@@ -1,5 +1,8 @@
 {
   "name": "OpenOrange",
   "version": "0.0.0",
-  "main" : "./lib/openorange.js"
+  "main" : "./lib/openorange.js",
+  "dependencies": {
+    "async": "^2.0.0-rc.3"
+  }
 }

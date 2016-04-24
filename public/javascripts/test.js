@@ -47,7 +47,7 @@ orm.load = function load(rec, callback) {
                 return;
             }
             console.log(result)
-            classmanager.getClass("Record").fromJSON(result.rec, rec)
+            classmanager.getClass("Embedded_Record").fromJSON(result.rec, rec)
             if (callback) callback();
         },
         error: function (jqXHR, textStatus, errorThrown ) {
@@ -77,7 +77,7 @@ orm.save = function save(rec, callback) {
                 return;
             }
             console.log(result)
-            classmanager.getClass("Record").fromJSON(result.rec, rec)
+            classmanager.getClass("Embedded_Record").fromJSON(result.rec, rec)
             callback()
         },
         error: function (jqXHR, textStatus, errorThrown ) {

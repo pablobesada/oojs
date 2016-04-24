@@ -1,0 +1,103 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/filter-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/method-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/bluebird-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/settle-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/timers-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/reduce-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/context-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/nodeify-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/finally-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/promise-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/call_get-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/nodeback-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/any-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/thenables-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/each-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/schedule-compiled.js" />
+        <item url="file://$PROJECT_DIR$/sandbox-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/bind-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/catch_filter-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/babel-cli/node_modules/request/node_modules/http-signature/node_modules/sshpk/node_modules/ecc-jsbn/node_modules/jsbn/example-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/es5-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/generators-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/babel-cli/node_modules/request/node_modules/http-signature/node_modules/sshpk/node_modules/ecc-jsbn/node_modules/jsbn/index-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/map-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/promisify-compiled.js" />
+        <item url="file://$PROJECT_DIR$/openorange/lib/orm-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/join-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/promise_array-compiled.js" />
+        <item url="file://$PROJECT_DIR$/core/records/Embedded_Record-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.core.min-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/direct_resolve-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.core-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/debuggability-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/synchronous_inspection-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.min-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/assert-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/cancel-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/using-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/props-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/some-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/queue-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/errors-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/async-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/util-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/race-compiled.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/filter-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/method-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/bluebird-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/settle-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/timers-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/reduce-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/context-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/nodeify-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/finally-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/promise-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/call_get-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/nodeback-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/any-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/thenables-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/each-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/schedule-compiled.js" />
+      <root url="file://$PROJECT_DIR$/sandbox-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/bind-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/catch_filter-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/babel-cli/node_modules/request/node_modules/http-signature/node_modules/sshpk/node_modules/ecc-jsbn/node_modules/jsbn/example-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/es5-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/generators-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/babel-cli/node_modules/request/node_modules/http-signature/node_modules/sshpk/node_modules/ecc-jsbn/node_modules/jsbn/index-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/map-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/promisify-compiled.js" />
+      <root url="file://$PROJECT_DIR$/openorange/lib/orm-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/join-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/promise_array-compiled.js" />
+      <root url="file://$PROJECT_DIR$/core/records/Embedded_Record-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.core.min-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/direct_resolve-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.core-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/debuggability-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/synchronous_inspection-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.min-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/assert-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/cancel-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/using-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/props-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/some-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/queue-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/errors-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/async-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/util-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/bluebird/js/release/race-compiled.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

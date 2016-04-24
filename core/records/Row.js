@@ -2,7 +2,7 @@ var cm = require.main.require('./openorange').classmanager
 
 var Description = {
     name: 'Row',
-    inherits: 'Record',
+    inherits: 'Embedded_Record',
     fields: {
         rowNr: {type: "integer"},
         masterId: {type: "integer"},

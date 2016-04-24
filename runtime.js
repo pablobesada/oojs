@@ -4,7 +4,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require("fs")
 var cm = require.main.require('./openorange').classmanager
-var Record = cm.getClass("Record")
+var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 /* GET users listing. */
 
