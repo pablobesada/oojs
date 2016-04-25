@@ -1,5 +1,10 @@
-var mysql     =    require('mysql');
 
+var mysql = require('mysql');
+// Note that the library's classes are not properties of the main export
+// so we require and promisifyAll them manually
+//Promise.promisifyAll(require("mysql/lib/Connection").prototype);
+//var mysql_pool = Promise.promisifyAll(require("mysql/lib/Pool").prototype);
+//var mysql     =    require('mysql');
 var db = {}
 
 db.pool      =    mysql.createPool({
@@ -10,7 +15,6 @@ db.pool      =    mysql.createPool({
     database : 'oo',
     debug    :  false
 });
-
 function handle_database(req,res) {
 
     pool.getConnection(function(err,connection){

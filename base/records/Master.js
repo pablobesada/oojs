@@ -1,7 +1,7 @@
 
 //console.log("en Master.js 4: current filename: " + __filename)
 
-var cm = require.main.require('./openorange').classmanager;
+var cm = global.__main__.require('./openorange').classmanager
 //console.log("en Master.js 5: current filename: " + __filename)
 
 var Description = {

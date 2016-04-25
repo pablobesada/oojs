@@ -17,17 +17,19 @@ classmanager.extractScriptDir = function extractScriptDir(dirname) {
 
 classmanager.createClass = function createClass(description, filename) {
     var ParentClass = classmanager.getParentClassFor(description.name, description.inherits, filename);
-    console.log(ParentClass)
     var ChildClass = ParentClass.createChildClass(description, filename);
     return ChildClass;
 }
-
 function require(module) {
     if (module == "./openorange") return {
         classmanager: classmanager,
         orm: orm
     }
+    if (module == "underscore") return _;
 }
+
+function global(){}
+global.__main__ = {require: require}
 require.main = {require: require}
 
 orm.load = function load(rec, callback) {
@@ -150,22 +152,35 @@ classmanager.getParentClassFor = function getParentClassFor(name, parent, dirnam
     });
     return res;
 }
-/*
-var Master = getClass("Master");
-var m = Master.new();
-m.Code = 'pepe';
-m.Name = 'jaja'
-console.log(m)
-*/
-var i = classmanager.getClass("SalesOrder").new()
-i.SerNr = 12345
-//i.CustName = 'pablo'
-//i.ItemGroup = 'a'
-i.load(function(err) {
-    console.log(err);
-    console.log(i.SerNr);
-    console.log(i.CustName);
-    i.save(function (err) {
-        console.log(err)
+
+
+
+var cm = require("./openorange").classmanager
+var SalesOrder = cm.getClass("SalesOrder")
+var so = SalesOrder.new()
+so.SerNr = 333;
+
+//so.SerNr = 999
+so.load()
+    .then(function () {
+        console.log("loaded")
+        console.log(so.CustCode)
+        console.log(so.Items.length)
     })
-})
+    .then(function () {
+        so.CustCode = so.CustCode + "X";
+        var sorw = so.Items.newRow()
+        sorw.ArtCode = "I" + so.Items.length;
+        so.Items.push(sorw);
+        so.Items[1].Name ='PABLO'
+        return so.save()
+    })
+    .then(function () {
+        console.log("saved: " + so.CustCode)
+        console.log("items: " + so.Items.length)
+    })
+    .catch(function (error) {
+        console.log(JSON.stringify(error))
+    })
+    .then(function () {
+    })

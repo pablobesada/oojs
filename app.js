@@ -1,3 +1,4 @@
+global.__main__ = module
 var express = require('express');
 
 var path = require('path');
@@ -77,5 +78,6 @@ app.use(function (err, req, res, next) {
     });
 });
 
+app.module = module
 module.exports = app;
 //redisClient.quit()

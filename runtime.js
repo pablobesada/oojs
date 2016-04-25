@@ -3,7 +3,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require("fs")
-var cm = require.main.require('./openorange').classmanager
+var cm = require('./openorange').classmanager
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 /* GET users listing. */
@@ -24,33 +24,27 @@ function sendModule(res, fn) {
 router.post('/load', function (req, res, next) {
     console.log(req.body)
     var rec = Record.fromJSON(req.body)
-    rec.load(function (err) {
-        res.setHeader('Content-Type', 'application/json');
-        if (err != null){
-            //aca que devuelvo?
+    res.setHeader('Content-Type', 'application/json');
+    rec.load()
+        .then(function () {
+            res.send({ok:true, rec: JSON.stringify(rec)});
+        })
+        .catch(function (err) {
             res.send({ok: false, error: "record not found"})
-            return;
-        }
-        res.send({ok:true, rec: JSON.stringify(rec)});
-        return;
-
-    })
+        });
 });
 
 router.post('/save', function (req, res, next) {
     console.log(req.body)
     var rec = Record.fromJSON(req.body)
-    rec.save(function (err) {
-        res.setHeader('Content-Type', 'application/json');
-        if (err != null){
-            //aca que devuelvo?
+    res.setHeader('Content-Type', 'application/json');
+    rec.save()
+        .then(function () {
+            res.send({ok: true, rec: JSON.stringify(rec)});
+        })
+        .catch(function (err) {
             res.send({ok: false, error: err})
-            return;
-        }
-        res.send({ok:true, rec: JSON.stringify(rec)});
-        return;
-
-    })
+        })
 });
 
 router.get('/class', function (req, res, next) {

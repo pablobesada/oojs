@@ -26,13 +26,13 @@ classmanager.getClassFilename = function getClassFilename(name, max_script_dir_i
 
 classmanager.createClass = function createClass(description, filename) {
     var ParentClass = classmanager.getParentClassFor(description.name, description.inherits, filename);
-    console.log(ParentClass)
+    //console.log(ParentClass)
     var ChildClass = ParentClass.createChildClass(description, filename);
     return ChildClass;
 }
 
 classmanager.getClass = function getClass(name, max_script_dir_index) {
-    console.log("en getClass: " + name)
+    //console.log("en getClass: " + name)
     var ms = max_script_dir_index;
     if (ms == null) ms = 0;
     for (var i=ms; i<classmanager.reversed_scriptdirs.length; i++) {
@@ -41,7 +41,7 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
             var ld = classmanager.lookupdirs[j];
             var modname = "./" + sd + "/" + ld + "/" + name;
             try {
-                var r = require.main.require(modname);
+                var r = global.__main__.require(modname);
                 //console.log(["require: ./" + sd + "/" + ld + "/" + name, r])
                 return r;
             } catch (e) {

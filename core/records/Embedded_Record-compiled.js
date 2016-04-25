@@ -1,6 +1,6 @@
 "use strict";
 
-var oo = require.main.require("./openorange");
+var oo = global.__main__.require("./openorange");
 var _ = require("underscore");
 
 var Field = Object.create(null);
@@ -81,6 +81,13 @@ DetailField.push = function push(obj) {
     Array.prototype.push.call(this, obj);
     obj.addListener(this);
     if (this.listener) this.listener.fieldModified(this);
+};
+
+DetailField.clear = function clear() {
+    if (this.length != 0) {
+        this.length = 0;
+        if (this.listener) this.listener.fieldModified(this);
+    }
 };
 
 DetailField.splice = function splice() {
@@ -240,19 +247,66 @@ Embedded_Record.inspect = function inspect() {
 
 Embedded_Record.__clearRemovedRows__ = function __clearRemovedRows__() {
     _(this.__details__).map(function (detail) {
-        console.log(arguments);console.log("CL: " + detail.__removed_rows__.length);detail._removed_rows__ = [];
+        detail._removed_rows__ = [];
     });
 };
 Embedded_Record.save = function save(callback) {
-    oo.orm.save(this, callback);
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        oo.orm.save(self, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+};
+
+Embedded_Record.check = function check() {
+    return true;
+};
+
+Embedded_Record.beforeInsert = function beforeInsert() {
+    return true;
+};
+
+Embedded_Record.beforeUpdate = function beforeUpdate() {
+    return true;
+};
+
+Embedded_Record.afterInsert = function afterInsert() {
+    return true;
+};
+
+Embedded_Record.afterUpdate = function afterUpdate() {
+    return true;
 };
 
 Embedded_Record.delete = function save(callback) {
-    oo.orm.delete(this, callback);
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        oo.orm.delete(self, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
 };
 
 Embedded_Record.load = function load(callback) {
-    oo.orm.load(this, callback);
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        oo.orm.load(self, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
 };
 
 Embedded_Record.isNew = function isNew() {
@@ -277,18 +331,29 @@ Embedded_Record.setNewFlag = function setNewFlag(b) {
 
 Embedded_Record.toJSON = function toJSON() {
     var obj = {
-        __classname__: this.__description__.name
+        __classname__: this.__description__.name,
+        __isnew__: this.__isnew__,
+        __ismodified__: this.__ismodified__
     };
     var fieldnames = this.fieldNames();
     for (var i = 0; i < fieldnames.length; i++) {
         var fn = fieldnames[i];
         obj[fn] = this[fn];
     }
+    var detailnames = this.detailNames();
+    for (var i = 0; i < detailnames.length; i++) {
+        var dn = detailnames[i];
+        obj[dn] = [];
+        var detail = this[dn];
+        for (var j = 0; j < detail.length; j++) {
+            obj[dn].push(this[dn][j].toJSON());
+        }
+    }
+
     return obj;
 };
 
 Embedded_Record.fromJSON = function fromJSON(obj, rec) {
-    console.log("en fromJSON");
     if (typeof obj == "string") obj = JSON.parse(obj);
     if (rec == null) rec = oo.classmanager.getClass(obj.__classname__).new();
     var fieldnames = rec.fieldNames();
@@ -296,6 +361,17 @@ Embedded_Record.fromJSON = function fromJSON(obj, rec) {
         var fn = fieldnames[i];
         rec[fn] = obj[fn];
     }
+    var detailnames = rec.detailNames();
+    for (var i = 0; i < detailnames.length; i++) {
+        var dn = detailnames[i];
+        var detail = rec[dn];
+        detail.clear();
+        for (var j = 0; j < obj[dn].length; j++) {
+            detail.push(detail.getRowClass().fromJSON(obj[dn][j]));
+        }
+    }
+    rec.setNewFlag(obj.__isnew__);
+    rec.setModifiedFlag(obj.__ismodified__);
     return rec;
 };
 

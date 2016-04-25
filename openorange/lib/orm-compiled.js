@@ -2,7 +2,6 @@
 
 var db = require("./db");
 var async = require("async");
-var Promise = require("bluebird");
 
 var orm = {};
 
@@ -202,41 +201,41 @@ function select_detail_function(conn, record, dn) {
 }
 
 orm.load = function load(record, callback) {
-    db.pool.getConnection(function (err, conn) {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-        var select = orm.generate_select_sql(record);
-        console.log(select.sql);
-        async.series([function (cb) {
-            conn.query(select.sql, select.values, function (err, rows, fields) {
-                if (err) {
-                    cb(err);
-                    return;
-                }
-                if (rows == 0) {
-                    cb({ error: "record not found" });
-                    return;
-                }
-                fill_record_with_query_result(record, rows[0], fields);
-                record.setNewFlag(false);
-                record.setModifiedFlag(false);
-                cb(null);
-                return;
-            });
-        }, function (cb) {
-            var funcs = [];
-            record.detailNames().forEach(function (dn) {
-                funcs.push(select_detail_function(conn, record, dn));
-            });
-            async.parallel(funcs, function result(err, results) {
-                cb(err);
-            });
-        }], function result(err, results) {
-            if (conn) conn.release();
-            callback(err);
+    var conn = null;
+    async.series([function (cb) {
+        db.pool.getConnection(function (err, val) {
+            conn = val;
+            if (err && conn) conn.release();
+            cb(err);
         });
+    }, function (cb) {
+        var select = orm.generate_select_sql(record);
+        conn.query(select.sql, select.values, function (err, rows, fields) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            if (rows == 0) {
+                cb({ error: "record not found" });
+                return;
+            }
+            fill_record_with_query_result(record, rows[0], fields);
+            record.setNewFlag(false);
+            record.setModifiedFlag(false);
+            cb(null);
+            return;
+        });
+    }, function (cb) {
+        var funcs = [];
+        record.detailNames().forEach(function (dn) {
+            funcs.push(select_detail_function(conn, record, dn));
+        });
+        async.parallel(funcs, function result(err, results) {
+            cb(err);
+        });
+    }], function result(err, results) {
+        if (conn) conn.release();
+        callback(err);
     });
 };
 
