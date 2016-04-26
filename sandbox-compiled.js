@@ -10,23 +10,26 @@ var SalesOrder = cm.getClass("SalesOrder");
 var so = SalesOrder.new();
 so.SerNr = 333;
 
-//so.SerNr = 999
-so.load().then(function () {
-    console.log(arguments);
-    console.log("loaded");
-    console.log(so.CustCode);
-    console.log(so.Items.length);
+Promise.resolve().then(so.load).then(so.delete).catch(function (err) {
+    console.log("rrr: " + JSON.stringify(err));
+}).then(function () {
+    so = SalesOrder.new();
+    so.SerNr = 333;
+    so.CustCode = 'AA';
+    return so.save();
 }).then(function () {
     so.CustCode = so.CustCode + "X";
     var sorw = so.Items.newRow();
-    sorw.ArtCode = "I" + so.Items.length;
     so.Items.push(sorw);
+    sorw.ArtCode = "I" + so.Items.length;
+
     return so.save();
 }).then(function () {
     console.log("saved: " + so.CustCode);
     console.log("items: " + so.Items.length);
 }).catch(function (error) {
-    console.log(JSON.stringify(error));
+    console.log([error.message, error.id]);
+    console.log("EEERRROORRR:" + JSON.stringify(error));
 }).then(function () {
     process.exit();
 });

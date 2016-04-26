@@ -32,39 +32,41 @@ function global() {}
 global.__main__ = { require: require };
 require.main = { require: require };
 
-orm.load = function load(rec, callback) {
+orm.load = function load(rec) {
     //var jsonrecord = JSON.stringify(record);
-    var url = '/runtime/load';
-    $.ajax({
-        type: "POST",
-        url: url,
-        contentType: 'application/json; charset=utf-8',
-        dataType: "json",
-        async: true,
-        data: JSON.stringify(rec.toJSON()),
-        success: function (result) {
-            console.log("loaded");
-            if (!result.ok) {
-                callback(result.error);
-                return;
+    return new Promise(function (resolve, reject) {
+        var url = '/runtime/load';
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            async: true,
+            data: JSON.stringify(rec.toJSON()),
+            success: function (result) {
+                console.log("loaded");
+                if (!result.ok) {
+                    callback(result.error);
+                    return;
+                }
+                console.log(result);
+                classmanager.getClass("Embedded_Record").fromJSON(result.rec, rec);
+                resolve();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                //console.log("en fail")
+                reject(errorThrown);
+            },
+            complete: function () {
+                //console.log("en load::complete");
             }
-            console.log(result);
-            classmanager.getClass("Embedded_Record").fromJSON(result.rec, rec);
-            if (callback) callback();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            //console.log("en fail")
-            throw errorThrown;
-        },
-        complete: function () {
-            //console.log("en load::complete");
-        }
+        });
     });
 };
 
-orm.save = function save(rec, callback) {
+orm.store = function store(rec, callback) {
     //var jsonrecord = JSON.stringify(record);
-    var url = '/runtime/save';
+    var url = '/runtime/store';
     $.ajax({
         type: "POST",
         url: url,

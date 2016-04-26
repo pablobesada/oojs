@@ -1,3 +1,5 @@
+"use strict";
+
 var cm = global.__main__.require('./openorange').classmanager;
 
 var Description = {
@@ -14,6 +16,20 @@ var SalesOrder = cm.createClass(Description, __filename);
 SalesOrder.init = function init() {
     SalesOrder.__super__.init.call(this);
     return this;
+};
+
+SalesOrder.check = function check() {
+    console.log("en SO check");
+    return SalesOrder.__super__.check.call(this).then(function () {
+
+        return "pepe";
+    }).then(function () {
+        return new Promise(function (resolve, reject) {
+            console.log("inside SO check");
+            resolve("de aca no");
+        });
+    });
+    return Promise.resolve();
 };
 
 module.exports = SalesOrder;

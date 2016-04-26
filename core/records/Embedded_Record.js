@@ -187,7 +187,9 @@ Embedded_Record.init = function init() {
     this.__fieldslistener__.receiver = this;
     var props = {}
     this.__listeners__ = [];
-
+    this.load = this.load.bind(this)
+    this.save = this.save.bind(this)
+    this.delete = this.delete.bind(this)
     for (var fn in this.__description__.fields) {
         var fd = this.__description__.fields[fn]
         if (fd.type != 'detail') {
@@ -235,27 +237,33 @@ Embedded_Record.__clearRemovedRows__ = function __clearRemovedRows__() {
 }
 Embedded_Record.save = function save(callback) {
     var self = this;
-    return new Promise(function (resolve, reject) {
-        oo.orm.save(self, function (err) {
-            if (err) {
-                reject(err)
-            } else {
-                resolve()
-            }
-        });
-    });
+    return self.check()
+        .then(function () {
+            return new Promise(function (resolve, reject) {
+                oo.orm.store(self, function (err) {
+                    if (err) {
+                        console.log("err:" + JSON.stringify(err))
+                        reject(err)
+                    } else {
+                        resolve()
+                    }
+                })
+            });
+        })
 }
 
 Embedded_Record.check = function check() {
-    return true;
+    console.log("en check de record")
+    //return Promise.reject("check failed")
+    return Promise.resolve();
 }
 
 Embedded_Record.beforeInsert = function beforeInsert() {
-    return true;
+    return Promise.resolve();
 }
 
 Embedded_Record.beforeUpdate = function beforeUpdate() {
-    return true;
+    return Promise.resolve();
 }
 
 Embedded_Record.afterInsert = function afterInsert() {
@@ -267,7 +275,7 @@ Embedded_Record.afterUpdate = function afterUpdate() {
 }
 
 
-Embedded_Record.delete = function save(callback) {
+Embedded_Record.delete = function del(callback) {
     var self = this;
     return new Promise(function (resolve, reject) {
         oo.orm.delete(self, function (err) {
@@ -281,7 +289,9 @@ Embedded_Record.delete = function save(callback) {
 }
 
 
-Embedded_Record.load = function load(callback) {
+Embedded_Record.load = function load() {
+    console.log(arguments)
+    return oo.orm.load(this);
     var self = this;
     return new Promise (function (resolve, reject) {
         oo.orm.load(self, function(err) {

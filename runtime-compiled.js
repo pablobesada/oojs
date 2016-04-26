@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require("fs");
 var cm = require('./openorange').classmanager;
+var orm = require('./openorange').orm;
 var Record = cm.getClass("Embedded_Record");
 var path = require("path");
 /* GET users listing. */
@@ -32,14 +33,16 @@ router.post('/load', function (req, res, next) {
     });
 });
 
-router.post('/save', function (req, res, next) {
+router.post('/store', function (req, res, next) {
     console.log(req.body);
     var rec = Record.fromJSON(req.body);
     res.setHeader('Content-Type', 'application/json');
-    rec.save().then(function () {
-        res.send({ ok: true, rec: JSON.stringify(rec) });
-    }).catch(function (err) {
-        res.send({ ok: false, error: err });
+    orm.store(rec, function (err) {
+        if (err) {
+            res.send({ ok: false, error: err });
+        } else {
+            res.send({ ok: true, rec: JSON.stringify(rec) });
+        }
     });
 });
 

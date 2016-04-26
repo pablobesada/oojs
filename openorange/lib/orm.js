@@ -176,7 +176,7 @@ function fill_record_with_query_result(record, row, fields) {
     }
 }
 
-function select_detail_function(conn, record, dn) {
+function select_detail_function2(conn, record, dn) {
     return function (cb) {
         var select = orm.generate_select_detail_sql(record, dn);
         console.log(select.sql)
@@ -199,7 +199,29 @@ function select_detail_function(conn, record, dn) {
     }
 }
 
-orm.load = function load(record, callback) {
+function select_detail_function(conn, record, dn) {
+    return new Promise(function (resolve, reject) {
+        var select = orm.generate_select_detail_sql(record, dn);
+        console.log(select.sql)
+        var detail = record.details(dn);
+        conn.query(select.sql, select.values, function (err, rows, fields) {
+            if (err) {
+                reject(err)
+                return;
+            }
+            rows.forEach(function (row) {
+                var rw = detail.newRow();
+                fill_record_with_query_result(rw, row, fields);
+                detail.push(rw);
+                rw.setNewFlag(false);
+                rw.setModifiedFlag(false);
+            })
+            resolve();
+        })
+    })
+}
+
+orm.load2 = function load(record, callback) {
     var conn = null;
     async.series([
             function (cb) {
@@ -245,6 +267,46 @@ orm.load = function load(record, callback) {
     );
 }
 
+orm.load = function load(record) {
+    var conn = null;
+    return new Promise(function (resolve, reject) {
+        db.pool.getConnection(function (err, val) {
+            conn = val;
+            if (err) {
+                if (conn) conn.release();
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    })
+    .then(function () {
+        var select = orm.generate_select_sql(record);
+        return new Promise(function (resolve, reject) {
+            conn.query(select.sql, select.values, function (err, rows, fields) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                if (rows == 0) {
+                    reject({error: "record not found"})
+                    return;
+                }
+                fill_record_with_query_result(record, rows[0], fields)
+                record.setNewFlag(false);
+                record.setModifiedFlag(false);
+                resolve();
+            })
+        });
+    })
+    .then (function () {
+        var funcs = [];
+        record.detailNames().forEach(function (dn) {
+            funcs.push(select_detail_function(conn, record, dn))
+        })
+        return Promise.all(funcs);
+    })
+}
 
 orm.generate_select_sql = function generate_select_sql(record) {
     var fieldnames = record.fieldNames();
@@ -412,7 +474,7 @@ function delete_details_and_finish_function(conn, record, callback) {
     }
 }
 
-orm.save = function save(record, callback) {
+orm.store = function store(record, callback) {
     if (!record.isNew() && !record.isModified()) {
         callback(null);
         return;
