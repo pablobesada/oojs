@@ -6,14 +6,21 @@ var db = require("./openorange/lib/db")
 
 var cm = require("./openorange").classmanager
 var SalesOrder = cm.getClass("SalesOrder")
+var Window = cm.getClass("Window")
 var so = SalesOrder.new()
 so.SerNr = 333;
 
+
+
 Promise.resolve()
     .then(so.load)
+    .then(function () {
+        console.log(so.CustCode)
+    })
     .then(so.delete)
     .catch(function (err) {
-        console.log("rrr: " + JSON.stringify(err))
+        console.log("rrr: " + JSON.stringify(err.message))
+
     })
     .then(function () {
         so = SalesOrder.new()
@@ -37,6 +44,7 @@ Promise.resolve()
         console.log([error.message, error.id])
         console.log("EEERRROORRR:" + JSON.stringify(error))
     })
+
     .then(function () {
         process.exit();
     })

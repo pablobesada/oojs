@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  script(language='javascript', src='https://code.jquery.com/jquery-1.12.3.min.js')
+  script(src='/bower_components/webcomponentsjs/webcomponents.min.js')
+  link(rel="import", href="/elements/hello-world.html")
+  link(rel="import", href="/bower_components/paper-card/paper-card.html")
+  h1= title
+  p Welcome to #{title} - Polymer
+  div#container
+    hello-world(who="Unic")
+
+
+  paper-card(heading="Emmental" image="http://placehold.it/350x150/FFC107/000000")
+    div(class="card-content") Emmentaler or Emmental is a yellow, medium-hard cheese that originated in the area around Emmental, Switzerland. It is one of the cheeses of Switzerland, and is sometimes known as Swiss cheese.
+    div(class="card-actions")
+      paper-button Share
+      paper-button Explore!
+
+
+  window

@@ -306,16 +306,6 @@ Embedded_Record.delete = function del(callback) {
 Embedded_Record.load = function load() {
     console.log(arguments);
     return oo.orm.load(this);
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        oo.orm.load(self, function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    });
 };
 
 Embedded_Record.isNew = function isNew() {

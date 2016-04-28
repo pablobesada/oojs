@@ -5,78 +5,88 @@ var async = require("async")
 var orm = {}
 
 function raw_insert_row_function(connection, record) {
-    return function (callback) {
+    return new Promise(function (resolve, reject) {
         var insert = orm.generate_insert_sql(record);
         console.log(insert.sql)
         connection.query(insert.sql, insert.values, function (err, info) {
-            if (!err) {
-                record.internalId = info.insertId;
-                record.syncVersion = 1;
-                record.setNewFlag(false);
-                record.setModifiedFlag(false);
+            if (err) {
+                reject(err);
+                return;
             }
-            callback(err);
+            record.internalId = info.insertId;
+            record.syncVersion = 1;
+            record.setNewFlag(false);
+            record.setModifiedFlag(false);
+            resolve();
             return;
         })
-    };
+    });
 }
 
 function raw_delete_row_function(connection, record) {
-    return function (callback) {
+    return new Promise(function (resolve, reject) {
         var del = orm.generate_delete_sql(record);
         console.log(del.sql)
         console.log(del.values)
         connection.query(del.sql, del.values, function (err, info) {
-            if (!err) {
-                console.log(info)
-                if (info.affectedRows != 1) {
-                    callback({code: "ROW_NOT_DELETED", message: "Row couldn't be deleted"})
-                    return;
-                }
+            if (err) {
+                reject(err);
+                return;
             }
-            callback(err);
+            console.log(info)
+            if (info.affectedRows != 1) {
+                reject({code: "ROW_NOT_DELETED", message: "Row couldn't be deleted"})
+                return;
+            }
+            resolve();
             return;
         })
-    };
+    });
 }
 
 function raw_update_row_function(connection, record) {
-    return function (callback) {
+    return new Promise (function (resolve, reject) {
         var update = orm.generate_update_sql(record);
         console.log(update.sql)
         connection.query(update.sql, update.values, function (err, info) {
-            if (!err) {
-                if (info.changedRows != 1) {
-                    callback({code: "ROW_NOT_UPDATED", message: "Row couldn't be updated"})
-                    return;
-                } else {
-                    record.setNewFlag(false);
-                    record.setModifiedFlag(false);
-                }
+            if (err) {
+                reject(err);
+                return;
             }
-            callback(err);
+            if (info.changedRows != 1) {
+                reject({code: "ROW_NOT_UPDATED", message: "Row couldn't be updated"})
+                return;
+            } else {
+                record.setNewFlag(false);
+                record.setModifiedFlag(false);
+                resolve();
+            }
             return;
         })
-    };
+    });
 }
 
 function deleteDetailFunction(connection, record, detailname) {
-    var detail = record.details(detailname);
-    return function (callback) {
+    return new Promise(function (resolve, reject) {
+        var detail = record.details(detailname);
         var del = orm.generate_delete_detail_sql(record, detailname);
         console.log(del.sql)
         console.log(del.values)
         connection.query(del.sql, del.values, function (err, info) {
-            callback(err);
+            if (err) {
+                reject(err);
+                return;
+            }
+            reject("alla"); return;
+            resolve()
             return;
         })
-    }
+    })
 }
 
 function saveDetailFunction(connection, record, detailname) {
-    var detail = record.details(detailname);
-    return function (callback) {
-        var funcs = [];
+    var funcs = [];
+    return new Promise (function (resolve, reject) {
         for (var i = 0; i < detail.length; i++) {
             var row = detail[i];
             row.masterId = record.internalId;
@@ -95,11 +105,9 @@ function saveDetailFunction(connection, record, detailname) {
                 funcs.push(raw_delete_row_function(connection, row))
             }
         }
-        console.log(detailname, detail);
-        async.series(funcs, function result(err, result) {
-            callback(err);
-        })
-    }
+        resolve();
+    })
+    .then(Promise.all(funcs))
 }
 
 orm.generate_insert_sql = function generate_insert_sql(record) {
@@ -269,43 +277,34 @@ orm.load2 = function load(record, callback) {
 
 orm.load = function load(record) {
     var conn = null;
-    return new Promise(function (resolve, reject) {
-        db.pool.getConnection(function (err, val) {
-            conn = val;
-            if (err) {
-                if (conn) conn.release();
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    })
-    .then(function () {
-        var select = orm.generate_select_sql(record);
-        return new Promise(function (resolve, reject) {
-            conn.query(select.sql, select.values, function (err, rows, fields) {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                if (rows == 0) {
-                    reject({error: "record not found"})
-                    return;
-                }
-                fill_record_with_query_result(record, rows[0], fields)
-                record.setNewFlag(false);
-                record.setModifiedFlag(false);
-                resolve();
-            })
-        });
-    })
-    .then (function () {
-        var funcs = [];
-        record.detailNames().forEach(function (dn) {
-            funcs.push(select_detail_function(conn, record, dn))
+    return db.getConnection()
+        .then(function (newconn) {
+            conn = newconn;
+            var select = orm.generate_select_sql(record);
+            return new Promise(function (resolve, reject) {
+                conn.query(select.sql, select.values, function (err, rows, fields) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    if (rows == 0) {
+                        reject({error: "record not found"})
+                        return;
+                    }
+                    fill_record_with_query_result(record, rows[0], fields)
+                    record.setNewFlag(false);
+                    record.setModifiedFlag(false);
+                    resolve();
+                })
+            });
         })
-        return Promise.all(funcs);
-    })
+        .then (function () {
+            var funcs = [];
+            record.detailNames().forEach(function (dn) {
+                funcs.push(select_detail_function(conn, record, dn))
+            })
+            return Promise.all(funcs);
+        })
 }
 
 orm.generate_select_sql = function generate_select_sql(record) {
@@ -372,7 +371,64 @@ function finish_parallel_function(conn, record, callback) {
     }
 }
 
-function save_details_and_finish_function(conn, record, callback) {
+function finish_parallel_function(conn, record, callback) {
+    return function result(err, result) {
+        if (err) {
+            conn.rollback(function (err2) {
+                conn.release();
+                if (err2) {
+                    callback(err2);
+                    return;
+                } //no estoy seguro de esto
+                callback(err);
+                return;
+            });
+        } else {
+            conn.commit(function (err2) {
+                conn.release();
+                if (err2) {
+                    callback(err2); //no estoy seguro de esto
+                    return;
+                }
+                record.__clearRemovedRows__();
+                callback(null);
+                return;
+            });
+        }
+    }
+}
+
+function commit(conn, record) {
+    return new Promise(function (resolve, reject) {
+        conn.commit(function (err2) {
+            conn.release();
+            if (err2) {
+                reject(err2); //no estoy seguro de esto
+                return;
+            }
+            record.__clearRemovedRows__();
+            resolve()
+            return;
+        })
+    })
+}
+
+
+function rollback(conn, record) {
+    return new Promise(function (resolve, reject) {
+        conn.rollback(function (err2) {
+            conn.release();
+            if (err2) {
+                reject(err2);
+                return;
+            } //no estoy seguro de esto
+            resolve(err);
+            return;
+        });
+    });
+}
+
+function save_details_and_finish_function2(conn, record, callback) {
     return function result(err, result) {
         if (err) {
             conn.rollback(function (err2) {
@@ -395,7 +451,26 @@ function save_details_and_finish_function(conn, record, callback) {
     }
 }
 
-function save_new(conn, record, callback) {
+function save_details_and_finish_function(conn, record) {
+    var funcs = [];
+    return new Promise(function (resolve, reject) {
+        for (var i = 0; i < record.detailNames().length; i++) {
+            var f = saveDetailFunction(conn, record, record.detailNames()[i]);
+            funcs.push(f);
+        }
+        resolve()
+    })
+    .then (Promise.all(funcs))
+    .then(
+        function onFullfillment() {
+            return commit(conn, record)
+        }, function onReject(err) {
+            rollback(conn, record)
+            return Promise.reject(err)
+        })
+}
+
+function save_new2(conn, record, callback) {
     var insert = orm.generate_insert_sql(record);
     console.log(insert.sql)
     async.series([
@@ -417,6 +492,35 @@ function save_new(conn, record, callback) {
             }
         ], save_details_and_finish_function(conn, record, callback)
     );
+}
+
+function save_new(conn, record) {
+    return new Promise(function (resolve, reject) {
+        conn.beginTransaction(function (err) {
+            if (err) return reject(err)
+            resolve()
+        });
+    })
+    .then(function () {
+        return new Promise(function (resolve, reject) {
+            var insert = orm.generate_insert_sql(record);
+            console.log(insert.sql)
+            conn.query(insert.sql, insert.values, function (err, info) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                record.internalId = info.insertId;
+                record.syncVersion = 1;
+                record.setNewFlag(false);
+                record.setModifiedFlag(false);
+                resolve();
+            })
+        })
+    })
+    .then(function () {
+        return save_details_and_finish_function(conn, record)
+    });
 }
 
 function save_existing(conn, record, callback) {
@@ -451,30 +555,26 @@ function save_existing(conn, record, callback) {
     );
 }
 
-function delete_details_and_finish_function(conn, record, callback) {
-    return function result(err, result) {
-        if (err) {
-            conn.rollback(function (err2) {
-                conn.release();
-                if (err2) {
-                    callback(err2);
-                    return;
-                } //no estoy seguro de esto
-                callback(err);
-                return;
-            });
-            return;
-        }
-        var funcs = [];
+function delete_details_and_finish_function(conn, record) {
+    var funcs = [];
+    return new Promise(function (resolve, reject) {
         for (var i = 0; i < record.detailNames().length; i++) {
             var f = deleteDetailFunction(conn, record, record.detailNames()[i]);
             funcs.push(f);
         }
-        async.parallel(funcs, finish_parallel_function(conn, record, callback));
-    }
+        //return Promise.all(funcs)
+        resolve()
+    }).then(Promise.all(funcs)) //.then(resolve, reject)
+    .then(
+        function onFullfillment() {
+        return commit(conn, record)
+    }, function onReject(err) {
+        rollback(conn, record)
+        return Promise.reject(err)
+    })
 }
 
-orm.store = function store(record, callback) {
+orm.store2 = function store(record, callback) {
     if (!record.isNew() && !record.isModified()) {
         callback(null);
         return;
@@ -493,45 +593,62 @@ orm.store = function store(record, callback) {
     });
 }
 
-orm.delete = function (record, callback) {
+orm.store = function store(record, callback) {
+    if (!record.isNew() && !record.isModified()) {
+        return Promise.resolve()
+    }
+    var conn = null;
+    return db.getConnection()
+        .then(function (newconn) {
+            conn = newconn;
+            if (record.isNew()) {
+                return save_new(conn, record);
+            } else if (record.isModified()) {
+                return save_existing(conn, record);
+            }
+        })
+}
+
+orm.delete = function (record) {
     if (record.isNew()) {
-        callback({
+        return Promise.reject({
             code: "NOT_DELETED",
             message: "Record is new. Cannot be deleted"
         });
-        return;
     }
-    db.pool.getConnection(function (err, conn) {
-        if (err) {
-            if (conn) conn.release();
-            callback(err, null);
-            return;
-        }
-        async.series([
-            function (cb) {
-                conn.beginTransaction(cb);
-                return;
-            },
-            function (cb) {
+    var conn = null;
+    return db.getConnection()
+        .then(function (newconn) {
+            conn = newconn
+            return new Promise(function (resolve, reject) {
+                conn.beginTransaction(function (err) {
+                    if (err) return reject(err)
+                    resolve()
+                });
+            })
+        }).then(function () {
+            return new Promise(function (resolve, reject) {
                 var del = orm.generate_delete_sql(record);
                 console.log(del.sql)
                 console.log(del.values)
                 conn.query(del.sql, del.values, function (err, info) {
-                    if (!err) {
+                    if (err) {
+                        reject(err)
+                        return;
+                    } else {
                         if (info.affectedRows != 1) {
-                            cb({
+                            reject({
                                 code: "NOT_DELETED",
                                 message: "Record might have been modified by other user"
                             })
                             return;
                         }
+                        resolve();
                     }
-                    cb(err);
-                    return;
                 })
-            }
-        ], delete_details_and_finish_function(conn, record, callback))
-    });
-
+            }).then(function () {
+                return delete_details_and_finish_function(conn, record);
+            })
+        });
 }
 module.exports = orm

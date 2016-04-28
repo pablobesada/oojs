@@ -1,4 +1,4 @@
-
+"use strict";
 var mysql = require('mysql');
 // Note that the library's classes are not properties of the main export
 // so we require and promisifyAll them manually
@@ -7,7 +7,7 @@ var mysql = require('mysql');
 //var mysql     =    require('mysql');
 var db = {}
 
-db.pool      =    mysql.createPool({
+db.pool     =    mysql.createPool({
     connectionLimit : 100, //important
     host     : 'localhost',
     user     : 'root',
@@ -39,6 +39,20 @@ function handle_database(req,res) {
         });
     });
 }
+
+db.getConnection = function getConnection() {
+    return new Promise(function (resolve, reject) {
+        db.pool.getConnection(function(err, connection) {
+            if (err) {
+                connnection.release();
+                reject(err);
+                return;
+            }
+            resolve(connection);
+        })
+    })
+}
+
 
 
 module.exports = db;

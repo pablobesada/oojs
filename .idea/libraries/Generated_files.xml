@@ -310,7 +310,9 @@
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/mocha-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/should.min-compiled.js" />
         <item url="file://$PROJECT_DIR$/base/records/SalesOrderItemRow-compiled.js" />
+        <item url="file://$PROJECT_DIR$/core/windows/Embedded_Window-compiled.js" />
         <item url="file://$PROJECT_DIR$/openorange/lib/classmanager-compiled.js" />
+        <item url="file://$PROJECT_DIR$/core/windows/Window-compiled.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -681,7 +683,7 @@
       <root url="file://$PROJECT_DIR$/base/records/Numerable-compiled.js" />
       <root url="file://$PROJECT_DIR$/core/records/Record-compiled.js" />
       <root url="file://$PROJECT_DIR$/core/records/Row-compiled.js" />
-      <root url="file://$PROJECT_DIR$/public/javascripts/test-compiled.js" />
+      <root url="file://$PROJECT_DIR$/public/js/test-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/bool-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/chain-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/error-compiled.js" />
@@ -716,7 +718,9 @@
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/mocha-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/should.min-compiled.js" />
       <root url="file://$PROJECT_DIR$/base/records/SalesOrderItemRow-compiled.js" />
+      <root url="file://$PROJECT_DIR$/core/windows/Embedded_Window-compiled.js" />
       <root url="file://$PROJECT_DIR$/openorange/lib/classmanager-compiled.js" />
+      <root url="file://$PROJECT_DIR$/core/windows/Window-compiled.js" />
     </CLASSES>
     <SOURCES />
   </library>

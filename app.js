@@ -41,6 +41,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
+
 
 app.use('/', routes);
 app.use('/runtime', clientRuntime);
