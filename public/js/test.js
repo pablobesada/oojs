@@ -23,7 +23,9 @@ classmanager.createClass = function createClass(description, filename) {
 function require(module) {
     if (module == "./openorange") return {
         classmanager: classmanager,
-        orm: orm
+        orm: orm,
+        isServer: false,
+        isClient: true,
     }
     if (module == "underscore") return _;
 }
@@ -32,7 +34,7 @@ function global(){}
 global.__main__ = {require: require}
 require.main = {require: require}
 
-orm.load = function load(rec) {
+orm.load2 = function load(rec) {
     //var jsonrecord = JSON.stringify(record);
     return new Promise(function (resolve, reject)
     {
@@ -47,7 +49,7 @@ orm.load = function load(rec) {
             success: function (result) {
                 console.log("loaded")
                 if (!result.ok) {
-                    callback(result.error);
+                    reject(result.error);
                     return;
                 }
                 console.log(result)
@@ -65,7 +67,7 @@ orm.load = function load(rec) {
     });
 }
 
-orm.store = function store(rec, callback) {
+orm.store2 = function store(rec, callback) {
     //var jsonrecord = JSON.stringify(record);
     var url = '/runtime/store';
     $.ajax({

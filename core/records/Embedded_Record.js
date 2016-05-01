@@ -68,6 +68,10 @@ DetailField.getRowClass = function getRowClass() {
     return this.__rowclass__;
 }
 
+DetailField.clearRemovedRows = function clearRemovedRows() {
+    this.__removed_rows__ = [];
+}
+
 DetailField.fieldNames = function fieldNames() {
     return this.getRowClass().fieldNames();
 }
@@ -182,6 +186,7 @@ Embedded_Record.init = function init() {
     this.__isnew__ = true;
     this.__ismodified__ = false;
     this.__fields__ = {}
+    this.__oldfields__ = {}
     this.__details__ = {}
     this.__fieldslistener__ = Object.create(FieldsListener)
     this.__fieldslistener__.receiver = this;
@@ -194,6 +199,7 @@ Embedded_Record.init = function init() {
     for (var fn in this.__description__.fields) {
         var fd = this.__description__.fields[fn]
         if (fd.type != 'detail') {
+            this.__oldfields__[fn] = Object.create(Field).init(fn, fd.type, fd.length, fd.persistent, fd.linkto);
             this.__fields__[fn] = Object.create(Field).init(fn, fd.type, fd.length, fd.persistent, fd.linkto);
             this.__fields__[fn].listener = this.__fieldslistener__;
             props[fn] = {
@@ -227,15 +233,17 @@ Embedded_Record.addListener = function (listener) {
 Embedded_Record.fieldNames = function fieldNames() {return this.__description__.fieldnames}
 Embedded_Record.detailNames = function detailNames() {return this.__description__.detailnames}
 Embedded_Record.fields = function fields(fn) {return this.__fields__[fn]}
+Embedded_Record.oldFields = function oldFields(fn) {return this.__oldfields__[fn]}
 Embedded_Record.details = function details(dn) {return this.__details__[dn]}
 Embedded_Record.hasField = function hasField(fn) {return fn in this.__fields__}
 Embedded_Record.inspect = function inspect() {
     return "<" + this.__description__.name + ", from " + this.__filename__+ ">"
 }
 
-Embedded_Record.__clearRemovedRows__ = function __clearRemovedRows__() {
+Embedded_Record.__clearRemovedRows__XX = function __clearRemovedRows__() {
     _(this.__details__).map(function (detail) { detail._removed_rows__ = []})
 }
+
 Embedded_Record.save = function save() {
     var self = this;
     var was_new = null;
@@ -259,12 +267,28 @@ Embedded_Record.save = function save() {
         })
 }
 
+Embedded_Record.syncOldFields = function syncOldFields() {
+    var self = this;
+    var fields = this.__description__.fields;
+    _(this.__description__.fields).forEach(function (fdef, fn) {
+        if (fdef.type != 'detail') {
+            self.oldFields(fn).setValue(self[fn])
+        } else {
+            var detail = self[fn]
+            for (var j=0;j<detail.length;j++) {
+                detail[j].syncOldFields();
+            }
+            detail.clearRemovedRows();
+        }
+    })
+    self.setModifiedFlag(false)
+}
+
 Embedded_Record.defaults = function defaults() {
     return Promise.resolve();
 }
 
 Embedded_Record.check = function check() {
-    console.log("en check de record")
     //return Promise.reject("check failed")
     return Promise.resolve();
 }
@@ -319,48 +343,106 @@ Embedded_Record.setNewFlag = function setNewFlag(b) {
 
 Embedded_Record.toJSON = function toJSON() {
     var obj = {
-        __classname__: this.__description__.name,
-        __isnew__: this.__isnew__,
-        __ismodified__: this.__ismodified__
+        __meta__: {
+            __isnew__: this.__isnew__,
+            __ismodified__: this.__ismodified__,
+            __classname__: this.__description__.name
+        },
+        fields: {},
+        oldFields: {},
+        removedRows: {}
     }
     var fieldnames = this.fieldNames();
     for (var i=0;i<fieldnames.length;i++) {
         var fn = fieldnames[i];
-        obj[fn] = this[fn];
+        obj.fields[fn] = this[fn];
+        obj.oldFields[fn] = this.oldFields(fn).getValue();
     }
     var detailnames = this.detailNames();
     for (var i=0;i<detailnames.length;i++) {
         var dn = detailnames[i];
-        obj[dn] = [];
+        obj.fields[dn] = [];
         var detail = this[dn];
         for (var j=0;j<detail.length;j++) {
-            obj[dn].push(this[dn][j].toJSON())
+            obj.fields[dn].push(this[dn][j].toJSON())
+        }
+        obj.removedRows[dn] = []
+        for (var j=0;j<detail.__removed_rows__.length;j++) {
+            obj.removedRows[dn].push(detail.__removed_rows__[j].toJSON())
         }
     }
-
     return obj;
 }
 
 Embedded_Record.fromJSON = function fromJSON(obj, rec) {
     if (typeof obj == "string") obj = JSON.parse(obj);
-    if (rec == null) rec = oo.classmanager.getClass(obj.__classname__).new();
+    if (rec == null) rec = oo.classmanager.getClass(obj.__meta__.__classname__).new();
     var fieldnames = rec.fieldNames();
     for (var i=0;i<fieldnames.length;i++) {
         var fn = fieldnames[i];
-        rec[fn] = obj[fn]
+        rec[fn] = obj.fields[fn]
+        rec.oldFields(fn).setValue(obj.oldFields[fn])
     }
     var detailnames = rec.detailNames();
     for (var i=0;i<detailnames.length;i++) {
         var dn = detailnames[i];
         var detail = rec[dn];
         detail.clear();
-        for (var j=0;j<obj[dn].length;j++) {
-            detail.push(detail.getRowClass().fromJSON(obj[dn][j]))
+        for (var j=0;j<obj.fields[dn].length;j++) {
+            detail.push(detail.getRowClass().fromJSON(obj.fields[dn][j]))
+        }
+        for (var j=0;j<obj.removedRows[dn].length;j++) {
+            detail.__removed_rows__.push(detail.getRowClass().fromJSON(obj.removedRows[dn][j]))
         }
     }
-    rec.setNewFlag(obj.__isnew__)
-    rec.setModifiedFlag(obj.__ismodified__)
+    rec.setNewFlag(obj.__meta__.__isnew__)
+    rec.setModifiedFlag(obj.__meta__.__ismodified__)
     return rec;
+}
+
+Embedded_Record.clone = function clone() {
+    var newrec = this.new();
+    var fieldnames = this.fieldNames();
+    for (var i=0;i<fieldnames.length;i++) {
+        var fn = fieldnames[i];
+        newrec[fn] = this[fn]
+    }
+    var detailnames = this.detailNames();
+    for (var i=0;i<detailnames.length;i++) {
+        var dn = detailnames[i];
+        var newdetail = newrec[dn];
+        var thisdetail = this[dn];
+        newdetail.clear();
+        for (var j=0;j<this[dn].length;j++) {
+            newdetail.push(thisdetail[j].clone())
+        }
+    }
+    newrec.setNewFlag(this.isNew())
+    newrec.setModifiedFlag(this.isModified())
+    return newrec;
+}
+
+Embedded_Record.isEqual = function isEqual(rec) {
+    if (rec.prototype != this.prototype) return false;
+    var fieldnames = this.fieldNames();
+    for (var i=0;i<fieldnames.length;i++) {
+        var fn = fieldnames[i];
+        if (rec[fn] != this[fn]) return false;
+    }
+    var detailnames = this.detailNames();
+    for (var i=0;i<detailnames.length;i++) {
+        var dn = detailnames[i];
+        var recdetail = rec[dn];
+        var thisdetail = this[dn];
+        if (recdetail.length != thisdetail.length) return false;
+        for (var j=0;j<this[dn].length;j++) {
+            if (!recdetail[j].isEqual(thisdetail[j])) return false;
+        }
+    }
+    if (rec.isNew() != this.isNew()) return false;
+    if (rec.isModified() != this.isModified()) return false;
+    if (JSON.stringify(rec.toJSON()) != JSON.stringify(this.toJSON())) return false; //ojo con estoooooo es muy pesado me parece... y ademas es redundante, solo aporte la comparacion de oldfields y removedrows
+    return true;
 }
 
 module.exports = Embedded_Record

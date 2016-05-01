@@ -11,13 +11,33 @@ var so = SalesOrder.new()
 so.SerNr = 333;
 
 
+so.load(function(err, callback) {
+    if (!err)  {
+        callback(err)
+        return;
+    }
+    so.save(function (err, callback) {
+        if (!err) {
+            callback(err)
+            return;
+        }
+        invoice.save(functo)
+    })
+})
 
 Promise.resolve()
+    .then(function () {
+        console.log(so.CustCode)
+    })
     .then(so.load)
     .then(function () {
         console.log(so.CustCode)
     })
     .then(so.delete)
+    .then(function () {
+        console.log("01")
+    })
+
     .catch(function (err) {
         console.log("rrr: " + JSON.stringify(err.message))
 
@@ -26,9 +46,16 @@ Promise.resolve()
         so = SalesOrder.new()
         so.SerNr = 333;
         so.CustCode = 'AA'
+        console.log("123")
+        var sorw = so.Items.newRow()
+        so.Items.push(sorw);
+        sorw.ArtCode = "M" + so.Items.length;
+
         return so.save()
     })
     .then(function () {
+        console.log("456")
+
         so.CustCode = so.CustCode + "X";
         var sorw = so.Items.newRow()
         so.Items.push(sorw);
@@ -40,14 +67,30 @@ Promise.resolve()
         console.log("saved: " + so.CustCode)
         console.log("items: " + so.Items.length)
     })
+    .then(function () {
+        console.log("456")
+
+        so.CustCode = so.CustCode + "X";
+        var sorw = so.Items.newRow()
+        so.Items.push(sorw);
+        sorw.ArtCode = "A" + so.Items.length;
+
+        return so.save()
+    })
+    .then(function () {
+        console.log("saved: " + so.CustCode)
+        console.log("items: " + so.Items.length)
+    })
     .catch(function (error) {
         console.log([error.message, error.id])
+        console.log(error.stack)
         console.log("EEERRROORRR:" + JSON.stringify(error))
     })
 
     .then(function () {
         process.exit();
     })
+
 
 /*so.save(function (err) {
     console.log("saved: " + err)

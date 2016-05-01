@@ -31,7 +31,7 @@ router.post('/load', function (req, res, next) {
             res.send({ok:true, rec: JSON.stringify(rec)});
         })
         .catch(function (err) {
-            res.send({ok: false, error: "record not found"})
+            res.send({ok: false, error: err, pepe: 1})
         });
 });
 
@@ -46,6 +46,19 @@ router.post('/store', function (req, res, next) {
             res.send({ok: true, rec: JSON.stringify(rec)});
         }
     })
+});
+
+router.post('/save', function (req, res, next) {
+    console.log(req.body)
+    var rec = Record.fromJSON(req.body)
+    res.setHeader('Content-Type', 'application/json');
+    rec.save()
+        .then(function() {
+            res.send({ok: true, rec: JSON.stringify(rec)});
+        })
+        .catch(function (err) {
+            res.send({ok: false, error: err})
+        })
 });
 
 router.get('/class', function (req, res, next) {

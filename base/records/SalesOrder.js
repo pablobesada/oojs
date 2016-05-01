@@ -20,7 +20,6 @@ SalesOrder.init = function init() {
 
 
 SalesOrder.check = function check() {
-    console.log("en SO check")
     return SalesOrder.__super__.check.call(this)
         .then(function () {
 
@@ -28,7 +27,6 @@ SalesOrder.check = function check() {
         })
         .then(function () {
             return new Promise(function (resolve, reject) {
-                console.log("inside SO check")
                 resolve("de aca no")
             })
         })
