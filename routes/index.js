@@ -17,4 +17,20 @@ router.get('/polymer', function(req, res, next) {
     res.render('polymer', { title: 'Express' });
 });
 
+router.get('/materialize', function(req, res, next) {
+    //req.session.test = 123
+    res.render('materialize', { title: 'Express' });
+});
+
+
+router.get('/window', function(req, res, next) {
+    //req.session.test = 123
+    res.render('window', { title: 'Express' });
+});
+
+router.get('/window_test', function(req, res, next) {
+    //req.session.test = 123
+    res.render('window_test', { title: 'Express' });
+});
+
 module.exports = router;

@@ -22,44 +22,19 @@ function sendModule(res, fn) {
     });
 }
 
-router.post('/load', function (req, res, next) {
+router.post('/record/:method', function (req, res, next) {
     console.log(req.body)
     var rec = Record.fromJSON(req.body)
     res.setHeader('Content-Type', 'application/json');
-    rec.load()
+    rec[req.params.method]()
         .then(function () {
             res.send({ok:true, rec: JSON.stringify(rec)});
         })
         .catch(function (err) {
-            res.send({ok: false, error: err, pepe: 1})
+            res.send({ok: false, error: err})
         });
 });
 
-router.post('/store', function (req, res, next) {
-    console.log(req.body)
-    var rec = Record.fromJSON(req.body)
-    res.setHeader('Content-Type', 'application/json');
-    orm.store(rec, function (err) {
-        if (err) {
-            res.send({ok: false, error: err})
-        } else {
-            res.send({ok: true, rec: JSON.stringify(rec)});
-        }
-    })
-});
-
-router.post('/save', function (req, res, next) {
-    console.log(req.body)
-    var rec = Record.fromJSON(req.body)
-    res.setHeader('Content-Type', 'application/json');
-    rec.save()
-        .then(function() {
-            res.send({ok: true, rec: JSON.stringify(rec)});
-        })
-        .catch(function (err) {
-            res.send({ok: false, error: err})
-        })
-});
 
 router.get('/class', function (req, res, next) {
     var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
@@ -68,12 +43,17 @@ router.get('/class', function (req, res, next) {
     sendModule(res, fn);
 });
 
-
 router.get('/parentclass', function (req, res, next) {
     var cls = cm.getParentClassFor(req.query.name, req.query.parent, req.query.dirname)
     var fn = cls.__filename__;
     sendModule(res, fn);
     console.log(fn)
+});
+
+router.get('/module', function (req, res, next) {
+    var fn = req.query.url + ".js"
+    console.log(fn)
+    sendModule(res, fn);
 });
 
 module.exports = router;

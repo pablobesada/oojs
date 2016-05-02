@@ -12,7 +12,7 @@ var Description = {
 var Item = cm.createClass(Description, __filename )
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 Item.init = function init() {
-    Item.__super__.init.call(this);
+    Item.super(this);
     return this
 }
 

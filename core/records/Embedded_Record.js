@@ -182,6 +182,13 @@ Embedded_Record.createChildClass = function createChildClass(descriptor, filenam
     return childclass;
 }
 
+Embedded_Record.super = function callSuper(methodname, self) {
+    if (methodname in this.__super__) {
+        return this.__super__[methodname].apply(self, arguments);
+    } else {
+        return Promise.resolve();
+    }
+}
 Embedded_Record.init = function init() {
     this.__isnew__ = true;
     this.__ismodified__ = false;

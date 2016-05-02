@@ -13,6 +13,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
-    "paper-card": "PolymerElements/paper-card#^1.1.1"
+    "paper-card": "PolymerElements/paper-card#^1.1.1",
+    "Materialize": "materialize#^0.97.6"
   }
 }

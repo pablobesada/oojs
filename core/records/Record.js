@@ -15,7 +15,7 @@ if (oo.isClient) Description.inherits = 'ClientRecord'
 var Record = cm.createClass(Description, __filename )
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 Record.init = function init() {
-    Record.__super__.init.call(this);
+    Record.super("init", this);
     return this
 }
 

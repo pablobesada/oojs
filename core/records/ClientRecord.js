@@ -21,6 +21,10 @@ ClientRecord.load = function load() {
     return this.runInServer("load");
 }
 
+ClientRecord.store = function store() {
+    return this.runInServer("store");
+}
+
 ClientRecord.save = function save() {
     return this.runInServer("save");
 }
@@ -28,7 +32,7 @@ ClientRecord.save = function save() {
 ClientRecord.runInServer = function runInServer(methodname) {
     var rec = this;
     return new Promise(function (resolve, reject) {
-        var url = '/runtime/' + methodname;
+        var url = '/runtime/record/' + methodname;
         $.ajax({
             type: "POST",
             url: url,

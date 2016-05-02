@@ -13,7 +13,7 @@ var Description = {
 var Row = cm.createClass(Description, __filename )
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 Row.init = function init() {
-    Row.__super__.init.call(this);
+    Row.super("init", this);
     return this
 }
 
