@@ -455,4 +455,8 @@ Embedded_Record.isEqual = function isEqual(rec) {
     return true;
 }
 
+Embedded_Record.fieldIsEditable = function fieldIsEditable(fieldname) {
+    return true;
+}
+
 module.exports = Embedded_Record

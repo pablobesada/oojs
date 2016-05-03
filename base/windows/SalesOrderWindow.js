@@ -12,8 +12,9 @@ var Description = {
         {field: 'CustCode'},
         {field: 'CustName'},
         {field: 'Items', columns: [
-            {type: 'input', field: 'ArtCode', label: 'Codigo'},
-            {type: 'input', field: 'Name', label: 'Descripcion'},
+            {field: 'rowNr'},
+            {field: 'ArtCode', label: 'Codigo'},
+            {field: 'Name', label: 'Descripcion'},
         ]}
     ]
 }

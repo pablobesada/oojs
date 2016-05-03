@@ -119,11 +119,13 @@ Embedded_Window.getRecord = function getRecord(rec) {
 
 Embedded_Window.beforeEdit = function beforeEdit(fieldname) {
     var self = this;
-    var r = self.getRecord()
-    if (fieldname == 'CustName') {
-        return self.getRecord().CustCode == '1'
+    var res=true;
+    if ('focus ' + fieldname in self) {
+        res = self['focus ' + fieldname]()
+        return res;
     }
-    return true;
+    res = self.getRecord().fieldIsEditable(fieldname);
+    return res;
 }
 
 Embedded_Window.afterEdit = function afterEdit(fieldname, value) {

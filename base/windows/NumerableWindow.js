@@ -1,3 +1,4 @@
+"use strict";
 var cm = global.__main__.require('./openorange').classmanager
 
 var Description = {
@@ -27,6 +28,10 @@ NumerableWindow.fieldModified = function fieldModified(field) {
 
 NumerableWindow['changed SerNr'] = function () {
     console.log("en numerablewindow: changed SerNr")
+}
+
+NumerableWindow['focus SerNr2'] = function () {
+    return true;
 }
 
 module.exports = NumerableWindow

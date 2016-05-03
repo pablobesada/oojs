@@ -22,4 +22,9 @@ Numerable.bring = function bring(SerNr) {
     return rec.load().then(function () {return rec})
 }
 
+Numerable.fieldIsEditable = function fieldIsEditable(fieldname) {
+    if (fieldname == 'SerNr') return false;
+    return true;
+}
+
 module.exports = Numerable
