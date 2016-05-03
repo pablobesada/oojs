@@ -45,7 +45,6 @@ ClientRecord.runInServer = function runInServer(methodname) {
                     reject(result.error);
                     return;
                 }
-                console.log(result)
                 classmanager.getClass("Record").fromJSON(result.rec, rec)
                 resolve();
                 return;

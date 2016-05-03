@@ -71,6 +71,7 @@ Promise.resolve()
         console.log("456")
 
         so.CustCode = so.CustCode + "X";
+        so.CustName = "pablo"
         var sorw = so.Items.newRow()
         so.Items.push(sorw);
         sorw.ArtCode = "A" + so.Items.length;

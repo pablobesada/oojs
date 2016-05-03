@@ -13,13 +13,8 @@ var Description = {
     }
 }
 
-//console.log("en Master.js 6: current filename: " + __filename)
-//console.log("en Master.js: ParentClass: "+ ParentClass.inspect())
 var Master = cm.createClass(Description, __filename)
-//console.log("en Master.js 2: current filename: " + __filename)
-//console.log("en Master.js 3: Master: "+ Master.inspect())
 Master.init = function init() {
-    //console.log("in Master.init, parentclass: " + ParentClass.inspect())
     Master.__super__.init.call(this);
     return this
 }

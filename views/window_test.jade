@@ -8,8 +8,19 @@ block content
     script(src='/bower_components/Materialize/dist/js/materialize.min.js')
     script(src='/js/openorange.js')
     script(src='/js/window_test.js')
-    a#addWindow(class="btn-floating btn-large waves-effect waves-light red") #[i(class="material-icons") add]
-
+    .fixed-action-btn.horizontal
+        a.btn-floating.btn-large.green
+            i.large.material-icons add
+        ul
+            li
+                a.btn-floating.blue#addSalesOrder
+                    i.material-icons line_weight
+            li
+                a.btn-floating.yellow.darken-1#addItem
+                    i.material-icons card_giftcard
+            li
+                a.btn-floating.red.darken-1#test
+                    i.material-icons done
     div.row#workspace
         div.col.s12
             ul.tabs

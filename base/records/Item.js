@@ -13,7 +13,7 @@ var Description = {
 var Item = cm.createClass(Description, __filename)
 
 Item.init = function init() {
-    Item.__super__.init.call(this);
+    Item.super("init", this);
     return this
 }
 

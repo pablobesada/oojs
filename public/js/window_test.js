@@ -8,22 +8,45 @@ var window_def = {
         {type: 'input', field: 'CustCode'}
     ]
 }
-
+var n1 = 6669;
+var n2 = 444;
+var n = n1;
 $().ready(function () {
     console.log("ready")
-    $("#addWindow").click(addWindow)
+    $("#addSalesOrder").click(addSalesOrder)
+    $("#addItem").click(addItem)
+    $("#test").click(test)
+    wso = cm.getClass("SalesOrderWindow").new()
+    addSalesOrder().then(function () {wso.open()});
 })
-
-function addWindow() {
-    var w = cm.getClass("SalesOrderWindow").new()
-    cm.getClass("SalesOrder").bring(333)
-        .then(function (so) {
-            console.log(so)
-            w.setRecord(so);
-            w.open()
-            //var wm = Object.create(WindowManager).init(w)
-
-            //wm.render($('#content')[0])
-            //console.log($('#content')[0])
+var wso;
+var wit;
+var so;
+function addSalesOrder() {
+    return cm.getClass("SalesOrder").bring(n)
+        .then(function (ss) {
+            so = ss;
+            wso.setRecord(so);
+            if (n == n1) {
+                n = n2;
+            } else {
+                n = n1;
+            }
         })
 };
+
+function addItem() {
+    var wit = cm.getClass("ItemWindow").new()
+    var rec = cm.getClass("Item").new()
+    rec.Code = '123'
+    wit.setRecord(rec);
+    wit.open()
+    //var wm = Object.create(WindowManager).init(w)
+
+    //wm.render($('#content')[0])
+    //console.log($('#content')[0])
+};
+
+function test() {
+    so.CustName = so.CustName + "H"
+}

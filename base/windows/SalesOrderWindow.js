@@ -4,11 +4,17 @@ var cm = global.__main__.require('./openorange').classmanager
 var Description = {
     name: 'SalesOrderWindow',
     inherits: 'SalesTransactionWindow',
-    title: "Ventana Test",
+    record: 'SalesOrder',
+    title: "Sales Order",
     form: [
-        {type: 'input', field: 'SerNr', label: 'Numero'},
-        {type: 'input', field: 'CustCode'},
-        {type: 'input', field: 'CustName'}
+        {field: 'syncVersion', label: 'sync'},
+        {field: 'SerNr', label: 'Numero'},
+        {field: 'CustCode'},
+        {field: 'CustName'},
+        {field: 'Items', columns: [
+            {type: 'input', field: 'ArtCode', label: 'Codigo'},
+            {type: 'input', field: 'Name', label: 'Descripcion'},
+        ]}
     ]
 }
 

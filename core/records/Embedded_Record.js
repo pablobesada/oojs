@@ -54,6 +54,7 @@ var DetailField = Object.create(Array.prototype);
 DetailField.init = function(name, description, listener) {
     this.name = name;
     this.__description__ = description;
+    this.type = this.__description__.type
     this.__rowclass__ = null;
     this.__removed_rows__ = [];
     //this.rows = Object.create(RowList).init();
@@ -139,7 +140,9 @@ var Embedded_Record = Object.create({
 })
 
 Embedded_Record.new = function () {
-    return Object.create(this).init();
+    var res = Object.create(this);
+    res.__class__ = this;
+    return res.init();
 }
 
 function propFieldGetter(fn)
@@ -184,7 +187,7 @@ Embedded_Record.createChildClass = function createChildClass(descriptor, filenam
 
 Embedded_Record.super = function callSuper(methodname, self) {
     if (methodname in this.__super__) {
-        return this.__super__[methodname].apply(self, arguments);
+        return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
     } else {
         return Promise.resolve();
     }

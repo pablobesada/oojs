@@ -13,6 +13,18 @@ NumerableWindow.init = function init() {
     return this
 }
 
+NumerableWindow.getTitle = function getTitle() {
+    var title = this.getOriginalTitle();
+    if (this.getRecord() && this.getRecord().SerNr != null) title += " " + this.getRecord().SerNr;
+    return title;
+}
+
+NumerableWindow.fieldModified = function fieldModified(field) {
+    NumerableWindow.super("fieldModified", this, field)
+    if (field.name == 'SerNr') this.notifyTitleChanged();
+}
+
+
 NumerableWindow['changed SerNr'] = function () {
     console.log("en numerablewindow: changed SerNr")
 }
