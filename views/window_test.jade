@@ -1,6 +1,7 @@
 extends layout
 
 block content
+    script(src="//cdn.jsdelivr.net/bluebird/3.3.5/bluebird.min.js")
     script(language='javascript', src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js')
     script(src='/bower_components/jquery/dist/jquery.min.js')
     link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
@@ -23,5 +24,5 @@ block content
                     i.material-icons done
     div.row#workspace
         div.col.s12
-            ul.tabs
+            ul.tabs.workspace
     div#content

@@ -2,7 +2,7 @@
 
 var classmanager = {};
 var orm = {};
-classmanager.scriptdirs = ["core", "base"];
+classmanager.scriptdirs = ["core", "base", "standard"];
 classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
 classmanager.extractScriptDir = function extractScriptDir(dirname) {
     for (var i in classmanager.reversed_scriptdirs) {

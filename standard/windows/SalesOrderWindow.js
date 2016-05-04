@@ -55,9 +55,9 @@ SalesOrderWindow["changed SerNr"] = function () {
 
 SalesOrderWindow["changed Items.ArtCode"] = function (rowNr) {
     var self = this;
-    return SalesOrderWindow.super("changed Items.ArtCode", self, rowNr)
+    return SalesOrderWindow.super("changed Items.ArtCode", this, rowNr)
         .then(function () {
-            return self.getRecord().Items[rowNr].pasteArtCode(this);
+            self.getRecord().Items[rowNr].Name += 'X'
         })
 
 }

@@ -20,8 +20,8 @@ NumerableWindow.getTitle = function getTitle() {
     return title;
 }
 
-NumerableWindow.fieldModified = function fieldModified(field) {
-    NumerableWindow.super("fieldModified", this, field)
+NumerableWindow.fieldModified = function fieldModified(record, field, row, rowfield) {
+    NumerableWindow.super("fieldModified", this, record, field, row, rowfield)
     if (field.name == 'SerNr') this.notifyTitleChanged();
 }
 
@@ -31,7 +31,7 @@ NumerableWindow['changed SerNr'] = function () {
 }
 
 NumerableWindow['focus SerNr2'] = function () {
-    return true;
+    return false;
 }
 
 module.exports = NumerableWindow

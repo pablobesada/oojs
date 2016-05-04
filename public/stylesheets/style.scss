@@ -10,6 +10,7 @@ a {
 }
 
 // Esto es necesario porque sino en webkit aparecen una flechitas (spin arrows) que si se les hace click modifican el valor de campo aunque luego el beforeEdit revuelva false
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -17,3 +18,23 @@ input[type=number]::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
 }
+input[type=number] {
+  -moz-appearance:textfield;
+}
+
+
+.input-field.oodetail {
+  //padding: 0px;
+  padding-bottom: 5px;
+  margin: 0px;
+}
+input[type].oodetail {
+  height: 1rem;
+  margin: 6px;
+  border: none;
+}
+table.oodetail td{
+  padding: 0px;
+}
+
+

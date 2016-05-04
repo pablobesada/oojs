@@ -22,8 +22,11 @@ Numerable.bring = function bring(SerNr) {
     return rec.load().then(function () {return rec})
 }
 
-Numerable.fieldIsEditable = function fieldIsEditable(fieldname) {
-    if (fieldname == 'SerNr') return false;
+Numerable.fieldIsEditable = function fieldIsEditable(fieldname, rowfieldname, rowNr) {
+    var self = this;
+    var res = Numerable.super("fieldIsEditable", self, fieldname, rowfieldname, rowNr)
+    if (!res) return res
+    if (fieldname == 'SerNr' && self.SerNr == 444) return false;
     return true;
 }
 

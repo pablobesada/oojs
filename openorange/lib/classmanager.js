@@ -5,7 +5,7 @@ var fs = require("fs")
 
 var classmanager = Object.create(null);
 
-classmanager.scriptdirs = ["core", "base"];
+classmanager.scriptdirs = ["core", "base", "standard"];
 classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
 
 classmanager.lookupdirs = ["records", "windows"];

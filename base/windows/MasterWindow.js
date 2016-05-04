@@ -20,8 +20,8 @@ MasterWindow.getTitle = function getTitle() {
     return title;
 }
 
-MasterWindow.fieldModified = function fieldModified(field) {
-    MasterWindow.super("fieldModified", this, field)
+MasterWindow.fieldModified = function fieldModified(record, field, row, rowfield) {
+    MasterWindow.super("fieldModified", this, record, field, row, rowfield)
     if (field.name == 'Code') this.notifyTitleChanged();
 }
 

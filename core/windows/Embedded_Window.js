@@ -109,8 +109,13 @@ Embedded_Window.setRecord = function setRecord(rec) {
     }
 }
 
-Embedded_Window.fieldModified = function fieldModified(field) {
-    this.notifyListeners({type: 'field', action: 'modified', data: field})
+Embedded_Window.fieldModified = function fieldModified(record, field, row, rowfield) {
+    this.notifyListeners({type: 'field', action: 'modified', data: {
+        record: record,
+        field: field,
+        row: row,
+        rowfield: rowfield
+    }})
 }
 
 Embedded_Window.getRecord = function getRecord(rec) {
@@ -128,11 +133,30 @@ Embedded_Window.beforeEdit = function beforeEdit(fieldname) {
     return res;
 }
 
+Embedded_Window.beforeEditRow = function beforeEditRow(fieldname, rowfieldname, rownr) {
+    var self = this;
+    var res = true;
+    if ('focus ' + fieldname + "." + rowfieldname in self) {
+        res = self['focus ' + fieldname + "." + rowfieldname]()
+        return res;
+    }
+    res = self.getRecord().fieldIsEditable(fieldname, rowfieldname, rownr);
+    return res;
+}
+
 Embedded_Window.afterEdit = function afterEdit(fieldname, value) {
     var self = this;
     self.getRecord()[fieldname] = value;
     if ('changed ' + fieldname in this) {
         this['changed ' + fieldname]()
+    }
+}
+
+Embedded_Window.afterEditRow = function afterEditRow(fieldname, rowfieldname, rownr, value) {
+    var self = this;
+    self.getRecord()[fieldname][rownr][rowfieldname] = value;
+    if ('changed ' + fieldname + '.' + rowfieldname in this) {
+        this['changed ' + fieldname + '.' + rowfieldname](rownr)
     }
 }
 

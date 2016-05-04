@@ -11,18 +11,21 @@ var window_def = {
 var n1 = 6669;
 var n2 = 444;
 var n = n1;
+var itcode = '123'
 $().ready(function () {
     console.log("ready")
     $("#addSalesOrder").click(addSalesOrder)
     $("#addItem").click(addItem)
     $("#test").click(test)
-    wso = cm.getClass("SalesOrderWindow").new()
-    addSalesOrder().then(function () {wso.open()});
+    //wso = cm.getClass("SalesOrderWindow").new()
+    //addSalesOrder().then(function () {wso.open()});
 })
 var wso;
 var wit;
 var so;
 function addSalesOrder() {
+    wso = cm.getClass("SalesOrderWindow").new()
+    wso.open()
     return cm.getClass("SalesOrder").bring(n)
         .then(function (ss) {
             so = ss;
@@ -36,9 +39,10 @@ function addSalesOrder() {
 };
 
 function addItem() {
-    var wit = cm.getClass("ItemWindow").new()
+    wit = cm.getClass("ItemWindow").new()
     var rec = cm.getClass("Item").new()
-    rec.Code = '123'
+    rec.Code = itcode;
+    itcode += '4'
     wit.setRecord(rec);
     wit.open()
     //var wm = Object.create(WindowManager).init(w)

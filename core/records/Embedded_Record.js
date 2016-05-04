@@ -29,27 +29,6 @@ Field.toString = function (v) {
     return this.value != null? this.value.toString(): null;
 }
 
-var RowList = Object.create(Array.prototype);
-RowList.init = function init() {
-    this.listener = null
-    this.detailfield = null;
-    return this;
-}
-
-RowList.push = function push(obj) {
-    Array.prototype.push.call(this, obj)
-    obj.addListener(this);
-    if (this.listener) this.listener.fieldModified(this);
-}
-
-RowList.fieldModified = function fieldModified(field) {
-    if (this.listener) this.listener.fieldModified(field)
-}
-
-RowList.newRow = function newRow() {
-    return this.detailfield.newRow();
-}
-
 var DetailField = Object.create(Array.prototype);
 DetailField.init = function(name, description, listener) {
     this.name = name;
@@ -107,8 +86,9 @@ DetailField.splice = function splice() {
     return removed;
 }
 
-DetailField.fieldModified = function fieldModified(field) {
-    if (this.listener) this.listener.fieldModified(this)
+DetailField.fieldModified = function fieldModified(record, field) {
+    //[].unshift.call(arguments, this);
+    if (this.listener) this.listener.fieldModified.call(this.listener, this, record, field)
 }
 
 var RecordListener = Object.create(null);
@@ -119,8 +99,8 @@ RecordListener.init = function (fieldModified) {
 
 var FieldsListener = Object.create(null);
 FieldsListener.receiver = null;
-FieldsListener.fieldModified = function (field) {
-    if (this.receiver != null) this.receiver.fieldModified(field);
+FieldsListener.fieldModified = function () {
+    if (this.receiver != null) this.receiver.fieldModified.apply(this.receiver, arguments);
 }
 
 var RecordDescription = {
@@ -229,10 +209,11 @@ Embedded_Record.init = function init() {
     return this;
 }
 
-Embedded_Record.fieldModified = function(field) {
+Embedded_Record.fieldModified = function(p1, p2, p3) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
     this.setModifiedFlag(true);
+    //[].unshift.call(arguments, this);
     for (var i=0;i<this.__listeners__.length;i++) {
-        this.__listeners__[i].fieldModified(field);
+        this.__listeners__[i].fieldModified.call(this.__listeners__[i], this, p1, p2 , p3);
     }
 }
 
@@ -455,7 +436,8 @@ Embedded_Record.isEqual = function isEqual(rec) {
     return true;
 }
 
-Embedded_Record.fieldIsEditable = function fieldIsEditable(fieldname) {
+Embedded_Record.fieldIsEditable = function fieldIsEditable(fieldname, rowfieldname, rownr) {
+    if (rowfieldname == 'rowNr') return false;
     return true;
 }
 

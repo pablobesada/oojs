@@ -22,4 +22,11 @@ Master.init = function init() {
 Master.inspect = function inspect() {
     return "<" + this.__description__.name + " " + this.Code + ">";
 }
+
+Master.bring = function bring(Code) {
+    var rec = this.new();
+    rec.Code = Code;
+    return rec.load().then(function () {return rec})
+}
+
 module.exports = Master
