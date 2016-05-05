@@ -20,8 +20,8 @@ NumerableWindow.getTitle = function getTitle() {
     return title;
 }
 
-NumerableWindow.fieldModified = function fieldModified(record, field, row, rowfield) {
-    NumerableWindow.super("fieldModified", this, record, field, row, rowfield)
+NumerableWindow.fieldModified = function fieldModified(record, field, row, rowfield, oldvalue) {
+    NumerableWindow.super("fieldModified", this, record, field, row, rowfield, oldvalue)
     if (field.name == 'SerNr') this.notifyTitleChanged();
 }
 

@@ -17,6 +17,7 @@ $().ready(function () {
     $("#addSalesOrder").click(addSalesOrder)
     $("#addItem").click(addItem)
     $("#test").click(test)
+    addSalesOrder();
     //wso = cm.getClass("SalesOrderWindow").new()
     //addSalesOrder().then(function () {wso.open()});
 })

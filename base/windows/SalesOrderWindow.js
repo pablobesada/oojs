@@ -28,6 +28,7 @@ var Description = {
                 label: "TAB2", content: [
                 {
                     field: 'Items', columns: [
+                    {field: 'rowNr'},
                     {field: 'ArtCode', label: 'Codigo'},
                     {field: 'Name', label: 'Descripcion'},
                 ]

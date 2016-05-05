@@ -21,8 +21,9 @@ Field.getValue = function () {
 
 Field.setValue = function (v) {
     if (this.value != v) {
+        var oldvalue = this.value;
         this.value = v;
-        if (this.listener) this.listener.fieldModified(this);
+        if (this.listener) this.listener.fieldModified(this, oldvalue);
     }
 }
 Field.toString = function (v) {
@@ -63,7 +64,18 @@ DetailField.push = function push(obj) {
     obj.rowNr = this.length;
     Array.prototype.push.call(this, obj)
     obj.addListener(this);
-    if (this.listener) this.listener.fieldModified(this);
+    if (this.listener) this.listener.rowInserted(this, obj, this.length-1);
+}
+
+DetailField.insert = function insert(obj, pos) {
+    //return this.push(obj)
+    obj.rowNr = pos;
+    Array.prototype.splice.call(this, pos, 0, obj)
+    for (var i=pos+1;i<this.length;i++) {
+        this[i].rowNr = i;
+    }
+    obj.addListener(this);
+    if (this.listener) this.listener.rowInserted(this, obj, pos);
 }
 
 DetailField.clear = function clear() {
@@ -86,9 +98,9 @@ DetailField.splice = function splice() {
     return removed;
 }
 
-DetailField.fieldModified = function fieldModified(record, field) {
+DetailField.fieldModified = function fieldModified(record, field, oldvalue) {
     //[].unshift.call(arguments, this);
-    if (this.listener) this.listener.fieldModified.call(this.listener, this, record, field)
+    if (this.listener) this.listener.fieldModified.call(this.listener, this, record, field, oldvalue)
 }
 
 var RecordListener = Object.create(null);
@@ -101,6 +113,10 @@ var FieldsListener = Object.create(null);
 FieldsListener.receiver = null;
 FieldsListener.fieldModified = function () {
     if (this.receiver != null) this.receiver.fieldModified.apply(this.receiver, arguments);
+}
+
+FieldsListener.rowInserted = function (detail, row, position) {
+    if (this.receiver != null) this.receiver.rowInserted(detail, row, position)
 }
 
 var RecordDescription = {
@@ -209,11 +225,18 @@ Embedded_Record.init = function init() {
     return this;
 }
 
-Embedded_Record.fieldModified = function(p1, p2, p3) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
+Embedded_Record.fieldModified = function(p1, p2, p3, p4) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield, p4: oldvalue}
     this.setModifiedFlag(true);
     //[].unshift.call(arguments, this);
     for (var i=0;i<this.__listeners__.length;i++) {
-        this.__listeners__[i].fieldModified.call(this.__listeners__[i], this, p1, p2 , p3);
+        this.__listeners__[i].fieldModified.call(this.__listeners__[i], this, p1, p2 , p3, p4);
+    }
+}
+
+Embedded_Record.rowInserted = function rowInserted(detail, row, position) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
+    this.setModifiedFlag(true);
+    for (var i=0;i<this.__listeners__.length;i++) {
+        this.__listeners__[i].rowInserted(this, detail, row , position);
     }
 }
 

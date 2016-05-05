@@ -8,6 +8,8 @@ WindowContainer.init = function (wnd) {
     this.windowjson = JSON.parse(JSON.stringify(this.window.getDescription().form))  //deep clone of the object because I need to add some metadata to it
     this.window.__container_data__ = {}
     this.last_tab_id = 0;
+    this.matrix_json_map = {}
+    this.virtual_rows = {}
     this.save = this.save.bind(this)
     //this.afterEdit = this.afterEdit.bind(this)
     //this.beforeEdit = this.beforeEdit.bind(this)
@@ -145,7 +147,7 @@ WindowContainer.createMatrixComponent = function createMatrixComponent(json, cls
         }
     }
     var editorElement = self[editor](json, cls, rowfield)
-    var bind_params = {self: self, json: json, detailname: detailname, rownr: rownr, rowfield: rowfield};
+    var bind_params = {self: self, json: json, detailname: detailname, rowfield: rowfield};
     editorElement.focus(self.beforeEditRow.bind(bind_params));
     editorElement.change(self.afterEditRow.bind(bind_params));
     json.__element__ = editorElement;
@@ -178,15 +180,22 @@ WindowContainer.integer = function integer(json, cls, field) {
 WindowContainer.beforeEdit = function beforeEdit(event) {
     var self = this;
     var readonly = !Boolean(self.window.beforeEdit(event.currentTarget.name))
-    $(event.target).attr("readonly", readonly);
+    $(event.currentTarget).attr("readonly", readonly);
 }
 
 WindowContainer.beforeEditRow = function beforeEditRow(event) {
     var self = this.self;
-    $(event.currentTarget).css('border-bottom', 'none');
-    $(event.currentTarget).css('box-shadow', 'none');
-    var readonly = !Boolean(self.window.beforeEditRow(this.detailname, this.rowfield.name, this.rownr))
-    $(event.currentTarget).attr("readonly", readonly);
+    var target = $(event.currentTarget);
+    target.css('border-bottom', 'none');
+    target.css('box-shadow', 'none');
+    var rownr = target.closest("tr").attr("rownr");
+    console.log(rownr)
+    if (rownr == 'null') { //virtual_row
+        self.window.getRecord()[this.detailname].push(self.window.getRecord()[this.detailname].newRow());
+        rownr = self.window.getRecord()[this.detailname].length-1;
+    }
+    var readonly = !Boolean(self.window.beforeEditRow(this.detailname, this.rowfield.name, rownr))
+    target.attr("readonly", readonly);
 }
 
 WindowContainer.afterEdit = function afterEdit(event) {
@@ -196,32 +205,49 @@ WindowContainer.afterEdit = function afterEdit(event) {
 
 WindowContainer.afterEditRow = function afterEditRow(event) {
     var self = this.self;
-    $(event.currentTarget).css('border-bottom', 'none');
-    $(event.currentTarget).css('box-shadow', 'none');
-    self.window.afterEditRow(this.detailname, this.rowfield.name, this.rownr, event.currentTarget.value);
+    var target = $(event.currentTarget)
+    target.css('border-bottom', 'none');
+    target.css('box-shadow', 'none');
+    var rownr = target.closest("tr").attr("rownr");
+    var value = target.val();
+    self.window.afterEditRow(this.detailname, this.rowfield.name, rownr, value);
 }
 
 
 WindowContainer.update = function update(event) {
+    var self = this;
     switch (event.type) {
         case "record":
-            if (event.action == 'replaced') this.bindRecordToWindow(event.data);
+            if (event.action == 'replaced') self.bindRecordToWindow(event.data);
             break;
         case "field":
+            console.log(event)
             if (event.action == 'modified') {
                 var field = event.data.field
                 if (field.type != "detail") {
-                    this.setEditorValue(field);
+                    self.setEditorValue(field);
                     Materialize.updateTextFields();
                 } else {
-                    this.setRowEditorValue(event.data.field, event.data.row.rowNr, event.data.rowfield);
+                    console.log("row: " + event.data.rowfield.name)
+                    var rowNr = event.data.row.rowNr;
+                    if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //se lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
+                    self.setRowEditorValue(event.data.field, rowNr, event.data.rowfield);
                     Materialize.updateTextFields();
+                }
+            } else if (event.action == 'row inserted') {
+                var detail = event.data.detail;
+                if (detail.name in this.matrix_json_map) {
+                    _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
+                        var tbody = matrixjson.__element__.find("tbody");
+                        self.insertMatrixRow(event.data.record, matrixjson, event.data.row, tbody);
+                    })
+
                 }
             }
             break;
         case "title":
             if (event.action == "modified") {
-                this.setWindowTitle(event.data)
+                self.setWindowTitle(event.data)
             }
             break;
     }
@@ -232,9 +258,11 @@ WindowContainer.setEditorValue = function setEditorValue(field) {
     this.__element__.find('.editor.oomaster[name=' + field.name + ']').val(value)
 }
 
-WindowContainer.setRowEditorValue = function setEditorValue(detail, rowNr, rowfield) {
+WindowContainer.setRowEditorValue = function setRowEditorValue(detail, rowNr, rowfield) {
     var value = rowfield.getValue();
-    this.__element__.find('table[name='+detail.name+'] tr[rownr='+rowNr+'] .editor.oodetail[name=' + rowfield.name + ']').val(value)
+    var e = this.__element__.find('table[name='+detail.name+'] tr[rownr='+rowNr+'] .editor.oodetail[name=' + rowfield.name + ']');
+    console.log(e, e.val())
+    e.val(value)
 }
 
 WindowContainer.setEditorReadOnly = function setEditorReadOnly(field, readonly) {
@@ -255,10 +283,12 @@ WindowContainer.createEmptyMatrix = function createEmptyMatrix(json) {
     table.append(thead)
     table.append('<tbody></tbody>')
     json.__element__ = table;
+    if (!(json.field in this.matrix_json_map)) this.matrix_json_map[json.field] = [];
+    this.matrix_json_map[json.field].push(json)
     return table;
 }
 
-WindowContainer.addMatrixRow = function addMatrixRow(record, json, row, tbodyElement) {
+WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tbodyElement, position) {
     var self = this;
     var tbody = tbodyElement;
     var tr = $('<tr rownr="' + row.rowNr + '"></tr>');
@@ -270,13 +300,28 @@ WindowContainer.addMatrixRow = function addMatrixRow(record, json, row, tbodyEle
         if (readonly) component.attr('readonly', readonly);
         component.css('border-bottom', 'none');
         component.css('box-shadow', 'none');
-        //var component = $('<div>'+row.fields(jcol.field).getValue()+'</div>')
-
         td.append(component)
         tr.append(td)
     })
-
-    tbody.append(tr);
+    var trs = tbody.children("tr");
+    var hasVirtualRow = (trs.length > 0 && trs.last().attr('rownr') == 'null');
+    var rows_count = trs.length;
+    if (hasVirtualRow) rows_count -= 1;
+    console.log(hasVirtualRow, row.rowNr, rows_count)
+    if (row.rowNr >= rows_count || row.rowNr == null) { //row.rowNr == null -> virtual_row
+        if (hasVirtualRow) {
+            trs.last().before(tr);
+        } else {
+            tbody.append(tr);
+        }
+    } else {
+        var next_tr = null;
+        for (var i=rows_count-1;i>=row.rowNr;i--) {
+            next_tr = tbody.children('tr[rownr='+i+']');
+            next_tr.attr('rownr', i+1)
+        }
+        next_tr.before(tr)
+    }
     return tr;
 }
 
@@ -288,8 +333,9 @@ WindowContainer.bindRecordToComponent = function bindRecordToComponent(record, j
                 var tbody = json.__element__.find("tbody");
                 tbody.html('');
                 _(record[json.field]).forEach(function (row) {
-                    self.addMatrixRow(record, json, row, tbody)
+                    self.insertMatrixRow(record, json, row, tbody)
                 })
+                self.insertMatrixRow(record, json, self.virtual_rows[json.field], tbody)
             } else if ('field' in json) {
                 var field = record.fields(json.field);
                 self.setEditorValue(field)
@@ -307,6 +353,11 @@ WindowContainer.bindRecordToComponent = function bindRecordToComponent(record, j
 
 WindowContainer.bindRecordToWindow = function bindRecordToWindow(record) {
     var self = this;
+    _(record.detailNames()).forEach(function (dn) {
+        var vt = record[dn].newRow();
+        //vt.rowNr =
+        self.virtual_rows[dn] = vt;
+    })
     self.bindRecordToComponent(record, self.windowjson)
     self.setWindowTitle(this.window.getTitle())
     Materialize.updateTextFields();

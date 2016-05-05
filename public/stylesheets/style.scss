@@ -8,7 +8,6 @@ body {
 a {
   color: #00B7FF;
 }
-
 // Esto es necesario porque sino en webkit aparecen una flechitas (spin arrows) que si se les hace click modifican el valor de campo aunque luego el beforeEdit revuelva false
 
 input[type=number]::-webkit-inner-spin-button,

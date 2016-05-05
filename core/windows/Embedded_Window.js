@@ -109,12 +109,22 @@ Embedded_Window.setRecord = function setRecord(rec) {
     }
 }
 
-Embedded_Window.fieldModified = function fieldModified(record, field, row, rowfield) {
+Embedded_Window.fieldModified = function fieldModified(record, field, row, rowfield, oldvalue) {
     this.notifyListeners({type: 'field', action: 'modified', data: {
         record: record,
         field: field,
         row: row,
-        rowfield: rowfield
+        rowfield: rowfield,
+        oldvalue: oldvalue
+    }})
+}
+
+Embedded_Window.rowInserted = function rowInserted(record, detail, row, position) {
+    this.notifyListeners({type: 'field', action: 'row inserted', data: {
+        record: record,
+        detail: detail,
+        row: row,
+        position: position
     }})
 }
 
