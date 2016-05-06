@@ -18,6 +18,7 @@ var Description = {
                 {
                     field: 'Items', columns: [
                     {field: 'rowNr'},
+                    {field: 'masterId'},
                     {field: 'ArtCode', label: 'Codigo'},
                     {field: 'Name', label: 'Descripcion'},
                 ]

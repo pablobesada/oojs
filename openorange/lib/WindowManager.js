@@ -184,15 +184,45 @@ WindowContainer.beforeEdit = function beforeEdit(event) {
 }
 
 WindowContainer.beforeEditRow = function beforeEditRow(event) {
-    var self = this.self;
+    var params = this;
+    var self = params.self;
     var target = $(event.currentTarget);
     target.css('border-bottom', 'none');
     target.css('box-shadow', 'none');
     var rownr = target.closest("tr").attr("rownr");
-    console.log(rownr)
     if (rownr == 'null') { //virtual_row
-        self.window.getRecord()[this.detailname].push(self.window.getRecord()[this.detailname].newRow());
-        rownr = self.window.getRecord()[this.detailname].length-1;
+        var newrow = self.window.getRecord()[params.detailname].newRow()
+        var tr = target.closest("tr");
+        var addedRow = self.virtual_rows[params.detailname];
+        addedRow.__window_container_avoid_insert__ = true;
+        //self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
+        self.window.getRecord()[params.detailname].push(self.virtual_rows[params.detailname]);
+        delete addedRow.__window_container_avoid_insert__;
+        tr.attr('rownr', addedRow.rowNr); //esto va antes del push para que durante el push toda este tr del table se complete con los valores que pudiera tener o que se seteen en el defaults del row (todo eso se corre adentro del push)
+        _(addedRow.fieldNames()).forEach(function (fn) {
+            var value = addedRow[fn]
+            if (value != null) {
+                self.update({type: 'field', action: 'modified', data: {
+                        record: self.window.getRecord(),
+                        field: self.window.getRecord().details(params.detailname),
+                        row: addedRow,
+                        rowfield: addedRow.fields(fn),
+                        oldvalue: value
+                    }});
+            }
+        }) /*hasta aca llegue antes de irme de viaje.
+        Si me paro en cualquier campo de la ultima fila, el virtual row se convierte con row del record.
+        Ahora falta agregar un nuevo virtual row al table para poder seguir agregando filas
+        /*
+        /*
+        rownr = self.window.getRecord()[params.detailname].length-1;
+        var tr = target.closest("tr");
+        var colidx = tr.children().index(target.closest("td"))
+        console.log(tr.closest("tbody").children().last().prev().children()[colidx]);
+        console.log(tr.closest("tbody").children().length, colidx)
+        $(tr.closest("tbody").children().last().prev().children()[colidx]).focus();
+        //params.json.__element__.closest("tr").prev().find("")
+        */
     }
     var readonly = !Boolean(self.window.beforeEditRow(this.detailname, this.rowfield.name, rownr))
     target.attr("readonly", readonly);
@@ -230,7 +260,7 @@ WindowContainer.update = function update(event) {
                 } else {
                     console.log("row: " + event.data.rowfield.name)
                     var rowNr = event.data.row.rowNr;
-                    if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //se lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
+                    if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
                     self.setRowEditorValue(event.data.field, rowNr, event.data.rowfield);
                     Materialize.updateTextFields();
                 }
@@ -289,6 +319,10 @@ WindowContainer.createEmptyMatrix = function createEmptyMatrix(json) {
 }
 
 WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tbodyElement, position) {
+    if (row.__window_container_avoid_insert__ == true) {
+        //self.insertMatrixRow(record, json, self.virtual_rows[json.field], tbody)
+        return;
+    }
     var self = this;
     var tbody = tbodyElement;
     var tr = $('<tr rownr="' + row.rowNr + '"></tr>');
@@ -303,24 +337,26 @@ WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tb
         td.append(component)
         tr.append(td)
     })
+
     var trs = tbody.children("tr");
     var hasVirtualRow = (trs.length > 0 && trs.last().attr('rownr') == 'null');
     var rows_count = trs.length;
     if (hasVirtualRow) rows_count -= 1;
-    console.log(hasVirtualRow, row.rowNr, rows_count)
     if (row.rowNr >= rows_count || row.rowNr == null) { //row.rowNr == null -> virtual_row
         if (hasVirtualRow) {
             trs.last().before(tr);
         } else {
             tbody.append(tr);
         }
+        console.log("AAA")
     } else {
         var next_tr = null;
-        for (var i=rows_count-1;i>=row.rowNr;i--) {
-            next_tr = tbody.children('tr[rownr='+i+']');
-            next_tr.attr('rownr', i+1)
+        for (var i = rows_count - 1; i >= row.rowNr; i--) {
+            next_tr = tbody.children('tr[rownr=' + i + ']');
+            next_tr.attr('rownr', i + 1)
         }
         next_tr.before(tr)
+        console.log("BBB")
     }
     return tr;
 }
@@ -348,7 +384,6 @@ WindowContainer.bindRecordToComponent = function bindRecordToComponent(record, j
             }
         })
     }
-
 }
 
 WindowContainer.bindRecordToWindow = function bindRecordToWindow(record) {
