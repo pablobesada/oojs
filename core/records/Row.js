@@ -1,3 +1,4 @@
+"use strict";
 var cm = global.__main__.require('./openorange').classmanager
 
 var Description = {
@@ -15,6 +16,16 @@ var Row = cm.createClass(Description, __filename )
 Row.init = function init() {
     Row.super("init", this);
     return this
+}
+
+Row.isEmpty = function isEmpty() {
+    var self = this;
+    for (var i=0;i<self.fieldNames().length;i++) {
+        var fn = self.fieldNames()[i];
+        if (fn == 'internalId' || fn == 'masterId' || fn == 'syncVersion' || fn == 'rowNr') continue;
+        if (self[fn] != '' && self[fn] != null) return false;
+    }
+    return true;
 }
 
 module.exports = Row

@@ -28,6 +28,7 @@ function require(module) {
         isClient: true,
     }
     if (module == "underscore") return _;
+    if (module == "./openorange/windowmanager") return WindowContainer;
     return loadModule(module)
 }
 

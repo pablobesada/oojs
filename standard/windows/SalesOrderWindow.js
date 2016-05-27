@@ -11,6 +11,7 @@ var Description = {
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
         {field: 'CustName'},
+        {field: 'User'},
         {
             type: 'tabs', pages: [
             {

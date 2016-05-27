@@ -19,8 +19,7 @@ Embedded_Window.new = function () {
 }
 
 Embedded_Window.open = function () {
-    var WindowManager = require("./openorange/lib/windowmanager")
-    var wm = Object.create(WindowManager).init(this)
+    var wm = Object.create(window.WindowManager).init(this)
     wm.render($('#content')[0])
 }
 

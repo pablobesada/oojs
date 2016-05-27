@@ -4,6 +4,7 @@ var Description = {
     name: 'Transaction',
     inherits: 'Numerable',
     fields: {
+        User: {type: "string", length: "10"},
     }
 }
 
