@@ -117,7 +117,7 @@ class Py2Js(object):
         lines.append(line)
 
         lines.extend(self.processBody(node.body, insert_lines_at_start = start_lines))
-        return lines
+        return lines 
 
     def arguments(self, node):
         ctx = self.getCurrentContext()
