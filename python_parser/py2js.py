@@ -117,7 +117,7 @@ class Py2Js(object):
         lines.append(line)
 
         lines.extend(self.processBody(node.body, insert_lines_at_start = start_lines))
-        return lines 
+        return lines
 
     def arguments(self, node):
         ctx = self.getCurrentContext()
@@ -147,7 +147,7 @@ class Py2Js(object):
         return [line]
 
     def UnaryOp(self, node):
-        line = '(%s %s)' % (self.process(node.op)[0] ,self.process(node.operand)[0])
+        line = '(%s %s)' % (self.inline(node.op) ,self.inline(node.operand))
         return [line]
 
     def BinOp(self, node):
@@ -155,7 +155,7 @@ class Py2Js(object):
         return [line]
 
     def BoolOp(self, node):
-        return ["(%s %s %s)" % (self.process(node.values[0])[0], self.process(node.op)[0], self.process(node.values[1])[0])]
+        return ["(%s %s %s)" % (self.inline(node.values[0]), self.inline(node.op), self.inline(node.values[1]))]
 
     def Or(self,node):
         return ['or']
@@ -199,11 +199,13 @@ class Py2Js(object):
                 if (not else_added):
                     lines.append(self.ident() + "else {")
                     else_added = True
-                self.startBlock()
+                    self.startBlock()
                 self.enableIdent()
                 for line in self.process(n):
                     lines.append(line + ";")
-                lines.append(self.endBlock())
+        if else_added:
+            self.endBlock()
+            lines.append(self.ident() + "}")
         return lines
 
     def IfExp(self, node):
@@ -438,11 +440,11 @@ class Py2Js(object):
         generators = []
         for generator in node.generators:
             generators.append("%s" % self.inline(generator))
-        line = self.ident(node.ident) + "[%s %s]" % (self.inline(node.elt), ' '.join(generators))
+        line = self.ident() + "[%s %s]" % (self.inline(node.elt), ' '.join(generators))
         return [line]
 
     def comprehension(self, node):
-        line = self.ident(node.ident) + "for %s in %s" % (self.inline(node.target), self.inline(node.iter))
+        line = self.ident() + "for %s in %s" % (self.inline(node.target), self.inline(node.iter))
         for i in node.ifs:
             line += " if %s" % self.inline(i)
         return [line]
@@ -456,10 +458,8 @@ class Py2Js(object):
     def GeneratorExp(self, node):
         generators = []
         for generator in node.generators:
-            generator.ident = False
             generators.append("%s" % self.inline(generator))
-        node.elt.ident = False
-        line = self.ident(node.ident) + "%s %s" % (self.inline(node.elt), ' '.join(generators))
+        line = self.ident() + "%s %s" % (self.inline(node.elt), ' '.join(generators))
         return [line]
 
     def While(self, node):
@@ -468,10 +468,7 @@ class Py2Js(object):
         node.test.ident = False
         line  = self.ident() + op + " " + self.inline(node.test) + ":"
         lines.append(line)
-        self.incrIdent()
-        for n in node.body:
-            lines.extend(self.process(n))
-        self.decrIdent()
+        lines.extend(self.processBody(node.body))
         else_added = False;
         for n in node.orelse:
             n.isElseIf = True

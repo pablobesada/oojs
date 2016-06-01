@@ -96,7 +96,7 @@ if fieldname in ("Comment","DisputedFlag","EstPayDate"):    # only field you sho
 #    b += 1
 
 """
-s = open("/Users/pablo/Desktop/desarrollos/oo/develop/base/windows/LabelWindow.py", "r").read()
+s = open("/Users/pablo/Desktop/desarrollos/oo/develop/standard/windows/InvoiceWindow.py", "r").read()
 #s = open("/Users/pablo/Desktop/desarrollos/oo/develop/core/RawRecord.py", "r").read()
 
 def useToken():
