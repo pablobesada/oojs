@@ -14,7 +14,6 @@ class Py2Js(object):
     def translate(self, source):
         node = ast.parse(source)
         lines = self.process(node)
-        print lines
         return '\n'.join(lines)
 
     def process(self, node):
@@ -155,13 +154,16 @@ class Py2Js(object):
         return [line]
 
     def BoolOp(self, node):
-        return ["(%s %s %s)" % (self.inline(node.values[0]), self.inline(node.op), self.inline(node.values[1]))]
+        values = []
+        for value in node.values:
+            values.append("%s" % self.inline(value))
+        return [(" %s " % self.inline(node.op)).join(values)]
 
     def Or(self,node):
         return ['or']
 
     def And(self,node):
-        return ['And']
+        return ['and']
 
     def Is(self,node):
         return ['is']
@@ -328,38 +330,35 @@ class Py2Js(object):
     def Slice(self, node):
         s = []
         if node.lower:
-            s.append(self.process(node.lower)[0])
+            s.append(self.inline(node.lower))
         else: s.append('')
         if node.upper:
-            s.append(self.process(node.upper)[0])
+            s.append(self.inline(node.upper))
         else: s.append('')
-        if node.step: s.append(self.process(node.step)[0])
+        if node.step: s.append(self.inline(node.step))
         return ["[%s]" % ':'.join(s)]
 
     def Tuple(self, node):
         elts = []
         for elt in node.elts:
-            elt.ident = False
-            elts.append("%s" % self.process(elt)[0])
+            elts.append("%s" % self.inline(elt))
         return ["[" + ','.join(elts) + ']']
 
     def List(self, node):
         elts = []
         for elt in node.elts:
-            elt.ident = False
-            elts.append("%s" % self.process(elt)[0])
+            elts.append("%s" % self.inline(elt))
         return ["[" + ','.join(elts) + ']']
 
     def Break(self, node):
         return [self.ident() + 'break']
 
     def Lambda(self, node):
-        node.body.ident = False
-        line = "lambda %s %s" % (self.process(node.args)[0], self.process(node.body)[0])
+        line = "lambda %s %s" % (self.inline(node.args), self.inline(node.body))
         return [line]
 
     def Dict(self, node):
-        return ["{%s}" % ','.join(["%s: %s" % (self.process(i[0])[0], self.process(i[1])[0])for i in zip(node.keys, node.values)])]
+        return ["{%s}" % ','.join(["%s: %s" % (self.inline(i[0]), self.inline(i[1]))for i in zip(node.keys, node.values)])]
 
     def Mult(self, node):
         return ["*"]
@@ -490,3 +489,14 @@ class Py2Js(object):
         return [self.ident(node.ident) + "global %s" % ','.join(names)]
 
 
+
+
+if __name__ == '__main__':
+    source = """
+def dummyFunc(a,b,c):
+    if dummy() or dummy2.prop() or a == b and (f >=r): print "Hola Traductor"
+    else:
+        print "Hola Mundo"
+"""
+    js = Py2Js().translate(source)
+    print js

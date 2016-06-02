@@ -515,7 +515,7 @@ class NodeProcessor:
         return ['<']
 
     def LtE(self, node):
-        return ['<=']
+        return ['<= ']
 
     def Gt(self, node):
         return ['>']
