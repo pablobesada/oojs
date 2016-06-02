@@ -14,25 +14,25 @@ Package.onUse(function (api) {
   api.imply('jquery', 'client');
 
   var assets = [
-    'dist/fonts/roboto/Roboto-Bold.ttf',
-    'dist/fonts/roboto/Roboto-Bold.woff',
-    'dist/fonts/roboto/Roboto-Bold.woff2',
-    'dist/fonts/roboto/Roboto-Light.ttf',
-    'dist/fonts/roboto/Roboto-Light.woff',
-    'dist/fonts/roboto/Roboto-Light.woff2',
-    'dist/fonts/roboto/Roboto-Medium.ttf',
-    'dist/fonts/roboto/Roboto-Medium.woff',
-    'dist/fonts/roboto/Roboto-Medium.woff2',
-    'dist/fonts/roboto/Roboto-Regular.ttf',
-    'dist/fonts/roboto/Roboto-Regular.woff',
-    'dist/fonts/roboto/Roboto-Regular.woff2',
-    'dist/fonts/roboto/Roboto-Thin.ttf',
-    'dist/fonts/roboto/Roboto-Thin.woff',
-    'dist/fonts/roboto/Roboto-Thin.woff2',
+    'dist/font/roboto/Roboto-Bold.ttf',
+    'dist/font/roboto/Roboto-Bold.woff',
+    'dist/font/roboto/Roboto-Bold.woff2',
+    'dist/font/roboto/Roboto-Light.ttf',
+    'dist/font/roboto/Roboto-Light.woff',
+    'dist/font/roboto/Roboto-Light.woff2',
+    'dist/font/roboto/Roboto-Medium.ttf',
+    'dist/font/roboto/Roboto-Medium.woff',
+    'dist/font/roboto/Roboto-Medium.woff2',
+    'dist/font/roboto/Roboto-Regular.ttf',
+    'dist/font/roboto/Roboto-Regular.woff',
+    'dist/font/roboto/Roboto-Regular.woff2',
+    'dist/font/roboto/Roboto-Thin.ttf',
+    'dist/font/roboto/Roboto-Thin.woff',
+    'dist/font/roboto/Roboto-Thin.woff2',
   ];
 
   addAssets(api, assets);
-  
+
   api.addFiles([
     'dist/js/materialize.js',
     'dist/css/materialize.css'
