@@ -1,0 +1,1177 @@
+doctype html
+html(lang='en')
+    //
+      ================================================================================
+      Item Name: Materialize - Material Design Admin Template
+      Version: 3.1
+      Author: GeeksLabs
+      Author URL: http://www.themeforest.net/user/geekslabs
+      ================================================================================
+    head
+        meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='msapplication-tap-highlight', content='no')
+        meta(name='description', content="Materialize is a Material Design Admin Template,It's modern, responsive and based on Material Design by Google. ")
+        meta(name='keywords', content='materialize, admin template, dashboard template, flat admin template, responsive admin template,')
+        title Materialize - Material Design Admin Template
+        // Favicons
+        link(rel='icon', href='images/favicon/favicon-32x32.png', sizes='32x32')
+        // Favicons
+        link(rel='apple-touch-icon-precomposed', href='images/favicon/apple-touch-icon-152x152.png')
+        // For iPhone
+        meta(name='msapplication-TileColor', content='#00bcd4')
+        meta(name='msapplication-TileImage', content='images/favicon/mstile-144x144.png')
+        // For Windows Phone
+        // CORE CSS
+        link(href='css/materialize.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(href='css/style.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+        // Custome CSS
+        link(href='css/custom/custom.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+        // INCLUDED PLUGIN CSS ON THIS PAGE
+        link(href='js/plugins/perfect-scrollbar/perfect-scrollbar.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(href='js/plugins/jvectormap/jquery-jvectormap.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(href='js/plugins/chartist-js/chartist.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+    body
+        // Start Page Loading
+        #loader-wrapper
+            #loader
+            .loader-section.section-left
+            .loader-section.section-right
+        // End Page Loading
+        // ////////////////////////////////////////////////////////////////////////////
+        // START HEADER
+        header#header.page-topbar
+            // start header nav
+            .navbar-fixed
+                nav.navbar-color
+                    .nav-wrapper
+                        ul.left
+                            li
+                                h1.logo-wrapper
+                                    a.brand-logo.darken-1(href='index.html')
+                                        img(src='images/materialize-logo.png', alt='materialize logo')
+                                    span.logo-text Materialize
+                        .header-search-wrapper.hide-on-med-and-down
+                            i.mdi-action-search
+                            input.header-search-input.z-depth-2(type='text', name='Search', placeholder='Explore Materialize')
+                        ul.right.hide-on-med-and-down
+                            li
+                                a.waves-effect.waves-block.waves-light.translation-button(href='javascript:void(0);', data-activates='translation-dropdown')
+                                    img(src='images/flag-icons/United-States.png', alt='USA')
+                            li
+                                a.waves-effect.waves-block.waves-light.toggle-fullscreen(href='javascript:void(0);')
+                                    i.mdi-action-settings-overscan
+                            li
+                                a.waves-effect.waves-block.waves-light.notification-button(href='javascript:void(0);', data-activates='notifications-dropdown')
+                                    i.mdi-social-notifications
+                                        small.notification-badge 5
+                            li
+                                a.waves-effect.waves-block.waves-light.chat-collapse(href='#', data-activates='chat-out')
+                                    i.mdi-communication-chat
+                        // translation-button
+                        ul#translation-dropdown.dropdown-content
+                            li
+                                a(href='#!')
+                                    img(src='images/flag-icons/United-States.png', alt='English')
+                                    span.language-select English
+                            li
+                                a(href='#!')
+                                    img(src='images/flag-icons/France.png', alt='French')
+                                    span.language-select French
+                            li
+                                a(href='#!')
+                                    img(src='images/flag-icons/China.png', alt='Chinese')
+                                    span.language-select Chinese
+                            li
+                                a(href='#!')
+                                    img(src='images/flag-icons/Germany.png', alt='German')
+                                    span.language-select German
+                        // notifications-dropdown
+                        ul#notifications-dropdown.dropdown-content
+                            li
+                                h5
+                                    | NOTIFICATIONS
+                                    span.new.badge 5
+                            li.divider
+                            li
+                                a(href='#!')
+                                    i.mdi-action-add-shopping-cart
+                                    |  A new order has been placed!
+                                time.media-meta(datetime='2015-06-12T20:50:48+08:00') 2 hours ago
+                            li
+                                a(href='#!')
+                                    i.mdi-action-stars
+                                    |  Completed the task
+                                time.media-meta(datetime='2015-06-12T20:50:48+08:00') 3 days ago
+                            li
+                                a(href='#!')
+                                    i.mdi-action-settings
+                                    |  Settings updated
+                                time.media-meta(datetime='2015-06-12T20:50:48+08:00') 4 days ago
+                            li
+                                a(href='#!')
+                                    i.mdi-editor-insert-invitation
+                                    |  Director meeting started
+                                time.media-meta(datetime='2015-06-12T20:50:48+08:00') 6 days ago
+                            li
+                                a(href='#!')
+                                    i.mdi-action-trending-up
+                                    |  Generate monthly report
+                                time.media-meta(datetime='2015-06-12T20:50:48+08:00') 1 week ago
+            // end header nav
+        // END HEADER
+        // ////////////////////////////////////////////////////////////////////////////
+        // START MAIN
+        #main
+            // START WRAPPER
+            .wrapper
+                // START LEFT SIDEBAR NAV
+                aside#left-sidebar-nav
+                    ul#slide-out.side-nav.fixed.leftside-navigation
+                        li.user-details.cyan.darken-2
+                            .row
+                                .col.col.s4.m4.l4
+                                    img.circle.responsive-img.valign.profile-image(src='images/avatar.jpg', alt='')
+                                .col.col.s8.m8.l8
+                                    ul#profile-dropdown.dropdown-content
+                                        li
+                                            a(href='#')
+                                                i.mdi-action-face-unlock
+                                                |  Profile
+                                        li
+                                            a(href='#')
+                                                i.mdi-action-settings
+                                                |  Settings
+                                        li
+                                            a(href='#')
+                                                i.mdi-communication-live-help
+                                                |  Help
+                                        li.divider
+                                        li
+                                            a(href='#')
+                                                i.mdi-action-lock-outline
+                                                |  Lock
+                                        li
+                                            a(href='#')
+                                                i.mdi-hardware-keyboard-tab
+                                                |  Logout
+                                    a.btn-flat.dropdown-button.waves-effect.waves-light.white-text.profile-btn(href='#', data-activates='profile-dropdown')
+                                        | John Doe
+                                        i.mdi-navigation-arrow-drop-down.right
+                                    p.user-roal Administrator
+                        li.bold.active
+                            a.waves-effect.waves-cyan(href='index.html')
+                                i.mdi-action-dashboard
+                                |  Dashboard
+                        li.no-padding
+                            ul.collapsible.collapsible-accordion
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-action-view-carousel
+                                        |  Layouts
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='layout-fullscreen.html') Full Screen
+                                            li
+                                                a(href='layout-horizontal-menu.html') Horizontal Menu
+                        li.bold
+                            a.waves-effect.waves-cyan(href='app-email.html')
+                                i.mdi-communication-email
+                                |  Mailbox
+                                span.new.badge 4
+                        li.bold
+                            a.waves-effect.waves-cyan(href='app-calendar.html')
+                                i.mdi-editor-insert-invitation
+                                |  Calender
+                        li.no-padding
+                            ul.collapsible.collapsible-accordion
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-action-invert-colors
+                                        |  CSS
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='css-typography.html') Typography
+                                            li
+                                                a(href='css-icons.html') Icons
+                                            li
+                                                a(href='css-animations.html') Animations
+                                            li
+                                                a(href='css-shadow.html') Shadow
+                                            li
+                                                a(href='css-media.html') Media
+                                            li
+                                                a(href='css-sass.html') Sass
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-image-palette
+                                        |  UI Elements
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='ui-alerts.html') Alerts
+                                            li
+                                                a(href='ui-buttons.html') Buttons
+                                            li
+                                                a(href='ui-badges.html') Badges
+                                            li
+                                                a(href='ui-breadcrumbs.html') Breadcrumbs
+                                            li
+                                                a(href='ui-collections.html') Collections
+                                            li
+                                                a(href='ui-collapsibles.html') Collapsibles
+                                            li
+                                                a(href='ui-tabs.html') Tabs
+                                            li
+                                                a(href='ui-navbar.html') Navbar
+                                            li
+                                                a(href='ui-pagination.html') Pagination
+                                            li
+                                                a(href='ui-preloader.html') Preloader
+                                            li
+                                                a(href='ui-toasts.html') Toasts
+                                            li
+                                                a(href='ui-tooltip.html') Tooltip
+                                            li
+                                                a(href='ui-waves.html') Waves
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-av-queue
+                                        |  Advanced UI
+                                        span.new.badge
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='advanced-ui-chips.html') Chips
+                                            li
+                                                a(href='advanced-ui-cards.html') Cards
+                                            li
+                                                a(href='advanced-ui-modals.html') Modals
+                                            li
+                                                a(href='advanced-ui-media.html') Media
+                                            li
+                                                a(href='advanced-ui-range-slider.html') Range Slider
+                                            li
+                                                a(href='advanced-ui-sweetalert.html') SweetAlert
+                                            li
+                                                a(href='advanced-ui-nestable.html') Shortable & Nestable
+                                            li
+                                                a(href='advanced-ui-translation.html') Language Translation
+                                            li
+                                                a(href='advanced-ui-highlight.html') Highlight
+                                li.bold
+                                    a.waves-effect.waves-cyan(href='app-widget.html')
+                                        i.mdi-device-now-widgets
+                                        |  Widgets
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-editor-border-all
+                                        |  Tables
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='table-basic.html') Basic Tables
+                                            li
+                                                a(href='table-data.html') Data Tables
+                                            li
+                                                a(href='table-jsgrid.html') jsGrid
+                                            li
+                                                a(href='table-editable.html') Editable Table
+                                            li
+                                                a(href='table-floatThead.html') floatThead
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-editor-insert-comment
+                                        |  Forms
+                                        span.new.badge
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='form-elements.html') Form Elements
+                                            li
+                                                a(href='form-layouts.html') Form Layouts
+                                            li
+                                                a(href='form-validation.html') Form Validations
+                                            li
+                                                a(href='form-masks.html') Form Masks
+                                            li
+                                                a(href='form-file-uploads.html') File Uploads
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-social-pages
+                                        |  Pages
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='page-contact.html') Contact Page
+                                            li
+                                                a(href='page-todo.html') ToDos
+                                            li
+                                                a(href='page-blog-1.html') Blog Type 1
+                                            li
+                                                a(href='page-blog-2.html') Blog Type 2
+                                            li
+                                                a(href='page-404.html') 404
+                                            li
+                                                a(href='page-500.html') 500
+                                            li
+                                                a(href='page-blank.html') Blank
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-action-shopping-cart
+                                        |  eCommers
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='eCommerce-products-page.html') Products Page
+                                            li
+                                                a(href='eCommerce-pricing.html') Pricing Table
+                                            li
+                                                a(href='eCommerce-invoice.html') Invoice
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-image-image
+                                        |  Medias
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='media-gallary-page.html') Gallery Page
+                                            li
+                                                a(href='media-hover-effects.html') Image Hover Effects
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-action-account-circle
+                                        |  User
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='user-profile-page.html') User Profile
+                                            li
+                                                a(href='user-login.html') Login
+                                            li
+                                                a(href='user-register.html') Register
+                                            li
+                                                a(href='user-forgot-password.html') Forgot Password
+                                            li
+                                                a(href='user-lock-screen.html') Lock Screen
+                                            li
+                                                a(href='user-session-timeout.html') Session Timeout
+                                li.bold
+                                    a.collapsible-header.waves-effect.waves-cyan
+                                        i.mdi-editor-insert-chart
+                                        |  Charts
+                                    .collapsible-body
+                                        ul
+                                            li
+                                                a(href='charts-chartjs.html') Chart JS
+                                            li
+                                                a(href='charts-chartist.html') Chartist
+                                            li
+                                                a(href='charts-morris.html') Morris Charts
+                                            li
+                                                a(href='charts-xcharts.html') xCharts
+                                            li
+                                                a(href='charts-flotcharts.html') Flot Charts
+                                            li
+                                                a(href='charts-sparklines.html') Sparkline Charts
+                        li.li-hover
+                            .divider
+                        li.li-hover
+                            p.ultra-small.margin.more-text MORE
+                        li
+                            a(href='angular-ui.html')
+                                i.mdi-action-verified-user
+                                |  Angular UI
+                                span.new.badge
+                        li
+                            a(href='css-grid.html')
+                                i.mdi-image-grid-on
+                                |  Grid
+                        li
+                            a(href='css-color.html')
+                                i.mdi-editor-format-color-fill
+                                |  Color
+                        li
+                            a(href='css-helpers.html')
+                                i.mdi-communication-live-help
+                                |  Helpers
+                        li
+                            a(href='changelogs.html')
+                                i.mdi-action-swap-vert-circle
+                                |  Changelogs
+                        li.li-hover
+                            .divider
+                        li.li-hover
+                            p.ultra-small.margin.more-text Daily Sales
+                        li.li-hover
+                            .row
+                                .col.s12.m12.l12
+                                    .sample-chart-wrapper
+                                        #ct2-chart.ct-chart.ct-golden-section
+                    a.sidebar-collapse.btn-floating.btn-medium.waves-effect.waves-light.hide-on-large-only.cyan(href='#', data-activates='slide-out')
+                        i.mdi-navigation-menu
+                // END LEFT SIDEBAR NAV
+                // ////////////////////////////////////////////////////////////////////////////
+                // START CONTENT
+                section#content
+                    // start container
+                    .container
+                        // chart dashboard start
+                        #chart-dashboard
+                            .row
+                                .col.s12.m12.l12
+                                    include window_component.jade
+                            .row
+                                .col.s12.m8.l8
+                                    .card
+                                        .card-move-up.waves-effect.waves-block.waves-light
+                                            .move-up.cyan.darken-1
+                                                div
+                                                    span.chart-title.white-text Revenue
+                                                    .chart-revenue.cyan.darken-2.white-text
+                                                        p.chart-revenue-total $4,500.85
+                                                        p.chart-revenue-per
+                                                            i.mdi-navigation-arrow-drop-up
+                                                            |  21.80 %
+                                                    .switch.chart-revenue-switch.right
+                                                        label.cyan-text.text-lighten-5
+                                                            | Month
+                                                            input(type='checkbox')
+                                                            span.lever
+                                                            |  Year
+                                                .trending-line-chart-wrapper
+                                                    canvas#trending-line-chart(height='70')
+                                        .card-content
+                                            a.btn-floating.btn-move-up.waves-effect.waves-light.darken-2.right
+                                                i.mdi-content-add.activator
+                                            .col.s12.m3.l3
+                                                #doughnut-chart-wrapper
+                                                    canvas#doughnut-chart(height='200')
+                                                    .doughnut-chart-status
+                                                        | 4500
+                                                        p.ultra-small.center-align Sold
+                                            .col.s12.m2.l2
+                                                ul.doughnut-chart-legend
+                                                    li.mobile.ultra-small
+                                                        span.legend-color
+                                                        | Mobile
+                                                    li.kitchen.ultra-small
+                                                        span.legend-color
+                                                        |  Kitchen
+                                                    li.home.ultra-small
+                                                        span.legend-color
+                                                        |  Home
+                                            .col.s12.m5.l6
+                                                .trending-bar-chart-wrapper
+                                                    canvas#trending-bar-chart(height='90')
+                                        .card-reveal
+                                            span.card-title.grey-text.text-darken-4
+                                                | Revenue by Month
+                                                i.mdi-navigation-close.right
+                                            table.responsive-table
+                                                thead
+                                                    tr
+                                                        th(data-field='id') ID
+                                                        th(data-field='month') Month
+                                                        th(data-field='item-sold') Item Sold
+                                                        th(data-field='item-price') Item Price
+                                                        th(data-field='total-profit') Total Profit
+                                                tbody
+                                                    tr
+                                                        td 1
+                                                        td January
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 2
+                                                        td February
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 3
+                                                        td March
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 4
+                                                        td April
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 5
+                                                        td May
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 6
+                                                        td June
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 7
+                                                        td July
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 8
+                                                        td August
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 9
+                                                        td Septmber
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 10
+                                                        td Octomber
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 11
+                                                        td November
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                                    tr
+                                                        td 12
+                                                        td December
+                                                        td 122
+                                                        td 100
+                                                        td $122,00.00
+                                .col.s12.m4.l4
+                                    .card
+                                        .card-move-up.teal.waves-effect.waves-block.waves-light
+                                            .move-up
+                                                p.margin.white-text Browser Stats
+                                                canvas#trending-radar-chart(height='114')
+                                        .card-content.teal.darken-2
+                                            a.btn-floating.btn-move-up.waves-effect.waves-light.darken-2.right
+                                                i.mdi-content-add.activator
+                                            .line-chart-wrapper
+                                                p.margin.white-text Revenue by country
+                                                canvas#line-chart(height='114')
+                                        .card-reveal
+                                            span.card-title.grey-text.text-darken-4
+                                                | Revenue by country
+                                                i.mdi-navigation-close.right
+                                            table.responsive-table
+                                                thead
+                                                    tr
+                                                        th(data-field='country-name') Country Name
+                                                        th(data-field='item-sold') Item Sold
+                                                        th(data-field='total-profit') Total Profit
+                                                tbody
+                                                    tr
+                                                        td USA
+                                                        td 65
+                                                        td $452.55
+                                                    tr
+                                                        td UK
+                                                        td 76
+                                                        td $452.55
+                                                    tr
+                                                        td Canada
+                                                        td 65
+                                                        td $452.55
+                                                    tr
+                                                        td Brazil
+                                                        td 76
+                                                        td $452.55
+                                                    tr
+                                                        td India
+                                                        td 65
+                                                        td $452.55
+                                                    tr
+                                                        td France
+                                                        td 76
+                                                        td $452.55
+                                                    tr
+                                                        td Austrelia
+                                                        td 65
+                                                        td $452.55
+                                                    tr
+                                                        td Russia
+                                                        td 76
+                                                        td $452.55
+                        // chart dashboard end
+                        // ////////////////////////////////////////////////////////////////////////////
+                        // card stats start
+                        #card-stats
+                            .row
+                                .col.s12.m6.l3
+                                    .card
+                                        .card-content.green.white-text
+                                            p.card-stats-title
+                                                i.mdi-social-group-add
+                                                |  New Clients
+                                            h4.card-stats-number 566
+                                            p.card-stats-compare
+                                                i.mdi-hardware-keyboard-arrow-up
+                                                |  15%
+                                                span.green-text.text-lighten-5 from yesterday
+                                        .card-action.green.darken-2
+                                            #clients-bar.center-align
+                                .col.s12.m6.l3
+                                    .card
+                                        .card-content.pink.lighten-1.white-text
+                                            p.card-stats-title
+                                                i.mdi-editor-insert-drive-file
+                                                |  New Invoice
+                                            h4.card-stats-number 1806
+                                            p.card-stats-compare
+                                                i.mdi-hardware-keyboard-arrow-down
+                                                |  3%
+                                                span.deep-purple-text.text-lighten-5 from last month
+                                        .card-action.pink.darken-2
+                                            #invoice-line.center-align
+                                .col.s12.m6.l3
+                                    .card
+                                        .card-content.blue-grey.white-text
+                                            p.card-stats-title
+                                                i.mdi-action-trending-up
+                                                |  Today Profit
+                                            h4.card-stats-number $806.52
+                                            p.card-stats-compare
+                                                i.mdi-hardware-keyboard-arrow-up
+                                                |  80%
+                                                span.blue-grey-text.text-lighten-5 from yesterday
+                                        .card-action.blue-grey.darken-2
+                                            #profit-tristate.center-align
+                                .col.s12.m6.l3
+                                    .card
+                                        .card-content.purple.white-text
+                                            p.card-stats-title
+                                                i.mdi-editor-attach-money
+                                                | Total Sales
+                                            h4.card-stats-number $8990.63
+                                            p.card-stats-compare
+                                                i.mdi-hardware-keyboard-arrow-up
+                                                |  70%
+                                                span.purple-text.text-lighten-5 last month
+                                        .card-action.purple.darken-2
+                                            #sales-compositebar.center-align
+                        // card stats end
+                        // ////////////////////////////////////////////////////////////////////////////
+                        // card widgets start
+                        #card-widgets
+                            .row
+                                .col.s12.m12.l4
+                                    ul#task-card.collection.with-header
+                                        li.collection-header.cyan
+                                            h4.task-card-title My Task
+                                            p.task-card-date March 26, 2015
+                                        li.collection-item.dismissable
+                                            input#task1(type='checkbox')
+                                            label(for='task1')
+                                                | Create Mobile App UI.
+                                                a.secondary-content(href='#')
+                                                    span.ultra-small Today
+                                            span.task-cat.teal Mobile App
+                                        li.collection-item.dismissable
+                                            input#task2(type='checkbox')
+                                            label(for='task2')
+                                                | Check the new API standerds.
+                                                a.secondary-content(href='#')
+                                                    span.ultra-small Monday
+                                            span.task-cat.purple Web API
+                                        li.collection-item.dismissable
+                                            input#task3(type='checkbox', checked='checked')
+                                            label(for='task3')
+                                                | Check the new Mockup of ABC.
+                                                a.secondary-content(href='#')
+                                                    span.ultra-small Wednesday
+                                            span.task-cat.pink Mockup
+                                        li.collection-item.dismissable
+                                            input#task4(type='checkbox', checked='checked', disabled='disabled')
+                                            label(for='task4') I did it !
+                                            span.task-cat.cyan Mobile App
+                                .col.s12.m6.l4
+                                    #flight-card.card
+                                        .card-header.amber.darken-2
+                                            .card-title
+                                                h4.flight-card-title Flight
+                                                p.flight-card-date June 18, Thu 04:50
+                                        .card-content-bg.white-text
+                                            .card-content
+                                                .row.flight-state-wrapper
+                                                    .col.s5.m5.l5.center-align
+                                                        .flight-state
+                                                            h4.margin LDN
+                                                            p.ultra-small London
+                                                    .col.s2.m2.l2.center-align
+                                                        i.mdi-device-airplanemode-on.flight-icon
+                                                    .col.s5.m5.l5.center-align
+                                                        .flight-state
+                                                            h4.margin SFO
+                                                            p.ultra-small San Francisco
+                                                .row
+                                                    .col.s6.m6.l6.center-align
+                                                        .flight-info
+                                                            p.small
+                                                                span.grey-text.text-lighten-4 Depart:
+                                                                |  04.50
+                                                            p.small
+                                                                span.grey-text.text-lighten-4 Flight:
+                                                                |  IB 5786
+                                                            p.small
+                                                                span.grey-text.text-lighten-4 Terminal:
+                                                                |  B
+                                                    .col.s6.m6.l6.center-align.flight-state-two
+                                                        .flight-info
+                                                            p.small
+                                                                span.grey-text.text-lighten-4 Arrive:
+                                                                |  08.50
+                                                            p.small
+                                                                span.grey-text.text-lighten-4 Flight:
+                                                                |  IB 5786
+                                                            p.small
+                                                                span.grey-text.text-lighten-4 Terminal:
+                                                                |  C
+                                .col.s12.m6.l4
+                                    #profile-card.card
+                                        .card-image.waves-effect.waves-block.waves-light
+                                            img.activator(src='images/user-bg.jpg', alt='user background')
+                                        .card-content
+                                            img.circle.responsive-img.activator.card-profile-image(src='images/avatar.jpg', alt='')
+                                            a.btn-floating.activator.btn-move-up.waves-effect.waves-light.darken-2.right
+                                                i.mdi-action-account-circle
+                                            span.card-title.activator.grey-text.text-darken-4 Roger Waters
+                                            p
+                                                i.mdi-action-perm-identity.cyan-text.text-darken-2
+                                                |  Project Manager
+                                            p
+                                                i.mdi-action-perm-phone-msg.cyan-text.text-darken-2
+                                                |  +1 (612) 222 8989
+                                            p
+                                                i.mdi-communication-email.cyan-text.text-darken-2
+                                                |  mail@domain.com
+                                        .card-reveal
+                                            span.card-title.grey-text.text-darken-4
+                                                | Roger Waters
+                                                i.mdi-navigation-close.right
+                                            p Here is some more information about this card.
+                                            p
+                                                i.mdi-action-perm-identity.cyan-text.text-darken-2
+                                                |  Project Manager
+                                            p
+                                                i.mdi-action-perm-phone-msg.cyan-text.text-darken-2
+                                                |  +1 (612) 222 8989
+                                            p
+                                                i.mdi-communication-email.cyan-text.text-darken-2
+                                                |  mail@domain.com
+                                            p
+                                                i.mdi-social-cake.cyan-text.text-darken-2
+                                                |  18th June 1990
+                                            p
+                                                i.mdi-device-airplanemode-on.cyan-text.text-darken-2
+                                                |  BAR - AUS
+                            .row
+                                // blog card
+                                .col.s12.m12.l4
+                                    .blog-card
+                                        .card
+                                            .card-image.waves-effect.waves-block.waves-light
+                                                img(src='images/gallary/30.jpg', alt='blog-img')
+                                            ul.card-action-buttons
+                                                li
+                                                    a.btn-floating.waves-effect.waves-light.green.accent-4
+                                                        i.mdi-social-share
+                                                li
+                                                    a.btn-floating.waves-effect.waves-light.light-blue
+                                                        i.mdi-action-info.activator
+                                            .card-content
+                                                p.row
+                                                    span.left
+                                                        a(href='') Web Design
+                                                    span.right 18th June, 2015
+                                                h4.card-title.grey-text.text-darken-4
+                                                    a.grey-text.text-darken-4(href='#') Materialize Featured Blog Post Card
+                                                .row
+                                                    .col.s2
+                                                        img.circle.responsive-img.valign.profile-image(src='images/avatar.jpg', alt='')
+                                                    .col.s9
+                                                        | By
+                                                        a(href='#') John Doe
+                                            .card-reveal
+                                                span.card-title.grey-text.text-darken-4
+                                                    i.mdi-navigation-close.right
+                                                    |  Apple MacBook Pro A1278 13"
+                                                p
+                                                    | Here is some more information about this blog that is only revealed once clicked on.
+                                // product-card
+                                .col.s12.m12.l4
+                                    .product-card
+                                        .card
+                                            .card-image.waves-effect.waves-block.waves-light
+                                                a.btn-floating.btn-large.btn-price.waves-effect.waves-light.pink.accent-2(href='#') $189
+                                                img(src='images/gallary/33.jpg', alt='product-img')
+                                            ul.card-action-buttons
+                                                li
+                                                    a.btn-floating.waves-effect.waves-light.green.accent-4
+                                                        i.mdi-av-repeat
+                                                li
+                                                    a.btn-floating.waves-effect.waves-light.red.accent-2
+                                                        i.mdi-action-favorite
+                                                li
+                                                    a.btn-floating.waves-effect.waves-light.light-blue
+                                                        i.mdi-action-info.activator
+                                            .card-content
+                                                .row
+                                                    .col.s8
+                                                        p.card-title.grey-text.text-darken-4
+                                                            a.grey-text.text-darken-4(href='#') Featured Product of The Month
+                                                    .col.s4.no-padding
+                                                        a(href='')
+                                                        img.responsive-img(src='images/amazon.jpg', alt='amazon')
+                                            .card-reveal
+                                                span.card-title.grey-text.text-darken-4
+                                                    i.mdi-navigation-close.right
+                                                    |  Apple MacBook Pro A1278 13"
+                                                p
+                                                    | Here is some more information about this product that is only revealed once clicked on.
+                                // map-card
+                                .col.s12.m12.l4
+                                    .map-card
+                                        .card
+                                            .card-image.waves-effect.waves-block.waves-light
+                                                #map-canvas(data-lat='40.747688', data-lng='-74.004142')
+                                            .card-content
+                                                a.btn-floating.activator.btn-move-up.waves-effect.waves-light.darken-2.right
+                                                    i.mdi-maps-pin-drop
+                                                h4.card-title.grey-text.text-darken-4
+                                                    a.grey-text.text-darken-4(href='#') Company Name LLC
+                                                p.blog-post-content Some more information about this company.
+                                            .card-reveal
+                                                span.card-title.grey-text.text-darken-4
+                                                    | Company Name LLC
+                                                    i.mdi-navigation-close.right
+                                                p
+                                                    | Here is some more information about this company. As a creative studio we believe no client is too big nor too small to work with us to obtain good advantage.By combining the creativity of artists with the precision of engineers we develop custom solutions that achieve results.Some more information about this company.
+                                                p
+                                                    i.mdi-action-perm-identity.cyan-text.text-darken-2
+                                                    |  Manager Name
+                                                p
+                                                    i.mdi-communication-business.cyan-text.text-darken-2
+                                                    |  125, ABC Street, New Yourk, USA
+                                                p
+                                                    i.mdi-action-perm-phone-msg.cyan-text.text-darken-2
+                                                    |  +1 (612) 222 8989
+                                                p
+                                                    i.mdi-communication-email.cyan-text.text-darken-2
+                                                    |  support@geekslabs.com
+                            // card widgets end
+                            // ////////////////////////////////////////////////////////////////////////////
+                            // work collections start
+                            #work-collections
+                                .row
+                                    .col.s12.m12.l6
+                                        ul#projects-collection.collection
+                                            li.collection-item.avatar
+                                                i.mdi-file-folder.circle.light-blue.darken-2
+                                                span.collection-header Projects
+                                                p Your Favorites
+                                                a.secondary-content(href='#')
+                                                    i.mdi-action-grade
+                                            li.collection-item
+                                                .row
+                                                    .col.s6
+                                                        p.collections-title Web App
+                                                        p.collections-content AEC Company
+                                                    .col.s3
+                                                        span.task-cat.cyan Development
+                                                    .col.s3
+                                                        #project-line-1
+                                            li.collection-item
+                                                .row
+                                                    .col.s6
+                                                        p.collections-title Mobile App for Social
+                                                        p.collections-content iSocial App
+                                                    .col.s3
+                                                        span.task-cat.grey.darken-3 UI/UX
+                                                    .col.s3
+                                                        #project-line-2
+                                            li.collection-item
+                                                .row
+                                                    .col.s6
+                                                        p.collections-title Website
+                                                        p.collections-content MediTab
+                                                    .col.s3
+                                                        span.task-cat.teal Marketing
+                                                    .col.s3
+                                                        #project-line-3
+                                            li.collection-item
+                                                .row
+                                                    .col.s6
+                                                        p.collections-title AdWord campaign
+                                                        p.collections-content True Line
+                                                    .col.s3
+                                                        span.task-cat.green SEO
+                                                    .col.s3
+                                                        #project-line-4
+                                    .col.s12.m12.l6
+                                        ul#issues-collection.collection
+                                            li.collection-item.avatar
+                                                i.mdi-action-bug-report.circle.red.darken-2
+                                                span.collection-header Issues
+                                                p Assigned to you
+                                                a.secondary-content(href='#')
+                                                    i.mdi-action-grade
+                                            li.collection-item
+                                                .row
+                                                    .col.s7
+                                                        p.collections-title
+                                                            strong #102
+                                                            |  Home Page
+                                                        p.collections-content Web Project
+                                                    .col.s2
+                                                        span.task-cat.pink.accent-2 P1
+                                                    .col.s3
+                                                        .progress
+                                                            .determinate(style='width: 70%')
+                                            li.collection-item
+                                                .row
+                                                    .col.s7
+                                                        p.collections-title
+                                                            strong #108
+                                                            |  API Fix
+                                                        p.collections-content API Project
+                                                    .col.s2
+                                                        span.task-cat.yellow.darken-4 P2
+                                                    .col.s3
+                                                        .progress
+                                                            .determinate(style='width: 40%')
+                                            li.collection-item
+                                                .row
+                                                    .col.s7
+                                                        p.collections-title
+                                                            strong #205
+                                                            |  Profile page css
+                                                        p.collections-content New Project
+                                                    .col.s2
+                                                        span.task-cat.light-green.darken-3 P3
+                                                    .col.s3
+                                                        .progress
+                                                            .determinate(style='width: 95%')
+                                            li.collection-item
+                                                .row
+                                                    .col.s7
+                                                        p.collections-title
+                                                            strong #188
+                                                            |  SAP Changes
+                                                        p.collections-content SAP Project
+                                                    .col.s2
+                                                        span.task-cat.pink.accent-2 P1
+                                                    .col.s3
+                                                        .progress
+                                                            .determinate(style='width: 10%')
+                            // work collections end
+                            // Floating Action Button
+                            .fixed-action-btn(style='bottom: 50px; right: 19px;')
+                                a.btn-floating.btn-large
+                                    i.mdi-action-stars
+                                ul
+                                    li
+                                        a.btn-floating.red(href='css-helpers.html')
+                                            i.large.mdi-communication-live-help
+                                    li
+                                        a.btn-floating.yellow.darken-1(href='app-widget.html')
+                                            i.large.mdi-device-now-widgets
+                                    li
+                                        a.btn-floating.green(href='app-calendar.html')
+                                            i.large.mdi-editor-insert-invitation
+                                    li
+                                        a.btn-floating.blue(href='app-email.html')
+                                            i.large.mdi-communication-email
+                            // Floating Action Button
+                        // end container
+                // END CONTENT
+                // ////////////////////////////////////////////////////////////////////////////
+                // START RIGHT SIDEBAR NAV
+                aside#right-sidebar-nav
+                    ul#chat-out.side-nav.rightside-navigation
+                        li.li-hover
+                            a.chat-close-collapse.right(href='#', data-activates='chat-out')
+                                i.mdi-navigation-close
+                            #right-search.row
+                                form.col.s12
+                                    .input-field
+                                        i.mdi-action-search.prefix
+                                        input#icon_prefix.validate(type='text')
+                                        label(for='icon_prefix') Search
+                        li.li-hover
+                            ul.chat-collapsible(data-collapsible='expandable')
+                                li
+                                    .collapsible-header.teal.white-text.active
+                                        i.mdi-social-whatshot
+                                        | Recent Activity
+                                    .collapsible-body.recent-activity
+                                        .recent-activity-list.chat-out-list.row
+                                            .col.s3.recent-activity-list-icon
+                                                i.mdi-action-add-shopping-cart
+                                            .col.s9.recent-activity-list-text
+                                                a(href='#') just now
+                                                p Jim Doe Purchased new equipments for zonal office.
+                                        .recent-activity-list.chat-out-list.row
+                                            .col.s3.recent-activity-list-icon
+                                                i.mdi-device-airplanemode-on
+                                            .col.s9.recent-activity-list-text
+                                                a(href='#') Yesterday
+                                                p Your Next flight for USA will be on 15th August 2015.
+                                        .recent-activity-list.chat-out-list.row
+                                            .col.s3.recent-activity-list-icon
+                                                i.mdi-action-settings-voice
+                                            .col.s9.recent-activity-list-text
+                                                a(href='#') 5 Days Ago
+                                                p Natalya Parker Send you a voice mail for next conference.
+                                        .recent-activity-list.chat-out-list.row
+                                            .col.s3.recent-activity-list-icon
+                                                i.mdi-action-store
+                                            .col.s9.recent-activity-list-text
+                                                a(href='#') Last Week
+                                                p Jessy Jay open a new store at S.G Road.
+                                        .recent-activity-list.chat-out-list.row
+                                            .col.s3.recent-activity-list-icon
+                                                i.mdi-action-settings-voice
+                                            .col.s9.recent-activity-list-text
+                                                a(href='#') 5 Days Ago
+                                                p Natalya Parker Send you a voice mail for next conference.
+                                li
+                                    .collapsible-header.light-blue.white-text.active
+                                        i.mdi-editor-attach-money
+                                        | Sales Repoart
+                                    .collapsible-body.sales-repoart
+                                        .sales-repoart-list.chat-out-list.row
+                                            .col.s8 Target Salse
+                                            .col.s4
+                                                span#sales-line-1
+                                        .sales-repoart-list.chat-out-list.row
+                                            .col.s8 Payment Due
+                                            .col.s4
+                                                span#sales-bar-1
+                                        .sales-repoart-list.chat-out-list.row
+                                            .col.s8 Total Delivery
+                                            .col.s4
+                                                span#sales-line-2
+                                        .sales-repoart-list.chat-out-list.row
+                                            .col.s8 Total Progress
+                                            .col.s4
+                                                span#sales-bar-2
+                                li
+                                    .collapsible-header.red.white-text
+                                        i.mdi-action-stars
+                                        | Favorite Associates
+                                    .collapsible-body.favorite-associates
+                                        .favorite-associate-list.chat-out-list.row
+                                            .col.s4
+                                                img.circle.responsive-img.online-user.valign.profile-image(src='images/avatar.jpg', alt='')
+                                            .col.s8
+                                                p Eileen Sideways
+                                                p.place Los Angeles, CA
+                                        .favorite-associate-list.chat-out-list.row
+                                            .col.s4
+                                                img.circle.responsive-img.online-user.valign.profile-image(src='images/avatar.jpg', alt='')
+                                            .col.s8
+                                                p Zaham Sindil
+                                                p.place San Francisco, CA
+                                        .favorite-associate-list.chat-out-list.row
+                                            .col.s4
+                                                img.circle.responsive-img.offline-user.valign.profile-image(src='images/avatar.jpg', alt='')
+                                            .col.s8
+                                                p Renov Leongal
+                                                p.place Cebu City, Philippines
+                                        .favorite-associate-list.chat-out-list.row
+                                            .col.s4
+                                                img.circle.responsive-img.online-user.valign.profile-image(src='images/avatar.jpg', alt='')
+                                            .col.s8
+                                                p Weno Carasbong
+                                                p Tokyo, Japan
+                                        .favorite-associate-list.chat-out-list.row
+                                            .col.s4
+                                                img.circle.responsive-img.offline-user.valign.profile-image(src='images/avatar.jpg', alt='')
+                                            .col.s8
+                                                p Nusja Nawancali
+                                                p.place Bangkok, Thailand
+                // LEFT RIGHT SIDEBAR NAV
+            // END WRAPPER
+        // END MAIN
+        // ////////////////////////////////////////////////////////////////////////////
+        // START FOOTER
+        footer.page-footer
+            .container
+                .row.section
+                    .col.l6.s12
+                        h5.white-text World Market
+                        p.grey-text.text-lighten-4 World map, world regions, countries and cities.
+                        #world-map-markers
+                    .col.l4.offset-l2.s12
+                        h5.white-text Sales by Country
+                        p.grey-text.text-lighten-4 A sample polar chart to show sales by country.
+                        #polar-chart-holder
+                            canvas#polar-chart-country(width='200')
+            .footer-copyright
+                .container
+                    | Copyright © 2015
+                    a.grey-text.text-lighten-4(href='http://themeforest.net/user/geekslabs/portfolio?ref=geekslabs', target='_blank') GeeksLabs
+                    |  All rights reserved.
+                    span.right
+                        | Design and Developed by
+                        a.grey-text.text-lighten-4(href='http://geekslabs.com/') GeeksLabs
+        // END FOOTER
+        //
+          ================================================
+          Scripts
+          ================================================
+        // jQuery Library
+        script(type='text/javascript', src='js/plugins/jquery-1.11.2.min.js')
+        // materialize js
+        script(type='text/javascript', src='js/materialize.min.js')
+        // scrollbar
+        script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js')
+        // chartist
+        script(type='text/javascript', src='js/plugins/chartist-js/chartist.min.js')
+        // chartjs
+        script(type='text/javascript', src='js/plugins/chartjs/chart.min.js')
+        script(type='text/javascript', src='js/plugins/chartjs/chart-script.js')
+        // sparkline
+        script(type='text/javascript', src='js/plugins/sparkline/jquery.sparkline.min.js')
+        script(type='text/javascript', src='js/plugins/sparkline/sparkline-script.js')
+        // google map api
+        script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAAZnaZBXLqNBRXjd-82km_NO7GUItyKek')
+        // jvectormap
+        script(type='text/javascript', src='js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js')
+        script(type='text/javascript', src='js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js')
+        script(type='text/javascript', src='js/plugins/jvectormap/vectormap-script.js')
+        // google map
+        script(type='text/javascript', src='js/plugins/google-map/google-map-script.js')
+        // plugins.js - Some Specific JS codes for Plugin Settings
+        script(type='text/javascript', src='js/plugins.min.js')
+        // custom-script.js - Add your own theme custom JS
+        script(type='text/javascript', src='js/custom-script.js')
+        // Toast Notification
+        script(type='text/javascript').
+            // Toast Notification
+            $(window).load(function() {
+                setTimeout(function() {
+                    Materialize.toast('<span>Hiya! I am a toast.</span>', 1500);
+                }, 1500);
+                setTimeout(function() {
+                    Materialize.toast('<span>You can swipe me too!</span>', 3000);
+                }, 5000);
+                setTimeout(function() {
+                    Materialize.toast('<span>You have new order.</span><a class="btn-flat yellow-text" href="#">Read<a>', 3000);
+                }, 15000);
+            });

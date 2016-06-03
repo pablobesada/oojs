@@ -6,7 +6,6 @@ require.prototype.main = app.module
 var oo = require("./../openorange")
 console.log(oo.isClient)
 var cm = oo.classmanager
-var ct = oo.client_tools
 var should = require('should');
 
 function fillRecord(record){
@@ -26,7 +25,7 @@ function fillRecord(record){
                 for (var j=0;j<nrows;j++) {
                     var row = record[fn].newRow()
                     fillRecord(row)
-                    record[fn].push(row)
+                    record[fn].push(row);
                 }
         }
     });
@@ -38,7 +37,6 @@ describe("Client", function () {
         var SalesOrder = cm.getClass("SalesOrder");
         var so = SalesOrder.new()
         so.SerNr=333
-        ct.always_run_in_server_promise(so, "load")
         var res = so.load();
         return res;
     });
