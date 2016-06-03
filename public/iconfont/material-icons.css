@@ -10,7 +10,7 @@
        url(MaterialIcons-Regular.ttf) format('truetype');
 }
 
-.material-icons {
+.mdi {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;

@@ -45,7 +45,7 @@ WindowContainer.displayWindow = function displayWindow(windowElement) {
 WindowContainer.createToolBar = function createToolBar() {
     var self = this;
     var html = '<div class="row">';
-    html += '<a class="btn waves-effect waves-light"><i class="material-icons">done</i></a>'
+    html += '<a class="btn waves-effect waves-light"><i class="mdi">done</i></a>'
     html += '</div>'
     var res = $(html);
     //res.find("a").click(function (event) {self.save(event)});
