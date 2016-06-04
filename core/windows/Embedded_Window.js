@@ -127,6 +127,13 @@ Embedded_Window.rowInserted = function rowInserted(record, detail, row, position
     }})
 }
 
+Embedded_Window.detailCleared = function detailCleared(record, detail, row, position) {
+    this.notifyListeners({type: 'field', action: 'detail cleared', data: {
+        record: record,
+        detail: detail,
+    }})
+}
+
 Embedded_Window.getRecord = function getRecord(rec) {
     return this.__record__
 }

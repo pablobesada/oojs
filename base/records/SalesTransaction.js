@@ -4,7 +4,7 @@ var Description = {
     name: 'SalesTransaction',
     inherits: 'FinancialTrans',
     fields: {
-        CustCode: {type: "string", length: 30},
+        CustCode: {type: "string", length: 30, linkto: 'Customer'},
         CustName: {type: "string", length: 30},
     }
 }

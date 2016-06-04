@@ -33,9 +33,8 @@ router.get('/window_test', function(req, res, next) {
     res.render('window_test', { title: 'Express' });
 });
 
-router.get('/admin/admin', function(req, res, next) {
-    //req.session.test = 123
-    res.render('admin', { title: 'Express' });
+router.get('/app/index', function(req, res, next) {
+    res.render('app', { title: 'Express' });
 });
 
 module.exports = router;

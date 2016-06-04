@@ -11,7 +11,29 @@ var Description = {
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
         {field: 'CustName'},
+        {field: 'PrintFormat'},
+        {field: 'PrintFormat', editor: 'radiobutton', options: [
+            {label: 'Normal', value: 0},
+            {label: 'Sum per Item', value: 1},
+            {label: 'Sum per Origin', value: 3},
+        ]},
+        {field: 'PrintFormat', editor: 'combobox', options: [
+            {label: 'Normal', value: 0},
+            {label: 'Sum per Item', value: 1},
+            {label: 'Sum per Origin', value: 3},
+        ]},
         {field: 'User'},
+        {field: "Status", editor: "checkbox"},
+        {field: "Status", editor: "integer"},
+        {field: 'Status', editor: 'combobox', options: [
+            {label: 'NO', value: 0},
+            {label: 'YES', value: 1},
+        ]},
+        {field: 'Status', editor: 'radiobutton', options: [
+            {label: 'NO', value: 0},
+            {label: 'YES', value: 1},
+        ]},
+        //{field: "Status", editor: "integer"},
         {
             type: 'tabs', pages: [
             {
@@ -21,7 +43,11 @@ var Description = {
                     {field: 'rowNr'},
                     {field: 'masterId'},
                     {field: 'ArtCode', label: 'Codigo'},
-                    {field: 'Name', label: 'Descripcion'},
+                    {field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
+                        {label: 'Normal', value: 0},
+                        {label: 'Sum per Item', value: 1},
+                        {label: 'Sum per Origin', value: 3},
+                    ]},
                 ]
                 }
             ]
@@ -61,7 +87,6 @@ SalesOrderWindow["changed Items.ArtCode"] = function (rowNr) {
         .then(function () {
             self.getRecord().Items[rowNr].Name += 'X'
         })
-
 }
 
 module.exports = SalesOrderWindow

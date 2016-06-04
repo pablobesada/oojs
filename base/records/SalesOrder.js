@@ -7,6 +7,7 @@ var Description = {
     inherits: 'SalesTransaction',
     fields: {
         SalesGroup: {type: "string", length: 30},
+        PrintFormat: {type: "string"},
         Items: {type: "detail", class: "SalesOrderItemRow"}
     }
 }

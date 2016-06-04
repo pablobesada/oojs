@@ -3,10 +3,12 @@ var _ = require("underscore");
 
 var WindowContainer = Object.create(null)
 WindowContainer.windows = []
+WindowContainer.element_ids = 1;
 WindowContainer.init = function (wnd) {
     this.window = wnd;
     this.windowjson = JSON.parse(JSON.stringify(this.window.getDescription().form))  //deep clone of the object because I need to add some metadata to it
     this.window.__container_data__ = {}
+    this.last_tab_id = 0;
     this.last_tab_id = 0;
     this.matrix_idx = 0;
     this.matrix_json_map = {}
@@ -29,7 +31,6 @@ WindowContainer.render = function render() {
     //console.log(this.windowjson)
     this.__element__ = w;
     this.displayWindow(w)
-
 }
 
 WindowContainer.displayWindow = function displayWindow(windowElement) {
@@ -114,6 +115,9 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
             case 'integer':
                 editor = 'integer';
                 break;
+            case 'boolean':
+                editor = 'checkbox';
+                break;
             case 'detail':
                 editor = 'matrix';
                 grid_cols = 12;
@@ -123,11 +127,23 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
     }
     var component = $('<div class="input-field col s' + grid_cols + '"></div>');
     var editorElement = self[editor](json, "oomaster")
+    var editors = editorElement;
     component.append(editorElement);
     if (headerInput) {
-        component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
-        editorElement.focus(self.beforeEdit.bind(self));
-        editorElement.change(self.afterEdit.bind(self));
+        switch (editor) {
+            case 'checkbox':
+                editors = editorElement.find("input");
+                console.log(editors)
+                break;
+            case 'radiobutton':
+                editors = editorElement.find("input");
+                break;
+            default:
+                component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
+                break;
+        }
+        editors.focus(self.beforeEdit.bind(self));
+        editors.change(self.afterEdit.bind(self));
     }
     json.__element__ = editorElement;
     return component;
@@ -179,8 +195,53 @@ WindowContainer.integer = function integer(json, cls, field) {
     return res;
 }
 
+
+WindowContainer.checkbox = function checkbox(json, cls, field) {
+    var self = this;
+    var value = field != null ? field.getValue() : '';
+    if (value == null) value = '';
+    var checked = value == ''? '': 'checked'
+    var element_id = "CHECKBOX_" + WindowContainer.element_ids++;
+    var html = '<p><input checked="'+checked+'" type="checkbox" name="' + json.field + '" class="editor ' + cls + ' validate" id="'+element_id+'">'
+    html += '<label for="'+element_id+'">' + (json.label ? json.label : json.field) + '</label></p>';
+    var res = $(html);
+    return res;
+}
+
+WindowContainer.combobox = function combobox(json, cls, field) {
+    var self = this;
+    var value = field != null ? field.getValue() : '';
+    if (value == null) value = '';
+    var html = '<select value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
+    for (var i=0;i<json.options.length;i++) {
+        var option = json.options[i];
+        var selected = (value == option.value)? 'SELECTED' : '';
+        html += '<option value="'+option.value+'" '+selected+'>'+option.label+'</option>'
+    }
+    html += '</select>'
+    var res = $(html);
+    return res;
+}
+
+WindowContainer.radiobutton = function radiobutton(json, cls, field) {
+    var self = this;
+    var value = field != null ? field.getValue() : '';
+    if (value == null) value = '';
+    console.log(json)
+    var html = '';
+    for (var i=0;i<json.options.length;i++) {
+        var option = json.options[i];
+        var element_id = "RADIO_" + WindowContainer.element_ids++;
+        html += '<p><input value="' + option.value + '" type="radio" name="' + json.field + '" class="editor ' + cls + ' validate" id="'+element_id+'">';
+        html += '<label for="'+element_id+'">' +option.label+ '</label></p>';
+    }
+    var res = $(html)//.find("input");
+    return res;
+}
+
 WindowContainer.beforeEdit = function beforeEdit(event) {
     var self = this;
+    console.log("beforeedit", self)
     var readonly = !Boolean(self.window.beforeEdit(event.currentTarget.name))
     $(event.currentTarget).attr("readonly", readonly);
 }
@@ -220,10 +281,6 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
                     });
                 }
             })
-            /*hasta aca llegue antes de irme de viaje.
-             Si me paro en cualquier campo de la ultima fila, el virtual row se convierte con row del record.
-             Ahora falta agregar un nuevo virtual row al table para poder seguir agregando filas
-             */
             self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
             //console.log($(self.matrix_json_map[params.detailname][0].__element__))
             console.log(self.matrix_json_map)
@@ -231,15 +288,6 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
                 return json.__element__.find("tbody").attr("matrix_idx") == tbody.attr("matrix_idx")
             })
             self.insertMatrixRow(self.window.getRecord(), json, self.virtual_rows[params.detailname], tbody)
-            /*
-             rownr = self.window.getRecord()[params.detailname].length-1;
-             var tr = target.closest("tr");
-             var colidx = tr.children().index(target.closest("td"))
-             console.log(tr.closest("tbody").children().last().prev().children()[colidx]);
-             console.log(tr.closest("tbody").children().length, colidx)
-             $(tr.closest("tbody").children().last().prev().children()[colidx]).focus();
-             //params.json.__element__.closest("tr").prev().find("")
-             */
         } else {
             target.attr("readonly", true);
             return;
@@ -251,7 +299,17 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
 
 WindowContainer.afterEdit = function afterEdit(event) {
     var self = this;
-    self.window.afterEdit(event.currentTarget.name, event.currentTarget.value)
+    var value = event.currentTarget.value;
+    if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
+        var ftype = self.window.getRecord().fields(event.currentTarget.name).type;
+        if (ftype == 'boolean') {
+            value = event.currentTarget.checked;
+        } else {
+            value = event.currentTarget.checked ? 1 : 0;
+        }
+    }
+    console.log("afteredit", self, value)
+    self.window.afterEdit(event.currentTarget.name, value)
 }
 
 WindowContainer.afterEditRow = function afterEditRow(event) {
@@ -294,6 +352,14 @@ WindowContainer.update = function update(event) {
                     })
 
                 }
+            } else if (event.action == 'detail cleared') {
+                var detail = event.data.detail;
+                if (detail.name in this.matrix_json_map) {
+                    _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
+                        var tbody = matrixjson.__element__.find("tbody");
+                        tbody.find("tr").not('[rowNr=null]').remove();
+                    })
+                }
             }
             break;
         case "title":
@@ -306,14 +372,31 @@ WindowContainer.update = function update(event) {
 
 WindowContainer.setEditorValue = function setEditorValue(field) {
     var value = field.getValue();
-    this.__element__.find('.editor.oomaster[name=' + field.name + ']').val(value)
+    var elements = this.__element__.find('.editor.oomaster[name=' + field.name + ']')
+    for (var i=0;i<elements.length;i++) {
+        var element =elements[i];
+        var e = $(element);
+        if (element.nodeName == 'SELECT') {
+            e.val(value)
+            e.material_select();
+        } else if (element.nodeName == 'INPUT' && e.attr('type') == 'radio') {
+            element.checked = (value == e.val());
+        } else if (element.nodeName == 'INPUT' && e.attr('type') == 'checkbox') {
+            element.checked = (value != null && value != '' && value != 0 && value != false);
+        }
+        else {
+            e.val(value)
+        }
+    }
 }
 
 WindowContainer.setRowEditorValue = function setRowEditorValue(detail, rowNr, rowfield) {
     var value = rowfield.getValue();
-    var e = this.__element__.find('table[name='+detail.name+'] tr[rownr='+rowNr+'] .editor.oodetail[name=' + rowfield.name + ']');
-    console.log(e, e.val())
-    e.val(value)
+    var elements = this.__element__.find('table[name='+detail.name+'] tr[rownr='+rowNr+'] .editor.oodetail[name=' + rowfield.name + ']');
+    elements.val(value)
+    for (var i=0;i<elements.length;i++) {
+        if (elements[i].nodeName == 'SELECT') $(elements[i]).material_select();
+    }
 }
 
 WindowContainer.setEditorReadOnly = function setEditorReadOnly(field, readonly) {
@@ -381,6 +464,7 @@ WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tb
         }
         next_tr.before(tr)
     }
+    tr.find("select").material_select();
     return tr;
 }
 
@@ -419,6 +503,7 @@ WindowContainer.bindRecordToWindow = function bindRecordToWindow(record) {
     self.bindRecordToComponent(record, self.windowjson)
     self.setWindowTitle(this.window.getTitle())
     Materialize.updateTextFields();
+    self.__element__.find("select").material_select()
 }
 
 window.WindowManager = WindowContainer; //para hacer global la variable WindowManager

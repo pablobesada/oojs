@@ -81,7 +81,7 @@ DetailField.insert = function insert(obj, pos) {
 DetailField.clear = function clear() {
     if (this.length != 0) {
         this.length = 0;
-        if (this.listener) this.listener.fieldModified(this);
+        if (this.listener) this.listener.detailCleared(this);
     }
 }
 
@@ -117,6 +117,10 @@ FieldsListener.fieldModified = function () {
 
 FieldsListener.rowInserted = function (detail, row, position) {
     if (this.receiver != null) this.receiver.rowInserted(detail, row, position)
+}
+
+FieldsListener.detailCleared = function (detail, row, position) {
+    if (this.receiver != null) this.receiver.detailCleared(detail)
 }
 
 var RecordDescription = {
@@ -239,6 +243,14 @@ Embedded_Record.rowInserted = function rowInserted(detail, row, position) { //it
         this.__listeners__[i].rowInserted(this, detail, row , position);
     }
 }
+
+Embedded_Record.detailCleared = function detailCleared(detail) {  //{p1: detail}
+    this.setModifiedFlag(true);
+    for (var i=0;i<this.__listeners__.length;i++) {
+        this.__listeners__[i].detailCleared(this, detail);
+    }
+}
+
 
 Embedded_Record.addListener = function (listener) {
     this.__listeners__.push(listener);

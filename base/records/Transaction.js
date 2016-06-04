@@ -5,6 +5,7 @@ var Description = {
     inherits: 'Numerable',
     fields: {
         User: {type: "string", length: "10"},
+        Status: {type: "integer"},
     }
 }
 
