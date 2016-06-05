@@ -152,7 +152,9 @@ orm.generate_delete_detail_sql = function generate_update_sql(record, detailname
 
 function fill_record_with_query_result(record, row, fields) {
     for (var i = 0; i < fields.length; i++) {
-        var fn = fields[i].name;
+        var field = fields[i];
+        var fn = field.name;
+        //console.log(fn, row[fn].constructor)
         record[fn] = row[fn];
     }
 }

@@ -23,7 +23,6 @@ SalesOrder.init = function init() {
 SalesOrder.check = function check() {
     return SalesOrder.__super__.check.call(this)
         .then(function () {
-
             return "pepe"
         })
         .then(function () {

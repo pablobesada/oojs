@@ -14,8 +14,6 @@ WindowContainer.init = function (wnd) {
     this.matrix_json_map = {}
     this.virtual_rows = {}
     this.save = this.save.bind(this)
-    //this.afterEdit = this.afterEdit.bind(this)
-    //this.beforeEdit = this.beforeEdit.bind(this)
     return this;
 }
 
@@ -160,8 +158,8 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
                 break;
             case 'date':
                 component.append('<label for="123">' + (json.label ? json.label : json.field) + '</label>');
-                editors.focus(self.beforeEdit.bind(self));
-                editors.change(self.afterEdit.bind(self));
+                //editors.focus(self.beforeEdit.bind(self));
+                editors.change(self.beforeEdit.bind(self));
                 break;
             default:
                 component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
@@ -294,8 +292,8 @@ WindowContainer.radiobutton = function radiobutton(json, cls, field) {
 
 WindowContainer.beforeEdit = function beforeEdit(event) {
     var self = this;
-    console.log("beforeedit", self)
     var target = $(event.currentTarget);
+    if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
     var readonly = !Boolean(self.window.beforeEdit(event.currentTarget.name))
     if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'radio') {
         if (readonly) {
@@ -312,6 +310,20 @@ WindowContainer.beforeEdit = function beforeEdit(event) {
         if (readonly) {
             target.val(self.window.getRecord()[event.currentTarget.name]);
             target.material_select();
+        } else {
+            self.afterEdit(event)
+        }
+    } else if (event.currentTarget.nodeName == 'INPUT' && target.attr('datepicker') == 'true') {
+        if (readonly) {
+            target.pickadate('picker').close();
+            var d = null;
+            var value = self.window.getRecord()[event.currentTarget.name];
+            if (value != null && value != '') {
+                d = moment(value, "YYYY-MM-DD").toDate()
+            }
+            event.currentTarget.__block_event__ = true;
+            target.pickadate('picker').set('select', d)
+            event.currentTarget.__block_event__ = false;
         } else {
             self.afterEdit(event)
         }
@@ -374,7 +386,6 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
         }
     } else if (event.currentTarget.nodeName == 'SELECT') {
         if (readonly) {
-            console.log(self.window.getRecord()[this.detailname][rownr][this.rowfield.name])
             target.val(self.window.getRecord()[this.detailname][rownr][this.rowfield.name]);
             target.material_select();
         } else {
@@ -398,11 +409,6 @@ WindowContainer.afterEdit = function afterEdit(event) {
         }
     } else if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('datepicker') == 'true') {
         value = $(event.currentTarget).pickadate('picker').get('select', 'yyyy-mm-dd');
-        /*value = '';
-        if (d != null) {
-            value = moment(d.obj).format("YYYY-MM-DD");
-        }*/
-
     }
     //console.log("afteredit", self, value)
     self.window.afterEdit(event.currentTarget.name, value)
@@ -493,7 +499,9 @@ WindowContainer.setEditorValue = function setEditorValue(field) {
             if (value != null && value != '') {
                 d = moment(value, "YYYY-MM-DD").toDate()
             }
+            element.__block_event__ = true;
             e.pickadate('picker').set('select', d)
+            element.__block_event__ = false;
         }
         else {
             e.val(value)
