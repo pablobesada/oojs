@@ -6,6 +6,8 @@ var Description = {
     fields: {
         User: {type: "string", length: "10"},
         Status: {type: "integer"},
+        TransDate: {type: "date"},
+        TransTime: {type: "time"},
     }
 }
 

@@ -39,6 +39,17 @@ WindowContainer.displayWindow = function displayWindow(windowElement) {
     windowElement.attr('id', this.tab_id);
     $('#workspace').append(windowElement);
     $('ul.tabs').tabs();
+    $('.datepicker').pickadate({
+        closeOnSelect: true,
+        selectMonths: true, // Creates a dropdown to control month
+        selectYears: 15, // Creates a dropdown of 15 years to control year
+        onSet: function( arg ){
+            if ( 'select' in arg ){ //prevent closing on selecting month/year
+                this.close();
+            }
+        }
+        //formatSubmit: 'yyyy-mm-dd'
+    })
     if (this.window.getRecord() != null) this.bindRecordToWindow(this.window.getRecord());
     this.window.addListener(this);
 }
@@ -118,6 +129,9 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
             case 'boolean':
                 editor = 'checkbox';
                 break;
+            case 'date':
+                editor = 'date';
+                break;
             case 'detail':
                 editor = 'matrix';
                 grid_cols = 12;
@@ -133,19 +147,30 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
         switch (editor) {
             case 'checkbox':
                 editors = editorElement.find("input");
-                console.log(editors)
+                editors.click(self.beforeEdit.bind(self));  //en el checkbox, el beforeEdit llama al afterEdit (esto es porque no siempre recibe eventos de focus -a veces se llama una sola vez y luego nunca mas-
                 break;
             case 'radiobutton':
                 editors = editorElement.find("input");
+                editors.click(self.beforeEdit.bind(self));
+                editors.change(self.afterEdit.bind(self));
+                break;
+            case 'combobox':
+                component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
+                editors.change(self.beforeEdit.bind(self)); //en el combobox, el beforeEdit llama al afterEdit (esto es porque no recibe eventos ni de click ni de focus
+                break;
+            case 'date':
+                component.append('<label for="123">' + (json.label ? json.label : json.field) + '</label>');
+                editors.focus(self.beforeEdit.bind(self));
+                editors.change(self.afterEdit.bind(self));
                 break;
             default:
                 component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
+                editors.focus(self.beforeEdit.bind(self));
+                editors.change(self.afterEdit.bind(self));
                 break;
         }
-        editors.focus(self.beforeEdit.bind(self));
-        editors.change(self.afterEdit.bind(self));
     }
-    json.__element__ = editorElement;
+    json.__element__ = editors;
     return component;
 }
 
@@ -161,14 +186,29 @@ WindowContainer.createMatrixComponent = function createMatrixComponent(json, cls
                 break;
             case 'integer':
                 editor = 'integer';
+                break
+            case 'boolean':
+                editor = 'checkbox';
                 break;
         }
     }
     var editorElement = self[editor](json, cls, rowfield)
+    var editors = editorElement;
     var bind_params = {self: self, json: json, detailname: detailname, rowfield: rowfield};
-    editorElement.focus(self.beforeEditRow.bind(bind_params));
-    editorElement.change(self.afterEditRow.bind(bind_params));
-    json.__element__ = editorElement;
+    switch (editor) {
+        case 'checkbox':
+            editors = editorElement.find("input");
+            editors.click(self.beforeEditRow.bind(bind_params));
+            break;
+        case 'combobox':
+            editors.change(self.beforeEditRow.bind(bind_params));
+            break;
+        default:
+            editors.focus(self.beforeEditRow.bind(bind_params));
+            editors.change(self.afterEditRow.bind(bind_params));
+            break;
+    }
+    json.__element__ = editors;
     return editorElement;
 }
 
@@ -195,15 +235,27 @@ WindowContainer.integer = function integer(json, cls, field) {
     return res;
 }
 
+WindowContainer.date = function date(json, cls, field) {
+    var self = this;
+    var value = field != null ? field.getValue() : '';
+    if (value == null) value = '';
+    var html = '<input value="' + value + '" type="date" name="' + json.field + '" class="editor datepicker ' + cls + ' validate" datepicker="true" id="123">';
+    var res = $(html);
+    return res;
+}
 
 WindowContainer.checkbox = function checkbox(json, cls, field) {
     var self = this;
     var value = field != null ? field.getValue() : '';
     if (value == null) value = '';
-    var checked = value == ''? '': 'checked'
+    var checked = value == ''? '': 'checked ="checked"'
     var element_id = "CHECKBOX_" + WindowContainer.element_ids++;
-    var html = '<p><input checked="'+checked+'" type="checkbox" name="' + json.field + '" class="editor ' + cls + ' validate" id="'+element_id+'">'
-    html += '<label for="'+element_id+'">' + (json.label ? json.label : json.field) + '</label></p>';
+    var html = '<p><input '+checked+' type="checkbox" name="' + json.field + '" class="editor ' + cls + ' validate" id="'+element_id+'">'
+    var label ='';
+    if (field == null) { //esto significa que me llamaron desde el header y no desde un matrix
+        label = (json.label ? json.label : json.field)
+    }
+    html += '<label for="'+element_id+'">' + label + '</label></p>';
     var res = $(html);
     return res;
 }
@@ -213,9 +265,11 @@ WindowContainer.combobox = function combobox(json, cls, field) {
     var value = field != null ? field.getValue() : '';
     if (value == null) value = '';
     var html = '<select value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
+    var selected = (value == '' || value == null)? 'SELECTED' : '';
+    html += '<option value="" '+selected+'></option>'
     for (var i=0;i<json.options.length;i++) {
         var option = json.options[i];
-        var selected = (value == option.value)? 'SELECTED' : '';
+        var selected = (value == (''+option.value))? 'SELECTED' : '';  // (''+option.value) es porque sino '' == 0 -> TRUE
         html += '<option value="'+option.value+'" '+selected+'>'+option.label+'</option>'
     }
     html += '</select>'
@@ -227,7 +281,6 @@ WindowContainer.radiobutton = function radiobutton(json, cls, field) {
     var self = this;
     var value = field != null ? field.getValue() : '';
     if (value == null) value = '';
-    console.log(json)
     var html = '';
     for (var i=0;i<json.options.length;i++) {
         var option = json.options[i];
@@ -242,8 +295,29 @@ WindowContainer.radiobutton = function radiobutton(json, cls, field) {
 WindowContainer.beforeEdit = function beforeEdit(event) {
     var self = this;
     console.log("beforeedit", self)
+    var target = $(event.currentTarget);
     var readonly = !Boolean(self.window.beforeEdit(event.currentTarget.name))
-    $(event.currentTarget).attr("readonly", readonly);
+    if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'radio') {
+        if (readonly) {
+            target.parent().parent().find("input[value=" + self.window.getRecord()[event.currentTarget.name] + "]")[0].checked = true;
+        }
+    } else if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
+        if (readonly) {
+            target[0].checked = Boolean(self.window.getRecord()[event.currentTarget.name]);
+        } else {
+            self.afterEdit(event);
+        }
+    }
+    else if (event.currentTarget.nodeName == 'SELECT') {
+        if (readonly) {
+            target.val(self.window.getRecord()[event.currentTarget.name]);
+            target.material_select();
+        } else {
+            self.afterEdit(event)
+        }
+    } else {
+        target.attr("readonly", readonly);
+    }
 }
 
 WindowContainer.beforeEditRow = function beforeEditRow(event) {
@@ -252,6 +326,7 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
     var target = $(event.currentTarget);
     target.css('border-bottom', 'none');
     target.css('box-shadow', 'none');
+    var readonly = null;
     var rownr = target.closest("tr").attr("rownr");
     if (rownr == 'null') { //virtual_row
         //si la fila anterior esta toda vacia, entonces no agrego otra nueva fila
@@ -263,7 +338,6 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
             var addedRow = self.virtual_rows[params.detailname];
             var tbody = target.closest("tbody")
             addedRow.__window_container_avoid_insert__ = tbody.attr('matrix_idx');
-            //self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
             self.window.getRecord()[params.detailname].push(self.virtual_rows[params.detailname]);
             delete addedRow.__window_container_avoid_insert__;
             tr.attr('rownr', addedRow.rowNr); //esto va antes del push para que durante el push toda este tr del table se complete con los valores que pudiera tener o que se seteen en el defaults del row (todo eso se corre adentro del push)
@@ -282,22 +356,37 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
                 }
             })
             self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
-            //console.log($(self.matrix_json_map[params.detailname][0].__element__))
-            console.log(self.matrix_json_map)
             var json = _(self.matrix_json_map[params.detailname]).find(function (json) {
                 return json.__element__.find("tbody").attr("matrix_idx") == tbody.attr("matrix_idx")
             })
             self.insertMatrixRow(self.window.getRecord(), json, self.virtual_rows[params.detailname], tbody)
         } else {
-            target.attr("readonly", true);
-            return;
+            readonly = true;
         }
     }
-    var readonly = !Boolean(self.window.beforeEditRow(this.detailname, this.rowfield.name, rownr))
-    target.attr("readonly", readonly);
+    if (readonly == null) readonly = !Boolean(self.window.beforeEditRow(this.detailname, this.rowfield.name, rownr))
+    if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
+        if (readonly) {
+            console.log(target[0], Boolean(self.window.getRecord()[this.detailname][rownr][this.rowfield.name]))
+            target[0].checked = Boolean(self.window.getRecord()[this.detailname][rownr][this.rowfield.name]);
+        } else {
+            self.afterEditRow.call(params, event);
+        }
+    } else if (event.currentTarget.nodeName == 'SELECT') {
+        if (readonly) {
+            console.log(self.window.getRecord()[this.detailname][rownr][this.rowfield.name])
+            target.val(self.window.getRecord()[this.detailname][rownr][this.rowfield.name]);
+            target.material_select();
+        } else {
+            self.afterEditRow.call(params, event);
+        }
+    } else {
+        target.attr("readonly", readonly);
+    }
 }
 
 WindowContainer.afterEdit = function afterEdit(event) {
+    console.log("afteredit")
     var self = this;
     var value = event.currentTarget.value;
     if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
@@ -307,19 +396,35 @@ WindowContainer.afterEdit = function afterEdit(event) {
         } else {
             value = event.currentTarget.checked ? 1 : 0;
         }
+    } else if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('datepicker') == 'true') {
+        value = $(event.currentTarget).pickadate('picker').get('select', 'yyyy-mm-dd');
+        /*value = '';
+        if (d != null) {
+            value = moment(d.obj).format("YYYY-MM-DD");
+        }*/
+
     }
-    console.log("afteredit", self, value)
+    //console.log("afteredit", self, value)
     self.window.afterEdit(event.currentTarget.name, value)
 }
 
 WindowContainer.afterEditRow = function afterEditRow(event) {
-    var self = this.self;
+    var params = this;
+    var self = params.self;
     var target = $(event.currentTarget)
     target.css('border-bottom', 'none');
     target.css('box-shadow', 'none');
     var rownr = target.closest("tr").attr("rownr");
     var value = target.val();
-    self.window.afterEditRow(this.detailname, this.rowfield.name, rownr, value);
+    if (event.currentTarget.nodeName == 'INPUT' && target.attr('type') == 'checkbox') {
+        var ftype = self.window.getRecord().details(params.detailname).getRowClass().__description__.fields[params.rowfield.name].type;
+        if (ftype == 'boolean') {
+            value = event.currentTarget.checked;
+        } else {
+            value = event.currentTarget.checked ? 1 : 0;
+        }
+    }
+    self.window.afterEditRow(params.detailname, params.rowfield.name, rownr, value);
 }
 
 
@@ -330,14 +435,14 @@ WindowContainer.update = function update(event) {
             if (event.action == 'replaced') self.bindRecordToWindow(event.data);
             break;
         case "field":
-            console.log(event)
+            //console.log(event)
             if (event.action == 'modified') {
                 var field = event.data.field
                 if (field.type != "detail") {
                     self.setEditorValue(field);
                     Materialize.updateTextFields();
                 } else {
-                    console.log("row: " + event.data.rowfield.name)
+                    //console.log("row: " + event.data.rowfield.name)
                     var rowNr = event.data.row.rowNr;
                     if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
                     self.setRowEditorValue(event.data.field, rowNr, event.data.rowfield);
@@ -383,6 +488,12 @@ WindowContainer.setEditorValue = function setEditorValue(field) {
             element.checked = (value == e.val());
         } else if (element.nodeName == 'INPUT' && e.attr('type') == 'checkbox') {
             element.checked = (value != null && value != '' && value != 0 && value != false);
+        } else if (element.nodeName == 'INPUT' && e.attr('datepicker') == 'true') {
+            var d = null;
+            if (value != null && value != '') {
+                d = moment(value, "YYYY-MM-DD").toDate()
+            }
+            e.pickadate('picker').set('select', d)
         }
         else {
             e.val(value)
@@ -393,9 +504,18 @@ WindowContainer.setEditorValue = function setEditorValue(field) {
 WindowContainer.setRowEditorValue = function setRowEditorValue(detail, rowNr, rowfield) {
     var value = rowfield.getValue();
     var elements = this.__element__.find('table[name='+detail.name+'] tr[rownr='+rowNr+'] .editor.oodetail[name=' + rowfield.name + ']');
-    elements.val(value)
     for (var i=0;i<elements.length;i++) {
-        if (elements[i].nodeName == 'SELECT') $(elements[i]).material_select();
+        var element =elements[i];
+        var e = $(element);
+        if (elements[i].nodeName == 'SELECT') {
+            e.val(value)
+            $(elements[i]).material_select();
+        } else if (element.nodeName == 'INPUT' && e.attr('type') == 'checkbox') {
+            element.checked = (value != null && value != '' && value != 0 && value != false);
+        } else {
+            e.val(value)
+        }
+
     }
 }
 
@@ -426,7 +546,6 @@ WindowContainer.createEmptyMatrix = function createEmptyMatrix(json) {
 }
 
 WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tbodyElement, position) {
-    console.log(tbodyElement.attr("matrix_idx"))
     if (row.__window_container_avoid_insert__ == tbodyElement.attr("matrix_idx")) {
         //self.insertMatrixRow(record, json, self.virtual_rows[json.field], tbody)
         return;

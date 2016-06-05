@@ -7,6 +7,7 @@ var Description = {
     fields: {
         ArtCode:  {type: "string", length: 30},
         Name:  {type: "string", length: 30},
+        OriginType: {type: "boolean"},
     }
 }
 

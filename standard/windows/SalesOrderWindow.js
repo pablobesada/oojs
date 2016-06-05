@@ -10,6 +10,9 @@ var Description = {
         {field: 'syncVersion', label: 'sync'},
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
+        {field: 'TransDate'},
+        {field: 'TransDate', editor: 'string'},
+        {field: 'TransDate', editor: 'string'},
         {field: 'CustName'},
         {field: 'PrintFormat'},
         {field: 'PrintFormat', editor: 'radiobutton', options: [
@@ -42,7 +45,10 @@ var Description = {
                     field: 'Items', columns: [
                     {field: 'rowNr'},
                     {field: 'masterId'},
+                    {field: 'OriginType', editor: "string"},
+                    {field: 'OriginType', editor: "checkbox"},
                     {field: 'ArtCode', label: 'Codigo'},
+                    {field: 'Name', label: 'Name'},
                     {field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
                         {label: 'Normal', value: 0},
                         {label: 'Sum per Item', value: 1},
@@ -73,6 +79,11 @@ var SalesOrderWindow = cm.createClass(Description, __filename)
 SalesOrderWindow.init = function init() {
     SalesOrderWindow.super("init", this);
     return this
+}
+
+SalesOrderWindow["changed PrintFormat"] = function () {
+    SalesOrderWindow.super("changed PrintFormat", this);
+    console.log("SO: changed PrintFormat: " + this.getRecord().PrintFormat)
 }
 
 SalesOrderWindow["changed SerNr"] = function () {

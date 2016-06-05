@@ -34,4 +34,9 @@ SalesOrder.check = function check() {
     return Promise.resolve();
 }
 
+SalesOrder.fieldIsEditable = function fieldIsEditable(fieldname, rowfieldname, rownr) {
+    //return false;
+    if (rowfieldname == 'rowNr') return false;
+    return true;
+}
 module.exports = SalesOrder
