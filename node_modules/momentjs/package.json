@@ -1,0 +1,53 @@
+{
+  "name": "momentjs",
+  "version": "1.1.7",
+  "description": "javascript 日期处理",
+  "main": "build/moment.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vvpvvp/momentjs.git"
+  },
+  "keywords": [
+    "moment",
+    "date"
+  ],
+  "author": {
+    "name": "alias"
+  },
+  "license": "The MIT License",
+  "_npmUser": {
+    "name": "vvpvvp",
+    "email": "a8918929@sina.com.cn"
+  },
+  "dependencies": {},
+  "bugs": {
+    "url": "https://github.com/vvpvvp/momentjs/issues"
+  },
+  "scripts": {
+    "build": "babel --presets=es2015 ./moment.js -d build",
+    "min": "babel build/moment.js --minified --no-babelrc -o build/moment.min.js"
+  },
+  "homepage": "https://github.com/vvpvvp/momentjs#readme",
+  "gitHead": "79f9fc223b1be7cfaf9604599e4c4d4a58aaa82c",
+  "_id": "momentjs@1.1.7",
+  "_shasum": "54baa05f1ebba90908eee4d0fe10c9ec283e3ff0",
+  "_from": "momentjs@latest",
+  "_npmVersion": "3.8.5",
+  "_nodeVersion": "4.2.3",
+  "dist": {
+    "shasum": "54baa05f1ebba90908eee4d0fe10c9ec283e3ff0",
+    "tarball": "https://registry.npmjs.org/momentjs/-/momentjs-1.1.7.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "vvpvvp",
+      "email": "a8918929@sina.com.cn"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/momentjs-1.1.7.tgz_1463366382891_0.2013670199085027"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/momentjs/-/momentjs-1.1.7.tgz"
+}
