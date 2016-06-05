@@ -69,6 +69,8 @@ Connection.beginTransaction = function beginTransaction () {
 Connection.query = function query (sql, values) {
     var self = this;
     return new Promise(function (resolve, reject) {
+        //console.log(sql)
+        //console.log(values)
         self.__conn__.query(sql, values, function (err, result, fields) {
             if (err) {
                 reject(err);

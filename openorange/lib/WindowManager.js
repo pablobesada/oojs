@@ -4,6 +4,18 @@ var _ = require("underscore");
 var WindowContainer = Object.create(null)
 WindowContainer.windows = []
 WindowContainer.element_ids = 1;
+WindowContainer.datePickerOptions = {
+    closeOnSelect: true,
+    selectMonths: true, // Creates a dropdown to control month
+    selectYears: 15, // Creates a dropdown of 15 years to control year
+    formatSubmit: "yyyy-mm-dd",
+    format: "dd-mm-yyyy",
+    onSet: function (arg) {
+        if ('select' in arg) { //prevent closing on selecting month/year
+            this.close();
+        }
+    }
+};
 WindowContainer.init = function (wnd) {
     this.window = wnd;
     this.windowjson = JSON.parse(JSON.stringify(this.window.getDescription().form))  //deep clone of the object because I need to add some metadata to it
@@ -26,6 +38,20 @@ WindowContainer.render = function render() {
     this.tab_id = "tab_" + WindowContainer.windows.length + 1;
     WindowContainer.windows.push({window: this.window, element: w, id: this.tab_id})
     w.append(self.createComponent(this.windowjson))
+    /*
+    var html = '';
+    html += '<div id="modal4" class="modal modal-fixed-footer green white-text">';
+    html += '  <div class="modal-content">'
+    html += '    <p>Lorem ipsum dolor sit amet, consectetur adipiscing el</p>';
+    html += '  </div>';
+    html += '  <div class="modal-footer green lighten-4">'
+    html += '    <a href="#" class="waves-effect waves-red btn-flat modal-action modal-close">Disagree</a>'
+    html += '    <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close">Agree</a>'
+    html += '  </div>'
+    html += '</div>'
+    var pastewindow = $(html)
+    w.append(pastewindow);
+    */
     //console.log(this.windowjson)
     this.__element__ = w;
     this.displayWindow(w)
@@ -37,17 +63,9 @@ WindowContainer.displayWindow = function displayWindow(windowElement) {
     windowElement.attr('id', this.tab_id);
     $('#workspace').append(windowElement);
     $('ul.tabs').tabs();
-    $('.datepicker').pickadate({
-        closeOnSelect: true,
-        selectMonths: true, // Creates a dropdown to control month
-        selectYears: 15, // Creates a dropdown of 15 years to control year
-        onSet: function( arg ){
-            if ( 'select' in arg ){ //prevent closing on selecting month/year
-                this.close();
-            }
-        }
-        //formatSubmit: 'yyyy-mm-dd'
-    })
+    //$('.modal-trigger').leanModal();
+    windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
+    //$('input.editor[timeeditor=true]').mask('00:00:00');
     if (this.window.getRecord() != null) this.bindRecordToWindow(this.window.getRecord());
     this.window.addListener(this);
 }
@@ -111,12 +129,12 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
     var editor;
     var grid_cols = 4;
     var headerInput = true;
+    var rclass = this.window.getRecordClass()
+    var field = rclass.__description__.fields[json.field]
+    if (!field) throw new Error("Field " + json.field + " not found in record")
     if ('editor' in json) {
         editor = json.editor;
     } else {
-        var rclass = this.window.getRecordClass()
-        var field = rclass.__description__.fields[json.field]
-        if (!field) throw new Error("Field " + json.field + " not found in record")
         switch (field.type) {
             case 'string':
                 editor = 'string';
@@ -130,6 +148,9 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
             case 'date':
                 editor = 'date';
                 break;
+            case 'time':
+                editor = 'time';
+                break;
             case 'detail':
                 editor = 'matrix';
                 grid_cols = 12;
@@ -138,6 +159,13 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
         }
     }
     var component = $('<div class="input-field col s' + grid_cols + '"></div>');
+    if (field.linkto) {
+        var pastewindow_icon = $('<i class="mdi-action-account-circle prefix"></i>')
+        var params = {self: self, field: field, json: json};
+        pastewindow_icon.click(self.openPasteWindow.bind(params))
+        component.append(pastewindow_icon);
+        //component.append('<a class="modal-trigger waves-effect waves-light btn" href="#modal4">Modal</a>');
+    }
     var editorElement = self[editor](json, "oomaster")
     var editors = editorElement;
     component.append(editorElement);
@@ -153,16 +181,16 @@ WindowContainer.createFieldComponent = function createFieldComponent(json) {
                 editors.change(self.afterEdit.bind(self));
                 break;
             case 'combobox':
-                component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
+                component.append('<label>' + (json.label ? json.label : json.field) + '</label>');
                 editors.change(self.beforeEdit.bind(self)); //en el combobox, el beforeEdit llama al afterEdit (esto es porque no recibe eventos ni de click ni de focus
                 break;
             case 'date':
-                component.append('<label for="123">' + (json.label ? json.label : json.field) + '</label>');
+                component.append('<label>' + (json.label ? json.label : json.field) + '</label>');
                 //editors.focus(self.beforeEdit.bind(self));
                 editors.change(self.beforeEdit.bind(self));
                 break;
             default:
-                component.append('<label for="' + json.field + '">' + (json.label ? json.label : json.field) + '</label>');
+                component.append('<label>' + (json.label ? json.label : json.field) + '</label>');
                 editors.focus(self.beforeEdit.bind(self));
                 editors.change(self.afterEdit.bind(self));
                 break;
@@ -185,6 +213,9 @@ WindowContainer.createMatrixComponent = function createMatrixComponent(json, cls
             case 'integer':
                 editor = 'integer';
                 break
+            case 'date':
+                editor = 'date'
+                break;
             case 'boolean':
                 editor = 'checkbox';
                 break;
@@ -199,6 +230,9 @@ WindowContainer.createMatrixComponent = function createMatrixComponent(json, cls
             editors.click(self.beforeEditRow.bind(bind_params));
             break;
         case 'combobox':
+            editors.change(self.beforeEditRow.bind(bind_params));
+            break;
+        case 'date':
             editors.change(self.beforeEditRow.bind(bind_params));
             break;
         default:
@@ -218,9 +252,18 @@ WindowContainer.save = function save() {
 WindowContainer.string = function string(json, cls, field) {
     var self = this;
     var value = field != null ? field.getValue() : '';
+    if (field != null && field.type == 'date' && value != null) value = value.format("YYYY-MM-DD")
     if (value == null) value = '';
     var html = '<input value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
     var res = $(html);
+    return res;
+}
+
+WindowContainer.time = function time(json, cls, field) {
+    var res = this.string(json, cls, field)
+    res.attr('timeeditor', true);
+    //res.attr('data-mask', '00:00:00')
+    res.mask('09:00:00')
     return res;
 }
 
@@ -235,9 +278,10 @@ WindowContainer.integer = function integer(json, cls, field) {
 
 WindowContainer.date = function date(json, cls, field) {
     var self = this;
-    var value = field != null ? field.getValue() : '';
+    var value = field != null ? field.getSQLValue() : '';
     if (value == null) value = '';
-    var html = '<input value="' + value + '" type="date" name="' + json.field + '" class="editor datepicker ' + cls + ' validate" datepicker="true" id="123">';
+    console.log(value)
+    var html = '<input data-value="' + value + '" type="date" name="' + json.field + '" class="editor datepicker ' + cls + ' validate" datepicker="true">';
     var res = $(html);
     return res;
 }
@@ -292,6 +336,7 @@ WindowContainer.radiobutton = function radiobutton(json, cls, field) {
 
 WindowContainer.beforeEdit = function beforeEdit(event) {
     var self = this;
+    if (self.window.getRecord() == null) return;
     var target = $(event.currentTarget);
     if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
     var readonly = !Boolean(self.window.beforeEdit(event.currentTarget.name))
@@ -333,6 +378,7 @@ WindowContainer.beforeEdit = function beforeEdit(event) {
 }
 
 WindowContainer.beforeEditRow = function beforeEditRow(event) {
+    if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
     var params = this;
     var self = params.self;
     var target = $(event.currentTarget);
@@ -379,7 +425,6 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
     if (readonly == null) readonly = !Boolean(self.window.beforeEditRow(this.detailname, this.rowfield.name, rownr))
     if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
         if (readonly) {
-            console.log(target[0], Boolean(self.window.getRecord()[this.detailname][rownr][this.rowfield.name]))
             target[0].checked = Boolean(self.window.getRecord()[this.detailname][rownr][this.rowfield.name]);
         } else {
             self.afterEditRow.call(params, event);
@@ -391,14 +436,28 @@ WindowContainer.beforeEditRow = function beforeEditRow(event) {
         } else {
             self.afterEditRow.call(params, event);
         }
+    } if (event.currentTarget.nodeName == 'INPUT' && target.attr('datepicker') == 'true') {
+        if (readonly) {
+            target.pickadate('picker').close();
+            var d = null;
+            var value = self.window.getRecord()[this.detailname][rownr][this.rowfield.name];
+            if (value != null && value != '') {
+                d = moment(value, "YYYY-MM-DD").toDate()
+            }
+            event.currentTarget.__block_event__ = true;
+            target.pickadate('picker').set('select', d)
+            event.currentTarget.__block_event__ = false;
+        } else {
+            self.afterEditRow.call(params,event)
+        }
     } else {
         target.attr("readonly", readonly);
     }
 }
 
 WindowContainer.afterEdit = function afterEdit(event) {
-    console.log("afteredit")
     var self = this;
+    console.log("afteredit")
     var value = event.currentTarget.value;
     if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
         var ftype = self.window.getRecord().fields(event.currentTarget.name).type;
@@ -407,7 +466,7 @@ WindowContainer.afterEdit = function afterEdit(event) {
         } else {
             value = event.currentTarget.checked ? 1 : 0;
         }
-    } else if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('datepicker') == 'true') {
+    } else if (event.currentTarget. nodeName == 'INPUT' && $(event.currentTarget).attr('datepicker') == 'true') {
         value = $(event.currentTarget).pickadate('picker').get('select', 'yyyy-mm-dd');
     }
     //console.log("afteredit", self, value)
@@ -429,6 +488,8 @@ WindowContainer.afterEditRow = function afterEditRow(event) {
         } else {
             value = event.currentTarget.checked ? 1 : 0;
         }
+    } else if (event.currentTarget. nodeName == 'INPUT' && target.attr('datepicker') == 'true') {
+        value = target.pickadate('picker').get('select', 'yyyy-mm-dd');
     }
     self.window.afterEditRow(params.detailname, params.rowfield.name, rownr, value);
 }
@@ -502,9 +563,12 @@ WindowContainer.setEditorValue = function setEditorValue(field) {
             element.__block_event__ = true;
             e.pickadate('picker').set('select', d)
             element.__block_event__ = false;
-        }
-        else {
-            e.val(value)
+        } else {
+            if (field.type == 'date' && value != null) {
+                e.val(value.format("YYYY-MM-DD"))
+            } else {
+                e.val(value)
+            }
         }
     }
 }
@@ -520,8 +584,23 @@ WindowContainer.setRowEditorValue = function setRowEditorValue(detail, rowNr, ro
             $(elements[i]).material_select();
         } else if (element.nodeName == 'INPUT' && e.attr('type') == 'checkbox') {
             element.checked = (value != null && value != '' && value != 0 && value != false);
+        } else if (element.nodeName == 'INPUT' && e.attr('datepicker') == 'true') {
+            var d = null;
+            if (value != null && value != '') {
+                //d = moment(value, "YYYY-MM-DD").toDate()
+                d = value.toDate()
+            }
+            //console.log(rowfield)
+            //console.log("a", d,value.constructor)
+            element.__block_event__ = true;
+            e.pickadate('picker').set('select', d)
+            element.__block_event__ = false;
         } else {
-            e.val(value)
+            if (rowfield.type == 'date' && value != null) {
+                e.val(value.format("YYYY-MM-DD"))
+            } else {
+                e.val(value)
+            }
         }
 
     }
@@ -592,6 +671,7 @@ WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tb
         next_tr.before(tr)
     }
     tr.find("select").material_select();
+    tr.find("input[datepicker=true]").pickadate(WindowContainer.datePickerOptions);
     return tr;
 }
 
@@ -631,6 +711,26 @@ WindowContainer.bindRecordToWindow = function bindRecordToWindow(record) {
     self.setWindowTitle(this.window.getTitle())
     Materialize.updateTextFields();
     self.__element__.find("select").material_select()
+}
+
+
+WindowContainer.openPasteWindow = function openPasteWindow(event) {
+    var params = this;
+    var self = params.self
+    var html = '';
+    html += '<div id="modal4" class="modal modal-fixed-footer green white-text" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
+    html += '  <div class="modal-content">'
+    html += '    <p>Lorem ipsum dolor sit amet, consectetur adipiscing el</p>';
+    html += '  </div>';
+    html += '  <div class="modal-footer green lighten-4">'
+    html += '    <a href="#" class="waves-effect waves-red btn-flat modal-action modal-close">Disagree</a>'
+    html += '    <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close">Agree</a>'
+    html += '  </div>'
+    html += '</div>'
+    var pastewindow = $(html)
+    $(self.__element__).append(pastewindow);
+    $('#modal4').openModal();
+    console.log(params);
 }
 
 window.WindowManager = WindowContainer; //para hacer global la variable WindowManager

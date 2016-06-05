@@ -8,7 +8,7 @@ var window_def = {
         {type: 'input', field: 'CustCode'}
     ]
 }
-var n1 = 6669;
+var n1 = 333;
 var n2 = 444;
 var n = n1;
 var itcode = '123'

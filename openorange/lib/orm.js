@@ -97,7 +97,7 @@ orm.generate_insert_sql = function generate_insert_sql(record) {
         if (fn == 'syncVersion') {
             values.push(1);
         } else {
-            values.push(record[fn]);
+            values.push(record.fields(fn).getSQLValue());
         }
     }
     var sql = "INSERT INTO " + record.__description__.name + " (" + fnames.join(",") + ") VALUES (" + questions.join(",") + ")";
@@ -115,14 +115,14 @@ orm.generate_update_sql = function generate_update_sql(record) {
         if (fn == 'syncVersion') {
             values.push(record[fn] + 1);
         } else {
-            values.push(record[fn]);
+            values.push(record.fields(fn).getSQLValue());
         }
     }
     where.push("`internalId`=?");
-    values.push(record.oldFields("internalId").getValue());
+    values.push(record.oldFields("internalId").getSQLValue());
     if (record.hasField("syncVersion")) {
         where.push("`syncVersion`=?");
-        values.push(record.oldFields("syncVersion").getValue());
+        values.push(record.oldFields("syncVersion").getSQLValue());
     }
     var sql = "UPDATE " + record.__description__.name + " SET " + setfields.join(",") + " WHERE " + where.join(" AND ");
     return {sql: sql, values: values};

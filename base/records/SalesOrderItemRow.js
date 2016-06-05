@@ -8,6 +8,8 @@ var Description = {
         ArtCode:  {type: "string", length: 30},
         Name:  {type: "string", length: 30},
         OriginType: {type: "boolean"},
+        DeliveryDateRow: {type: "date"},
+        DeliveryTimeRow: {type: "time"},
     }
 }
 

@@ -10,6 +10,10 @@ var Description = {
         {field: 'syncVersion', label: 'sync'},
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
+        {field: 'TransTime'},
+        {field: 'TransTime', editor: 'string'},
+        {field: 'TransTime', editor: 'string'},
+
         {field: 'TransDate'},
         {field: 'TransDate', editor: 'string'},
         {field: 'TransDate', editor: 'string'},
@@ -45,6 +49,10 @@ var Description = {
                     field: 'Items', columns: [
                     {field: 'rowNr'},
                     {field: 'masterId'},
+                    {field: 'DeliveryTimeRow', editor: "string"},
+                    {field: 'DeliveryTimeRow', editor: "time"},
+                    {field: 'DeliveryDateRow', editor: "string"},
+                    {field: 'DeliveryDateRow', editor: "date"},
                     {field: 'OriginType', editor: "string"},
                     {field: 'OriginType', editor: "checkbox"},
                     {field: 'ArtCode', label: 'Codigo'},

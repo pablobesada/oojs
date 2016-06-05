@@ -4,7 +4,7 @@ var chance = new require("chance")()
 var _ = require("underscore")
 require.prototype.main = app.module
 var oo = require("./../openorange")
-console.log(oo.isClient)
+//console.log(oo.isClient)
 var cm = oo.classmanager
 var should = require('should');
 
@@ -33,21 +33,26 @@ function fillRecord(record){
 }
 
 describe("Client", function () {
-    it("control client decoration", function () {
+    it("control client decoration", function (done) {
         var SalesOrder = cm.getClass("SalesOrder");
         var so = SalesOrder.new()
         so.SerNr=333
-        var res = so.load();
-        return res;
+        so.load()
+            .then(function () {
+                console.log(so.TransDate)
+                so.TransDate = '2015-01-03'
+                return so.save()
+            })
+            .then(function () {done()})
     });
 });
 
-
+/*
 describe("Record", function () {
     before(function (done) {
         var SalesOrder = cm.getClass("SalesOrder");
         var so = SalesOrder.new()
-        so.SerNr = 333
+        so.SerNr = 6669
         so.load()
             .then(function () {
                 //console.log("is new: " + so.isNew())
@@ -113,3 +118,4 @@ describe("Record", function () {
             })
     });
 });
+*/

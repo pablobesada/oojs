@@ -15,6 +15,7 @@
     "express": "~4.13.1",
     "express-session": "^1.13.0",
     "jade": "~1.11.0",
+    "momentjs": "^1.1.7",
     "morgan": "~1.6.1",
     "mysql": "^2.10.2",
     "node-compass": "0.2.3",

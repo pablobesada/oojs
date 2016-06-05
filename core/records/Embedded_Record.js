@@ -1,8 +1,14 @@
 "use strict";
 var oo = global.__main__.require("./openorange")
 var _ = require("underscore")
+var moment = require("momentjs")
 
 var Field = Object.create(null);
+Field.create = function create(name, type, length, persistent, linkto) {
+    if (type == 'date') return Object.create(DateField).init(name, type, length, persistent, linkto);
+    return Object.create(Field).init(name, type, length, persistent, linkto);
+}
+
 Field.init = function(name, type, length, persistent, linkto) {
     this.name = name;
     this.type = type;
@@ -19,6 +25,11 @@ Field.getValue = function () {
     return this.value;
 }
 
+Field.getSQLValue = function () {
+    //console.log("en get value: " + this.value)
+    return this.value;
+}
+
 Field.setValue = function (v) {
     if (this.value != v) {
         var oldvalue = this.value;
@@ -26,8 +37,38 @@ Field.setValue = function (v) {
         if (this.listener) this.listener.fieldModified(this, oldvalue);
     }
 }
+
 Field.toString = function (v) {
     return this.value != null? this.value.toString(): null;
+}
+
+var DateField = Object.create(Field)
+DateField.init = function(name, type, length, persistent, linkto) {
+    return Field.init.call(this, name, type, length, persistent, linkto)
+}
+
+DateField.setValue = function (v) {
+    var vv;
+    if (v == null) {
+        vv = null;
+    } else if (v instanceof moment) {
+        vv = v
+    } else if (v instanceof Date) {
+        vv = moment(v)
+    } else if (typeof v == 'string') {
+        vv = moment(v, "YYYY-MM-DD")
+    } else {
+        vv = null
+    }
+    if (this.value != vv) {
+        var oldvalue = this.value;
+        this.value = vv;
+        if (this.listener) this.listener.fieldModified(this, oldvalue);
+    }
+}
+
+DateField.getSQLValue = function () {
+    return this.value == null? null : this.value.format("YYYY-MM-DD");
 }
 
 var DetailField = Object.create(Array.prototype);
@@ -37,9 +78,6 @@ DetailField.init = function(name, description, listener) {
     this.type = this.__description__.type
     this.__rowclass__ = null;
     this.__removed_rows__ = [];
-    //this.rows = Object.create(RowList).init();
-    //this.rows.parent = listener;
-    //this.rows.detailfield = this;
     this.listener = listener;
     return this;
 }
@@ -209,8 +247,8 @@ Embedded_Record.init = function init() {
     for (var fn in this.__description__.fields) {
         var fd = this.__description__.fields[fn]
         if (fd.type != 'detail') {
-            this.__oldfields__[fn] = Object.create(Field).init(fn, fd.type, fd.length, fd.persistent, fd.linkto);
-            this.__fields__[fn] = Object.create(Field).init(fn, fd.type, fd.length, fd.persistent, fd.linkto);
+            this.__oldfields__[fn] = Field.create(fn, fd.type, fd.length, fd.persistent, fd.linkto);
+            this.__fields__[fn] = Field.create(fn, fd.type, fd.length, fd.persistent, fd.linkto);
             this.__fields__[fn].listener = this.__fieldslistener__;
             props[fn] = {
                 enumerable: true,
@@ -381,8 +419,8 @@ Embedded_Record.toJSON = function toJSON() {
     var fieldnames = this.fieldNames();
     for (var i=0;i<fieldnames.length;i++) {
         var fn = fieldnames[i];
-        obj.fields[fn] = this[fn];
-        obj.oldFields[fn] = this.oldFields(fn).getValue();
+        obj.fields[fn] = this.fields(fn).getSQLValue();
+        obj.oldFields[fn] = this.oldFields(fn).getSQLValue();
     }
     var detailnames = this.detailNames();
     for (var i=0;i<detailnames.length;i++) {

@@ -15,6 +15,8 @@
     "polymer": "Polymer/polymer#^1.4.0",
     "paper-card": "PolymerElements/paper-card#^1.1.1",
     "Materialize": "materialize#^0.97.6",
-    "moment": "momentjs#^2.13.0"
+    "moment": "momentjs#^2.13.0",
+    "formatter.js": "formatter#^0.1.5",
+    "jquery-mask-plugin": "^1.14.0"
   }
 }
