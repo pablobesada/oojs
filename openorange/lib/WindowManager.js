@@ -280,7 +280,6 @@ WindowContainer.date = function date(json, cls, field) {
     var self = this;
     var value = field != null ? field.getSQLValue() : '';
     if (value == null) value = '';
-    console.log(value)
     var html = '<input data-value="' + value + '" type="date" name="' + json.field + '" class="editor datepicker ' + cls + ' validate" datepicker="true">';
     var res = $(html);
     return res;
@@ -378,6 +377,7 @@ WindowContainer.beforeEdit = function beforeEdit(event) {
 }
 
 WindowContainer.beforeEditRow = function beforeEditRow(event) {
+    console.log("en before edit row")
     if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
     var params = this;
     var self = params.self;
@@ -474,6 +474,7 @@ WindowContainer.afterEdit = function afterEdit(event) {
 }
 
 WindowContainer.afterEditRow = function afterEditRow(event) {
+    console.log("en after edit row")
     var params = this;
     var self = params.self;
     var target = $(event.currentTarget)
@@ -497,6 +498,7 @@ WindowContainer.afterEditRow = function afterEditRow(event) {
 
 WindowContainer.update = function update(event) {
     var self = this;
+    console.log(event)
     switch (event.type) {
         case "record":
             if (event.action == 'replaced') self.bindRecordToWindow(event.data);
@@ -520,7 +522,9 @@ WindowContainer.update = function update(event) {
                 if (detail.name in this.matrix_json_map) {
                     _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
                         var tbody = matrixjson.__element__.find("tbody");
+                        console.log("insert in " + tbody.attr("matrix_idx"), event.data.row.rowNr, tbody.children("tr").length)
                         self.insertMatrixRow(event.data.record, matrixjson, event.data.row, tbody);
+                        //console.log("insert in " + tbody.attr("matrix_idx"), event.data.row.rowNr, tbody.children("tr").length)
                     })
 
                 }
@@ -635,6 +639,7 @@ WindowContainer.createEmptyMatrix = function createEmptyMatrix(json) {
 WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tbodyElement, position) {
     if (row.__window_container_avoid_insert__ == tbodyElement.attr("matrix_idx")) {
         //self.insertMatrixRow(record, json, self.virtual_rows[json.field], tbody)
+        console.log("exiting")
         return;
     }
     var self = this;
@@ -656,6 +661,7 @@ WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tb
     var hasVirtualRow = (trs.length > 0 && trs.last().attr('rownr') == 'null');
     var rows_count = trs.length;
     if (hasVirtualRow) rows_count -= 1;
+    console.log(row.rowNr, rows_count, hasVirtualRow)
     if (row.rowNr >= rows_count || row.rowNr == null) { //row.rowNr == null -> virtual_row
         if (hasVirtualRow) {
             trs.last().before(tr);
@@ -671,7 +677,9 @@ WindowContainer.insertMatrixRow = function insertMatrixRow(record, json, row, tb
         next_tr.before(tr)
     }
     tr.find("select").material_select();
+    console.log("A", tbody.children("tr").length)
     tr.find("input[datepicker=true]").pickadate(WindowContainer.datePickerOptions);
+    console.log("B", tbody.children("tr").length)
     return tr;
 }
 

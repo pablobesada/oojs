@@ -47,21 +47,21 @@ var Description = {
                 label: "TAB1", content: [
                 {
                     field: 'Items', columns: [
-                    {field: 'rowNr'},
-                    {field: 'masterId'},
-                    {field: 'DeliveryTimeRow', editor: "string"},
+                    //{field: 'rowNr'},
+                    //{field: 'masterId'},
+                    /*{field: 'DeliveryTimeRow', editor: "string"},
                     {field: 'DeliveryTimeRow', editor: "time"},
-                    {field: 'DeliveryDateRow', editor: "string"},
+                    {field: 'DeliveryDateRow', editor: "string"},*/
                     {field: 'DeliveryDateRow', editor: "date"},
-                    {field: 'OriginType', editor: "string"},
-                    {field: 'OriginType', editor: "checkbox"},
+                    /*{field: 'OriginType', editor: "string"},
+                    {field: 'OriginType', editor: "checkbox"},*/
                     {field: 'ArtCode', label: 'Codigo'},
                     {field: 'Name', label: 'Name'},
-                    {field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
+                    /*{field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
                         {label: 'Normal', value: 0},
                         {label: 'Sum per Item', value: 1},
                         {label: 'Sum per Origin', value: 3},
-                    ]},
+                    ]},*/
                 ]
                 }
             ]

@@ -53,5 +53,8 @@ function addItem() {
 };
 
 function test() {
-    so.CustName = so.CustName + "H"
+    var wcust = cm.getClass("CustomerWindow").new()
+    var rec = cm.getClass("Customer").new()
+    wcust.setRecord(rec)
+    wcust.open()
 }

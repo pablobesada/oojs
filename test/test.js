@@ -34,16 +34,12 @@ function fillRecord(record){
 
 describe("Client", function () {
     it("control client decoration", function (done) {
-        var SalesOrder = cm.getClass("SalesOrder");
-        var so = SalesOrder.new()
-        so.SerNr=333
-        so.load()
-            .then(function () {
-                console.log(so.TransDate)
-                so.TransDate = '2015-01-03'
-                return so.save()
+        var Customer = cm.getClass("Customer")
+        Customer.select()
+            .then(function (result) {
+                console.log(result);
+                done();
             })
-            .then(function () {done()})
     });
 });
 

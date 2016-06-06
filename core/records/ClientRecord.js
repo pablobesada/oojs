@@ -21,6 +21,10 @@ ClientRecord.load = function load() {
     return this.runInServer("load");
 }
 
+ClientRecord.select = function load() {
+    return this.runInServer("select");
+}
+
 ClientRecord.store = function store() {
     return this.runInServer("store");
 }
@@ -29,8 +33,18 @@ ClientRecord.save = function save() {
     return this.runInServer("save");
 }
 
-ClientRecord.runInServer = function runInServer(methodname) {
+ClientRecord.runInServer = function runInServer(methodname, params) {
     var rec = this;
+    var data = {}
+    if ('__isnew__' in rec) {
+        data.calltype = 'instance';
+        data.self = JSON.stringify(rec.toJSON())
+    } else {
+        data.calltype = 'class';
+        data.recordclass = this.__description__.name;
+    }
+    data.method = methodname;
+    data.params = params != null? params : [];
     return new Promise(function (resolve, reject) {
         var url = '/runtime/record/' + methodname;
         $.ajax({
@@ -39,14 +53,17 @@ ClientRecord.runInServer = function runInServer(methodname) {
             contentType: 'application/json; charset=utf-8',
             dataType: "json",
             async: true,
-            data: JSON.stringify(rec.toJSON()),
+            data: JSON.stringify(data),
             success: function (result) {
                 if (!result.ok) {
                     reject(result.error);
                     return;
                 }
-                classmanager.getClass("Record").fromJSON(result.rec, rec)
-                resolve();
+                if (data.calltype == 'instance') {
+                    classmanager.getClass("Record").fromJSON(result.self, rec)
+                }
+                var response = 'response' in result? result.response : null;
+                resolve(response);
                 return;
             },
             error: function (jqXHR, textStatus, errorThrown) {

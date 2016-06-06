@@ -209,7 +209,7 @@ orm.load2 = function load(record, callback) {
                 });
             },
             function (cb) {
-                var select = orm.generate_select_sql(record);
+                var select = orm.generate_load_sql(record);
                 //console.log(select.sql)
                 conn.query(select.sql, select.values, function (err, rows, fields) {
                     if (err) {
@@ -250,7 +250,7 @@ orm.load = function load(record) {
     return db.getConnection()
         .then(function (newconn) {
             conn = newconn;
-            var select = orm.generate_select_sql(record);
+            var select = orm.generate_load_sql(record);
             //console.log(select.sql)
             return conn.query(select.sql, select.values)
         })
@@ -273,7 +273,7 @@ orm.load = function load(record) {
         })
 }
 
-orm.generate_select_sql = function generate_select_sql(record) {
+orm.generate_load_sql = function generate_load_sql(record) {
     var fieldnames = record.fieldNames();
     var questions = [];
     var values = [];
@@ -573,4 +573,42 @@ orm.delete = function (record) {
         });
 }
 
+orm.select = function select(recordClass) {
+    var conn = null;
+    return db.getConnection()
+        .then(function (newconn) {
+            conn = newconn;
+            var select = orm.generate_select_sql(recordClass);
+            return conn.query(select.sql, select.values)
+        })
+        .spread(function (rows, fields) {
+            var result = []
+            for (var i=0;i<rows.length;i++) {
+                var record = recordClass.new();
+                fill_record_with_query_result(record, rows[i], fields)
+                result.push(record);
+            }
+            return result;
+        })
+}
+
+orm.generate_select_sql = function generate_select_sql(record) {
+    var fieldnames = record.fieldNames();
+    var questions = [];
+    var values = [];
+    var snames = []
+    var where = []
+
+    for (var i = 0; i < fieldnames.length; i++) {
+        var fn = fieldnames[i];
+        snames.push("`" + fn + "`");
+        var value = record[fn];
+        if (value != null) {
+            //where.push("`" + fn + "` = ?");
+            values.push(record[fn]);
+        }
+    }
+    var sql = "SELECT " + snames.join(",") + " FROM " + record.__description__.name; // + " WHERE " + where.join(" AND ") + " LIMIT 1";
+    return {sql: sql, values: values};
+}
 module.exports = orm

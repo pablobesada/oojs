@@ -7,6 +7,7 @@ var cm = require('./openorange').classmanager
 var orm = require('./openorange').orm
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
+var _ = require('underscore')
 /* GET users listing. */
 
 function sendModule(res, fn) {
@@ -23,12 +24,24 @@ function sendModule(res, fn) {
 }
 
 router.post('/record/:method', function (req, res, next) {
-    console.log(req.body)
-    var rec = Record.fromJSON(req.body)
+    var params = req.body;
+    console.log(params.calltype)
+    console.log(params.self)
+    console.log(params.params)
+    var rec;
+    if (params.calltype == 'instance') {
+        rec = Record.fromJSON(params.self)
+    } else {
+        rec = cm.getClass(params.recordclass);
+    }
     res.setHeader('Content-Type', 'application/json');
-    rec[req.params.method]()
-        .then(function () {
-            res.send({ok:true, rec: JSON.stringify(rec)});
+    rec[params.method].apply(rec, params.params)
+        .then(function (response) {
+            if (params.calltype == 'instance') {
+                res.send({ok: true, self: JSON.stringify(rec), response: response});
+            } else {
+                res.send({ok: true, response: response});
+            }
         })
         .catch(function (err) {
             res.send({ok: false, error: err})
@@ -39,7 +52,6 @@ router.post('/record/:method', function (req, res, next) {
 router.get('/class', function (req, res, next) {
     var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
     var fn = cls.__filename__;
-    console.log(fn)
     sendModule(res, fn);
 });
 
@@ -52,8 +64,20 @@ router.get('/parentclass', function (req, res, next) {
 
 router.get('/module', function (req, res, next) {
     var fn = req.query.url + ".js"
-    console.log(fn)
     sendModule(res, fn);
+});
+
+router.get('/select', function (req, res, next) {
+    var recordname = 'Customer'
+    var recClass = cm.getClass(recordname);
+    recClass.select()
+        .then(function (records) {
+            res.send({ok:true, records: _(records).map(function (rec) {return JSON.stringify(rec)}) });
+        })
+        .catch(function (err) {
+            console.log(err)
+            res.send({ok: false, error: err})
+        });
 });
 
 module.exports = router;
