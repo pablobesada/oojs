@@ -1,3 +1,4 @@
+"use strict";
 var cm = global.__main__.require('./openorange').classmanager
 
 var Description = {
@@ -14,6 +15,16 @@ var SalesTransaction = cm.createClass(Description, __filename)
 SalesTransaction.init = function init() {
     SalesTransaction.__super__.init.call(this);
     return this
+}
+
+SalesTransaction.pasteCustCode = function pasteCustCode() {
+    var self = this;
+    if (this.CustCode) {
+        cm.getClass("Customer").bring(this.CustCode)
+            .then(function (customer) {
+                self.CustName = customer.Name;
+            })
+    }
 }
 
 module.exports = SalesTransaction

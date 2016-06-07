@@ -13,4 +13,9 @@ SalesTransactionWindow.init = function init() {
     return this
 }
 
+SalesTransactionWindow["changed CustCode"] = function () {
+    SalesTransactionWindow.super("changed CustCode", this);
+    this.getRecord().pasteCustCode();
+}
+
 module.exports = SalesTransactionWindow

@@ -22,13 +22,11 @@ SalesOrderItemRow.init = function init() {
 
 SalesOrderItemRow.pasteArtCode = function pasteArtCode(salesorder) {
     var self = this;
-    console.log("en pasteArtCode");
+    console.log("en pasteArtCode: " + self.ArtCode);
     return cm.getClass("Item").bring(self.ArtCode)
         .then(function (item) {
-            return Promise.delay(1000)
-            .then(function () {
-                self.Name = item.Name
-            });
+            console.log("bringed: " + item.Name)
+            self.Name = item.Name
         })
 }
 

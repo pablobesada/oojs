@@ -10,6 +10,7 @@ var Description = {
         {field: 'syncVersion', label: 'sync'},
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
+        {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         {field: 'TransTime'},
         {field: 'TransTime', editor: 'string'},
         {field: 'TransTime', editor: 'string'},
@@ -17,6 +18,7 @@ var Description = {
         {field: 'TransDate'},
         {field: 'TransDate', editor: 'string'},
         {field: 'TransDate', editor: 'string'},
+        {field: 'CustName'},
         {field: 'CustName'},
         {field: 'PrintFormat'},
         {field: 'PrintFormat', editor: 'radiobutton', options: [
@@ -47,21 +49,21 @@ var Description = {
                 label: "TAB1", content: [
                 {
                     field: 'Items', columns: [
-                    //{field: 'rowNr'},
-                    //{field: 'masterId'},
-                    /*{field: 'DeliveryTimeRow', editor: "string"},
+                    {field: 'rowNr'},
+                    {field: 'masterId'},
+                    {field: 'DeliveryTimeRow', editor: "string"},
                     {field: 'DeliveryTimeRow', editor: "time"},
-                    {field: 'DeliveryDateRow', editor: "string"},*/
+                    {field: 'DeliveryDateRow', editor: "string"},
                     {field: 'DeliveryDateRow', editor: "date"},
-                    /*{field: 'OriginType', editor: "string"},
-                    {field: 'OriginType', editor: "checkbox"},*/
-                    {field: 'ArtCode', label: 'Codigo'},
+                    {field: 'OriginType', editor: "string"},
+                    {field: 'OriginType', editor: "checkbox"},
+                    {field: 'ArtCode', label: 'Codigo', pastewindow: "ItemPasteWindow"},
                     {field: 'Name', label: 'Name'},
-                    /*{field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
+                    {field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
                         {label: 'Normal', value: 0},
                         {label: 'Sum per Item', value: 1},
                         {label: 'Sum per Origin', value: 3},
-                    ]},*/
+                    ]},
                 ]
                 }
             ]
@@ -70,7 +72,7 @@ var Description = {
                 label: "TAB2", content: [
                 {
                     field: 'Items', columns: [
-                    {field: 'ArtCode', label: 'Codigo'},
+                    {field: 'ArtCode', label: 'Codigo', pastewindow: 'ItemPasteWindow'},
                     {field: 'Name', label: 'Descripcion'},
                 ]
                 }

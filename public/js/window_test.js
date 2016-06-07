@@ -25,6 +25,8 @@ var wso;
 var wit;
 var so;
 function addSalesOrder() {
+    wso = cm.getClass("CustomerListWindow").new()
+    wso.open()
     wso = cm.getClass("SalesOrderWindow").new()
     wso.open()
     return cm.getClass("SalesOrder").bring(n)

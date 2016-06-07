@@ -22,7 +22,11 @@ ClientRecord.load = function load() {
 }
 
 ClientRecord.select = function load() {
-    return this.runInServer("select");
+    return this.runInServer("select")
+        .then(function (records) {
+            var Record = classmanager.getClass("Record")
+            return _(records).map(function (jsonrec) {return Record.fromJSON(jsonrec)})
+        });
 }
 
 ClientRecord.store = function store() {

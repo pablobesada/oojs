@@ -26,7 +26,8 @@ Master.inspect = function inspect() {
 Master.bring = function bring(Code) {
     var rec = this.new();
     rec.Code = Code;
-    return rec.load().then(function () {return rec})
+    console.log("en brind de master")
+    return rec.load().then(function () {console.log("master:bring: received: " + rec); return rec})
 }
 
 module.exports = Master

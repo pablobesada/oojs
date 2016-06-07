@@ -6,6 +6,8 @@ var Description = {
     fields: {
         Code: {type: "string", length: 30},
         Name: {type: "string", length: 30},
+        GroupCode: {type: "string", length: 30},
+        TaxRegNr: {type: "string", length: 30},
     }
 }
 

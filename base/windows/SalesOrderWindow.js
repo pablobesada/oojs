@@ -10,7 +10,7 @@ var Description = {
         {field: 'syncVersion', label: 'sync'},
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
-        {field: 'CustName'},
+        {field: 'CustName', pastewindow: "CustomerPasteWindow"},
         {type: 'tabs', pages: [
             {
                 label: "TAB1", content: [
