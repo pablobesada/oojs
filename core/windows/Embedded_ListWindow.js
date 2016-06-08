@@ -19,6 +19,7 @@ Embedded_ListWindow.createChildClass = function createChildClass(descriptor, fil
     childclass.__description__.name = descriptor.name;
     childclass.__description__.title = descriptor.title;
     childclass.__description__.recordClass = descriptor.record
+    childclass.__description__.windowClass = descriptor.window
     childclass.__description__.columns = descriptor.columns;
     //childclass.__description__.form = descriptor.form; //podria tener un form para casos de paste windows mas avanzados
     childclass.__filename__ = filename;

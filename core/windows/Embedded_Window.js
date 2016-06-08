@@ -23,6 +23,10 @@ Embedded_Window.open = function () {
     wm.render($('#content')[0])
 }
 
+Embedded_Window.setFocus = function setFocus() {
+    window.WindowManager.setFocus(this)
+}
+
 Embedded_Window.createChildClass = function createChildClass(descriptor, filename) {
     var childclass = Object.create(this)
     childclass.__description__ = {}

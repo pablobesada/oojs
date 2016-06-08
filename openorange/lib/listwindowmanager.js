@@ -14,10 +14,10 @@ ListWindowContainer.init = function (wnd) {
 ListWindowContainer.render = function render() {
     var self = this;
     //console.log(containerElement)
-    var html = '<div class="container"></div>';
-
+    var html = '<div class="container"><table class="recordlist"><thead></thead><tbody></tbody></table></div>';
     var w = $(html)
-    w.append('<p>HOLA MUNDO</p>');
+    self.fillTable(w)
+    //w.append('<p>HOLA MUNDO</p>');
     //w.append(self.createToolBar());
     this.tab_id = "tab_listwindow_" + ListWindowContainer.listwindows.length + 1;
     ListWindowContainer.listwindows.push({listwindow: this.listwindow, element: w, id: this.tab_id});
@@ -40,5 +40,48 @@ ListWindowContainer.displayWindow = function displayWindow(windowElement) {
     //if (this.listwindow.getRecord() != null) this.bindRecordToWindow(this.window.getRecord());
     //this.window.addListener(this);
 };
+
+ListWindowContainer.fillTable = function fillTable(windowElement) {
+    var self = this;
+    var recordClass = cm.getClass(self.listwindow.__description__.recordClass);
+    var columns = self.listwindow.__description__.columns;
+    var res = recordClass.select()
+        .then(function(records) {
+            var thead = windowElement.find(".recordlist>thead");
+            thead.find("tr").remove()
+            var tbody = windowElement.find(".recordlist>tbody");
+            tbody.find("tr").remove()
+            var tr = $("<tr></tr>");
+            for (var i=0;i<columns.length;i++) {
+                tr.append($('<th>'+columns[i].field+'</th>'));
+            }
+            thead.append(tr);
+            for (var j=0;j<records.length;j++) {
+                var rec = records[j];
+                var tr = $("<tr></tr>");
+                for (var i=0;i<columns.length;i++) {
+                    var fn = columns[i].field;
+                    var value = rec[fn];
+                    if (value == null) value = '';
+                    tr.append($('<td>'+value+'</td>'));
+                }
+                var listparams = {self: self, record: rec};
+                tr.click(self.recordSelectedInListWindow.bind(listparams));
+                tbody.append(tr)
+            }
+        });
+}
+
+ListWindowContainer.recordSelectedInListWindow = function recordSelectedInListWindow() {
+    var self = this.self
+    var record = this.record;
+    record.load()
+        .then(function () {
+            var window = cm.getClass(self.listwindow.getDescription().windowClass).new();
+            window.setRecord(record);
+            window.open();
+            window.setFocus();
+        })
+}
 
 window.ListWindowManager = ListWindowContainer; //para hacer global la variable WindowManager

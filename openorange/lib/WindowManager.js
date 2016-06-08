@@ -17,6 +17,16 @@ WindowContainer.datePickerOptions = {
         }
     }
 };
+
+WindowContainer.setFocus = function setFocus(window) {
+    for (var i=0;i<WindowContainer.windows.length;i++) {
+        var w = WindowContainer.windows[i];
+        if (w.window === window) {
+            $('ul.tabs').tabs('select_tab', w.tab_id);
+        }
+    }
+}
+
 WindowContainer.init = function (wnd) {
     this.window = wnd;
     this.windowjson = JSON.parse(JSON.stringify(this.window.getDescription().form));  //deep clone of the object because I need to add some metadata to it
@@ -38,7 +48,7 @@ WindowContainer.render = function render() {
     var w = $(html);
     w.append(self.createToolBar());
     this.tab_id = "tab_" + WindowContainer.windows.length + 1;
-    WindowContainer.windows.push({window: this.window, element: w, id: this.tab_id});
+    WindowContainer.windows.push({window: this.window, element: w, tab_id: this.tab_id});
     w.append(self.createComponent(this.windowjson));
     w.append(self.createPasteWindow());
     //console.log(this.windowjson)
