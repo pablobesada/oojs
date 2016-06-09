@@ -14,11 +14,13 @@ ListWindowContainer.init = function (wnd) {
 ListWindowContainer.render = function render() {
     var self = this;
     //console.log(containerElement)
-    var html = '<div class="container"><table class="recordlist"><thead></thead><tbody></tbody></table></div>';
+    var html = '<div class="container"></div>';
     var w = $(html)
-    self.fillTable(w)
+
     //w.append('<p>HOLA MUNDO</p>');
-    //w.append(self.createToolBar());
+    w.append(self.createToolBar());
+    w.append('<table class="recordlist"><thead></thead><tbody></tbody></table>')
+    self.fillTable(w)
     this.tab_id = "tab_listwindow_" + ListWindowContainer.listwindows.length + 1;
     ListWindowContainer.listwindows.push({listwindow: this.listwindow, element: w, id: this.tab_id});
     //w.append(self.createComponent(this.windowjson));
@@ -34,17 +36,33 @@ ListWindowContainer.displayWindow = function displayWindow(windowElement) {
     windowElement.attr('id', this.tab_id);
     $('#workspace').append(windowElement);
     $('ul.tabs').tabs();
-    //$('.modal-trigger').leanModal();
-    //windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
-    //$('input.editor[timeeditor=true]').mask('00:00:00');
-    //if (this.listwindow.getRecord() != null) this.bindRecordToWindow(this.window.getRecord());
-    //this.window.addListener(this);
 };
+
+ListWindowContainer.createToolBar = function createToolBar() {
+    var self = this;
+    var html = '<div class="row">';
+    html += '<a class="btn waves-effect waves-light"><i class="mdi">+</i></a>';
+    html += '</div>';
+    var res = $(html);
+    //res.find("a").click(function (event) {self.save(event)});
+    res.find("a").click(self.action_new.bind(self));
+    return res;
+};
+
+ListWindowContainer.action_new = function action_new() {
+    var self = this;
+    var record = cm.getClass(self.listwindow.getDescription().recordClass).new()
+    var window = cm.getClass(self.listwindow.getDescription().windowClass).new();
+    window.setRecord(record);
+    window.open();
+    window.setFocus();
+}
 
 ListWindowContainer.fillTable = function fillTable(windowElement) {
     var self = this;
     var recordClass = cm.getClass(self.listwindow.__description__.recordClass);
     var columns = self.listwindow.__description__.columns;
+    //var res = recordClass.select().fetch()
     var res = recordClass.select()
         .then(function(records) {
             var thead = windowElement.find(".recordlist>thead");

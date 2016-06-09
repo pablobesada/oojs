@@ -2,6 +2,7 @@
 var oo = global.__main__.require("./openorange")
 var _ = require("underscore")
 var moment = require("momentjs")
+var Query = oo.query;
 
 var Field = Object.create(null);
 Field.create = function create(name, type, length, persistent, linkto) {
@@ -230,6 +231,11 @@ Embedded_Record.super = function callSuper(methodname, self) {
         return Promise.resolve();
     }
 }
+
+Embedded_Record.getDescription = function getDescription() {
+    return this.__description__
+}
+
 Embedded_Record.init = function init() {
     this.__isnew__ = true;
     this.__ismodified__ = false;
@@ -386,6 +392,7 @@ Embedded_Record.load = function load() {
 }
 
 Embedded_Record.select = function select() {
+    //return Query.select(this)
     return oo.orm.select(this)
 }
 

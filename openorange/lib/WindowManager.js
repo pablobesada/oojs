@@ -37,7 +37,6 @@ WindowContainer.init = function (wnd) {
     this.matrix_json_map = {};
     this.virtual_rows = {};
     this.pastewindow_id = null;
-    this.save = this.save.bind(this);
     return this;
 };
 
@@ -76,7 +75,7 @@ WindowContainer.createToolBar = function createToolBar() {
     html += '</div>';
     var res = $(html);
     //res.find("a").click(function (event) {self.save(event)});
-    res.find("a").click(self.save);
+    res.find("a").click(this.save.bind(this));
     return res;
 };
 

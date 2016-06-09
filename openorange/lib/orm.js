@@ -2,6 +2,9 @@
 var db = require("./db")
 var async = require("async")
 var Promise = require("bluebird")
+var ormutils = require("./ormutils.js")
+var Query = require("./serverquery.js")
+
 Promise.config({
     longStackTraces: true
 })
@@ -150,15 +153,6 @@ orm.generate_delete_detail_sql = function generate_update_sql(record, detailname
     return {sql: sql, values: values};
 }
 
-function fill_record_with_query_result(record, row, fields) {
-    for (var i = 0; i < fields.length; i++) {
-        var field = fields[i];
-        var fn = field.name;
-        //console.log(fn, row[fn].constructor)
-        record[fn] = row[fn];
-    }
-}
-
 function select_detail_function2(conn, record, dn) {
     return function (cb) {
         var select = orm.generate_select_detail_sql(record, dn);
@@ -171,7 +165,7 @@ function select_detail_function2(conn, record, dn) {
             }
             rows.forEach(function (row) {
                 var rw = detail.newRow();
-                fill_record_with_query_result(rw, row, fields);
+                ormutils.fill_record_with_query_result(rw, row, fields);
                 detail.push(rw);
                 rw.setNewFlag(false);
                 rw.setModifiedFlag(false);
@@ -190,7 +184,7 @@ function select_detail_function(conn, record, dn) {
         .spread(function (rows, fields) {
             rows.forEach(function (row) {
                 var rw = detail.newRow();
-                fill_record_with_query_result(rw, row, fields);
+                ormutils.fill_record_with_query_result(rw, row, fields);
                 detail.push(rw);
                 rw.setNewFlag(false);
                 rw.setModifiedFlag(false);
@@ -220,7 +214,7 @@ orm.load2 = function load(record, callback) {
                         cb({error: "record not found"})
                         return;
                     }
-                    fill_record_with_query_result(record, rows[0], fields)
+                    ormutils.fill_record_with_query_result(record, rows[0], fields)
                     record.setNewFlag(false);
                     record.setModifiedFlag(false);
                     cb(null);
@@ -258,7 +252,7 @@ orm.load = function load(record) {
             if (rows == 0) {
                 throw {error: "record not found"}
             }
-            fill_record_with_query_result(record, rows[0], fields)
+            ormutils.fill_record_with_query_result(record, rows[0], fields)
             record.setNewFlag(false);
             record.setModifiedFlag(false);
         })
@@ -574,6 +568,8 @@ orm.delete = function (record) {
 }
 
 orm.select = function select(recordClass) {
+    //return Query.select(recordClass)
+
     var conn = null;
     return db.getConnection()
         .then(function (newconn) {
@@ -585,11 +581,12 @@ orm.select = function select(recordClass) {
             var result = []
             for (var i=0;i<rows.length;i++) {
                 var record = recordClass.new();
-                fill_record_with_query_result(record, rows[i], fields)
+                ormutils.fill_record_with_query_result(record, rows[i], fields)
                 result.push(record);
             }
             return result;
         })
+
 }
 
 orm.generate_select_sql = function generate_select_sql(record) {
@@ -611,4 +608,5 @@ orm.generate_select_sql = function generate_select_sql(record) {
     var sql = "SELECT " + snames.join(",") + " FROM " + record.__description__.name; // + " WHERE " + where.join(" AND ") + " LIMIT 1";
     return {sql: sql, values: values};
 }
+
 module.exports = orm

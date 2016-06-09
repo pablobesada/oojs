@@ -21,7 +21,7 @@ ClientRecord.load = function load() {
     return this.runInServer("load");
 }
 
-ClientRecord.select = function load() {
+ClientRecord.select = function select() {
     return this.runInServer("select")
         .then(function (records) {
             var Record = classmanager.getClass("Record")

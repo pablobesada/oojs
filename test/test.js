@@ -4,6 +4,7 @@ var chance = new require("chance")()
 var _ = require("underscore")
 require.prototype.main = app.module
 var oo = require("./../openorange")
+var Query = oo.query;
 //console.log(oo.isClient)
 var cm = oo.classmanager
 var should = require('should');
@@ -35,10 +36,12 @@ function fillRecord(record){
 describe("Client", function () {
     it("control client decoration", function (done) {
         var Customer = cm.getClass("Customer")
-        Customer.select()
+        //console.log(Customer.select())
+        //done();
+        Customer.select().limit(5).fetch()
             .then(function (result) {
-                console.log(result);
-                done();
+                console.log(result)
+                done()
             })
     });
 });

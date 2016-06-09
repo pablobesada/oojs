@@ -24,12 +24,13 @@ function require(module) {
     if (module == "./openorange") return {
         classmanager: classmanager,
         orm: orm,
+        query: ClientQuery,
         isServer: false,
         isClient: true,
     }
     if (module == "underscore") return _;
     if (module == "momentjs") return moment;
-    if (module == "./openorange/windowmanager") return WindowContainer;
+    //if (module == "./openorange/windowmanager") return WindowContainer;
     return loadModule(module)
 }
 
