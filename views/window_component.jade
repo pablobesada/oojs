@@ -1,34 +1,17 @@
-script(src='/openorange/lib/basequery.js')
-script(src='/openorange/lib/clientquery.js')
-script(src='/js/openorange.js')
-script(src="/bower_components/bluebird/js/browser/bluebird.min.js")
-script(language='javascript', src='/bower_components/underscore/underscore-min.js')
-script(src='/bower_components/jquery/dist/jquery.min.js')
 //link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
 //link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
 link(rel='stylesheet', href='/iconfont/material-icons.css')
 //link(rel='stylesheet', href='/bower_components/Materialize/dist/css/materialize.min.css')
 
 //script(src='/bower_components/Materialize/dist/js/materialize.min.js')
-script(src='/openorange/lib/windowmanager.js')
-script(src='/openorange/lib/listwindowmanager.js')
-script(src='/js/window_test.js')
 
 
-.fixed-action-btn.horizontal
-    a.btn-floating.btn-large.green
-        i.large.mdi add
-    ul
-        li
-            a.btn-floating.blue#addSalesOrder
-                i.mdi line_weight
-        li
-            a.btn-floating.yellow.darken-1#addItem
-                i.mdi card_giftcard
-        li
-            a.btn-floating.red.darken-1#test
-                i.mdi done
-div.row#workspace
-    div.col.s12
-        ul.tabs.workspace
-div#content
+
+
+
+script.
+    console.log("aaa")
+    $().ready(function () {
+        console.log("aca")
+        $('ul.tabs').tabs();
+    });

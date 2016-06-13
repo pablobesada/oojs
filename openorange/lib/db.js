@@ -45,6 +45,7 @@ function handle_database(req,res) {
 }
 
 var Connection = Object.create(null);
+
 Connection.init = function init(conn) {
     this.__conn__ = conn
     this.beginTransaction = this.beginTransaction.bind(this)
@@ -111,14 +112,24 @@ Connection.rollback = function rollback() {
     })
 }
 
+Connection.release = function release() {
+    var self = this;
+    self.__conn__.release();
+    self.__conn__ = null;
+    console.log("releasing connection");
+}
+
 db.getConnection = function getConnection() {
     return new Promise(function (resolve, reject) {
         db.pool.getConnection(function(err, connection) {
             if (err) {
-                connnection.release();
+                if (connection) {
+                    connnection.release();
+                }
                 reject(err);
                 return;
             }
+            console.log("returning new connection");
             resolve(Object.create(Connection).init(connection));
         })
     })

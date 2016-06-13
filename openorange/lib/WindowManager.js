@@ -41,6 +41,7 @@ WindowContainer.init = function (wnd) {
 };
 
 WindowContainer.render = function render() {
+
     var self = this;
     //console.log(containerElement)
     var html = '<div class="container"></div>';
@@ -756,7 +757,7 @@ WindowContainer.openPasteWindow = function openPasteWindow(event) {
         readonly = !Boolean(self.window.beforeEditRow(params.detailname, fieldjson.field, params.rownr));
     }
     if (readonly) return;
-    var res = recordClass.select()
+    var res = recordClass.select().fetch()
         .then(function(records) {
             var thead = pwelement.find(".recordlist>thead");
             thead.find("tr").remove()

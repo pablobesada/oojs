@@ -3,6 +3,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require("fs")
+var oo = require('./openorange')
 var cm = require('./openorange').classmanager
 var orm = require('./openorange').orm
 var Record = cm.getClass("Embedded_Record")
@@ -25,9 +26,6 @@ function sendModule(res, fn) {
 
 router.post('/record/:method', function (req, res, next) {
     var params = req.body;
-    console.log(params.calltype)
-    console.log(params.self)
-    console.log(params.params)
     var rec;
     if (params.calltype == 'instance') {
         rec = Record.fromJSON(params.self)
@@ -42,6 +40,20 @@ router.post('/record/:method', function (req, res, next) {
             } else {
                 res.send({ok: true, response: response});
             }
+        })
+        .catch(function (err) {
+            res.send({ok: false, error: err})
+        });
+});
+
+router.post('/query/fetch', function (req, res, next) {
+    var params = req.body;
+    res.setHeader('Content-Type', 'application/json');
+    var query = oo.query.fromJSON(req.body);
+    console.log(req.body)
+    query.fetch()
+        .then(function (response) {
+            res.send({ok: true, response: response});
         })
         .catch(function (err) {
             res.send({ok: false, error: err})

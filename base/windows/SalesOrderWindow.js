@@ -11,7 +11,8 @@ var Description = {
         {field: 'SerNr', label: 'Numero'},
         {field: 'CustCode'},
         {field: 'CustName', pastewindow: "CustomerPasteWindow"},
-        {type: 'tabs', pages: [
+        {
+            type: 'tabs', pages: [
             {
                 label: "TAB1", content: [
                 {

@@ -392,8 +392,8 @@ Embedded_Record.load = function load() {
 }
 
 Embedded_Record.select = function select() {
-    //return Query.select(this)
-    return oo.orm.select(this)
+    return Query.select(this)
+    //return oo.orm.select(this)
 }
 
 Embedded_Record.isNew = function isNew() {

@@ -8,23 +8,27 @@ var window_def = {
         {type: 'input', field: 'CustCode'}
     ]
 }
-var n1 = 333;
+var n1 = 2222444;
 var n2 = 444;
 var n = n1;
 var itcode = '123'
-$().ready(function () {
+$(document).ready(function () {
     console.log("ready")
+    //$('ul.tabs').tabs();
+
+    console.log("ready2")
     $("#addSalesOrder").click(addSalesOrder)
     $("#addItem").click(addItem)
     $("#test").click(test)
-    addSalesOrder();
     //wso = cm.getClass("SalesOrderWindow").new()
-    //addSalesOrder().then(function () {wso.open()});
+    addSalesOrder();
 })
+
 var wso;
 var wit;
 var so;
 function addSalesOrder() {
+
     wso = cm.getClass("CustomerListWindow").new()
     wso.open()
     wso = cm.getClass("SalesOrderWindow").new()
@@ -39,6 +43,10 @@ function addSalesOrder() {
                 n = n1;
             }
         })
+        .catch(function () {
+            console.log("sales order not found")
+        })
+
 };
 
 function addItem() {

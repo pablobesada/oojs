@@ -263,7 +263,16 @@ orm.load = function load(record) {
             })
             return Promise.all(funcs);
         }).then(function () {
+            conn.release();
+            conn = null;
             record.syncOldFields();
+        })
+        .finally(function (err) {
+            if (conn != null) {
+                conn.release()
+                conn = null;
+                //console.log(err, conn)
+            }
         })
 }
 
@@ -537,7 +546,13 @@ orm.store = function store(record, callback) {
             //console.log(record.oldFields("internalId").getValue());
             record.syncOldFields();
             //console.log(record.oldFields("internalId").getValue());
-        })
+        }).finally(function (err) {
+            if (conn != null) {
+                conn.release()
+                conn = null;
+                //console.log(err, conn)
+            }
+        });
 }
 
 orm.delete = function (record) {
@@ -564,7 +579,13 @@ orm.delete = function (record) {
                 throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
             }
             return delete_details_and_finish_function(conn, record);
-        });
+        }).finally(function (err) {
+            if (conn != null) {
+                conn.release()
+                conn = null;
+                //console.log(err, conn)
+            }
+        })
 }
 
 orm.select = function select(recordClass) {
