@@ -79,12 +79,12 @@ ListWindowContainer.displayWindow = function displayWindow(windowElement) {
             grid = new Slick.Grid(windowElement.find(".listwindow_grid"), loader.data, self.grid_columns, options);
             grid.onClick.subscribe(function(e, args) {
                 var item = args.item;
-                console.log(args)
+                //console.log(args)
                 self.recordSelectedInListWindow(args.grid.getData()[args.row])
             });
             grid.onViewportChanged.subscribe(function (e, args) {
                 var vp = grid.getViewport();
-                console.log(vp.top, vp.bottom);
+                //console.log(vp.top, vp.bottom);
                 loader.ensureData(vp.top, vp.bottom);
             });
             loader.onDataLoaded.subscribe(function (e, args) {

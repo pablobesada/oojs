@@ -15,7 +15,7 @@ var Customer = cm.createClass(Description, __filename)
 
 Customer.init = function init() {
     Customer.super("init", this);
-    //console.log("en init de customer de base")
+    //console.log("en init de customer de standard")
     return this
 }
 

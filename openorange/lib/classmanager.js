@@ -8,7 +8,7 @@ var classmanager = Object.create(null);
 classmanager.scriptdirs = ["core", "base", "standard"];
 classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
 
-classmanager.lookupdirs = ["records", "windows"];
+classmanager.lookupdirs = ["records", "windows", "reports"];
 
 classmanager.getClassFilename = function getClassFilename(name, max_script_dir_index) {
     var ms = max_script_dir_index;

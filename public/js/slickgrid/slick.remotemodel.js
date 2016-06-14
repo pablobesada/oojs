@@ -127,7 +127,7 @@
         }
 
         function onSuccess(result, start) {
-            console.log(result);
+            //console.log(result);
             var from = start, to = from + result.length;
             if (from + PAGESIZE > to) {
                 data.length = to

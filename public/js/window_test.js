@@ -16,12 +16,15 @@ $(document).ready(function () {
     console.log("ready")
     //$('ul.tabs').tabs();
 
-    console.log("ready2")
     $("#addSalesOrder").click(addSalesOrder)
     $("#addItem").click(addItem)
     $("#test").click(test)
+    //var tab = $('<li class="tab col s3"><a href="#' + this.tab_id + '"><prueba></prueba></a></li>');
+    //$('ul.tabs.workspace').append(tab);
+
     //wso = cm.getClass("SalesOrderWindow").new()
     addSalesOrder();
+    addReport();
 })
 
 var wso;
@@ -48,6 +51,13 @@ function addSalesOrder() {
         })
 
 };
+
+function addReport() {
+
+    var wrep = cm.getClass("CustomerListReport").new()
+    wrep.open()
+}
+
 
 function addItem() {
     wit = cm.getClass("ItemWindow").new()

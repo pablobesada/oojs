@@ -38,13 +38,15 @@ function global(){}
 global.__main__ = {require: require}
 require.main = {require: require}
 
-var classes = {}
+classmanager.classes = {}
 classmanager.getClass = function getClass(name, max_script_dir_index) {
+    if (max_script_dir_index == null) max_script_dir_index = 0;
     var k = name + "|" + max_script_dir_index;
-    if (k in classes) {
+    if (k in classmanager.classes) {
         //console.log("getclass: returning " + name + " from cache");
-        return classes[k]
+        return classmanager.classes[k]
     }
+    //console.log("getclass: fetching " + name + " from server");
     var url = '/runtime/class';
     var res = null;
     $.ajax({
@@ -55,8 +57,8 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
         success: function (result) {
             //console.log("en success: " + name);
             res = moduleFunction();
-            classes[k] = res;
-            if (!max_script_dir_index) classes[name] = res;
+            classmanager.classes[k] = res;
+            //if (!max_script_dir_index) classmanager.classes[name] = res;
         },
         error: function (jqXHR, textStatus, errorThrown ) {
             //console.log("en fail")
@@ -72,9 +74,9 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
 
 classmanager.getParentClassFor = function getParentClassFor(name, parent, dirname) {
     var k = name + "|" + parent + "|" + dirname;
-    if (k in classes) {
+    if (k in classmanager.classes) {
         //console.log("getparentclass: returning " + name + " from cache");
-        return classes[k];
+        return classmanager.classes[k];
     }
     var url = '/runtime/parentclass';
     var res = null;
@@ -86,7 +88,19 @@ classmanager.getParentClassFor = function getParentClassFor(name, parent, dirnam
         success: function (result) {
             res = moduleFunction();
             //console.log("en parent success: " + name +"/" + parent + "   " + res.__filename__);
-            classes[k] = res;
+            classmanager.classes[k] = res;
+            classmanager.classes[k] = res;
+            //console.log("getparentclass: fetching " + name + "/" + parent + "/" + dirname + " from server");
+            //console.log("received " + res.getDescription().name, "SD: " + classmanager.extractScriptDir(res.__filename__))
+            if (res.__description__.name != name) {
+                //console.log("storing as: " + res.__description__.name + " and " + res.__description__.name + "|0");
+                classmanager.classes[res.__description__.name + "|0"] = res;
+            }
+            var sd_idx = classmanager.reversed_scriptdirs.indexOf(classmanager.extractScriptDir(res.__filename__));
+            if (sd_idx != 0) {
+                classmanager.classes[res.__description__.name + "|" + sd_idx] = res;
+            }
+
         },
         error: function (jqXHR, textStatus, errorThrown ) {
             //console.log("en fail")

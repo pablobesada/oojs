@@ -56,12 +56,9 @@ function cc(i) {
 
 describe("Client", function () {
     it("control client decoration", function (done) {
-        var Customer = cm.getClass("Customer");
-        Customer.select().where({Code: 'C00001'}).fetch()
-            .then(function (recs) {
-                console.log(recs)
-                done()
-            });
+        var R = cm.getClass("CustomerListReport").new();
+        console.log(R.__description__)
+        done()
     })
 
 });
