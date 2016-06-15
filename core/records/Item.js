@@ -1,4 +1,4 @@
-var cm = require.main.require('./openorange').classmanager
+var cm = require('openorange').classmanager
 
 var Description = {
     name: 'Item',

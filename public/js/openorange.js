@@ -21,10 +21,11 @@ classmanager.createClass = function createClass(description, filename) {
     return ChildClass;
 }
 function require(module) {
-    if (module == "./openorange") return {
+    if (module == "openorange") return {
         classmanager: classmanager,
         orm: orm,
         query: ClientQuery,
+        explorer: OpenOrangeExplorer,
         isServer: false,
         isClient: true,
     }

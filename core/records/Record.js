@@ -1,4 +1,4 @@
-var oo = global.__main__.require('./openorange')
+var oo = require('openorange')
 var cm = oo.classmanager
 
 

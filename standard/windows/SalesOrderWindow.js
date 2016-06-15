@@ -1,5 +1,5 @@
 "use strict";
-var cm = global.__main__.require('./openorange').classmanager
+var cm = require('openorange').classmanager
 
 var Description = {
     name: 'SalesOrderWindow',
@@ -7,13 +7,17 @@ var Description = {
     record: 'SalesOrder',
     title: "Sales Order",
     form: [
-        {field: 'syncVersion', label: 'sync'},
-        {field: 'SerNr', label: 'Numero'},
-        {field: 'CustCode'},
-        {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
-        {field: 'TransTime'},
-        {field: 'TransTime', editor: 'string'},
-        {field: 'TransTime', editor: 'string'},
+        {type: "column", content: [
+            {field: 'syncVersion', label: 'sync2'},
+            {type: "line", content: [
+                {field: 'SerNr', label: 'Numero'},
+                {field: 'CustCode'},
+                {field: 'TransTime'},
+                {field: 'TransTime', editor: 'string'},
+                {field: 'TransTime', editor: 'string'},
+            ]},
+            {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
+        ]},
 
         {field: 'TransDate'},
         {field: 'TransDate', editor: 'string'},

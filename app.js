@@ -16,7 +16,7 @@ var redisClient = redis.createClient()
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var clientRuntime = require('./runtime');
-var db = require('./openorange/lib/db');
+var db = require('openorange/lib/db');
 
 var app = express();
 
@@ -42,7 +42,7 @@ app.use(cookieParser());
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
-app.use('/openorange/lib',  express.static(path.join(__dirname, '/openorange/lib')));
+app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/openorange/lib')));
 
 
 app.use('/', routes);

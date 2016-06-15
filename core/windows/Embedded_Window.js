@@ -1,5 +1,5 @@
 "use strict";
-var oo = global.__main__.require("./openorange")
+var oo = require("openorange")
 
 var WindowDescription = {
     name: 'Embedded_Window',

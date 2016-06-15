@@ -1,6 +1,6 @@
 "use strict";
 //var WindowManager = require("./openorange/lib/windowmanager")
-var cm = require("./openorange").classmanager
+var cm = require("openorange").classmanager
 var window_def = {
     title: "Ventana Test",
     form: [

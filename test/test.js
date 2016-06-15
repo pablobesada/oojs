@@ -3,7 +3,8 @@ var app = require("./../app")
 var chance = new require("chance")()
 var _ = require("underscore")
 require.prototype.main = app.module
-var oo = require("./../openorange")
+//var oo = require("./../openorange")
+var oo = require("openorange")
 var Query = oo.query;
 //console.log(oo.isClient)
 var cm = oo.classmanager
@@ -56,11 +57,15 @@ function cc(i) {
 
 describe("Client", function () {
     it("control client decoration", function (done) {
-        var R = cm.getClass("CustomerListReport").new();
-        console.log(R.__description__)
-        done()
+        oo.explorer.search("list")
+            .then(function (results) {
+                console.log(results)
+                done();
+            })
+            .catch(function (err) {
+                console.log(err)
+            })
     })
-
 });
 
 /*

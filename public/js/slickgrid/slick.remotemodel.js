@@ -6,7 +6,7 @@
      * Right now, it's hooked up to load Hackernews stories, but can
      * easily be extended to support any JSONP-compatible backend that accepts paging parameters.
      */
-    var oo = require("./openorange");
+    var oo = require("openorange");
 
     function RemoteModel() {
         // private

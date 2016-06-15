@@ -1,5 +1,5 @@
 "use strict"
-var cm = global.__main__.require('./openorange').classmanager
+var cm = require('openorange').classmanager
 
 var Description = {
     name: 'Embedded_Report',
@@ -95,21 +95,45 @@ Embedded_Report.endRow = function endRow() {
     this.__html__.push("</tr>")
 }
 
+Embedded_Report.startHeaderRow = function startHeaderRow() {
+    this.__html__.push("<tr style='font-weight: bold'>")
+}
+
+Embedded_Report.endHeaderRow = function endHeaderRow() {
+    this.__html__.push("</tr>")
+}
+
+Embedded_Report.header = function header(cols) {
+    this.startHeaderRow();
+    for (var i=0;i<cols.length;i++) {
+        this.addValue(cols[i])
+    }
+    this.endHeaderRow();
+}
+
+Embedded_Report.row = function row(values) {
+    this.startRow();
+    for (var i=0;i<values.length;i++) {
+        this.addValue(values[i])
+    }
+    this.endRow();
+}
+
 Embedded_Report.addValue = function addValue(v, options) {
     var value = v;
     var options = options != null? options : {};
     var onclick=''
     if ('Window' in options && 'FieldName' in options) {
         onclick='onclick="cm.getClass(\'Embedded_Report\').findReport('+this.getId()+').__std_zoomin__(\''+options['Window']+'\',\''+options['FieldName']+'\',\''+value+'\')"';
+    } else  if ('CallMethod' in options) {
+        var param = 'Parameter' in options? "'" + options['Parameter'] + "'" : '';
+        onclick='onclick="cm.getClass(\'Embedded_Report\').findReport('+this.getId()+').__call_method_zoomin__('+param+',\''+value+'\')"';
     }
-
     this.__html__.push("<td "+onclick+">" + value + "</td>")
 }
 
 Embedded_Report.__std_zoomin__ = function __std_zoomin__(w, fn, v) {
-
     var wnd = cm.getClass(w).new()
-    console.log(w, fn, v, wnd.getDescription().recordClass)
     var rec = cm.getClass(wnd.getDescription().recordClass).new()
     rec[fn] = v
     rec.load()
@@ -121,6 +145,9 @@ Embedded_Report.__std_zoomin__ = function __std_zoomin__(w, fn, v) {
         .catch(function (err) {
             console.log("ERRR", err)
         })
+}
+
+Embedded_Report.__call_method_zoomin__ = function __call_method_zoomin__(method, params) {
 }
 
 module.exports = Embedded_Report

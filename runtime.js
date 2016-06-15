@@ -3,9 +3,9 @@
 var express = require('express');
 var router = express.Router();
 var fs = require("fs")
-var oo = require('./openorange')
-var cm = require('./openorange').classmanager
-var orm = require('./openorange').orm
+var oo = require('openorange')
+var cm = oo.classmanager
+var orm = oo.orm
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 var _ = require('underscore')
@@ -85,6 +85,18 @@ router.get('/select', function (req, res, next) {
     recClass.select()
         .then(function (records) {
             res.send({ok:true, records: _(records).map(function (rec) {return JSON.stringify(rec)}) });
+        })
+        .catch(function (err) {
+            console.log(err)
+            res.send({ok: false, error: err})
+        });
+});
+
+router.get('/explorer/search', function (req, res, next) {
+    console.log(req.query.txt)
+    oo.explorer.search(req.query.txt)
+        .then(function (result) {
+            res.send({ok:true, response: result});
         })
         .catch(function (err) {
             console.log(err)
