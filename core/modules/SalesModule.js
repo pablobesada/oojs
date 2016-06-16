@@ -9,6 +9,7 @@ var Description = {
         {name: 'Customer', label: 'Clientes', access: 'CustomerListWindow'},
         {name: 'Item', label: 'Articulos', access: 'ItemListWindow'},
         {name: 'SalesOrder', label: 'Ordenes de Venta', access: 'SalesOrderListWindow'},
+        {name: 'Invoice', label: 'Facturas', access: 'InvoiceListWindow'},
     ],
     reports: [
         {name: 'CustomerListReport', label: 'Listado de Clientes'},

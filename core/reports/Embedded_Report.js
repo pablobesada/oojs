@@ -51,13 +51,26 @@ Embedded_Report.getId = function getId() {
 }
 
 Embedded_Report.open = function () {
-    var wm = Object.create(window.ReportManager).init(this)
-    this.run()
+    var self = this
+    self.container = Object.create(window.ReportManager).init(self)
+    self.container.appendToWorkspace()
+    self.run()
         .then(function () {
-            wm.render()
+            self.render();
         })
 }
 
+Embedded_Report.clear = function clear() {
+    this.__html__ = [];
+}
+
+Embedded_Report.render = function render() {
+    this.container.render();
+}
+
+Embedded_Report.setFocus = function setFocus() {
+    window.ReportManager.setFocus(this)
+}
 Embedded_Report.super = function callSuper(methodname, self) {
     if (methodname in this.__super__) {
         return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
@@ -127,7 +140,7 @@ Embedded_Report.addValue = function addValue(v, options) {
         onclick='onclick="cm.getClass(\'Embedded_Report\').findReport('+this.getId()+').__std_zoomin__(\''+options['Window']+'\',\''+options['FieldName']+'\',\''+value+'\')"';
     } else  if ('CallMethod' in options) {
         var param = 'Parameter' in options? "'" + options['Parameter'] + "'" : '';
-        onclick='onclick="cm.getClass(\'Embedded_Report\').findReport('+this.getId()+').__call_method_zoomin__('+param+',\''+value+'\')"';
+        onclick='onclick="cm.getClass(\'Embedded_Report\').findReport('+this.getId()+').__call_method_zoomin__(\''+options['CallMethod'] + '\','+param+',\''+value+'\')"';
     }
     this.__html__.push("<td "+onclick+">" + value + "</td>")
 }
@@ -147,7 +160,8 @@ Embedded_Report.__std_zoomin__ = function __std_zoomin__(w, fn, v) {
         })
 }
 
-Embedded_Report.__call_method_zoomin__ = function __call_method_zoomin__(method, params) {
+Embedded_Report.__call_method_zoomin__ = function __call_method_zoomin__(method, params, value) {
+    this[method](params, value);
 }
 
 module.exports = Embedded_Report

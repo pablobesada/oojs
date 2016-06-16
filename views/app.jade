@@ -64,7 +64,9 @@ body
                                     span.logo-text Materialize
                         .header-search-wrapper.hide-on-med-and-down
                             i.mdi-action-search
-                            input.header-search-input.z-depth-2(type='text', name='Search', placeholder='Explore OpenOrange')
+                            //input.header-search-input.z-depth-2(type='text', name='Search', id="OOSearch", placeholder='explore openorange')
+                            input#OOSearch.header-search-input.z-depth-2.typeahead(type="text",placeholder="explore openorange")
+
             // end header nav
         // END HEADER
         // ////////////////////////////////////////////////////////////////////////////
@@ -148,6 +150,8 @@ script(src='/openorange/lib/listwindowmanager.js')
 script(src='/openorange/lib/reportmanager.js')
 script(src='/js/window_test.js')
 
+//typeahead & bloodhound
+script(src='/js/typeahead.bundle.min.js')
 // materialize js
 script(type='text/javascript', src='js/materialize.min.js')
 //script(type='text/javascript', src='/bower_components/Materialize/dist/js/materialize.min.js')

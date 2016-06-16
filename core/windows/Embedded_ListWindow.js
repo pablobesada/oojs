@@ -44,6 +44,9 @@ Embedded_ListWindow.open = function () {
     wm.render($('#content')[0])
 }
 
+Embedded_ListWindow.setFocus = function setFocus() {
+    window.ListWindowManager.setFocus(this)
+}
 Embedded_ListWindow.super = function callSuper(methodname, self) {
     if (methodname in this.__super__) {
         return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));

@@ -7,7 +7,7 @@ classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
 classmanager.extractScriptDir = function extractScriptDir(dirname) {
     for (var i in classmanager.reversed_scriptdirs) {
         var sd = classmanager.reversed_scriptdirs[i];
-        var idx = dirname.lastIndexOf("/"+sd+"/")
+        var idx = dirname.lastIndexOf("/" + sd + "/")
         if (idx >= 0) {
             return sd;
         }
@@ -35,7 +35,8 @@ function require(module) {
     return loadModule(module)
 }
 
-function global(){}
+function global() {
+}
 global.__main__ = {require: require}
 require.main = {require: require}
 
@@ -61,7 +62,7 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
             classmanager.classes[k] = res;
             //if (!max_script_dir_index) classmanager.classes[name] = res;
         },
-        error: function (jqXHR, textStatus, errorThrown ) {
+        error: function (jqXHR, textStatus, errorThrown) {
             //console.log("en fail")
             console.log(errorThrown)
             throw errorThrown;
@@ -103,7 +104,7 @@ classmanager.getParentClassFor = function getParentClassFor(name, parent, dirnam
             }
 
         },
-        error: function (jqXHR, textStatus, errorThrown ) {
+        error: function (jqXHR, textStatus, errorThrown) {
             //console.log("en fail")
             throw errorThrown;
         },
@@ -131,7 +132,7 @@ var loadModule = function loadModule(url) {
             res = moduleFunction();
             loadedModules[url] = res;
         },
-        error: function (jqXHR, textStatus, errorThrown ) {
+        error: function (jqXHR, textStatus, errorThrown) {
             //console.log("en fail")
             console.log(errorThrown)
             throw errorThrown;
@@ -142,3 +143,39 @@ var loadModule = function loadModule(url) {
     });
     return res;
 }
+
+$(document).ready(function () {
+        var oo = require("openorange")
+        $('#OOSearch.typeahead').typeahead({hint: true}, {
+            async: true,
+            display: 'label',
+            limit: 4,
+            source: function (query, syncResults, asyncResults) {
+
+                //syncResults([])
+                oo.explorer.search(query)
+                    .then(function (results) {
+                        //console.log(results.length)
+                        asyncResults(results)
+
+                    })
+
+            },
+        }).on('typeahead:selected', function (obj, datum) {
+                var wnd = null;
+                switch(datum.type) {
+                    case 'Record Class':
+                        wnd = oo.classmanager.getClass(datum.access).new();
+                        break;
+                    case 'Report':
+                        wnd = oo.classmanager.getClass(datum.name).new();
+                        break;
+                }
+                if (wnd != null) {
+                    wnd.open()
+                    wnd.setFocus()
+                }
+
+            });
+    $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
+})
