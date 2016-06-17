@@ -54,13 +54,10 @@ SalesOrderWindow["changed SerNr"] = function () {
 }
 
 
-SalesOrderWindow["changed Items.ArtCode"] = function (rowNr) {
+SalesOrderWindow["changed Items.ArtCode"] = async function (rowNr) {
     var self = this;
-    return SalesOrderWindow.super("changed Items.ArtCode", self, rowNr)
-        .then(function () {
-            return self.getRecord().Items[rowNr].pasteArtCode(this);
-        })
-
+    await SalesOrderWindow.super("changed Items.ArtCode", self, rowNr);
+    return self.getRecord().Items[rowNr].pasteArtCode(this);
 }
 
 module.exports = SalesOrderWindow

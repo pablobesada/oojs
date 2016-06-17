@@ -9,6 +9,7 @@ var orm = oo.orm
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 var _ = require('underscore')
+var babel = require("babel-core")
 /* GET users listing. */
 
 function sendModule(res, fn) {
@@ -19,8 +20,9 @@ function sendModule(res, fn) {
         var fulldata = "var moduleFunction = (function() {module = {};\n";
         fulldata = fulldata + "var __dirname = '" + path.dirname(fn) + "';\n"
         fulldata = fulldata + "var __filename = '" + fn + "';\n"
-        fulldata = fulldata + data + "\nreturn module.exports;})";
-        res.status(200).send(fulldata)
+        fulldata = fulldata + data + "\nreturn module.exports;})\n";
+        fulldata = fulldata + "//# sourceURL=" + fn;
+        res.status(200).send( babel.transform(fulldata, {"presets": ["stage-3"]}).code);
     });
 }
 

@@ -1,3 +1,4 @@
+"use strict"
 var cm = require('openorange').classmanager
 
 var Description = {
@@ -20,3 +21,4 @@ Customer.init = function init() {
 }
 
 module.exports = Customer
+//# sourceURL=Customer.js

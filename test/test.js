@@ -1,4 +1,9 @@
 "use strict";
+require('babel-register')({
+    ignore: /node_modules\/(?!openorange)/
+});
+require("babel-polyfill");
+
 var app = require("./../app")
 var chance = new require("chance")()
 var _ = require("underscore")
@@ -10,6 +15,9 @@ var Query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
+
+
+require("./local/record.js")
 
 function fillRecord(record){
     var fields = record.__description__.fields
@@ -55,18 +63,7 @@ function cc(i) {
     });
 };
 
-describe("Client", function () {
-    it("control client decoration", function (done) {
-        oo.explorer.search("list")
-            .then(function (results) {
-                console.log(results)
-                done();
-            })
-            .catch(function (err) {
-                console.log(err)
-            })
-    })
-});
+
 
 /*
 describe("Record", function () {

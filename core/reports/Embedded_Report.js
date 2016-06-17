@@ -50,14 +50,12 @@ Embedded_Report.getId = function getId() {
     return this.__id__;
 }
 
-Embedded_Report.open = function () {
+Embedded_Report.open = async function () {
     var self = this
     self.container = Object.create(window.ReportManager).init(self)
     self.container.appendToWorkspace()
-    self.run()
-        .then(function () {
-            self.render();
-        })
+    await self.run()
+    self.render();
 }
 
 Embedded_Report.clear = function clear() {
@@ -145,19 +143,15 @@ Embedded_Report.addValue = function addValue(v, options) {
     this.__html__.push("<td "+onclick+">" + value + "</td>")
 }
 
-Embedded_Report.__std_zoomin__ = function __std_zoomin__(w, fn, v) {
+Embedded_Report.__std_zoomin__ = async function __std_zoomin__(w, fn, v) {
     var wnd = cm.getClass(w).new()
     var rec = cm.getClass(wnd.getDescription().recordClass).new()
     rec[fn] = v
-    rec.load()
-        .then(function () {
-            wnd.setRecord(rec)
-            wnd.open();
-            wnd.setFocus();
-        })
-        .catch(function (err) {
-            console.log("ERRR", err)
-        })
+    if (await rec.load()) {
+        wnd.setRecord(rec)
+        wnd.open();
+        wnd.setFocus();
+    }
 }
 
 Embedded_Report.__call_method_zoomin__ = function __call_method_zoomin__(method, params, value) {

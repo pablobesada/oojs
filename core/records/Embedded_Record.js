@@ -314,27 +314,28 @@ Embedded_Record.__clearRemovedRows__XX = function __clearRemovedRows__() {
     _(this.__details__).map(function (detail) { detail._removed_rows__ = []})
 }
 
-Embedded_Record.save = function save() {
-    var self = this;
-    var was_new = null;
-    return self.check()
-        .then(function () {
-            if (self.isNew()) {
-                was_new = true;
-                return self.beforeInsert();
-            } else {
-                was_new = false;
-                return self.beforeUpdate();
-            }
-        })
-        .then(self.store)
-        .then(function () {
-            if (was_new) {
-                return self.afterInsert();
-            } else {
-                return self.afterUpdate();
-            }
-        })
+Embedded_Record.save = async function save() {
+    let self = this;
+    let was_new = null;
+    let res = await self.check()
+    if (!res) return res;
+    if (self.isNew()) {
+        was_new = true;
+        res = await self.beforeInsert();
+        if (!res) return res;
+    } else {
+        was_new = false;
+        res = self.beforeUpdate();
+        if (!res) return res;
+    }
+    res = await self.store();
+    if (!res) return res;
+    if (was_new) {
+        self.afterInsert();
+    } else {
+        self.afterUpdate();
+    }
+    return true;
 }
 
 Embedded_Record.syncOldFields = function syncOldFields() {
@@ -379,8 +380,9 @@ Embedded_Record.afterUpdate = function afterUpdate() {
     return Promise.resolve();
 }
 
-Embedded_Record.store = function store() {
-    return oo.orm.store(this);
+Embedded_Record.store = async function store() {
+    var res = await oo.orm.store(this);
+    return res
 }
 
 Embedded_Record.delete = function del() {

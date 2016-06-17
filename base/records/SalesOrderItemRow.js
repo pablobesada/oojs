@@ -20,14 +20,12 @@ SalesOrderItemRow.init = function init() {
     return this
 }
 
-SalesOrderItemRow.pasteArtCode = function pasteArtCode(salesorder) {
+SalesOrderItemRow.pasteArtCode = async function pasteArtCode(salesorder) {
     var self = this;
     console.log("en pasteArtCode: " + self.ArtCode);
-    return cm.getClass("Item").bring(self.ArtCode)
-        .then(function (item) {
-            console.log("bringed: " + item.Name)
-            self.Name = item.Name
-        })
+    var item = await cm.getClass("Item").bring(self.ArtCode);
+    console.log("bringed: " + item.Name)
+    self.Name = item.Name
 }
 
 module.exports = SalesOrderItemRow

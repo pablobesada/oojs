@@ -1,5 +1,8 @@
+"use strict";
 var express = require('express');
 var router = express.Router();
+var fs = require("fs")
+var babel = require("babel-core")
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -35,6 +38,12 @@ router.get('/window_test', function(req, res, next) {
 
 router.get('/app/index', function(req, res, next) {
     res.render('app', { title: 'Express' });
+});
+
+router.get('/openorange/lib/:fn', function(req, res, next) {
+    fs.readFile("./node_modules/openorange/lib/" + req.params.fn, 'utf8', function (err, data) {
+        res.send(babel.transform(data, {"presets": ["stage-3"]}).code)
+    });
 });
 
 module.exports = router;

@@ -13,8 +13,8 @@ SalesTransactionWindow.init = function init() {
     return this
 }
 
-SalesTransactionWindow["changed CustCode"] = function () {
-    SalesTransactionWindow.super("changed CustCode", this);
+SalesTransactionWindow["changed CustCode"] = async function () {
+    await SalesTransactionWindow.super("changed CustCode", this);
     this.getRecord().pasteCustCode();
 }
 

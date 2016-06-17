@@ -105,7 +105,11 @@ classmanager.getParentClassFor = function getParentClassFor(name, parent, dirnam
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            //console.log("en fail")
+            if (textStatus == 'parsererror') {
+                //evaluo el codigo que para vuelva a saltar el error y aparezca en el debugger
+                eval(jqXHR.responseText)
+            }
+            console.log(errorThrown)
             throw errorThrown;
         },
         complete: function () {

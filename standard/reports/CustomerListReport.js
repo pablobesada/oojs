@@ -38,6 +38,7 @@ CustomerListReport.run = function run() {
 
 CustomerListReport.ZoomInTest = function ZoomInTest(param, value) {
     var self = this;
+    cm.getClass("Customer").bring("C00009")
     console.log(param, value)
     if (value == 'Codigo') self.order = 'Code';
     if (value == 'Nombre') self.order = 'Name'

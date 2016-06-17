@@ -17,13 +17,11 @@ SalesTransaction.init = function init() {
     return this
 }
 
-SalesTransaction.pasteCustCode = function pasteCustCode() {
+SalesTransaction.pasteCustCode = async function pasteCustCode() {
     var self = this;
     if (this.CustCode) {
-        cm.getClass("Customer").bring(this.CustCode)
-            .then(function (customer) {
-                self.CustName = customer.Name;
-            })
+        var customer = await cm.getClass("Customer").bring(this.CustCode);
+        self.CustName = customer.Name;
     }
 }
 

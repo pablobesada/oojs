@@ -1,3 +1,4 @@
+"use strict"
 global.__main__ = module
 var express = require('express');
 
@@ -17,6 +18,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var clientRuntime = require('./runtime');
 var db = require('openorange/lib/db');
+var Promise = require("bluebird")
 
 var app = express();
 
@@ -42,7 +44,7 @@ app.use(cookieParser());
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
-app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/openorange/lib')));
+//app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/openorange/lib')));
 
 
 app.use('/', routes);
@@ -56,6 +58,13 @@ app.use(function (req, res, next) {
     err.status = 404;
     next(err);
 });
+
+
+async function ppp() {
+     return new Promise(function (resolve, reject) {
+         setTimeout(function () {resolve("hola mundo")}, 10);
+     })
+}
 
 // error handlers
 

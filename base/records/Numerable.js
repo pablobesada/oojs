@@ -16,10 +16,12 @@ Numerable.init = function init() {
     return this
 }
 
-Numerable.bring = function bring(SerNr) {
+Numerable.bring = async function bring(SerNr) {
     var rec = this.new();
     rec.SerNr = SerNr;
-    return rec.load().then(function () {return rec})
+    var res = await rec.load();
+    if (res) return rec;
+    return null
 }
 
 Numerable.fieldIsEditable = function fieldIsEditable(fieldname, rowfieldname, rowNr) {

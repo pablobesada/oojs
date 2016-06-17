@@ -1,4 +1,6 @@
+"use strict"
 var cluster = require('cluster');
+
 if (false && cluster.isMaster) {
 
     // Count the machine's CPUs

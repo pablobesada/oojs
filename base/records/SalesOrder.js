@@ -20,17 +20,10 @@ SalesOrder.init = function init() {
 }
 
 
-SalesOrder.check = function check() {
-    return SalesOrder.__super__.check.call(this)
-        .then(function () {
-            return "pepe"
-        })
-        .then(function () {
-            return new Promise(function (resolve, reject) {
-                resolve("de aca no")
-            })
-        })
-    return Promise.resolve();
+SalesOrder.check = async function check() {
+    var res = SalesOrder.__super__.check.call(this)
+    if (!res) return res;
+    return true;
 }
 
 SalesOrder.fieldIsEditable = function fieldIsEditable(fieldname, rowfieldname, rownr) {

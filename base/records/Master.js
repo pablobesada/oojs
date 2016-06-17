@@ -23,11 +23,13 @@ Master.inspect = function inspect() {
     return "<" + this.__description__.name + " " + this.Code + ">";
 }
 
-Master.bring = function bring(Code) {
+Master.bring = async function bring(Code) {
     var rec = this.new();
     rec.Code = Code;
-    console.log("en brind de master")
-    return rec.load().then(function () {console.log("master:bring: received: " + rec); return rec})
+    var res = await rec.load();
+    if (res) return rec;
+    return null;
 }
 
 module.exports = Master
+//# sourceURL=filenameXXX.js
