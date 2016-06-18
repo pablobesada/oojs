@@ -1,16 +1,20 @@
-var cm = require('openorange').classmanager
+'use strict';
+
+var cm = require('openorange').classmanager;
 
 var Description = {
     name: 'TransactionWindow',
-    inherits: 'NumerableWindow',
-}
+    inherits: 'NumerableWindow'
+};
 
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var TransactionWindow = cm.createClass(Description, __filename )
+var TransactionWindow = cm.createClass(Description, __filename);
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 TransactionWindow.init = function init() {
     TransactionWindow.__super__.init.call(this);
-    return this
-}
+    return this;
+};
 
-module.exports = TransactionWindow
+module.exports = TransactionWindow;
+
+//# sourceMappingURL=TransactionWindow.js.map

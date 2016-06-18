@@ -22,7 +22,8 @@ function sendModule(res, fn) {
         fulldata = fulldata + "var __filename = '" + fn + "';\n"
         fulldata = fulldata + data + "\nreturn module.exports;})\n";
         fulldata = fulldata + "//# sourceURL=" + fn;
-        res.status(200).send( babel.transform(fulldata, {"presets": ["stage-3"]}).code);
+        //fulldata = babel.transform(fulldata, {"presets": ["stage-3"]}).code
+        res.status(200).send(fulldata);
     });
 }
 
@@ -65,7 +66,7 @@ router.post('/query/fetch', function (req, res, next) {
 
 router.get('/class', function (req, res, next) {
     var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
-    var fn = cls.__filename__;
+    var fn = cls.__description__.filename  || cls.__filename__ ;
     sendModule(res, fn);
 });
 

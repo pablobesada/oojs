@@ -1,12 +1,10 @@
 "use strict";
-require('babel-register')({
-    ignore: /node_modules\/(?!openorange)/
-});
+//require('babel-register')({
+//    ignore: /node_modules\/(?!openorange)/
+//});
 require("babel-polyfill");
 
 var app = require("./../app")
-var chance = new require("chance")()
-var _ = require("underscore")
 require.prototype.main = app.module
 //var oo = require("./../openorange")
 var oo = require("openorange")
@@ -17,51 +15,10 @@ var should = require('should');
 var async = require('async')
 
 
-require("./local/record.js")
+//require("./local/RecordTest.js")
+require("./local/ReportTest.js")
 
-function fillRecord(record){
-    var fields = record.__description__.fields
-    _(fields).forEach(function(fielddef, fn) {
-        if (fn == 'masterId') return;
-        if (fn == 'rowNr') return;
-        switch (fielddef.type) {
-            case 'string':
-                record[fn] = chance.word({length: 4});
-                break;
-            case 'integer':
-                record[fn] = chance.natural();
-                break;
-            case 'detail':
-                var nrows = chance.natural({min: 1, max: 13})
-                for (var j=0;j<nrows;j++) {
-                    var row = record[fn].newRow()
-                    fillRecord(row)
-                    record[fn].push(row);
-                }
-        }
-    });
-    return record;
-}
 
-function cc(i) {
-    console.log(i);
-    var Customer = cm.getClass("Customer")
-    var c = Customer.new()
-    c.Code = "C0" + i;
-    c.Name = "Cliente " + i
-    return new Promise(function (resolve, reject) {
-        c.load()
-            .then(function () {
-                resolve("found: " + i);
-            })
-            .catch(function (err) {
-                c.save().then(function (res) {
-                    resolve("saved: " + i);
-                })
-                //resolve("should save: " + i + "  " + err)
-            })
-    });
-};
 
 
 

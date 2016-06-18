@@ -40,7 +40,7 @@ router.get('/app/index', function(req, res, next) {
     res.render('app', { title: 'Express' });
 });
 
-router.get('/openorange/lib/:fn', function(req, res, next) {
+router.get('/XXXopenorange/lib/:fn', function(req, res, next) {
     fs.readFile("./node_modules/openorange/lib/" + req.params.fn, 'utf8', function (err, data) {
         res.send(babel.transform(data, {"presets": ["stage-3"]}).code)
     });

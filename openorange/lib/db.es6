@@ -1,8 +1,9 @@
 "use strict";
+//require('source-map-support').install();
 var Promise = require("bluebird")
-Promise.config({
+/*Promise.config({
     longStackTraces: true
-})
+})*/
 var mysql = require('mysql');
 // Note that the library's classes are not properties of the main export
 // so we require and promisifyAll them manually
@@ -73,6 +74,9 @@ Connection.query = async function query (sql, values) {
         //console.log(sql, values)
         self.__conn__.query(sql, values, function (err, result, fields) {
             if (err) {
+                console.log(err)
+                console.log(sql)
+                console.log(values)
                 reject(err);
                 return;
             }
@@ -117,7 +121,6 @@ Connection.release = function release() {
     self.__conn__ = null;
     //console.log("releasing connection");
 }
-
 
 db.getConnection = async function getConnection() {
     return new Promise(function (resolve, reject) {

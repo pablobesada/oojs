@@ -74,6 +74,10 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
     return res;
 }
 
+classmanager.SuperClass = function SuperClass(description) {
+    return classmanager.getParentClassFor(description.name, description.inherits, description.filename);
+}
+
 classmanager.getParentClassFor = function getParentClassFor(name, parent, dirname) {
     var k = name + "|" + parent + "|" + dirname;
     if (k in classmanager.classes) {

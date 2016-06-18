@@ -30,6 +30,7 @@ classmanager.createClass = function createClass(description, filename) {
     return ChildClass;
 }
 
+
 classmanager.getClass = function getClass(name, max_script_dir_index) {
     //console.log("en getClass: " + name)
     var ms = max_script_dir_index;
@@ -40,11 +41,14 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
             var ld = classmanager.lookupdirs[j];
             var modname = "./" + sd + "/" + ld + "/" + name;
             try {
+                //console.log("requiring: " + modname)
                 var r = global.__main__.require(modname);
+                //console.log("returning: " + r)
                 return r;
             } catch (e) {
                 //console.log("ESTOY ACA", e.code, e.message, (e.code != 'MODULE_NOT_FOUND' || e.message != "Cannot find module '" + modname + "'"))
                 if (e.code != 'MODULE_NOT_FOUND' || e.message != "Cannot find module '" + modname + "'") {
+                    console.log("Error requiring module: " + modname);
                     console.log(e.stack);
                     console.log(e.message);
                     throw(e)
@@ -67,12 +71,23 @@ classmanager.extractScriptDir = function extractScriptDir(classpath) {
     return null;
 }
 
-classmanager.getParentClassFor = function getSuperClassFor(name, parent, classpath) {
+classmanager.getParentClassFor = function getParentClassFor(name, parent, classpath) {
+    if (!name || !parent || !classpath) {
+        if (!name) throw new Error("can't find a parent class without a name")
+        if (!parent) throw new Error("can't find a parent class without a inherit attrbute")
+        if (!classpath) throw new Error("can't find a parent class without a path")
+    }
     var sd = classmanager.extractScriptDir(classpath)
     var cls = classmanager.getClass(name, classmanager.reversed_scriptdirs.indexOf(sd)+1)
     if (cls != null) return cls;
     var cls = classmanager.getClass(parent);
     return cls;
+};
+
+classmanager.SuperClass = function SuperClass(description) {
+    let superclass = classmanager.getParentClassFor(description.name, description.inherits, description.filename)
+    //superclass = superclass.prepareParentClass(description, classpath)
+    return superclass
 };
 
 module.exports = classmanager;

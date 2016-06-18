@@ -1,4 +1,6 @@
 "use strict"
+require('source-map-support').install(); //solo debe usarse para debugging
+
 global.__main__ = module
 var express = require('express');
 
@@ -44,7 +46,7 @@ app.use(cookieParser());
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
-//app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/openorange/lib')));
+app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/openorange/lib')));
 
 
 app.use('/', routes);
@@ -58,13 +60,6 @@ app.use(function (req, res, next) {
     err.status = 404;
     next(err);
 });
-
-
-async function ppp() {
-     return new Promise(function (resolve, reject) {
-         setTimeout(function () {resolve("hola mundo")}, 10);
-     })
-}
 
 // error handlers
 
