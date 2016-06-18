@@ -3,14 +3,15 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'FinancialTransWindow',
     inherits: 'TransactionWindow',
+    filename: __filename
 }
 
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var FinancialTransWindow = cm.createClass(Description, __filename )
+var Parent = cm.SuperClass(Description)
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-FinancialTransWindow.init = function init() {
-    FinancialTransWindow.__super__.init.call(this);
-    return this
+class FinancialTransWindow extends Parent {
+    constructor() {
+        super()
+    }
 }
-
-module.exports = FinancialTransWindow
+module.exports = FinancialTransWindow.initClass(Description)

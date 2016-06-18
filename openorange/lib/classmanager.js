@@ -4,9 +4,16 @@ var path = require("path");
 var fs = require("fs")
 
 var classmanager = Object.create(null);
+classmanager.scriptdirs = []
+classmanager.reversed_scriptdirs = []
+classmanager.addScriptDir = function addScriptDir(sd) {
+    classmanager.scriptdirs.push(sd)
+    classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
+}
 
-classmanager.scriptdirs = ["core", "base", "standard"];
-classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
+classmanager.addScriptDir("core");
+classmanager.addScriptDir("base");
+classmanager.addScriptDir("standard");
 
 classmanager.lookupdirs = ["records", "windows", "reports", "modules"];
 

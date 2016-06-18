@@ -1,8 +1,8 @@
 "use strict";
+//var app = require("./../../app")
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
-var app = require("./../../app");
 var chance = new require("chance")();
 var _ = require("underscore");
 var oo = require("openorange");
@@ -10,9 +10,9 @@ var Query = oo.query;
 var cm = oo.classmanager;
 var should = require('should');
 var async = require('async');
-var utils = require("../utils");
+var utils = null;
 
-describe("Record", function () {
+describe("Embedded_Record", function () {
     var _this = this;
 
     this.timeout(18000);
@@ -116,4 +116,8 @@ describe("Record", function () {
     })));
 });
 
-//# sourceMappingURL=RecordTest.js.map
+module.exports = function config(utilsModule) {
+    utils = utilsModule;
+};
+
+//# sourceMappingURL=Embedded_RecordTest.js.map

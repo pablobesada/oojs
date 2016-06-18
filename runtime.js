@@ -72,7 +72,7 @@ router.get('/class', function (req, res, next) {
 
 router.get('/parentclass', function (req, res, next) {
     var cls = cm.getParentClassFor(req.query.name, req.query.parent, req.query.dirname)
-    var fn = cls.__filename__;
+    var fn = cls.__description__.filename  || cls.__filename__ ;
     sendModule(res, fn);
     console.log(fn)
 });

@@ -1,5 +1,5 @@
 "use strict";
-var app = require("./../../app")
+//var app = require("./../../app")
 var chance = new require("chance")()
 var _ = require("underscore")
 var oo = require("openorange")
@@ -7,9 +7,9 @@ var Query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
-var utils = require("../utils")
+let utils = null;
 
-describe("Record", function () {
+describe("Embedded_Record", function () {
     this.timeout(18000)
     let cls = cm.getClass("SalesOrder");
     let rec = null;
@@ -50,3 +50,6 @@ describe("Record", function () {
     })
 });
 
+module.exports = function config(utilsModule) {
+    utils = utilsModule
+}

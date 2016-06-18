@@ -103,7 +103,7 @@ orm.generate_insert_sql = function generate_insert_sql(record) {
             values.push(record.fields(fn).getSQLValue());
         }
     }
-    var sql = "INSERT INTO " + record.__description__.name + " (" + fnames.join(",") + ") VALUES (" + questions.join(",") + ")";
+    var sql = "INSERT INTO " + record.__class__.__description__.name + " (" + fnames.join(",") + ") VALUES (" + questions.join(",") + ")";
     return {sql: sql, values: values};
 }
 
@@ -127,7 +127,7 @@ orm.generate_update_sql = function generate_update_sql(record) {
         where.push("`syncVersion`=?");
         values.push(record.oldFields("syncVersion").getSQLValue());
     }
-    var sql = "UPDATE " + record.__description__.name + " SET " + setfields.join(",") + " WHERE " + where.join(" AND ");
+    var sql = "UPDATE " + record.__class__.__description__.name + " SET " + setfields.join(",") + " WHERE " + where.join(" AND ");
     return {sql: sql, values: values};
 }
 
@@ -288,7 +288,7 @@ orm.generate_load_sql = function generate_load_sql(record) {
         }
     }
     if (where.length == 0) throw new Error("Imposible hacer select sin valores")
-    var sql = "SELECT " + snames.join(",") + " FROM " + record.__description__.name + " WHERE " + where.join(" AND ") + " LIMIT 1";
+    var sql = "SELECT " + snames.join(",") + " FROM " + record.__class__.__description__.name + " WHERE " + where.join(" AND ") + " LIMIT 1";
     return {sql: sql, values: values};
 }
 

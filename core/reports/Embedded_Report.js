@@ -25,25 +25,7 @@ var Description = {
  })*/
 
 var Embedded_Report = function () {
-    _createClass(Embedded_Report, [{
-        key: 'getClass',
-        value: function getClass() {
-            return Object.getPrototypeOf(this);
-        }
-    }], [{
-        key: 'define',
-        value: function define(obj) {
-            for (var m in obj) {
-                this[m] = obj[m];
-            }
-            return this;
-        }
-    }, {
-        key: 'getParentClass',
-        value: function getParentClass() {
-            return Object.getPrototypeOf(this);
-        }
-    }, {
+    _createClass(Embedded_Report, null, [{
         key: 'createChildClass',
         value: function createChildClass(descriptor, filename) {
             //console.log("en createChildClass: ", this)
@@ -96,7 +78,6 @@ var Embedded_Report = function () {
     }, {
         key: 'initClass',
         value: function initClass(descriptor) {
-            console.log("en initClass: " + this);
             //var childclass = Object.create(this)
             this.__description__ = {};
             this.__description__.name = descriptor.name;

@@ -9,15 +9,16 @@ var Description = {
         Name: {type: "string", length: 30},
         GroupCode: {type: "string", length: 30},
         TaxRegNr: {type: "string", length: 30},
+    },
+    filename: __filename
+}
+
+var Parent = cm.SuperClass(Description)
+
+class Customer extends Parent {
+    constructor() {
+        super()
     }
 }
 
-var Customer = cm.createClass(Description, __filename)
-
-Customer.init = function init() {
-    Customer.super("init", this);
-    //console.log("en init de customer de base")
-    return this
-}
-
-module.exports = Customer
+module.exports = Customer.initClass(Description)

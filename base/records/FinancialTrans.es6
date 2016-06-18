@@ -5,14 +5,16 @@ var Description = {
     inherits: 'Transaction',
     fields: {
         Currency: {type: "string", length: 3},
+    },
+    filename: __filename
+}
+
+var Parent = cm.SuperClass(Description)
+
+class FinancialTrans extends Parent {
+
+    constructor() {
+        super()
     }
 }
-
-var FinancialTrans = cm.createClass(Description, __filename)
-
-FinancialTrans.init = function init() {
-    FinancialTrans.__super__.init.call(this);
-    return this
-}
-
-module.exports = FinancialTrans
+module.exports = FinancialTrans.initClass(Description)

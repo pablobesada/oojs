@@ -1,190 +1,353 @@
 "use strict";
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var oo = require("openorange");
+var _ = require("underscore");
 
 var WindowDescription = {
     name: 'Embedded_Window',
-    inherits: null
+    inherits: null,
+    filename: __filename
 };
 
+/*
 var Embedded_Window = Object.create({
     '__super__': null,
     '__description__': WindowDescription,
-    '__filename__': __filename
-});
+    '__filename__': __filename,
+})
+*/
 
-Embedded_Window.new = function () {
-    var res = Object.create(this);
-    res.__class__ = this;
-    return res.init();
-};
+var Embedded_Window = function () {
+    _createClass(Embedded_Window, [{
+        key: "open",
+        value: function open() {
+            var wm = Object.create(window.WindowManager).init(this);
+            wm.render($('#content')[0]);
+        }
+    }, {
+        key: "setFocus",
+        value: function setFocus() {
+            window.WindowManager.setFocus(this);
+        }
+    }], [{
+        key: "new",
+        value: function _new() {
+            var res = new this();
+            return res;
+        }
+    }, {
+        key: "initClass",
+        value: function initClass(descriptor) {
+            //var childclass = Object.create(this)
+            var parentdesc = this.__description__;
+            var newdesc = {};
+            newdesc.name = descriptor.name;
+            newdesc.title = descriptor.title;
+            newdesc.recordClass = descriptor.record;
+            newdesc.form = descriptor.form;
+            newdesc.filename = descriptor.filename;
+            this.__description__ = newdesc;
+            this.__recordClass__ = null;
+            this.__super__ = Reflect.getPrototypeOf(this);
+            return this;
+        }
+    }]);
 
-Embedded_Window.open = function () {
-    var wm = Object.create(window.WindowManager).init(this);
-    wm.render($('#content')[0]);
-};
+    function Embedded_Window() {
+        _classCallCheck(this, Embedded_Window);
 
-Embedded_Window.setFocus = function setFocus() {
-    window.WindowManager.setFocus(this);
-};
-
-Embedded_Window.createChildClass = function createChildClass(descriptor, filename) {
-    var childclass = Object.create(this);
-    childclass.__description__ = {};
-    childclass.__description__.name = descriptor.name;
-    childclass.__description__.title = descriptor.title;
-    childclass.__description__.recordClass = descriptor.record;
-    childclass.__description__.form = descriptor.form;
-    childclass.__filename__ = filename;
-    childclass.__super__ = this;
-    this.__recordClass__ = null;
-    return childclass;
-};
-
-Embedded_Window.init = function init() {
-    this.__record__ = null;
-    this.__listeners__ = [];
-    this.__title__ = this.__class__.__description__.title;
-    return this;
-};
-
-Embedded_Window.addListener = function addListener(listener) {
-    this.__listeners__.push(listener);
-};
-
-Embedded_Window.notifyListeners = function notifyListeners(event) {
-    _(this.__listeners__).forEach(function (listener) {
-        listener.update(event);
-    });
-};
-
-Embedded_Window.getRecordClass = function getRecordClass() {
-    if (this.__class__.__recordClass__ == null && this.__description__.recordClass) {
-        this.__class__.__recordClass__ = oo.classmanager.getClass(this.__description__.recordClass);
+        this.__class__ = this.constructor;
+        this.__record__ = null;
+        this.__listeners__ = [];
+        this.__title__ = this.__class__.__description__.title;
     }
-    return this.__class__.__recordClass__;
-};
 
-Embedded_Window.super = function callSuper(methodname, self) {
-    if (methodname in this.__super__) {
-        return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
-    } else {
-        return Promise.resolve();
-    }
-};
+    _createClass(Embedded_Window, [{
+        key: "addListener",
+        value: function addListener(listener) {
+            this.__listeners__.push(listener);
+        }
+    }, {
+        key: "notifyListeners",
+        value: function notifyListeners(event) {
+            _(this.__listeners__).forEach(function (listener) {
+                listener.update(event);
+            });
+        }
+    }, {
+        key: "getRecordClass",
+        value: function getRecordClass() {
+            if (this.__class__.__recordClass__ == null && this.__class__.__description__.recordClass) {
+                this.__class__.__recordClass__ = oo.classmanager.getClass(this.__class__.__description__.recordClass);
+            }
+            return this.__class__.__recordClass__;
+        }
+    }, {
+        key: "tryCallSuper",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(methodname) {
+                var parentClassPrototype,
+                    _args = arguments;
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                parentClassPrototype = Object.getPrototypeOf(this.constructor).prototype;
 
-Embedded_Window.getDescription = function getDescription() {
-    return this.__description__;
-};
+                                if (!(methodname in parentClassPrototype)) {
+                                    _context.next = 5;
+                                    break;
+                                }
 
-Embedded_Window.inspect = function inspect() {
-    return "<" + this.__description__.name + ", from " + this.__filename__ + ">";
-};
+                                return _context.abrupt("return", parentClassPrototype[methodname].apply(this, Array.prototype.slice.apply(_args).slice(2)));
 
-Embedded_Window.getOriginalTitle = function getOriginalTitle() {
-    return this.__class__.__description__.title;
-};
+                            case 5:
+                                return _context.abrupt("return", Promise.resolve());
 
-Embedded_Window.getTitle = function getTitle() {
-    return this.getOriginalTitle();
-};
+                            case 6:
+                            case "end":
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
 
-Embedded_Window.notifyTitleChanged = function notifyTitleChanged() {
-    this.notifyListeners({ type: "title", action: "modified", data: this.getTitle() });
-};
+            function tryCallSuper(_x) {
+                return ref.apply(this, arguments);
+            }
 
-Embedded_Window.setTitle = function setTitle(title) {
-    this.__title__ = title;
-    this.notifyListeners({ type: "title", action: "modified", data: title });
-};
+            return tryCallSuper;
+        }()
+    }, {
+        key: "inspect",
+        value: function inspect() {
+            return "<" + this.__description__.name + ", from " + this.__filename__ + ">";
+        }
+    }, {
+        key: "getOriginalTitle",
+        value: function getOriginalTitle() {
+            return this.__class__.__description__.title;
+        }
+    }, {
+        key: "getTitle",
+        value: function getTitle() {
+            return this.getOriginalTitle();
+        }
+    }, {
+        key: "notifyTitleChanged",
+        value: function notifyTitleChanged() {
+            this.notifyListeners({ type: "title", action: "modified", data: this.getTitle() });
+        }
+    }, {
+        key: "setTitle",
+        value: function setTitle(title) {
+            this.__title__ = title;
+            this.notifyListeners({ type: "title", action: "modified", data: title });
+        }
+    }, {
+        key: "setRecord",
+        value: function setRecord(rec) {
+            if (this.__record__ != rec) {
+                this.__record__ = rec;
+                this.__record__.addListener(this);
+                this.notifyListeners({ type: 'record', action: 'replaced', data: rec });
+            }
+        }
+    }, {
+        key: "fieldModified",
+        value: function fieldModified(record, field, row, rowfield, oldvalue) {
+            this.notifyListeners({
+                type: 'field', action: 'modified', data: {
+                    record: record,
+                    field: field,
+                    row: row,
+                    rowfield: rowfield,
+                    oldvalue: oldvalue
+                }
+            });
+        }
+    }, {
+        key: "rowInserted",
+        value: function rowInserted(record, detail, row, position) {
+            this.notifyListeners({
+                type: 'field', action: 'row inserted', data: {
+                    record: record,
+                    detail: detail,
+                    row: row,
+                    position: position
+                }
+            });
+        }
+    }, {
+        key: "detailCleared",
+        value: function detailCleared(record, detail, row, position) {
+            this.notifyListeners({
+                type: 'field', action: 'detail cleared', data: {
+                    record: record,
+                    detail: detail
+                }
+            });
+        }
+    }, {
+        key: "getRecord",
+        value: function getRecord(rec) {
+            return this.__record__;
+        }
+    }, {
+        key: "beforeEdit",
+        value: function beforeEdit(fieldname) {
+            var self = this;
+            var res = true;
+            if ('focus ' + fieldname in self) {
+                res = self['focus ' + fieldname]();
+                return res;
+            }
+            res = self.getRecord().fieldIsEditable(fieldname);
+            return res;
+        }
+    }, {
+        key: "beforeEditRow",
+        value: function beforeEditRow(fieldname, rowfieldname, rownr) {
+            var self = this;
+            var res = true;
+            if ('focus ' + fieldname + "." + rowfieldname in self) {
+                res = self['focus ' + fieldname + "." + rowfieldname]();
+                return res;
+            }
+            res = self.getRecord().fieldIsEditable(fieldname, rowfieldname, rownr);
+            return res;
+        }
+    }, {
+        key: "call_afterEdit",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(fieldname, value) {
+                var self;
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                self = this;
+                                //console.log(self.getRecord())
 
-Embedded_Window.save = function save() {
-    if (this.getRecord() != null) {
-        return this.getRecord().save();
-    }
-    return Promise.resolve();
-};
+                                self.getRecord()[fieldname] = value;
+                                //console.log(self.getRecord()[fieldname])
 
-Embedded_Window.setRecord = function setRecord(rec) {
-    if (this.__record__ != rec) {
-        this.__record__ = rec;
-        this.__record__.addListener(this);
-        this.notifyListeners({ type: 'record', action: 'replaced', data: rec });
-    }
-};
+                                if (!('changed ' + fieldname in self)) {
+                                    _context2.next = 6;
+                                    break;
+                                }
 
-Embedded_Window.fieldModified = function fieldModified(record, field, row, rowfield, oldvalue) {
-    this.notifyListeners({ type: 'field', action: 'modified', data: {
-            record: record,
-            field: field,
-            row: row,
-            rowfield: rowfield,
-            oldvalue: oldvalue
-        } });
-};
+                                _context2.next = 5;
+                                return this['changed ' + fieldname]();
 
-Embedded_Window.rowInserted = function rowInserted(record, detail, row, position) {
-    this.notifyListeners({ type: 'field', action: 'row inserted', data: {
-            record: record,
-            detail: detail,
-            row: row,
-            position: position
-        } });
-};
+                            case 5:
+                                return _context2.abrupt("return", _context2.sent);
 
-Embedded_Window.detailCleared = function detailCleared(record, detail, row, position) {
-    this.notifyListeners({ type: 'field', action: 'detail cleared', data: {
-            record: record,
-            detail: detail
-        } });
-};
+                            case 6:
+                            case "end":
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
 
-Embedded_Window.getRecord = function getRecord(rec) {
-    return this.__record__;
-};
+            function call_afterEdit(_x2, _x3) {
+                return ref.apply(this, arguments);
+            }
 
-Embedded_Window.beforeEdit = function beforeEdit(fieldname) {
-    var self = this;
-    var res = true;
-    if ('focus ' + fieldname in self) {
-        res = self['focus ' + fieldname]();
-        return res;
-    }
-    res = self.getRecord().fieldIsEditable(fieldname);
-    return res;
-};
+            return call_afterEdit;
+        }()
+    }, {
+        key: "afterEditRow",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(fieldname, rowfieldname, rownr, value) {
+                var self;
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                self = this;
 
-Embedded_Window.beforeEditRow = function beforeEditRow(fieldname, rowfieldname, rownr) {
-    var self = this;
-    var res = true;
-    if ('focus ' + fieldname + "." + rowfieldname in self) {
-        res = self['focus ' + fieldname + "." + rowfieldname]();
-        return res;
-    }
-    res = self.getRecord().fieldIsEditable(fieldname, rowfieldname, rownr);
-    return res;
-};
+                                self.getRecord()[fieldname][rownr][rowfieldname] = value;
+                                if ('changed ' + fieldname + '.' + rowfieldname in this) {
+                                    this['changed ' + fieldname + '.' + rowfieldname](rownr);
+                                }
 
-Embedded_Window.afterEdit = function afterEdit(fieldname, value) {
-    var self = this;
-    self.getRecord()[fieldname] = value;
-    if ('changed ' + fieldname in this) {
-        this['changed ' + fieldname]();
-    }
-};
+                            case 3:
+                            case "end":
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
 
-Embedded_Window.afterEditRow = function afterEditRow(fieldname, rowfieldname, rownr, value) {
-    var self = this;
-    self.getRecord()[fieldname][rownr][rowfieldname] = value;
-    if ('changed ' + fieldname + '.' + rowfieldname in this) {
-        this['changed ' + fieldname + '.' + rowfieldname](rownr);
-    }
-};
+            function afterEditRow(_x4, _x5, _x6, _x7) {
+                return ref.apply(this, arguments);
+            }
 
-Embedded_Window.save = function save() {
-    var rec = this.getRecord();
-    if (rec != null) return rec.save();
-};
+            return afterEditRow;
+        }()
+    }, {
+        key: "save",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+                var rec;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                rec = this.getRecord();
+
+                                if (!(rec != null)) {
+                                    _context4.next = 3;
+                                    break;
+                                }
+
+                                return _context4.abrupt("return", rec.save());
+
+                            case 3:
+                                return _context4.abrupt("return", false);
+
+                            case 4:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function save() {
+                return ref.apply(this, arguments);
+            }
+
+            return save;
+        }()
+    }], [{
+        key: "tryCall",
+        value: function tryCall(self, methodname) {
+            if (methodname in this) {
+                return this[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+            } else {
+                return Promise.resolve();
+            }
+        }
+    }, {
+        key: "getDescription",
+        value: function getDescription() {
+            return this.__class__.__description__;
+        }
+    }]);
+
+    return Embedded_Window;
+}();
+
+Embedded_Window.__description__ = WindowDescription;
 
 module.exports = Embedded_Window;
 

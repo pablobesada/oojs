@@ -12,8 +12,8 @@ var utils = require("../utils")
 describe("Report", function () {
     it("create a report", async () => {
         let report = cm.getClass("CustomerListReport").new()
-        console.log(report.__class__.__description__.filename)
-        await report.run()
+        console.log(report.__class__)
+        //await report.run()
         //console.log(report.getHTML())
     })
 });

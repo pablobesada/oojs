@@ -9,26 +9,30 @@ var Description = {
         SalesGroup: {type: "string", length: 20},
         PrintFormat: {type: "integer"},
         Items: {type: "detail", class: "SalesOrderItemRow"}
+    },
+    filename: __filename,
+}
+
+var Parent = cm.SuperClass(Description)
+
+class SalesOrder extends Parent {
+
+    constructor() {
+        super()
+    }
+
+
+    async check() {
+        var res = super.check()
+        if (!res) return res;
+        return true;
+    }
+
+    fieldIsEditable(fieldname, rowfieldname, rownr) {
+        //return false;
+        if (rowfieldname == 'rowNr') return false;
+        return true;
     }
 }
 
-var SalesOrder = cm.createClass(Description, __filename)
-
-SalesOrder.init = function init() {
-    SalesOrder.__super__.init.call(this);
-    return this
-}
-
-
-SalesOrder.check = async function check() {
-    var res = SalesOrder.__super__.check.call(this)
-    if (!res) return res;
-    return true;
-}
-
-SalesOrder.fieldIsEditable = function fieldIsEditable(fieldname, rowfieldname, rownr) {
-    //return false;
-    if (rowfieldname == 'rowNr') return false;
-    return true;
-}
-module.exports = SalesOrder
+module.exports = SalesOrder.initClass(Description)

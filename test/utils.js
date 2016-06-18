@@ -7,7 +7,7 @@ let moment = require("momentjs")
 let utils = {}
 
 utils.fillRecord = function fillRecord(record){
-    var fields = record.__description__.fields
+    var fields = record.__class__.getDescription().fields
     _(fields).forEach(function(fielddef, fn) {
         if (fn == 'masterId') return;
         if (fn == 'rowNr') return;

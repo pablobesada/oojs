@@ -10,22 +10,26 @@ var Description = {
         OriginType: {type: "boolean"},
         DeliveryDateRow: {type: "date"},
         DeliveryTimeRow: {type: "time"},
+    },
+    filename: __filename
+
+}
+
+var Parent = cm.SuperClass(Description)
+
+class SalesOrderItemRow extends Parent {
+    constructor() {
+        super()
+
+    }
+
+    async pasteArtCode(salesorder) {
+        var self = this;
+        console.log("en pasteArtCode: " + self.ArtCode);
+        var item = await cm.getClass("Item").bring(self.ArtCode);
+        console.log("bringed: " + item.Name)
+        self.Name = item.Name
     }
 }
 
-var SalesOrderItemRow = cm.createClass(Description, __filename )
-
-SalesOrderItemRow.init = function init() {
-    SalesOrderItemRow.__super__.init.call(this);
-    return this
-}
-
-SalesOrderItemRow.pasteArtCode = async function pasteArtCode(salesorder) {
-    var self = this;
-    console.log("en pasteArtCode: " + self.ArtCode);
-    var item = await cm.getClass("Item").bring(self.ArtCode);
-    console.log("bringed: " + item.Name)
-    self.Name = item.Name
-}
-
-module.exports = SalesOrderItemRow
+module.exports = SalesOrderItemRow.initClass(Description)

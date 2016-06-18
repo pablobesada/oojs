@@ -508,7 +508,7 @@ WindowContainer.afterEdit = function afterEdit(event) {
         value = $(event.currentTarget).pickadate('picker').get('select', 'yyyy-mm-dd');
     }
     //console.log("afteredit", self, value)
-    self.window.afterEdit(event.currentTarget.name, value)
+    self.window.call_afterEdit(event.currentTarget.name, value)
 };
 
 WindowContainer.afterEditRow = function afterEditRow(event) {

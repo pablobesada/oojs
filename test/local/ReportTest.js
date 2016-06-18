@@ -23,11 +23,11 @@ describe("Report", function () {
                     case 0:
                         report = cm.getClass("CustomerListReport").new();
 
-                        console.log(report.__class__.__description__.filename);
-                        _context.next = 4;
-                        return report.run();
+                        console.log(report.__class__);
+                        //await report.run()
+                        //console.log(report.getHTML())
 
-                    case 4:
+                    case 2:
                     case "end":
                         return _context.stop();
                 }

@@ -84,34 +84,32 @@ var Description = {
             },
         ]
         }
-    ]
+    ],
+    filename: __filename,
 }
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var SalesOrderWindow = cm.createClass(Description, __filename)
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-SalesOrderWindow.init = function init() {
-    SalesOrderWindow.super("init", this);
-    return this
+var Parent = cm.SuperClass(Description)
+
+class SalesOrderWindow extends Parent {
+    constructor() {
+        super()
+    }
+
+    async "changed PrintFormat"() {
+        await super["changed PrintFormat"]();
+        console.log("SO: changed PrintFormat: " + this.getRecord().PrintFormat)
+    }
+
+    async "changed SerNr"() {
+        super["changed SerNr"]();
+        console.log("SO: changed SerNr: " + this.getRecord().SerNr)
+    }
+
+
+    async "changed Items.ArtCode"(rowNr) {
+        var self = this;
+        await super["changed Items.ArtCode"](rowNr)
+        self.getRecord().Items[rowNr].Name += 'X'
+    }
 }
-
-SalesOrderWindow["changed PrintFormat"] = function () {
-    SalesOrderWindow.super("changed PrintFormat", this);
-    console.log("SO: changed PrintFormat: " + this.getRecord().PrintFormat)
-}
-
-SalesOrderWindow["changed SerNr"] = function () {
-    SalesOrderWindow.super("changed SerNr", this);
-    console.log("SO: changed SerNr: " + this.getRecord().SerNr)
-}
-
-
-SalesOrderWindow["changed Items.ArtCode"] = function (rowNr) {
-    var self = this;
-    return SalesOrderWindow.super("changed Items.ArtCode", this, rowNr)
-        .then(function () {
-            self.getRecord().Items[rowNr].Name += 'X'
-        })
-}
-
-module.exports = SalesOrderWindow
+module.exports = SalesOrderWindow.initClass(Description)

@@ -4,14 +4,15 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'Window',
     inherits: 'Embedded_Window',
+    filename: __filename,
 }
 
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var Window = cm.createClass(Description, __filename )
+var Parent = cm.SuperClass(Description)
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-Window.init = function init() {
-    Window.__super__.init.call(this);
-    return this
+class Window extends Parent {
+    constructor() {
+        super()
+    }
 }
-
-module.exports = Window
+module.exports = Window.initClass(Description)

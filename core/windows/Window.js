@@ -1,20 +1,35 @@
 "use strict";
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var cm = require('openorange').classmanager;
 
 var Description = {
     name: 'Window',
-    inherits: 'Embedded_Window'
+    inherits: 'Embedded_Window',
+    filename: __filename
 };
 
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var Window = cm.createClass(Description, __filename);
+var Parent = cm.SuperClass(Description);
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-Window.init = function init() {
-    Window.__super__.init.call(this);
-    return this;
-};
 
-module.exports = Window;
+var Window = function (_Parent) {
+    _inherits(Window, _Parent);
+
+    function Window() {
+        _classCallCheck(this, Window);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Window).call(this));
+    }
+
+    return Window;
+}(Parent);
+
+module.exports = Window.initClass(Description);
 
 //# sourceMappingURL=Window.js.map

@@ -3,19 +3,18 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'SalesTransactionWindow',
     inherits: 'FinancialTransWindow',
+    filename: __filename
 }
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var SalesTransactionWindow = cm.createClass(Description, __filename )
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-SalesTransactionWindow.init = function init() {
-    SalesTransactionWindow.__super__.init.call(this);
-    return this
-}
+var Parent = cm.SuperClass(Description)
+class SalesTransactionWindow extends Parent {
+    constructor() {
+        super()
+    }
 
-SalesTransactionWindow["changed CustCode"] = async function () {
-    await SalesTransactionWindow.super("changed CustCode", this);
-    this.getRecord().pasteCustCode();
+    async "changed CustCode"() {
+        await Parent.tryCall(this, "changed CustCode")
+        return this.getRecord().pasteCustCode();
+    }
 }
-
-module.exports = SalesTransactionWindow
+module.exports = SalesTransactionWindow.initClass(Description)

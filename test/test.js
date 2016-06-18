@@ -13,10 +13,11 @@ var Query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
+var utils = require("./utils")
 
-
-//require("./local/RecordTest.js")
-require("./local/ReportTest.js")
+//require("./core/records/Embedded_RecordTest")(utils)
+require("./core/windows/Embedded_WindowTest")(utils)
+//require("./local/ReportTest.js")
 
 
 

@@ -15,19 +15,6 @@ var Description = {
 
 class Embedded_Report {
 
-    static define(obj) {
-        for (let m in obj) {
-            this[m] = obj[m]
-        }
-        return this
-    }
-    getClass() {
-        return Object.getPrototypeOf(this)
-    }
-    static getParentClass() {
-        return Object.getPrototypeOf(this)
-    }
-
     static createChildClass(descriptor, filename) {
         //console.log("en createChildClass: ", this)
         //var childclass = Object.create(this)
@@ -57,7 +44,6 @@ class Embedded_Report {
     }
 
     static initClass(descriptor) {
-        console.log("en initClass: " + this)
         //var childclass = Object.create(this)
         this.__description__ = {}
         this.__description__.name = descriptor.name;

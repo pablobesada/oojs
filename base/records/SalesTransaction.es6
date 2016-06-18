@@ -7,22 +7,24 @@ var Description = {
     fields: {
         CustCode: {type: "string", length: 30, linkto: 'Customer'},
         CustName: {type: "string", length: 30},
+    },
+    filename: __filename
+}
+
+let Parent = cm.SuperClass(Description)
+
+class SalesTransaction extends Parent {
+    constructor() {
+        super()
+    }
+
+    async pasteCustCode() {
+        var self = this;
+        if (this.CustCode) {
+            let customer = await cm.getClass("Customer").bring(this.CustCode);
+            if (customer) self.CustName = customer.Name;
+        }
     }
 }
 
-var SalesTransaction = cm.createClass(Description, __filename)
-
-SalesTransaction.init = function init() {
-    SalesTransaction.__super__.init.call(this);
-    return this
-}
-
-SalesTransaction.pasteCustCode = async function pasteCustCode() {
-    var self = this;
-    if (this.CustCode) {
-        var customer = await cm.getClass("Customer").bring(this.CustCode);
-        self.CustName = customer.Name;
-    }
-}
-
-module.exports = SalesTransaction
+module.exports = SalesTransaction.initClass(Description)
