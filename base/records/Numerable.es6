@@ -18,11 +18,7 @@ class Numerable extends Parent {
     }
 
     static async bring(SerNr) {
-        var rec = this.new();
-        rec.SerNr = SerNr;
-        var res = await rec.load();
-        if (res) return rec;
-        return null
+        return this.findOne({SerNr: SerNr})
     }
 
     fieldIsEditable(fieldname, rowfieldname, rowNr) {

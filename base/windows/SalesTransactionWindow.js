@@ -38,7 +38,7 @@ var SalesTransactionWindow = function (_Parent) {
                         switch (_context.prev = _context.next) {
                             case 0:
                                 _context.next = 2;
-                                return Parent.tryCall(this, "changed CustCode");
+                                return Parent.tryCall(this, null, "changed CustCode");
 
                             case 2:
                                 return _context.abrupt('return', this.getRecord().pasteCustCode());

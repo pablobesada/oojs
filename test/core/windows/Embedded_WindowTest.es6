@@ -8,6 +8,8 @@ var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
 let utils = null;
+//oo.isClient = true;
+//oo.isServer = false;
 
 describe("Embedded_Window", function () {
     let cls = cm.getClass("SalesOrderWindow");

@@ -95,14 +95,13 @@ classmanager.getParentClassFor = function getParentClassFor(name, parent, dirnam
             res = moduleFunction();
             //console.log("en parent success: " + name +"/" + parent + "   " + res.__filename__);
             classmanager.classes[k] = res;
-            classmanager.classes[k] = res;
             //console.log("getparentclass: fetching " + name + "/" + parent + "/" + dirname + " from server");
-            //console.log("received " + res.getDescription().name, "SD: " + classmanager.extractScriptDir(res.__filename__))
+            //console.log(res)
             if (res.__description__.name != name) {
                 //console.log("storing as: " + res.__description__.name + " and " + res.__description__.name + "|0");
                 classmanager.classes[res.__description__.name + "|0"] = res;
             }
-            var sd_idx = classmanager.reversed_scriptdirs.indexOf(classmanager.extractScriptDir(res.__filename__));
+            var sd_idx = classmanager.reversed_scriptdirs.indexOf(classmanager.extractScriptDir(res.__description__.filename));
             if (sd_idx != 0) {
                 classmanager.classes[res.__description__.name + "|" + sd_idx] = res;
             }

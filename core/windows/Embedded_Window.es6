@@ -8,14 +8,6 @@ var WindowDescription = {
     filename: __filename,
 }
 
-/*
-var Embedded_Window = Object.create({
-    '__super__': null,
-    '__description__': WindowDescription,
-    '__filename__': __filename,
-})
-*/
-
 class Embedded_Window {
     static new() {
         var res = new this()
@@ -70,25 +62,17 @@ class Embedded_Window {
         return this.__class__.__recordClass__
     }
 
-    static tryCall(self, methodname) {
-        if (methodname in this) {
-            return this[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+    static tryCall(self, defaultResponse, methodname) {
+        if (methodname == null) throw new Error("methodname can not be null")
+        if (methodname in this.prototype) {
+            return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
         } else {
-            return Promise.resolve();
-        }
-    }
-
-    async tryCallSuper(methodname) {
-        let parentClassPrototype = Object.getPrototypeOf(this.constructor).prototype;
-        if (methodname in parentClassPrototype) {
-            return parentClassPrototype[methodname].apply(this, Array.prototype.slice.apply(arguments).slice(2));
-        } else {
-            return Promise.resolve()
+            return defaultResponse;
         }
     }
 
     static getDescription() {
-        return this.__class__.__description__
+        return this.__description__
     }
 
     inspect() {

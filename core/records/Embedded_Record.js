@@ -10,6 +10,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+//"use strict";
 var oo = require("openorange");
 var _ = require("underscore");
 var moment = require("momentjs");
@@ -289,8 +290,8 @@ function propDetailGetter(fn) {
 
 var Embedded_Record = function () {
     _createClass(Embedded_Record, [{
-        key: "callSuper",
-        value: function callSuper(methodname, self) {
+        key: "callSuperXXX",
+        value: function callSuperXXX(methodname, self) {
             if (methodname in this.__super__) {
                 return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
             } else {
@@ -326,6 +327,16 @@ var Embedded_Record = function () {
             this.__super__ = Reflect.getPrototypeOf(this);
             this.__description__ = newdesc;
             return this;
+        }
+    }, {
+        key: "tryCall",
+        value: function tryCall(self, defaultResponse, methodname) {
+            if (methodname == null) throw new Error("methodname can not be null");
+            if (methodname in this.prototype) {
+                return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+            } else {
+                return defaultResponse;
+            }
         }
     }, {
         key: "getDescription",
@@ -495,43 +506,59 @@ var Embedded_Record = function () {
                                 return _context.abrupt("return", res);
 
                             case 14:
-                                _context.next = 20;
+                                _context.next = 22;
                                 break;
 
                             case 16:
                                 was_new = false;
-                                res = self.beforeUpdate();
+                                _context.next = 19;
+                                return self.beforeUpdate();
 
-                                if (res) {
-                                    _context.next = 20;
-                                    break;
-                                }
-
-                                return _context.abrupt("return", res);
-
-                            case 20:
-                                _context.next = 22;
-                                return self.store();
-
-                            case 22:
+                            case 19:
                                 res = _context.sent;
 
                                 if (res) {
-                                    _context.next = 25;
+                                    _context.next = 22;
                                     break;
                                 }
 
                                 return _context.abrupt("return", res);
 
-                            case 25:
-                                if (was_new) {
-                                    self.afterInsert();
-                                } else {
-                                    self.afterUpdate();
+                            case 22:
+                                _context.next = 24;
+                                return self.store();
+
+                            case 24:
+                                res = _context.sent;
+
+                                if (res) {
+                                    _context.next = 27;
+                                    break;
                                 }
-                                return _context.abrupt("return", true);
+
+                                return _context.abrupt("return", res);
 
                             case 27:
+                                if (!was_new) {
+                                    _context.next = 32;
+                                    break;
+                                }
+
+                                _context.next = 30;
+                                return self.afterInsert();
+
+                            case 30:
+                                _context.next = 34;
+                                break;
+
+                            case 32:
+                                _context.next = 34;
+                                return self.afterUpdate();
+
+                            case 34:
+                                return _context.abrupt("return", true);
+
+                            case 35:
                             case "end":
                                 return _context.stop();
                         }
@@ -570,7 +597,7 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                return _context2.abrupt("return", Promise.resolve());
+                                return _context2.abrupt("return");
 
                             case 1:
                             case "end":
@@ -594,7 +621,7 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                return _context3.abrupt("return", Promise.resolve());
+                                return _context3.abrupt("return", true);
 
                             case 1:
                             case "end":
@@ -618,7 +645,7 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                return _context4.abrupt("return", Promise.resolve());
+                                return _context4.abrupt("return", true);
 
                             case 1:
                             case "end":
@@ -642,7 +669,7 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context5.prev = _context5.next) {
                             case 0:
-                                return _context5.abrupt("return", Promise.resolve());
+                                return _context5.abrupt("return", true);
 
                             case 1:
                             case "end":
@@ -666,7 +693,7 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context6.prev = _context6.next) {
                             case 0:
-                                return _context6.abrupt("return", Promise.resolve());
+                                return _context6.abrupt("return", true);
 
                             case 1:
                             case "end":
@@ -690,7 +717,7 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context7.prev = _context7.next) {
                             case 0:
-                                return _context7.abrupt("return", Promise.resolve());
+                                return _context7.abrupt("return", true);
 
                             case 1:
                             case "end":
@@ -785,13 +812,9 @@ var Embedded_Record = function () {
             return load;
         }()
     }, {
-        key: "select",
-        value: function select() {
-            return Query.select(this);
-            //return oo.orm.select(this)
-        }
-    }, {
         key: "isNew",
+
+        //return oo.orm.select(this)
         value: function isNew() {
             return this.__isnew__;
         }
@@ -898,6 +921,55 @@ var Embedded_Record = function () {
             return true;
         }
     }], [{
+        key: "findOne",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee11(whereClause) {
+                var rec, fn, res;
+                return regeneratorRuntime.wrap(function _callee11$(_context11) {
+                    while (1) {
+                        switch (_context11.prev = _context11.next) {
+                            case 0:
+                                rec = this.new();
+
+                                for (fn in whereClause) {
+                                    rec[fn] = whereClause[fn];
+                                }
+                                _context11.next = 4;
+                                return rec.load();
+
+                            case 4:
+                                res = _context11.sent;
+
+                                if (res) {
+                                    _context11.next = 7;
+                                    break;
+                                }
+
+                                return _context11.abrupt("return", null);
+
+                            case 7:
+                                return _context11.abrupt("return", rec);
+
+                            case 8:
+                            case "end":
+                                return _context11.stop();
+                        }
+                    }
+                }, _callee11, this);
+            }));
+
+            function findOne(_x) {
+                return ref.apply(this, arguments);
+            }
+
+            return findOne;
+        }()
+    }, {
+        key: "select",
+        value: function select() {
+            return Query.select(this);
+        }
+    }, {
         key: "fromJSON",
         value: function fromJSON(obj, rec) {
             if (typeof obj == "string") obj = JSON.parse(obj);

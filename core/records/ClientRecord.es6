@@ -10,9 +10,7 @@ var Description = {
     filename: __filename
 }
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 var Parent = cm.SuperClass(Description)
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 
 class ClientRecord extends Parent {
     constructor() {
@@ -28,7 +26,10 @@ class ClientRecord extends Parent {
     }
 
     async save() {
-        return this.runInServer("save");
+        //return this.runInServer("save");
+        // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
+            // 1. save de registros locals
+            // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
     }
 
     async runInServer(methodname, params) {

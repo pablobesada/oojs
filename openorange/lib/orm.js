@@ -111,7 +111,7 @@ var save_existing = function () {
                             break;
                         }
 
-                        console.log({ code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user " + info.changedRows });
+                        console.log({ code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user " });
                         return _context4.abrupt("return", false);
 
                     case 9:

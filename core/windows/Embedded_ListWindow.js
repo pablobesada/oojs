@@ -1,69 +1,106 @@
-"use strict"
-var cm = require('openorange').classmanager
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var oo = require('openorange');
 
 var ListWindowDescription = {
     name: 'Embedded_ListWindow',
     inherits: null,
-}
+    filename: __filename
+};
 
-var Embedded_ListWindow =  Object.create({
-    '__super__': null,
-    '__description__': ListWindowDescription,
-    '__filename__': __filename,
-})
+var Embedded_ListWindow = function () {
+    _createClass(Embedded_ListWindow, null, [{
+        key: 'initClass',
+        value: function initClass(descriptor) {
+            var newdesc = {};
+            newdesc.name = descriptor.name;
+            newdesc.title = descriptor.title;
+            newdesc.recordClass = descriptor.record;
+            newdesc.windowClass = descriptor.window;
+            newdesc.columns = descriptor.columns;
+            newdesc.filename = descriptor.filename;
+            this.__description__ = newdesc;
+            this.__super__ = Reflect.getPrototypeOf(this);
+            this.__recordClass__ = null;
+            this.__windowClass__ = null;
+            return this;
+        }
+    }, {
+        key: 'new',
+        value: function _new() {
+            var res = new this();
+            return res;
+        }
+    }]);
 
+    function Embedded_ListWindow() {
+        _classCallCheck(this, Embedded_ListWindow);
 
-Embedded_ListWindow.createChildClass = function createChildClass(descriptor, filename) {
-    var childclass = Object.create(this)
-    childclass.__description__ = {}
-    childclass.__description__.name = descriptor.name;
-    childclass.__description__.title = descriptor.title;
-    childclass.__description__.recordClass = descriptor.record
-    childclass.__description__.windowClass = descriptor.window
-    childclass.__description__.columns = descriptor.columns;
-    //childclass.__description__.form = descriptor.form; //podria tener un form para casos de paste windows mas avanzados
-    childclass.__filename__ = filename;
-    childclass.__super__ = this;
-    this.__recordClass__ = null;
-    return childclass;
-}
-
-
-Embedded_ListWindow.new = function () {
-    var res = Object.create(this);
-    res.__class__ = this;
-    return res.init();
-}
-
-Embedded_ListWindow.init = function init() {
-    return this;
-}
-
-Embedded_ListWindow.open = function () {
-    var wm = Object.create(window.ListWindowManager).init(this)
-    wm.render($('#content')[0])
-}
-
-Embedded_ListWindow.setFocus = function setFocus() {
-    window.ListWindowManager.setFocus(this)
-}
-Embedded_ListWindow.super = function callSuper(methodname, self) {
-    if (methodname in this.__super__) {
-        return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
-    } else {
-        return Promise.resolve()
+        this.__class__ = this.constructor;
     }
-}
 
-Embedded_ListWindow.getDescription = function getDescription() {
-    return this.__description__
-}
+    _createClass(Embedded_ListWindow, [{
+        key: 'open',
+        value: function open() {
+            var wm = Object.create(window.ListWindowManager).init(this);
+            wm.render($('#content')[0]);
+        }
+    }, {
+        key: 'setFocus',
+        value: function setFocus() {
+            window.ListWindowManager.setFocus(this);
+        }
+    }, {
+        key: 'inspect',
+        value: function inspect() {
+            return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">";
+        }
+    }, {
+        key: 'getTitle',
+        value: function getTitle() {
+            return "RECORDS";
+        }
+    }, {
+        key: 'getRecordClass',
+        value: function getRecordClass() {
+            if (this.__class__.__recordClass__ == null && this.__class__.__description__.recordClass) {
+                this.__class__.__recordClass__ = oo.classmanager.getClass(this.__class__.__description__.recordClass);
+            }
+            return this.__class__.__recordClass__;
+        }
+    }, {
+        key: 'getWindowClass',
+        value: function getWindowClass() {
+            if (this.__class__.__windowClass__ == null && this.__class__.__description__.windowClass) {
+                this.__class__.__windowClass__ = oo.classmanager.getClass(this.__class__.__description__.windowClass);
+            }
+            return this.__class__.__windowClass__;
+        }
+    }], [{
+        key: 'tryCall',
+        value: function tryCall(self, methodname) {
+            if (methodname in this) {
+                return this[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+            } else {
+                return Promise.resolve();
+            }
+        }
+    }, {
+        key: 'getDescription',
+        value: function getDescription() {
+            return this.__description__;
+        }
+    }]);
 
-Embedded_ListWindow.inspect = function inspect() {
-    return "<" + this.__description__.name + ", from " + this.__filename__+ ">"
-}
+    return Embedded_ListWindow;
+}();
 
-Embedded_ListWindow.getTitle = function getTitle() {
-    return "RECORDS";
-}
-module.exports = Embedded_ListWindow
+Embedded_ListWindow.__description__ = ListWindowDescription;
+
+module.exports = Embedded_ListWindow;
+
+//# sourceMappingURL=Embedded_ListWindow.js.map

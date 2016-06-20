@@ -13,7 +13,7 @@ class SalesTransactionWindow extends Parent {
     }
 
     async "changed CustCode"() {
-        await Parent.tryCall(this, "changed CustCode")
+        await Parent.tryCall(this, null, "changed CustCode")
         return this.getRecord().pasteCustCode();
     }
 }

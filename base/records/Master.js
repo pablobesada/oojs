@@ -42,31 +42,13 @@ var Master = function (_Parent) {
         key: 'bring',
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(Code) {
-                var rec, res;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                rec = this.new();
+                                return _context.abrupt('return', this.findOne({ Code: Code }));
 
-                                rec.Code = Code;
-                                _context.next = 4;
-                                return rec.load();
-
-                            case 4:
-                                res = _context.sent;
-
-                                if (!res) {
-                                    _context.next = 7;
-                                    break;
-                                }
-
-                                return _context.abrupt('return', rec);
-
-                            case 7:
-                                return _context.abrupt('return', null);
-
-                            case 8:
+                            case 1:
                             case 'end':
                                 return _context.stop();
                         }

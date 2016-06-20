@@ -16,7 +16,7 @@ utils.fillRecord = function fillRecord(record){
                 record[fn] = chance.word({length: fielddef.length});
                 break;
             case 'integer':
-                record[fn] = chance.natural();
+                record[fn] = chance.integer({min: -10000, max: 10000});
                 break;
             case 'date':
                 record[fn] = moment()

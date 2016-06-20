@@ -29,7 +29,7 @@ WindowContainer.setFocus = function setFocus(window) {
 
 WindowContainer.init = function (wnd) {
     this.window = wnd;
-    this.windowjson = JSON.parse(JSON.stringify(this.window.getDescription().form));  //deep clone of the object because I need to add some metadata to it
+    this.windowjson = JSON.parse(JSON.stringify(this.window.__class__.getDescription().form));  //deep clone of the object because I need to add some metadata to it
     this.window.__container_data__ = {};
     this.last_tab_id = 0;
     this.last_tab_id = 0;

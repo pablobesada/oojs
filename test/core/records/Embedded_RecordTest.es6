@@ -10,8 +10,7 @@ var async = require('async')
 let utils = null;
 
 describe("Embedded_Record", function () {
-    this.timeout(18000)
-    let cls = cm.getClass("SalesOrder");
+    let cls = cm.getClass("TestRecord");
     let rec = null;
     let original_rec = null;
     it("create new record and store it", async () => {
@@ -28,25 +27,65 @@ describe("Embedded_Record", function () {
         var res = await rec.load();
         res.should.be.true("no se grabo");
         original_rec.syncOldFields();
-        //console.log(JSON.stringify(rec.toJSON()))
-        //console.log(JSON.stringify(original_rec.toJSON()))
         rec.isEqual(original_rec).should.be.true("registros diferentes");
     })
 
-    it("Concurrent save (saving with old syncVersion)", async () => {
-        let sonr = 2222444;
-        let SalesOrder = cm.getClass("SalesOrder");
-        let so = await SalesOrder.bring(sonr)
-        so.syncVersion -= 1
-        so.syncOldFields();
-        let original_custname = so.CustName;
-        so.CustName += 'ABC';
-        let res = await so.save()
-        res.should.be.false();
-        let so2 = SalesOrder.new()
-        so2.SerNr = sonr;
-        await so2.load();
-        so2.CustName.should.be.equal(original_custname)
+    it("Concurrent store (storing with old syncVersion)", async () => {
+        rec.syncOldFields()
+        rec.syncVersion -= 1
+        rec.syncOldFields();
+        let oldval = rec.Integer_Field++;
+        let res = await rec.store()
+        res.should.be.false("Se grabo cuando el store() deberia haber fallado por edicion concurrente");
+        let rec2 = cls.new()
+        rec2.internalId = rec.internalId;
+        await rec2.load();
+        rec2.Integer_Field.should.be.equal(oldval, "El campo se modifico en la base de datos")
+    })
+
+    it("Save OK", async ()=> {
+        let internalId = rec.internalId;
+        rec = cls.new()
+        rec.internalId = internalId;
+        let res = await rec.load();
+        res.should.be.true();
+        rec.checkReturnValue = true;
+        rec.Integer_Field++;
+        res = await rec.save()
+        res.should.be.true("El save no grabo")
+        should.exist(await cls.findOne({internalId: rec.internalId, Integer_Field: rec.Integer_Field}), "El save devolvio true, pero el registro no esta en la DB")
+    })
+
+    it("Save with Check fail", async ()=> {
+        let internalId = rec.internalId;
+        rec = await cls.findOne({internalId: rec.internalId})
+        should.exist(rec);
+        rec.checkReturnValue = false;
+        rec.Integer_Field++;
+        let res = await rec.save()
+        res.should.be.false("El save grabo y no deberia haberse grabado")
+        should.not.exist(await cls.findOne({internalId: rec.internalId, Integer_Field: rec.Integer_Field}), "El save devolvio false, pero igual grabo el registro")
+    })
+
+    it("Save with beforeInsert fail", async ()=> {
+        let rec = cls.new()
+        utils.fillRecord(rec)
+        rec.beforeInsertReturnValue = false;
+        let res = await rec.save()
+        should(res).be.false("No deberia haber grabado")
+        should.not.exist(await cls.findOne({internalId: rec.internalId}), "El save devolvio false, pero igual grabo el registro")
+    })
+
+    it("Save with beforeUpdate fail", async ()=> {
+        let rec = cls.new()
+        utils.fillRecord(rec)
+        rec.beforeUpdateReturnValue = false;
+        let res = await rec.save()
+        should(res).be.true("Deberia haber grabado")
+        rec.Integer_Field++;
+        res = await rec.save()
+        should(res).be.false("No Deberia haber grabado")
+        should.not.exist(await cls.findOne({internalId: rec.internalId, Integer_Field: rec.Integer_Field}), "El save devolvio false, pero igual grabo el registro")
     })
 });
 

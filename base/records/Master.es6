@@ -24,11 +24,7 @@ class Master extends Parent {
     }
 
     static async bring(Code) {
-        var rec = this.new();
-        rec.Code = Code;
-        var res = await rec.load();
-        if (res) return rec;
-        return null;
+        return this.findOne({Code: Code})
     }
 }
 

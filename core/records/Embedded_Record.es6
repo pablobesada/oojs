@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 var oo = require("openorange")
 var _ = require("underscore")
 var moment = require("momentjs")
@@ -270,7 +270,16 @@ class Embedded_Record {
         return this;
     }
 
-    callSuper(methodname, self) {
+    static tryCall(self, defaultResponse, methodname) {
+        if (methodname == null) throw new Error("methodname can not be null")
+        if (methodname in this.prototype) {
+            return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+        } else {
+            return defaultResponse;
+        }
+    }
+
+    callSuperXXX(methodname, self) {
         if (methodname in this.__super__) {
             return this.__super__[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
         } else {
@@ -392,15 +401,15 @@ class Embedded_Record {
             if (!res) return res;
         } else {
             was_new = false;
-            res = self.beforeUpdate();
+            res = await self.beforeUpdate();
             if (!res) return res;
         }
         res = await self.store();
         if (!res) return res;
         if (was_new) {
-            self.afterInsert();
+            await self.afterInsert();
         } else {
-            self.afterUpdate();
+            await self.afterUpdate();
         }
         return true;
     }
@@ -422,28 +431,27 @@ class Embedded_Record {
     }
 
     async defaults() {
-        return Promise.resolve();
+        return;
     }
 
     async check() {
-        //return Promise.reject("check failed")
-        return Promise.resolve();
+        return true;
     }
 
     async beforeInsert() {
-        return Promise.resolve();
+        return true;
     }
 
     async beforeUpdate() {
-        return Promise.resolve();
+        return true;
     }
 
     async afterInsert() {
-        return Promise.resolve();
+        return true;
     }
 
     async afterUpdate() {
-        return Promise.resolve();
+        return true;
     }
 
     async store() {
@@ -459,7 +467,17 @@ class Embedded_Record {
         return oo.orm.load(this);
     }
 
-    select() {
+    static async findOne(whereClause) {
+        let rec = this.new();
+        for (let fn in whereClause) {
+            rec[fn] = whereClause[fn];
+        }
+        let res = await rec.load();
+        if (!res) return null;
+        return rec;
+    }
+
+    static select() {
         return Query.select(this)
         //return oo.orm.select(this)
     }

@@ -21,9 +21,7 @@ var Description = {
     filename: __filename
 };
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 var Parent = cm.SuperClass(Description);
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 
 var ClientRecord = function (_Parent) {
     _inherits(ClientRecord, _Parent);
@@ -90,9 +88,6 @@ var ClientRecord = function (_Parent) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                return _context3.abrupt('return', this.runInServer("save"));
-
-                            case 1:
                             case 'end':
                                 return _context3.stop();
                         }
@@ -108,6 +103,11 @@ var ClientRecord = function (_Parent) {
         }()
     }, {
         key: 'runInServer',
+
+        //return this.runInServer("save");
+        // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
+        // 1. save de registros locals
+        // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(methodname, params) {
                 var rec, data;

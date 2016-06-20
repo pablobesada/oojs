@@ -434,7 +434,7 @@ async function save_existing(conn, record) {
     let update = orm.generate_update_sql(record);
     let info = await conn.query(update.sql, update.values)
     if (info.changedRows != 1) {
-        console.log({code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user " + info.changedRows})
+        console.log({code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user "})
         return false
     }
     record.syncVersion += 1;

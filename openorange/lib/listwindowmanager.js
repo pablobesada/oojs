@@ -8,7 +8,7 @@ ListWindowContainer.listwindows = [];
 ListWindowContainer.init = function (wnd) {
     this.listwindow = wnd;
     this.grid_columns = null;
-    this.windowjson = JSON.parse(JSON.stringify(this.listwindow.getDescription().columns));   //deep clone of the object because I need to add some metadata to it
+    this.windowjson = JSON.parse(JSON.stringify(this.listwindow.__class__.__description__.columns));   //deep clone of the object because I need to add some metadata to it
     return this
 }
 
@@ -61,8 +61,9 @@ ListWindowContainer.displayWindow = function displayWindow(windowElement) {
 
     $('ul.tabs').tabs();
 
-    var recordClass = cm.getClass(self.listwindow.__description__.recordClass);
-    var columns = self.listwindow.__description__.columns;
+    //var recordClass = cm.getClass(self.listwindow.__description__.recordClass);
+    var recordClass = self.listwindow.getRecordClass();
+    var columns = self.listwindow.__class__.__description__.columns;
 
     var res = recordClass.select().limit(6).fetch()
         .then(function (records) {
@@ -137,8 +138,8 @@ ListWindowContainer.createToolBar = function createToolBar() {
 
 ListWindowContainer.action_new = function action_new() {
     var self = this;
-    var record = cm.getClass(self.listwindow.getDescription().recordClass).new()
-    var window = cm.getClass(self.listwindow.getDescription().windowClass).new();
+    var record = self.listwindow.getRecordClass().new()
+    var window = self.listwindow.getWindowClass().new();
     window.setRecord(record);
     window.open();
     window.setFocus();
@@ -147,7 +148,7 @@ ListWindowContainer.action_new = function action_new() {
 ListWindowContainer.generateColumns = function generateColumns() {
     var self = this;
     this.grid_columns = [];
-    var columns = self.listwindow.__description__.columns;
+    var columns = self.listwindow.__class__.__description__.columns;
     for (var i=0;i<columns.length;i++) {
         var col = columns[i];
         this.grid_columns.push({id: col.field, name: col.field, field: col.field, sortable: true})
@@ -156,8 +157,8 @@ ListWindowContainer.generateColumns = function generateColumns() {
 
 ListWindowContainer.fillTable = function fillTable(windowElement) {
     var self = this;
-    var recordClass = cm.getClass(self.listwindow.__description__.recordClass);
-    var columns = self.listwindow.__description__.columns;
+    var recordClass = cm.getClass(self.listwindow.__class__.__description__.recordClass);
+    var columns = self.listwindow.__class__.__description__.columns;
     var res = recordClass.select().limit(4).fetch()
     //var res = recordClass.select()
         .then(function(records) {
@@ -190,7 +191,7 @@ ListWindowContainer.recordSelectedInListWindow = function recordSelectedInListWi
     var self = this;
     record.load()
         .then(function () {
-            var window = cm.getClass(self.listwindow.getDescription().windowClass).new();
+            var window = cm.getClass(self.listwindow.__class__.getDescription().windowClass).new();
             window.setRecord(record);
             window.open();
             window.setFocus();

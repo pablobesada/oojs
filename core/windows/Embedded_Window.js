@@ -15,14 +15,6 @@ var WindowDescription = {
     filename: __filename
 };
 
-/*
-var Embedded_Window = Object.create({
-    '__super__': null,
-    '__description__': WindowDescription,
-    '__filename__': __filename,
-})
-*/
-
 var Embedded_Window = function () {
     _createClass(Embedded_Window, [{
         key: "open",
@@ -88,42 +80,6 @@ var Embedded_Window = function () {
             }
             return this.__class__.__recordClass__;
         }
-    }, {
-        key: "tryCallSuper",
-        value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(methodname) {
-                var parentClassPrototype,
-                    _args = arguments;
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                parentClassPrototype = Object.getPrototypeOf(this.constructor).prototype;
-
-                                if (!(methodname in parentClassPrototype)) {
-                                    _context.next = 5;
-                                    break;
-                                }
-
-                                return _context.abrupt("return", parentClassPrototype[methodname].apply(this, Array.prototype.slice.apply(_args).slice(2)));
-
-                            case 5:
-                                return _context.abrupt("return", Promise.resolve());
-
-                            case 6:
-                            case "end":
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this);
-            }));
-
-            function tryCallSuper(_x) {
-                return ref.apply(this, arguments);
-            }
-
-            return tryCallSuper;
-        }()
     }, {
         key: "inspect",
         value: function inspect() {
@@ -226,11 +182,11 @@ var Embedded_Window = function () {
     }, {
         key: "call_afterEdit",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(fieldname, value) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(fieldname, value) {
                 var self;
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
-                        switch (_context2.prev = _context2.next) {
+                        switch (_context.prev = _context.next) {
                             case 0:
                                 self = this;
                                 //console.log(self.getRecord())
@@ -239,25 +195,25 @@ var Embedded_Window = function () {
                                 //console.log(self.getRecord()[fieldname])
 
                                 if (!('changed ' + fieldname in self)) {
-                                    _context2.next = 6;
+                                    _context.next = 6;
                                     break;
                                 }
 
-                                _context2.next = 5;
+                                _context.next = 5;
                                 return this['changed ' + fieldname]();
 
                             case 5:
-                                return _context2.abrupt("return", _context2.sent);
+                                return _context.abrupt("return", _context.sent);
 
                             case 6:
                             case "end":
-                                return _context2.stop();
+                                return _context.stop();
                         }
                     }
-                }, _callee2, this);
+                }, _callee, this);
             }));
 
-            function call_afterEdit(_x2, _x3) {
+            function call_afterEdit(_x, _x2) {
                 return ref.apply(this, arguments);
             }
 
@@ -266,11 +222,11 @@ var Embedded_Window = function () {
     }, {
         key: "afterEditRow",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(fieldname, rowfieldname, rownr, value) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(fieldname, rowfieldname, rownr, value) {
                 var self;
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context2.prev = _context2.next) {
                             case 0:
                                 self = this;
 
@@ -281,13 +237,13 @@ var Embedded_Window = function () {
 
                             case 3:
                             case "end":
-                                return _context3.stop();
+                                return _context2.stop();
                         }
                     }
-                }, _callee3, this);
+                }, _callee2, this);
             }));
 
-            function afterEditRow(_x4, _x5, _x6, _x7) {
+            function afterEditRow(_x3, _x4, _x5, _x6) {
                 return ref.apply(this, arguments);
             }
 
@@ -296,30 +252,30 @@ var Embedded_Window = function () {
     }, {
         key: "save",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
                 var rec;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
-                        switch (_context4.prev = _context4.next) {
+                        switch (_context3.prev = _context3.next) {
                             case 0:
                                 rec = this.getRecord();
 
                                 if (!(rec != null)) {
-                                    _context4.next = 3;
+                                    _context3.next = 3;
                                     break;
                                 }
 
-                                return _context4.abrupt("return", rec.save());
+                                return _context3.abrupt("return", rec.save());
 
                             case 3:
-                                return _context4.abrupt("return", false);
+                                return _context3.abrupt("return", false);
 
                             case 4:
                             case "end":
-                                return _context4.stop();
+                                return _context3.stop();
                         }
                     }
-                }, _callee4, this);
+                }, _callee3, this);
             }));
 
             function save() {
@@ -330,17 +286,18 @@ var Embedded_Window = function () {
         }()
     }], [{
         key: "tryCall",
-        value: function tryCall(self, methodname) {
-            if (methodname in this) {
-                return this[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+        value: function tryCall(self, defaultResponse, methodname) {
+            if (methodname == null) throw new Error("methodname can not be null");
+            if (methodname in this.prototype) {
+                return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
             } else {
-                return Promise.resolve();
+                return defaultResponse;
             }
         }
     }, {
         key: "getDescription",
         value: function getDescription() {
-            return this.__class__.__description__;
+            return this.__description__;
         }
     }]);
 

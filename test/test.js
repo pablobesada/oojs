@@ -15,8 +15,12 @@ var should = require('should');
 var async = require('async')
 var utils = require("./utils")
 
-//require("./core/records/Embedded_RecordTest")(utils)
-require("./core/windows/Embedded_WindowTest")(utils)
+
+cm.addScriptDir("test")
+
+cm.getClass("Company")
+require("./core/records/Embedded_RecordTest")(utils)
+//require("./core/windows/Embedded_WindowTest")(utils)
 //require("./local/ReportTest.js")
 
 

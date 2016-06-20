@@ -11,6 +11,8 @@ var cm = oo.classmanager;
 var should = require('should');
 var async = require('async');
 var utils = null;
+//oo.isClient = true;
+//oo.isServer = false;
 
 describe("Embedded_Window", function () {
     var _this = this;
