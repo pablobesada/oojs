@@ -30,6 +30,19 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+var contextSession = require('continuation-local-storage').createNamespace('contextSession')
+app.use(function(req, res, next) {
+    contextSession.bindEmitter(req);
+    contextSession.bindEmitter(res);
+
+    contextSession.run(function() {
+        console.log("en run")
+        contextSession.set('req', req);
+        next();
+    });
+});
+
 app.use(logger('dev'));
 
 app.use(session({
@@ -84,6 +97,7 @@ app.use(function (err, req, res, next) {
         error: {}
     });
 });
+
 
 app.module = module
 module.exports = app;

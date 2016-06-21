@@ -32,6 +32,10 @@ class ClientRecord extends Parent {
             // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
     }
 
+    async ppp() {
+        return this.runInServer("ppp");
+    }
+
     async runInServer(methodname, params) {
         var rec = this;
         var data = {}

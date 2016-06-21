@@ -390,6 +390,10 @@ class Embedded_Record {
         })
     }
 
+    async save_fromGUI() {
+
+    }
+
     async save() {
         let self = this;
         let was_new = null;
@@ -605,6 +609,12 @@ class Embedded_Record {
     fieldIsEditable(fieldname, rowfieldname, rownr) {
         if (rowfieldname == 'rowNr') return false;
         return true;
+    }
+
+    ppp() {
+        let session = require('continuation-local-storage').getNamespace('contextSession')
+        let req = session.get('req')
+        console.log("A", req.query)
     }
 }
 Embedded_Record.__description__ = RecordDescription

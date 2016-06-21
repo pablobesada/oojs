@@ -1,4 +1,5 @@
-//console.log("en " + __filename)
+"use strict"
+require("babel-polyfill");
 
 var oo = {}
 oo.isServer = true;

@@ -19,6 +19,8 @@ class Customer extends Parent {
     constructor() {
         super()
     }
+
+
 }
 
 module.exports = Customer.initClass(Description)

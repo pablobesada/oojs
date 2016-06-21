@@ -10,7 +10,6 @@ var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 var _ = require('underscore')
 var babel = require("babel-core")
-/* GET users listing. */
 
 function sendModule(res, fn) {
     fs.readFile(fn, 'utf8', function (err, data) {

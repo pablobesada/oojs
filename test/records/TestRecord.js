@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -12,13 +12,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 //"use strict";
 var cm = require('openorange').classmanager;
+var _ = require("underscore");
+var chance = require("chance")();
 
 var Description = {
     name: 'TestRecord',
     inherits: 'Record',
     fields: {
+        TestName: { type: "string", length: 60 },
+        SubTestName: { type: "string", length: 60 },
         String_Field: { type: "string", length: 60 },
-        Integer_Field: { type: "integer" }
+        Integer_Field: { type: "integer" },
+        Rows: { type: "detail", class: "TestRecordRow" }
     },
     filename: __filename
 };
@@ -36,11 +41,12 @@ var TestRecord = function (_Parent) {
         _this.checkReturnValue = true;
         _this.beforeInsertReturnValue = true;
         _this.beforeUpdateReturnValue = true;
+        _this.beforeInsert_recordsToStore = [];
         return _this;
     }
 
     _createClass(TestRecord, [{
-        key: 'check',
+        key: "check",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
                 var res;
@@ -59,13 +65,13 @@ var TestRecord = function (_Parent) {
                                     break;
                                 }
 
-                                return _context.abrupt('return', res);
+                                return _context.abrupt("return", res);
 
                             case 5:
-                                return _context.abrupt('return', this.checkReturnValue);
+                                return _context.abrupt("return", this.checkReturnValue);
 
                             case 6:
-                            case 'end':
+                            case "end":
                                 return _context.stop();
                         }
                     }
@@ -79,10 +85,11 @@ var TestRecord = function (_Parent) {
             return check;
         }()
     }, {
-        key: 'beforeInsert',
+        key: "beforeInsert",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-                var res;
+                var res, i, record, _res;
+
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
@@ -98,13 +105,41 @@ var TestRecord = function (_Parent) {
                                     break;
                                 }
 
-                                return _context2.abrupt('return', res);
+                                return _context2.abrupt("return", res);
 
                             case 5:
-                                return _context2.abrupt('return', this.beforeInsertReturnValue);
+                                _context2.t0 = regeneratorRuntime.keys(this.beforeInsert_recordsToStore);
 
                             case 6:
-                            case 'end':
+                                if ((_context2.t1 = _context2.t0()).done) {
+                                    _context2.next = 16;
+                                    break;
+                                }
+
+                                i = _context2.t1.value;
+                                record = this.beforeInsert_recordsToStore[i];
+                                _context2.next = 11;
+                                return record.store();
+
+                            case 11:
+                                _res = _context2.sent;
+
+                                if (_res) {
+                                    _context2.next = 14;
+                                    break;
+                                }
+
+                                throw new Error("no se pudo grabar registro dentro de beforeInsert");
+
+                            case 14:
+                                _context2.next = 6;
+                                break;
+
+                            case 16:
+                                return _context2.abrupt("return", this.beforeInsertReturnValue);
+
+                            case 17:
+                            case "end":
                                 return _context2.stop();
                         }
                     }
@@ -118,7 +153,7 @@ var TestRecord = function (_Parent) {
             return beforeInsert;
         }()
     }, {
-        key: 'beforeUpdate',
+        key: "beforeUpdate",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
                 var res;
@@ -137,13 +172,13 @@ var TestRecord = function (_Parent) {
                                     break;
                                 }
 
-                                return _context3.abrupt('return', res);
+                                return _context3.abrupt("return", res);
 
                             case 5:
-                                return _context3.abrupt('return', this.beforeUpdateReturnValue);
+                                return _context3.abrupt("return", this.beforeUpdateReturnValue);
 
                             case 6:
-                            case 'end':
+                            case "end":
                                 return _context3.stop();
                         }
                     }
@@ -155,6 +190,84 @@ var TestRecord = function (_Parent) {
             }
 
             return beforeUpdate;
+        }()
+    }, {
+        key: "fillWithRandomValues",
+        value: function fillWithRandomValues() {
+            return this.__class__.fillRecordWithRandomValues(this);
+        }
+    }], [{
+        key: "fillRecordWithRandomValues",
+        value: function fillRecordWithRandomValues(record) {
+            var cls = this;
+            var fields = record.__class__.getDescription().fields;
+            _(fields).forEach(function (fielddef, fn) {
+                if (fn == 'internalId') return;
+                if (fn == 'masterId') return;
+                if (fn == 'rowNr') return;
+                switch (fielddef.type) {
+                    case 'string':
+                        record[fn] = chance.word({ length: fielddef.length });
+                        break;
+                    case 'integer':
+                        record[fn] = chance.integer({ min: -10000, max: 10000 });
+                        break;
+                    case 'date':
+                        record[fn] = moment();
+                        break;
+                    case 'time':
+                        //record[fn] = moment()
+                        record[fn] = '07:04:33';
+                        break;
+                    case 'detail':
+                        var nrows = chance.natural({ min: 4, max: 13 });
+                        for (var j = 0; j < nrows; j++) {
+                            //console.log(fn)
+                            var row = record[fn].newRow();
+                            cls.fillRecordWithRandomValues(row);
+                            record[fn].push(row);
+                        }
+                }
+            });
+            return record;
+        }
+    }, {
+        key: "newSavedRecord",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+                var rec;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                rec = this.new().fillWithRandomValues();
+                                _context4.next = 3;
+                                return rec.store();
+
+                            case 3:
+                                if (!_context4.sent) {
+                                    _context4.next = 5;
+                                    break;
+                                }
+
+                                return _context4.abrupt("return", rec);
+
+                            case 5:
+                                return _context4.abrupt("return", null);
+
+                            case 6:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function newSavedRecord() {
+                return ref.apply(this, arguments);
+            }
+
+            return newSavedRecord;
         }()
     }]);
 
