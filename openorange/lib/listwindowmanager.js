@@ -189,6 +189,7 @@ ListWindowContainer.fillTable = function fillTable(windowElement) {
 
 ListWindowContainer.recordSelectedInListWindow = function recordSelectedInListWindow(record) {
     var self = this;
+    console.log("aca")
     record.load()
         .then(function () {
             var window = cm.getClass(self.listwindow.__class__.getDescription().windowClass).new();

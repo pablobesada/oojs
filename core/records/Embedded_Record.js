@@ -944,9 +944,10 @@ var Embedded_Record = function () {
     }, {
         key: "ppp",
         value: function ppp() {
-            var session = require('continuation-local-storage').getNamespace('contextSession');
-            var req = session.get('req');
-            console.log("A", req.query);
+            console.log("en ppp: " + oo.contextmanager.getSession().user);
+            //let session = require('continuation-local-storage').getNamespace('contextSession')
+            //let req = session.get('req')
+            //console.log("A", req.params)
         }
     }], [{
         key: "findOne",

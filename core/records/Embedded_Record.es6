@@ -612,9 +612,10 @@ class Embedded_Record {
     }
 
     ppp() {
-        let session = require('continuation-local-storage').getNamespace('contextSession')
-        let req = session.get('req')
-        console.log("A", req.query)
+        console.log("en ppp: " + oo.contextmanager.getSession().user)
+        //let session = require('continuation-local-storage').getNamespace('contextSession')
+        //let req = session.get('req')
+        //console.log("A", req.params)
     }
 }
 Embedded_Record.__description__ = RecordDescription

@@ -1,5 +1,7 @@
 "use strict"
 require('source-map-support').install(); //solo debe usarse para debugging
+require('continuation-local-storage'); //hay que importarlo muy rapido para que no tire warnings
+
 
 global.__main__ = module
 var express = require('express');
@@ -13,13 +15,14 @@ var session = require('express-session');
 
 var redisStore = require('connect-redis')(session);
 var redis = require("redis");
-
 var redisClient = redis.createClient()
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+
+var oo = require('openorange');
 var clientRuntime = require('./runtime');
-var db = require('openorange/lib/db');
+
 var Promise = require("bluebird")
 
 var app = express();
@@ -31,31 +34,20 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-var contextSession = require('continuation-local-storage').createNamespace('contextSession')
-app.use(function(req, res, next) {
-    contextSession.bindEmitter(req);
-    contextSession.bindEmitter(res);
-
-    contextSession.run(function() {
-        console.log("en run")
-        contextSession.set('req', req);
-        next();
-    });
-});
-
 app.use(logger('dev'));
+app.use(cookieParser());
 
 app.use(session({
     secret: 'oojs secret awxsdecf',
     // create new redis store.
     store: new redisStore({host: 'localhost', port: 6379, client: redisClient, ttl: 260}),
-    saveUninitialized: false,
+    saveUninitialized: true,
     resave: false
 }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
+
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
@@ -63,6 +55,8 @@ app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/op
 
 
 app.use('/', routes);
+
+app.use('/runtime', oo.contextmanager.expressMiddleware()); //aca manejan usuario actual, conexion actual, etc. para ser usadas con toda la app. Son variables definidas por request/cookie
 app.use('/runtime', clientRuntime);
 app.use('/users', users);
 //app.use('/db', db);

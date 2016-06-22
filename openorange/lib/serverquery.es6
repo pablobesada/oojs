@@ -4,16 +4,18 @@ var BaseQuery = require("./basequery")
 var db = require("./db")
 var ormutils = require("./ormutils")
 var cm = require("./classmanager")
+var ctx = require("./contextmanager")
 
 var ServerQuery = Object.create(BaseQuery)
 
 
 ServerQuery.fetch = async function fetch() {
-    console.log("quering")
+    //console.log("quering")
     var self = this;
     var sql = this.generateSQL()
     //var conn = null;
-    var conn = await db.getConnection()
+    //var conn = await db.getConnection()
+    var conn = await ctx.getDBConnection()
     //var qres = await conn.query(sql.sql, sql.values);
     //var rows = qres[0], fields = qres[1];
     var [rows, fields] = await conn.query(sql.sql, sql.values);

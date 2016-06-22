@@ -1,20 +1,37 @@
-var cm = require('openorange').classmanager
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var cm = require('openorange').classmanager;
 
 var Description = {
     name: 'Item',
     inherits: 'Master',
     fields: {
-        ItemGroup: {type: "string", length: 30},
-        Brand: {type: "string", length: 30},
+        ItemGroup: { type: "string", length: 30 },
+        Brand: { type: "string", length: 30 }
+    },
+    filename: __filename
+};
+
+var Parent = cm.SuperClass(Description);
+
+var Item = function (_Parent) {
+    _inherits(Item, _Parent);
+
+    function Item() {
+        _classCallCheck(this, Item);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Item).call(this));
     }
-}
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
-var Item = cm.createClass(Description, __filename)
+    return Item;
+}(Parent);
 
-Item.init = function init() {
-    Item.super("init", this);
-    return this
-}
+module.exports = Item.initClass(Description);
 
-module.exports = Item
+//# sourceMappingURL=Item.js.map

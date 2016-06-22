@@ -8,6 +8,7 @@ var BaseQuery = require("./basequery");
 var db = require("./db");
 var ormutils = require("./ormutils");
 var cm = require("./classmanager");
+var ctx = require("./contextmanager");
 
 var ServerQuery = Object.create(BaseQuery);
 
@@ -19,20 +20,21 @@ ServerQuery.fetch = function () {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
-                        console.log("quering");
+                        //console.log("quering")
                         self = this;
                         sql = this.generateSQL();
                         //var conn = null;
+                        //var conn = await db.getConnection()
 
-                        _context.next = 5;
-                        return db.getConnection();
+                        _context.next = 4;
+                        return ctx.getDBConnection();
 
-                    case 5:
+                    case 4:
                         conn = _context.sent;
-                        _context.next = 8;
+                        _context.next = 7;
                         return conn.query(sql.sql, sql.values);
 
-                    case 8:
+                    case 7:
                         _ref = _context.sent;
                         _ref2 = _slicedToArray(_ref, 2);
                         rows = _ref2[0];
@@ -54,7 +56,7 @@ ServerQuery.fetch = function () {
                         }
                         return _context.abrupt("return", result);
 
-                    case 16:
+                    case 15:
                     case "end":
                         return _context.stop();
                 }

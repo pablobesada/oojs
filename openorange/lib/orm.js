@@ -23,27 +23,19 @@ var save_details_and_finish_function = function () {
                         return Promise.all(funcs);
 
                     case 6:
-                        _context2.next = 8;
-                        return conn.commit();
-
-                    case 8:
                         return _context2.abrupt("return", true);
 
-                    case 11:
-                        _context2.prev = 11;
+                    case 9:
+                        _context2.prev = 9;
                         _context2.t0 = _context2["catch"](0);
-                        _context2.next = 15;
-                        return conn.rollback(conn);
-
-                    case 15:
                         return _context2.abrupt("return", false);
 
-                    case 16:
+                    case 12:
                     case "end":
                         return _context2.stop();
                 }
             }
-        }, _callee2, this, [[0, 11]]);
+        }, _callee2, this, [[0, 9]]);
     }));
 
     return function save_details_and_finish_function(_x2, _x3) {
@@ -140,6 +132,7 @@ var async = require("async");
 var Promise = require("bluebird");
 var ormutils = require("./ormutils.js");
 var Query = require("./serverquery.js");
+var ctx = require("./contextmanager.js");
 
 Promise.config({
     longStackTraces: true
@@ -323,46 +316,6 @@ function select_detail_function(conn, record, dn) {
     });
 }
 
-orm.load2 = function load(record, callback) {
-    var conn = null;
-    async.series([function (cb) {
-        db.pool.getConnection(function (err, val) {
-            conn = val;
-            if (err && conn) conn.release();
-            cb(err);
-        });
-    }, function (cb) {
-        var select = orm.generate_load_sql(record);
-        //console.log(select.sql)
-        conn.query(select.sql, select.values, function (err, rows, fields) {
-            if (err) {
-                cb(err);
-                return;
-            }
-            if (rows == 0) {
-                cb({ error: "record not found" });
-                return;
-            }
-            ormutils.fill_record_with_query_result(record, rows[0], fields);
-            record.setNewFlag(false);
-            record.setModifiedFlag(false);
-            cb(null);
-            return;
-        });
-    }, function (cb) {
-        var funcs = [];
-        record.detailNames().forEach(function (dn) {
-            funcs.push(select_detail_function(conn, record, dn));
-        });
-        async.parallel(funcs, function result(err, results) {
-            cb(err);
-        });
-    }], function result(err, results) {
-        if (conn) conn.release();
-        callback(err);
-    });
-};
-
 orm.load = function () {
     var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(record) {
         var conn, select, qres, rows, fields, funcs;
@@ -372,7 +325,7 @@ orm.load = function () {
                     case 0:
                         _context.prev = 0;
                         _context.next = 3;
-                        return db.getConnection();
+                        return ctx.getDBConnection();
 
                     case 3:
                         conn = _context.sent;
@@ -407,27 +360,21 @@ orm.load = function () {
                         return Promise.all(funcs);
 
                     case 18:
-                        conn.release();
-                        conn = null;
+                        //conn.release();
+                        //conn = null;
                         record.syncOldFields();
                         return _context.abrupt("return", true);
 
+                    case 20:
+                        _context.prev = 20;
+                        return _context.finish(20);
+
                     case 22:
-                        _context.prev = 22;
-
-                        if (conn != null) {
-                            conn.release();
-                            conn = null;
-                            //console.log(err, conn)
-                        }
-                        return _context.finish(22);
-
-                    case 25:
                     case "end":
                         return _context.stop();
                 }
             }
-        }, _callee, this, [[0,, 22, 25]]);
+        }, _callee, this, [[0,, 20, 22]]);
     }));
 
     function load(_x) {
@@ -437,6 +384,11 @@ orm.load = function () {
     return load;
 }();
 
+//if (conn != null) {
+//    conn.release()
+//    conn = null;
+//console.log(err, conn)
+//}
 orm.generate_load_sql = function generate_load_sql(record) {
     var fieldnames = record.fieldNames();
     var questions = [];
@@ -475,93 +427,6 @@ orm.generate_select_detail_sql = function generate_select_detail_sql(record, det
     return { sql: sql, values: values };
 };
 
-function finish_parallel_function(conn, record, callback) {
-    return function result(err, result) {
-        if (err) {
-            conn.rollback(function (err2) {
-                conn.release();
-                if (err2) {
-                    callback(err2);
-                    return;
-                } //no estoy seguro de esto
-                callback(err);
-                return;
-            });
-        } else {
-            conn.commit(function (err2) {
-                conn.release();
-                if (err2) {
-                    callback(err2); //no estoy seguro de esto
-                    return;
-                }
-                record.__clearRemovedRows__();
-                callback(null);
-                return;
-            });
-        }
-    };
-}
-
-function finish_parallel_function(conn, record, callback) {
-    return function result(err, result) {
-        if (err) {
-            conn.rollback(function (err2) {
-                conn.release();
-                if (err2) {
-                    callback(err2);
-                    return;
-                } //no estoy seguro de esto
-                callback(err);
-                return;
-            });
-        } else {
-            conn.commit(function (err2) {
-                conn.release();
-                if (err2) {
-                    callback(err2); //no estoy seguro de esto
-                    return;
-                }
-                record.__clearRemovedRows__();
-                callback(null);
-                return;
-            });
-        }
-    };
-}
-
-function commit(conn, record) {
-    return conn.commit().then(function () {
-        record.__clearRemovedRows__();
-    });
-}
-
-function rollback(conn, record) {
-    return conn.rollback();
-}
-
-function save_details_and_finish_function2(conn, record, callback) {
-    return function result(err, result) {
-        if (err) {
-            conn.rollback(function (err2) {
-                conn.release();
-                if (err2) {
-                    callback(err2);
-                    return;
-                } //no estoy seguro de esto
-                callback(err);
-                return;
-            });
-            return;
-        }
-        var funcs = [];
-        for (var i = 0; i < record.detailNames().length; i++) {
-            var f = saveDetailFunction(conn, record, record.detailNames()[i]);
-            funcs.push(f);
-        }
-        async.parallel(funcs, finish_parallel_function(conn, record, callback));
-    };
-}
-
 function delete_details_and_finish_function(conn, record) {
     var funcs = [];
     return new Promise(function (resolve, reject) {
@@ -573,11 +438,12 @@ function delete_details_and_finish_function(conn, record) {
     }).then(function () {
         return Promise.all(funcs);
     }).then(function () {
-        return conn.commit().then(function () {
-            record.syncOldFields();
-        });
+        record.syncOldFields();
+        //return conn.commit().then(function () {
+        //
+        //})
     }, function onReject(err) {
-        return rollback(conn, record).then(Promise.reject(err));
+        Promise.reject(err);
     });
 }
 
@@ -601,7 +467,7 @@ orm.store = function () {
                     case 3:
                         _context5.prev = 3;
                         _context5.next = 6;
-                        return db.getConnection();
+                        return ctx.getDBConnection();
 
                     case 6:
                         conn = _context5.sent;
@@ -643,23 +509,22 @@ orm.store = function () {
 
                     case 20:
                         _context5.prev = 20;
-
-                        if (conn != null) {
-                            conn.release();
-                            conn = null;
-                        }
                         return _context5.finish(20);
 
-                    case 23:
+                    case 22:
+                        // if (conn != null) {
+                        //     conn.release()
+                        //     conn = null;
+                        // }
                         ;
                         return _context5.abrupt("return", true);
 
-                    case 25:
+                    case 24:
                     case "end":
                         return _context5.stop();
                 }
             }
-        }, _callee5, this, [[3,, 20, 23]]);
+        }, _callee5, this, [[3,, 20, 22]]);
     }));
 
     function store(_x8, _x9) {
@@ -677,7 +542,8 @@ orm.delete = function (record) {
         });
     }
     var conn = null;
-    return db.getConnection().then(function (newconn) {
+    //return db.getConnection()
+    return ctx.getDBConnection().then(function (newconn) {
         conn = newconn;
         return conn.beginTransaction();
     }).then(function () {
@@ -693,11 +559,11 @@ orm.delete = function (record) {
         }
         return delete_details_and_finish_function(conn, record);
     }).finally(function (err) {
-        if (conn != null) {
-            conn.release();
-            conn = null;
-            //console.log(err, conn)
-        }
+        //if (conn != null) {
+        //    conn.release()
+        //    conn = null;
+        //    //console.log(err, conn)
+        // }
     });
 };
 
@@ -705,7 +571,8 @@ orm.select = function select(recordClass) {
     //return Query.select(recordClass)
 
     var conn = null;
-    return db.getConnection().then(function (newconn) {
+    //return db.getConnection()
+    return ctx.getDBConnection().then(function (newconn) {
         conn = newconn;
         var select = orm.generate_select_sql(recordClass);
         return conn.query(select.sql, select.values);

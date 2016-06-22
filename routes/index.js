@@ -5,7 +5,6 @@ var fs = require("fs")
 var babel = require("babel-core")
 
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
     //req.session.test = 123
     res.render('index', { title: 'Express' });

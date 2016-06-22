@@ -2,13 +2,18 @@
 
 var express = require('express');
 var router = express.Router();
+
 var fs = require("fs")
+
 var oo = require('openorange')
+
 var cm = oo.classmanager
 var orm = oo.orm
+
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 var _ = require('underscore')
+
 var babel = require("babel-core")
 
 function sendModule(res, fn) {
@@ -27,6 +32,7 @@ function sendModule(res, fn) {
 }
 
 router.post('/record/:method', function (req, res, next) {
+    console.log("rec/method:", req.session.user)
     var params = req.body;
     var rec;
     if (params.calltype == 'instance') {
@@ -52,13 +58,14 @@ router.post('/query/fetch', function (req, res, next) {
     var params = req.body;
     res.setHeader('Content-Type', 'application/json');
     var query = oo.query.fromJSON(req.body);
-    console.log(req.body)
+    //console.log(req.body)
     query.fetch()
         .then(function (response) {
             res.send({ok: true, response: response});
         })
         .catch(function (err) {
             res.send({ok: false, error: err})
+            console.log(err.stack)
         });
 });
 
@@ -73,7 +80,7 @@ router.get('/parentclass', function (req, res, next) {
     var cls = cm.getParentClassFor(req.query.name, req.query.parent, req.query.dirname)
     var fn = cls.__description__.filename  || cls.__filename__ ;
     sendModule(res, fn);
-    console.log(fn)
+    //console.log(fn)
 });
 
 router.get('/module', function (req, res, next) {
@@ -95,7 +102,7 @@ router.get('/select', function (req, res, next) {
 });
 
 router.get('/explorer/search', function (req, res, next) {
-    console.log(req.query.txt)
+    //console.log(req.query.txt)
     oo.explorer.search(req.query.txt)
         .then(function (result) {
             res.send({ok:true, response: result});
@@ -104,6 +111,20 @@ router.get('/explorer/search', function (req, res, next) {
             console.log(err)
             res.send({ok: false, error: err})
         });
+});
+
+
+router.post('/login', function (req, res, next) {
+    console.log(req.body)
+    let data = req.body;
+    console.log("login user: ", data)
+    req.session.user = data.user
+    cm.getClass("Customer").new().ppp();
+    req.session.user = 'pepito'
+    setTimeout(function () {
+        cm.getClass("Customer").new().ppp();
+    }, 6000)
+    res.send({ok: true})
 });
 
 module.exports = router;

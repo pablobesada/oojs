@@ -28,6 +28,7 @@ function require(module) {
         explorer: OpenOrangeExplorer,
         isServer: false,
         isClient: true,
+        login: login,
     }
     if (module == "underscore") return _;
     if (module == "momentjs") return moment;
@@ -186,3 +187,24 @@ $(document).ready(function () {
             });
     $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
 })
+
+let login = function (user, password) {
+    $.ajax({
+        url: '/runtime/login',
+        contentType: 'application/json; charset=utf-8',
+        async: true,
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify({user: user, password: password}),
+        success: function (result) {
+            console.log("login: ", result)
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown)
+            throw errorThrown;
+        },
+        complete: function () {
+        }
+    });
+
+}

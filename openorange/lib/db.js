@@ -61,6 +61,7 @@ var Connection = function () {
         this.beginTransaction = this.beginTransaction.bind(this);
         this.commit = this.commit.bind(this);
         this.rollback = this.rollback.bind(this);
+        this.busy = false;
         return this;
     }
 
@@ -76,7 +77,9 @@ var Connection = function () {
                                 self = this;
                                 return _context.abrupt("return", new Promise(function (resolve, reject) {
                                     if (self.log_queries) console.log("BEGIN TRANSACTION");
+                                    self.busy = true;
                                     self.__conn__.beginTransaction(function (err) {
+                                        self.busy = false;
                                         if (err) {
                                             reject(err);
                                             return;
@@ -111,8 +114,9 @@ var Connection = function () {
                                 self = this;
                                 return _context2.abrupt("return", new Promise(function (resolve, reject) {
                                     if (self.log_queries) console.log(sql, values);
+                                    self.busy = true;
                                     self.__conn__.query(sql, values, function (err, result, fields) {
-
+                                        self.busy = false;
                                         if (err) {
                                             console.log(err);
                                             console.log(sql);
@@ -156,7 +160,9 @@ var Connection = function () {
                                 self = this;
                                 return _context3.abrupt("return", new Promise(function (resolve, reject) {
                                     if (self.log_queries) console.log("COMMIT");
+                                    self.busy = true;
                                     self.__conn__.commit(function (err) {
+                                        self.busy = false;
                                         if (err) {
                                             reject(err);
                                             return;
@@ -191,7 +197,9 @@ var Connection = function () {
                                 self = this;
                                 return _context4.abrupt("return", new Promise(function (resolve, reject) {
                                     if (self.log_queries) console.log("ROLLBACK");
+                                    self.busy = true;
                                     self.__conn__.rollback(function (err) {
+                                        self.busy = false;
                                         if (err) {
                                             reject(err);
                                             return;
@@ -217,6 +225,7 @@ var Connection = function () {
     }, {
         key: "release",
         value: function release() {
+            console.log("RELEASING connnection");
             var self = this;
             self.__conn__.release();
             self.__conn__ = null;
@@ -233,6 +242,7 @@ db.getConnection = function () {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
+                        console.log("REQUESTING NEW CONNECTION");
                         return _context5.abrupt("return", new Promise(function (resolve, reject) {
                             db.pool.getConnection(function (err, connection) {
                                 if (err) {
@@ -247,7 +257,7 @@ db.getConnection = function () {
                             });
                         }));
 
-                    case 1:
+                    case 2:
                     case "end":
                         return _context5.stop();
                 }
