@@ -19,7 +19,5 @@ if (false && cluster.isMaster) {
     });
 } else {
     var app = require("./app")
-    app.listen(4000);
-
-    console.log('Application running!');
+    app.serve();
 }

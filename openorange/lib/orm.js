@@ -50,15 +50,12 @@ var save_new = function () {
             while (1) {
                 switch (_context3.prev = _context3.next) {
                     case 0:
-                        _context3.next = 2;
-                        return conn.beginTransaction();
-
-                    case 2:
+                        //await conn.beginTransaction()
                         insert = orm.generate_insert_sql(record);
-                        _context3.next = 5;
+                        _context3.next = 3;
                         return conn.query(insert.sql, insert.values);
 
-                    case 5:
+                    case 3:
                         info = _context3.sent;
 
                         record.internalId = info.insertId;
@@ -67,7 +64,7 @@ var save_new = function () {
                         record.setModifiedFlag(false);
                         return _context3.abrupt("return", save_details_and_finish_function(conn, record));
 
-                    case 11:
+                    case 9:
                     case "end":
                         return _context3.stop();
                 }
@@ -87,32 +84,29 @@ var save_existing = function () {
             while (1) {
                 switch (_context4.prev = _context4.next) {
                     case 0:
-                        _context4.next = 2;
-                        return conn.beginTransaction();
-
-                    case 2:
+                        //await conn.beginTransaction();
                         update = orm.generate_update_sql(record);
-                        _context4.next = 5;
+                        _context4.next = 3;
                         return conn.query(update.sql, update.values);
 
-                    case 5:
+                    case 3:
                         info = _context4.sent;
 
                         if (!(info.changedRows != 1)) {
-                            _context4.next = 9;
+                            _context4.next = 7;
                             break;
                         }
 
                         console.log({ code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user " });
                         return _context4.abrupt("return", false);
 
-                    case 9:
+                    case 7:
                         record.syncVersion += 1;
                         record.setNewFlag(false);
                         record.setModifiedFlag(false);
                         return _context4.abrupt("return", save_details_and_finish_function(conn, record));
 
-                    case 13:
+                    case 11:
                     case "end":
                         return _context4.stop();
                 }
@@ -473,7 +467,7 @@ orm.store = function () {
                         conn = _context5.sent;
 
                         if (!record.isNew()) {
-                            _context5.next = 13;
+                            _context5.next = 15;
                             break;
                         }
 
@@ -482,49 +476,59 @@ orm.store = function () {
 
                     case 10:
                         _res = _context5.sent;
-                        _context5.next = 19;
-                        break;
 
-                    case 13:
-                        if (!record.isModified()) {
-                            _context5.next = 19;
+                        if (_res) {
+                            _context5.next = 13;
                             break;
                         }
 
-                        _context5.next = 16;
+                        return _context5.abrupt("return", _res);
+
+                    case 13:
+                        _context5.next = 21;
+                        break;
+
+                    case 15:
+                        if (!record.isModified()) {
+                            _context5.next = 21;
+                            break;
+                        }
+
+                        _context5.next = 18;
                         return save_existing(conn, record);
 
-                    case 16:
+                    case 18:
                         _res2 = _context5.sent;
 
                         if (_res2) {
-                            _context5.next = 19;
+                            _context5.next = 21;
                             break;
                         }
 
                         return _context5.abrupt("return", _res2);
 
-                    case 19:
-                        record.syncOldFields();
+                    case 21:
+                        _context5.next = 28;
+                        break;
 
-                    case 20:
-                        _context5.prev = 20;
-                        return _context5.finish(20);
+                    case 23:
+                        _context5.prev = 23;
+                        _context5.t0 = _context5["catch"](3);
+                        _context5.next = 27;
+                        return conn.rollback();
 
-                    case 22:
-                        // if (conn != null) {
-                        //     conn.release()
-                        //     conn = null;
-                        // }
-                        ;
+                    case 27:
+                        throw _context5.t0;
+
+                    case 28:
                         return _context5.abrupt("return", true);
 
-                    case 24:
+                    case 29:
                     case "end":
                         return _context5.stop();
                 }
             }
-        }, _callee5, this, [[3,, 20, 22]]);
+        }, _callee5, this, [[3, 23]]);
     }));
 
     function store(_x8, _x9) {
@@ -543,10 +547,11 @@ orm.delete = function (record) {
     }
     var conn = null;
     //return db.getConnection()
-    return ctx.getDBConnection().then(function (newconn) {
+    return ctx.getDBConnection();
+    then(function (newconn) {
         conn = newconn;
-        return conn.beginTransaction();
-    }).then(function () {
+        //return conn.beginTransaction();
+        //}).then(function () {
         var del = orm.generate_delete_sql(record);
         //console.log(del.sql)
         //console.log(del.values)

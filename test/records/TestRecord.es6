@@ -1,4 +1,4 @@
-//"use strict";
+"use strict";
 var cm = require('openorange').classmanager
 let _ = require("underscore")
 let chance = require("chance")()
@@ -17,7 +17,7 @@ var Description = {
     filename: __filename,
 }
 
-var Parent = cm.SuperClass(Description)
+let Parent = cm.SuperClass(Description)
 
 class TestRecord extends Parent {
 

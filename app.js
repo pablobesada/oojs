@@ -50,8 +50,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
-app.use('/openorange/lib',  express.static(path.join(__dirname, 'node_modules/openorange/lib')));
+app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
+app.use('/openorange/lib', express.static(path.join(__dirname, 'node_modules/openorange/lib')));
 
 
 app.use('/', routes);
@@ -92,6 +92,10 @@ app.use(function (err, req, res, next) {
     });
 });
 
+app.serve = function () {
+    app.listen(4000);
+    console.log("Application Listening")
+}
 
 app.module = module
 module.exports = app;

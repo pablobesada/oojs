@@ -20,6 +20,7 @@ db.pool = mysql.createPool({
     database: 'oo',
     debug: false
 });
+
 function handle_database(req, res) {
 
     pool.getConnection(function (err, connection) {
@@ -48,19 +49,19 @@ function handle_database(req, res) {
 class Connection {
 
     constructor(conn) {
+        this.id = Connection.__nextid__++;
         this.log_queries = true;
+        this.log_query_values = false;
         this.__conn__ = conn
-        this.beginTransaction = this.beginTransaction.bind(this)
-        this.commit = this.commit.bind(this)
-        this.rollback = this.rollback.bind(this)
         this.busy = false;
+        if (this.log_queries) console.log(`(${this.id}) NEW connnection`)
         return this;
     }
 
     async beginTransaction() {
         var self = this;
         return new Promise(function (resolve, reject) {
-            if (self.log_queries) console.log("BEGIN TRANSACTION")
+            if (self.log_queries) console.log(`(${self.id}) BEGIN TRANSACTION`)
             self.busy = true;
             self.__conn__.beginTransaction(function (err) {
                 self.busy = false;
@@ -76,7 +77,8 @@ class Connection {
     async query(sql, values) {
         var self = this;
         return new Promise(function (resolve, reject) {
-            if (self.log_queries) console.log(sql, values)
+            if (self.log_queries) console.log(`(${self.id}) ${sql}`)
+            if (self.log_query_values) console.log(values)
             self.busy = true;
             self.__conn__.query(sql, values, function (err, result, fields) {
                 self.busy = false;
@@ -99,7 +101,7 @@ class Connection {
     async commit() {
         var self = this;
         return new Promise(function (resolve, reject) {
-            if (self.log_queries) console.log("COMMIT")
+            if (self.log_queries) console.log(`(${self.id}) COMMIT`)
             self.busy = true;
             self.__conn__.commit(function (err) {
                 self.busy = false;
@@ -115,7 +117,7 @@ class Connection {
     async rollback() {
         var self = this;
         return new Promise(function (resolve, reject) {
-            if (self.log_queries) console.log("ROLLBACK")
+            if (self.log_queries) console.log(`(${self.id}) ROLLBACK`)
             self.busy = true;
             self.__conn__.rollback(function (err) {
                 self.busy = false;
@@ -129,16 +131,17 @@ class Connection {
     }
 
     release() {
-        console.log("RELEASING connnection")
         var self = this;
+        if (self.log_queries)  console.log(`(${self.id}) RELEASING connnection`)
         self.__conn__.release();
         self.__conn__ = null;
         //console.log("releasing connection");
     }
 }
+Connection.__nextid__ = 1;
 
 db.getConnection = async function getConnection() {
-    console.log("REQUESTING NEW CONNECTION")
+    var self = this;
     return new Promise(function (resolve, reject) {
         db.pool.getConnection(function (err, connection) {
             if (err) {
@@ -148,8 +151,16 @@ db.getConnection = async function getConnection() {
                 reject(err);
                 return;
             }
-            //console.log("returning new connection");
-            resolve(new Connection(connection));
+            let res = new Connection(connection);
+            if (!connection.reusing) {
+                connection.reusing = true;
+                res.query("SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+                    .then(function () {return res.query("SET AUTOCOMMIT=0;")})
+                    .then(function () {resolve(res)})
+            } else {
+                resolve(res)
+            }
+
         })
     })
 }

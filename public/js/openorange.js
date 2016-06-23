@@ -2,8 +2,8 @@
 
 var classmanager = {};
 var orm = {};
-classmanager.scriptdirs = ["core", "base", "standard"];
-classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
+classmanager.scriptdirs = ["core", "base", "standard", "test"];
+classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
 classmanager.extractScriptDir = function extractScriptDir(dirname) {
     for (var i in classmanager.reversed_scriptdirs) {
         var sd = classmanager.reversed_scriptdirs[i];
@@ -29,9 +29,12 @@ function require(module) {
         isServer: false,
         isClient: true,
         login: login,
+        rollback: rollback,
+        commit: commit,
     }
     if (module == "underscore") return _;
     if (module == "momentjs") return moment;
+    if (module == "chance") return Chance;
     //if (module == "./openorange/windowmanager") return WindowContainer;
     return loadModule(module)
 }
@@ -207,4 +210,64 @@ let login = function (user, password) {
         }
     });
 
+}
+
+let rollback = function rollback() {
+    return new Promise(function (resolve, reject) {
+        var url = '/runtime/oo/rollback';
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            async: true,
+            //data: JSON.stringify(data),
+            success: function (result) {
+                if (!result.ok) {
+                    reject(result.error);
+                    return;
+                }
+                var response = 'response' in result ? result.response : null;
+                resolve(response);
+                return;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                //console.log("en fail")
+                reject(errorThrown);
+            },
+            complete: function () {
+                //console.log("en load::complete");
+            }
+        });
+    });
+}
+
+let commit = function commit() {
+    return new Promise(function (resolve, reject) {
+        var url = '/runtime/oo/commit';
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            async: true,
+            //data: JSON.stringify(data),
+            success: function (result) {
+                if (!result.ok) {
+                    reject(result.error);
+                    return;
+                }
+                var response = 'response' in result ? result.response : null;
+                resolve(response);
+                return;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                //console.log("en fail")
+                reject(errorThrown);
+            },
+            complete: function () {
+                //console.log("en load::complete");
+            }
+        });
+    });
 }

@@ -19,7 +19,7 @@ class ContextManager {
 
         };
     }
-    
+
     static getSession() {
         return contextSession.get('session') || {id: '123'};
     }
@@ -40,6 +40,23 @@ class ContextManager {
         this.dbconnections[session.id].push(conn)
         return conn;
     }
+
+    static async beginTransaction() {
+        let conn = await this.getDBConnection();
+        return conn.beginTransaction();
+    }
+
+    static async commit() {
+        let conn = await this.getDBConnection();
+        return conn.commit();
+    }
+
+    static async rollback() {
+        let conn = await this.getDBConnection();
+        return conn.rollback();
+    }
+
+
 }
 ContextManager.dbconnections = {}
 

@@ -64,9 +64,11 @@ var ClientRecord = function (_Parent) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
+                                console.log("en store de clienterecord");
+
                                 return _context2.abrupt('return', this.runInServer("store"));
 
-                            case 1:
+                            case 2:
                             case 'end':
                                 return _context2.stop();
                         }
@@ -80,48 +82,32 @@ var ClientRecord = function (_Parent) {
 
             return store;
         }()
+
+        /*
+        async save() {
+            return super.save();
+            //return this.runInServer("save");
+            // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
+                // 1. save de registros locals
+                // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
+        }*/
+
     }, {
-        key: 'save',
+        key: 'ppp',
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
+                                return _context3.abrupt('return', this.runInServer("ppp"));
+
+                            case 1:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
                 }, _callee3, this);
-            }));
-
-            function save() {
-                return ref.apply(this, arguments);
-            }
-
-            return save;
-        }()
-    }, {
-        key: 'ppp',
-
-        //return this.runInServer("save");
-        // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
-        // 1. save de registros locals
-        // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
-        value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
-                    while (1) {
-                        switch (_context4.prev = _context4.next) {
-                            case 0:
-                                return _context4.abrupt('return', this.runInServer("ppp"));
-
-                            case 1:
-                            case 'end':
-                                return _context4.stop();
-                        }
-                    }
-                }, _callee4, this);
             }));
 
             function ppp() {
@@ -133,11 +119,11 @@ var ClientRecord = function (_Parent) {
     }, {
         key: 'runInServer',
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(methodname, params) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(methodname, params) {
                 var rec, data;
-                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context4.prev = _context4.next) {
                             case 0:
                                 rec = this;
                                 data = {};
@@ -151,7 +137,7 @@ var ClientRecord = function (_Parent) {
                                 }
                                 data.method = methodname;
                                 data.params = params != null ? params : [];
-                                return _context5.abrupt('return', new Promise(function (resolve, reject) {
+                                return _context4.abrupt('return', new Promise(function (resolve, reject) {
                                     var url = '/runtime/record/' + methodname;
                                     $.ajax({
                                         type: "POST",
@@ -184,10 +170,10 @@ var ClientRecord = function (_Parent) {
 
                             case 6:
                             case 'end':
-                                return _context5.stop();
+                                return _context4.stop();
                         }
                     }
-                }, _callee5, this);
+                }, _callee4, this);
             }));
 
             function runInServer(_x, _x2) {

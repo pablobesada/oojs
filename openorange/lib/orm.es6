@@ -81,10 +81,9 @@ function saveDetailFunction(connection, record, detailname) {
             }
         }
         resolve();
+    }).then(function () {
+        return Promise.all(funcs)
     })
-        .then(function () {
-            return Promise.all(funcs)
-        })
 }
 
 orm.generate_insert_sql = function generate_insert_sql(record) {
@@ -222,7 +221,7 @@ orm.load = async function load(record) {
         //if (conn != null) {
         //    conn.release()
         //    conn = null;
-            //console.log(err, conn)
+        //console.log(err, conn)
         //}
     }
 }
@@ -286,7 +285,7 @@ async function save_details_and_finish_function(conn, record) {
 
 
 async function save_new(conn, record) {
-    await conn.beginTransaction()
+    //await conn.beginTransaction()
     var insert = orm.generate_insert_sql(record);
     var info = await conn.query(insert.sql, insert.values)
     record.internalId = info.insertId;
@@ -297,7 +296,7 @@ async function save_new(conn, record) {
 }
 
 async function save_existing(conn, record) {
-    await conn.beginTransaction();
+    //await conn.beginTransaction();
     let update = orm.generate_update_sql(record);
     let info = await conn.query(update.sql, update.values)
     if (info.changedRows != 1) {
@@ -319,20 +318,20 @@ function delete_details_and_finish_function(conn, record) {
         }
         resolve();
     })
-    .then(function () {
-        return Promise.all(funcs)
-    })
-    .then(
-        function () {
-            record.syncOldFields()
-            //return conn.commit().then(function () {
-            //
-            //})
-        },
-        function onReject(err) {
-            Promise.reject(err);
-        }
-    )
+        .then(function () {
+            return Promise.all(funcs)
+        })
+        .then(
+            function () {
+                record.syncOldFields()
+                //return conn.commit().then(function () {
+                //
+                //})
+            },
+            function onReject(err) {
+                Promise.reject(err);
+            }
+        )
 }
 
 orm.store = async function store(record, callback) {
@@ -345,17 +344,16 @@ orm.store = async function store(record, callback) {
         var conn = await ctx.getDBConnection();
         if (record.isNew()) {
             let res = await save_new(conn, record);
+            if (!res) return res;
         } else if (record.isModified()) {
             let res = await save_existing(conn, record);
             if (!res) return res;
         }
-        record.syncOldFields();
-    } finally {
-       // if (conn != null) {
-       //     conn.release()
-       //     conn = null;
-       // }
-    };
+        //record.syncOldFields(); ya no se hace aca
+    } catch (err) {
+        await conn.rollback()
+        throw err
+    }
     return true;
 }
 
@@ -369,28 +367,28 @@ orm.delete = function (record) {
     var conn = null;
     //return db.getConnection()
     return ctx.getDBConnection()
-        .then(function (newconn) {
-            conn = newconn
-            return conn.beginTransaction();
-        }).then(function () {
-            var del = orm.generate_delete_sql(record);
-            //console.log(del.sql)
-            //console.log(del.values)
-            return conn.query(del.sql, del.values)
-        }).then(function (info) {
-            //console.log(info)
-            if (info.affectedRows != 1) {
-                //console.log(info.affectedRows)
-                throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
-            }
-            return delete_details_and_finish_function(conn, record);
-        }).finally(function (err) {
-            //if (conn != null) {
-            //    conn.release()
-            //    conn = null;
-            //    //console.log(err, conn)
-           // }
-        })
+    then(function (newconn) {
+        conn = newconn
+        //return conn.beginTransaction();
+        //}).then(function () {
+        var del = orm.generate_delete_sql(record);
+        //console.log(del.sql)
+        //console.log(del.values)
+        return conn.query(del.sql, del.values)
+    }).then(function (info) {
+        //console.log(info)
+        if (info.affectedRows != 1) {
+            //console.log(info.affectedRows)
+            throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
+        }
+        return delete_details_and_finish_function(conn, record);
+    }).finally(function (err) {
+        //if (conn != null) {
+        //    conn.release()
+        //    conn = null;
+        //    //console.log(err, conn)
+        // }
+    })
 }
 
 orm.select = function select(recordClass) {
@@ -406,7 +404,7 @@ orm.select = function select(recordClass) {
         })
         .spread(function (rows, fields) {
             var result = []
-            for (var i=0;i<rows.length;i++) {
+            for (var i = 0; i < rows.length; i++) {
                 var record = recordClass.new();
                 ormutils.fill_record_with_query_result(record, rows[i], fields)
                 result.push(record);

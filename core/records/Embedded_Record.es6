@@ -302,10 +302,6 @@ class Embedded_Record {
         this.__fieldslistener__.receiver = this;
         var props = {}
         this.__listeners__ = [];
-        this.load = this.load.bind(this)
-        this.store = this.store.bind(this)
-        this.save = this.save.bind(this)
-        this.delete = this.delete.bind(this)
         let description = this.__class__.getDescription()
         for (var fn in description.fields) {
             var fd = description.fields[fn]
@@ -395,27 +391,35 @@ class Embedded_Record {
     }
 
     async save() {
+        console.log("en save de Embedded_Record")
         let self = this;
-        let was_new = null;
         let res = await self.check()
-        if (!res) return res;
-        if (self.isNew()) {
-            was_new = true;
-            res = await self.beforeInsert();
-            if (!res) return res;
-        } else {
-            was_new = false;
-            res = await self.beforeUpdate();
-            if (!res) return res;
+        if (res) {
+            if (self.isNew()) {
+                res = await self.beforeInsert();
+                if (res) {
+                    res = await self.store();
+                    if (!res) return res;
+                    res = await self.afterInsert()
+                    if (res == null) res = true;
+                }
+            } else {
+                res = await self.beforeUpdate();
+                if (res) {
+                    res = await self.store();
+                    if (!res) return res;
+                    res = await self.afterUpdate()
+                    if (res == null) res = true;
+                }
+            }
         }
-        res = await self.store();
-        if (!res) return res;
-        if (was_new) {
-            await self.afterInsert();
+        if (res) {
+            self.syncOldFields();
         } else {
-            await self.afterUpdate();
+            await oo.rollback();
         }
-        return true;
+        return res;
+
     }
 
     syncOldFields() {
@@ -460,6 +464,7 @@ class Embedded_Record {
 
     async store() {
         var res = await oo.orm.store(this);
+        if (res) this.syncOldFields();
         return res
     }
 

@@ -11,18 +11,23 @@ let utils = null;
 
 describe("Embedded_Record", function () {
     let cls = cm.getClass("TestRecord");
+    let cls2 = cm.getClass("TestRecord2");
     let rec = null;
     let original_rec = null;
 
     it("create new record and store it", async () => {
+        return;
+        await (await oo.contextmanager.getDBConnection()).beginTransaction()
         rec = cls.new()
         utils.fillRecord(rec);
         let res = await rec.store();
         res.should.be.true();
         original_rec = rec.clone();
+        await (await oo.contextmanager.getDBConnection()).commit()
     })
 
     it("load", async () => {
+        return
         rec = cls.new()
         rec.internalId = original_rec.internalId;
         var res = await rec.load();
@@ -32,16 +37,22 @@ describe("Embedded_Record", function () {
     })
 
     it("Concurrent store (storing with old syncVersion)", async () => {
+        return
+        await (await oo.contextmanager.getDBConnection()).beginTransaction()
         let r1 = await cls.newSavedRecord();
         let r2 = await cls.findOne({internalId: r1.internalId})
         should(r1.isEqual(r2)).be.true()
+        r1.String_Field = 'r1'
         r1.Integer_Field++;
         should(await r1.store()).ok()
         r2.Integer_Field--;
+        r2.String_Field = 'r2'
         should(await r2.store()).not.ok()
+        //await (await oo.contextmanager.getDBConnection()).commit()
     })
 
     it("Detail integrity against master syncVersion", async () => {
+        return
         let r1 = await cls.newSavedRecord();
         let r2 = await cls.findOne({internalId: r1.internalId})
         should(r1.isEqual(r2)).be.true()
@@ -53,6 +64,7 @@ describe("Embedded_Record", function () {
     })
 
     it("Save new OK", async ()=> {
+        return
         rec = cls.new()
         utils.fillRecord(rec);
         should(await rec.save()).be.true("El save no grabo")
@@ -60,6 +72,7 @@ describe("Embedded_Record", function () {
     })
 
     it("Save with Check fail", async ()=> {
+        return
         let internalId = rec.internalId;
         rec = await cls.findOne({internalId: rec.internalId})
         should.exist(rec);
@@ -71,6 +84,7 @@ describe("Embedded_Record", function () {
     })
 
     it("Save with beforeInsert fail", async ()=> {
+        return
         let rec = cls.new()
         utils.fillRecord(rec)
         rec.beforeInsertReturnValue = false;
@@ -90,6 +104,7 @@ describe("Embedded_Record", function () {
     });
 
     it("Save with beforeUpdate fail", async ()=> {
+        return
         let rec = cls.new()
         utils.fillRecord(rec)
         rec.beforeUpdateReturnValue = false;
@@ -100,6 +115,23 @@ describe("Embedded_Record", function () {
         should(res).be.false("No Deberia haber grabado");
         should.not.exist(await cls.findOne({internalId: rec.internalId, Integer_Field: rec.Integer_Field}), "El save devolvio false, pero igual grabo el registro")
     })
+
+    it ("Check if it makes rollback when storing record with wrong fields", async () => {
+        await oo.beginTransaction()
+        //cls.__description__.fields['DUMMY'] = {type: "string", length: 30}
+        //cls.__description__.fieldnames.push("DUMMY")
+        let rec = cls.new().fillWithRandomValues();
+        rec.beforeInsertReturnValue = false;
+        rec.SubTestName = 'TEST'
+        for (let i=0;i<3;i++) {
+            let record = cls2.new().fillWithRandomValues()
+            record.SubTestName = rec.SubTestName
+            rec.beforeInsert_recordsToStore.push(record);
+        }
+
+        let res = await rec.save();
+        await oo.commit()
+    });
 });
 
 module.exports = function config(utilsModule) {

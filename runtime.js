@@ -32,7 +32,6 @@ function sendModule(res, fn) {
 }
 
 router.post('/record/:method', function (req, res, next) {
-    console.log("rec/method:", req.session.user)
     var params = req.body;
     var rec;
     if (params.calltype == 'instance') {
@@ -51,6 +50,7 @@ router.post('/record/:method', function (req, res, next) {
         })
         .catch(function (err) {
             res.send({ok: false, error: err})
+            console.log(err)
         });
 });
 
@@ -71,16 +71,26 @@ router.post('/query/fetch', function (req, res, next) {
 
 
 router.get('/class', function (req, res, next) {
-    var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
-    var fn = cls.__description__.filename  || cls.__filename__ ;
-    sendModule(res, fn);
+    try {
+        var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
+        var fn = cls.__description__.filename || cls.__filename__;
+        sendModule(res, fn);
+    } catch (err) {
+        console.log(err.stack);
+        throw err;
+    }
 });
 
 router.get('/parentclass', function (req, res, next) {
-    var cls = cm.getParentClassFor(req.query.name, req.query.parent, req.query.dirname)
-    var fn = cls.__description__.filename  || cls.__filename__ ;
-    sendModule(res, fn);
-    //console.log(fn)
+    try {
+        var cls = cm.getParentClassFor(req.query.name, req.query.parent, req.query.dirname)
+        var fn = cls.__description__.filename || cls.__filename__;
+        sendModule(res, fn);
+        //console.log(fn)
+    } catch (err) {
+        console.log(err.stack);
+        throw err;
+    }
 });
 
 router.get('/module', function (req, res, next) {
@@ -127,4 +137,25 @@ router.post('/login', function (req, res, next) {
     res.send({ok: true})
 });
 
+router.post('/oo/rollback', function (req, res, next) {
+    oo.rollback()
+        .then(function (result) {
+            res.send({ok:true, response: result});
+        })
+        .catch(function (err) {
+            console.log(err)
+            res.send({ok: false, error: err})
+        });
+});
+
+router.post('/oo/commit', function (req, res, next) {
+    oo.commit()
+        .then(function (result) {
+            res.send({ok:true, response: result});
+        })
+        .catch(function (err) {
+            console.log(err)
+            res.send({ok: false, error: err})
+        });
+});
 module.exports = router;

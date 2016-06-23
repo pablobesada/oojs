@@ -8,14 +8,13 @@ classmanager.scriptdirs = []
 classmanager.reversed_scriptdirs = []
 classmanager.addScriptDir = function addScriptDir(sd) {
     classmanager.scriptdirs.push(sd)
-    classmanager.reversed_scriptdirs = classmanager.scriptdirs.reverse()
+    classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
 }
 
 classmanager.addScriptDir("core");
 classmanager.addScriptDir("base");
 classmanager.addScriptDir("standard");
-
-classmanager.lookupdirs = ["records", "windows", "reports", "modules"];
+classmanager.lookupdirs = ["records", "windows", "reports", "modules", "tools"];
 
 classmanager.getClassFilename = function getClassFilename(name, max_script_dir_index) {
     var ms = max_script_dir_index;
@@ -50,7 +49,7 @@ classmanager.getClass = function getClass(name, max_script_dir_index) {
             try {
                 //console.log("requiring: " + modname)
                 var r = global.__main__.require(modname);
-                //console.log("returning: " + r)
+                //console.log(`found ${name} in ${modname}`)
                 return r;
             } catch (e) {
                 //console.log("ESTOY ACA", e.code, e.message, (e.code != 'MODULE_NOT_FOUND' || e.message != "Cannot find module '" + modname + "'"))

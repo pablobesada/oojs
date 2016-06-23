@@ -97,6 +97,96 @@ var ContextManager = function () {
 
             return getDBConnection;
         }()
+    }, {
+        key: 'beginTransaction',
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+                var conn;
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                _context2.next = 2;
+                                return this.getDBConnection();
+
+                            case 2:
+                                conn = _context2.sent;
+                                return _context2.abrupt('return', conn.beginTransaction());
+
+                            case 4:
+                            case 'end':
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
+
+            function beginTransaction() {
+                return ref.apply(this, arguments);
+            }
+
+            return beginTransaction;
+        }()
+    }, {
+        key: 'commit',
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
+                var conn;
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                _context3.next = 2;
+                                return this.getDBConnection();
+
+                            case 2:
+                                conn = _context3.sent;
+                                return _context3.abrupt('return', conn.commit());
+
+                            case 4:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function commit() {
+                return ref.apply(this, arguments);
+            }
+
+            return commit;
+        }()
+    }, {
+        key: 'rollback',
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+                var conn;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                _context4.next = 2;
+                                return this.getDBConnection();
+
+                            case 2:
+                                conn = _context4.sent;
+                                return _context4.abrupt('return', conn.rollback());
+
+                            case 4:
+                            case 'end':
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function rollback() {
+                return ref.apply(this, arguments);
+            }
+
+            return rollback;
+        }()
     }]);
 
     return ContextManager;
