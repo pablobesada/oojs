@@ -59,7 +59,7 @@ var Connection = function () {
 
         this.id = Connection.__nextid__++;
         this.log_queries = true;
-        this.log_query_values = false;
+        this.log_query_values = true;
         this.__conn__ = conn;
         this.busy = false;
         if (this.log_queries) console.log("(" + this.id + ") NEW connnection");

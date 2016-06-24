@@ -2,6 +2,7 @@
 var cm = require('openorange').classmanager
 let _ = require("underscore")
 let chance = require("chance")()
+let moment = require("moment")
 
 
 var Description = {
@@ -12,6 +13,7 @@ var Description = {
         SubTestName: {type: "string", length: 60},
         String_Field: {type: "string", length: 60},
         Integer_Field: {type: "integer"},
+        Date_Field: {type: "date"},
         Rows: {type: "detail", class: "TestRecordRow"}
     },
     filename: __filename,
@@ -32,18 +34,28 @@ class TestRecord extends Parent {
     async check(){
         let res = await Parent.tryCall(this, true, "check");
         if (!res) return res;
+        await TestRecord.wait(2000)
         return this.checkReturnValue;
     }
 
+    static wait(t) {
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                resolve()
+            },t)
+        });
+    }
     async beforeInsert(){
+        let self = this;
         let res = await Parent.tryCall(this, true, "beforeInsert");
         if (!res) return res;
         for (let i in this.beforeInsert_recordsToStore) {
             let record = this.beforeInsert_recordsToStore[i];
+            await TestRecord.wait(2000);
             let res = await record.store();
             if (!res) throw new Error("no se pudo grabar registro dentro de beforeInsert")
         }
-        return this.beforeInsertReturnValue;
+        return self.beforeInsertReturnValue;
     }
 
     async beforeUpdate(){
@@ -53,12 +65,14 @@ class TestRecord extends Parent {
     }
 
     static fillRecordWithRandomValues(record) {
+        console.log("AAAAASDASDASDASDASDASDS")
         let cls = this;
         var fields = record.__class__.getDescription().fields
         _(fields).forEach(function(fielddef, fn) {
             if (fn == 'internalId') return;
             if (fn == 'masterId') return;
             if (fn == 'rowNr') return;
+            console.log(fn, fielddef)
             switch (fielddef.type) {
                 case 'string':
                     record[fn] = chance.word({length: fielddef.length});
@@ -67,7 +81,9 @@ class TestRecord extends Parent {
                     record[fn] = chance.integer({min: -10000, max: 10000});
                     break;
                 case 'date':
-                    record[fn] = moment()
+                    let v = new moment()
+                    record[fn] = v
+                    console.log(v, record[fn])
                     break;
                 case 'time':
                     //record[fn] = moment()

@@ -1,31 +1,30 @@
 let continuationLocalStorage = require('continuation-local-storage')
-let contextSession = continuationLocalStorage.createNamespace('contextSession');
+let context = continuationLocalStorage.createNamespace('openorange-async-session-context');
 
 class ContextManager {
 
     static expressMiddleware() {
 
         return function(req, res, next) {
-            contextSession.bindEmitter(req);
-            contextSession.bindEmitter(res);
+            context.bindEmitter(req);
+            context.bindEmitter(res);
             //console.log("en middleware")
-            contextSession.run(function() {
-                //console.log("en middleware 2", req.session, req.session.user)
+            context.run(function() {
+                //console.log("en middleware 2", req.session)
                 //console.log("req.sessionID: ", req.sessionID, "   session.id: " + req.session.id)
-                contextSession.set('session', req.session);
-
+                context.set('request-session', req.session);
                 next();
             });
 
         };
     }
 
-    static getSession() {
-        return contextSession.get('session') || {id: '123'};
+    static getRequestSession() {
+        return context.get('request-session') || {id: 'local-session'};
     }
 
     static async getDBConnection() {
-        let session = this.getSession();
+        let session = this.getRequestSession();
         console.log("SID: " + session.id)
         if (!this.dbconnections[session.id]) this.dbconnections[session.id] = []
         let connections = this.dbconnections[session.id];
@@ -54,6 +53,11 @@ class ContextManager {
     static async rollback() {
         let conn = await this.getDBConnection();
         return conn.rollback();
+    }
+
+    static currentUser() {
+        let session = this.getRequestSession()
+        return session.user;
     }
 
 

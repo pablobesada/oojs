@@ -19,5 +19,9 @@ class Record extends Parent {
     constructor() {
         super()
     }
+
+    defaults() {
+
+    }
 }
 module.exports = Record.initClass(Description)

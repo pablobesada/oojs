@@ -1,6 +1,6 @@
 "use strict";
 
-var BaseQuery = require("./basequery")
+var BaseQuery = require("./both/basequery")
 var db = require("./db")
 var ormutils = require("./ormutils")
 var cm = require("./classmanager")

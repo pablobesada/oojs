@@ -7,6 +7,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var oo = require("openorange");
+console.log("requiring oo en Embedded_Window", oo);
 var _ = require("underscore");
 
 var WindowDescription = {
@@ -19,13 +20,13 @@ var Embedded_Window = function () {
     _createClass(Embedded_Window, [{
         key: "open",
         value: function open() {
-            var wm = Object.create(window.WindowManager).init(this);
+            var wm = Object.create(oo.windowmanager).init(this);
             wm.render($('#content')[0]);
         }
     }, {
         key: "setFocus",
         value: function setFocus() {
-            window.WindowManager.setFocus(this);
+            oo.windowmanager.setFocus(this);
         }
     }], [{
         key: "new",

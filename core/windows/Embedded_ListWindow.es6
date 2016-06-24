@@ -35,12 +35,12 @@ class Embedded_ListWindow {
     }
 
     open() {
-        var wm = Object.create(window.ListWindowManager).init(this)
+        var wm = Object.create(oo.listwindowmanager).init(this)
         wm.render($('#content')[0])
     }
 
     setFocus() {
-        window.ListWindowManager.setFocus(this)
+        oo.listwindowmanager.setFocus(this)
     }
 
     static tryCall(self, methodname) {

@@ -1,5 +1,6 @@
 "use strict"
-var cm = require('openorange').classmanager
+var oo = require('openorange')
+var cm = oo.classmanager
 
 var Description = {
     name: 'Embedded_Report',
@@ -82,7 +83,7 @@ class Embedded_Report {
 
     async open() {
         var self = this
-        self.container = Object.create(window.ReportManager).init(self)
+        self.container = Object.create(oo.reportmanager).init(self)
         self.container.appendToWorkspace()
         await self.run()
         self.render();
@@ -101,7 +102,7 @@ class Embedded_Report {
     }
 
     setFocus() {
-        window.ReportManager.setFocus(this)
+        oo.reportamanager.setFocus(this)
     }
 
     /*
@@ -175,17 +176,17 @@ class Embedded_Report {
         var options = options != null ? options : {};
         var onclick = ''
         if ('Window' in options && 'FieldName' in options) {
-            onclick = 'onclick="cm.getClass(\'Embedded_Report\').findReport(' + this.getId() + ').__std_zoomin__(\'' + options['Window'] + '\',\'' + options['FieldName'] + '\',\'' + value + '\')"';
+            onclick = 'onclick="oo.reportmanager.findReport(' + this.getId() + ').__std_zoomin__(\'' + options['Window'] + '\',\'' + options['FieldName'] + '\',\'' + value + '\')"';
         } else if ('CallMethod' in options) {
             var param = 'Parameter' in options ? "'" + options['Parameter'] + "'" : '';
-            onclick = 'onclick="cm.getClass(\'Embedded_Report\').findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
+            onclick = 'onclick="oo.reportmanager.findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
         }
         this.__html__.push("<td " + onclick + ">" + value + "</td>")
     }
 
     async __std_zoomin__(w, fn, v) {
         var wnd = cm.getClass(w).new()
-        var rec = cm.getClass(wnd.getDescription().recordClass).new()
+        var rec = cm.getClass(wnd.__class__.getDescription().recordClass).new()
         rec[fn] = v
         if (await rec.load()
     )

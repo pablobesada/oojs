@@ -17,8 +17,9 @@ var ORMBrowserTests = function () {
     _createClass(ORMBrowserTests, null, [{
         key: "test1",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-                var cls, cls2, rec, i, record, res, response, saved_recs;
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(t, bir, cb) {
+                var cls, cls2, rec, i, _i, record, response, saved_recs, res;
+
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
@@ -27,45 +28,45 @@ var ORMBrowserTests = function () {
                                 cls2 = oo.classmanager.getClass("TestRecord2");
                                 rec = cls.new().fillWithRandomValues();
 
-                                rec.beforeInsertReturnValue = true;
-                                rec.SubTestName = 'TEST';
-                                for (i = 0; i < 3; i++) {
+                                for (i in rec.Rows) {
+                                    rec.Rows[i].String_Field = 'ROW ' + t;
+                                }rec.beforeInsertReturnValue = bir;
+                                rec.SubTestName = 'TEST ' + t;
+                                for (_i = 0; _i < 3; _i++) {
                                     record = cls2.new().fillWithRandomValues();
 
                                     record.SubTestName = rec.SubTestName;
                                     rec.beforeInsert_recordsToStore.push(record);
                                 }
-                                _context.next = 8;
-                                return rec.save();
-
-                            case 8:
-                                res = _context.sent;
-
-                                console.log(res);
-
-                                if (!res) {
-                                    _context.next = 13;
-                                    break;
-                                }
-
-                                _context.next = 13;
-                                return oo.commit();
-
-                            case 13:
                                 response = { should_exist: [], should_not_exist: [] };
                                 saved_recs = _(rec.beforeInsert_recordsToStore).map(function (r) {
                                     return JSON.stringify(r.toJSON());
                                 });
 
                                 saved_recs.push(JSON.stringify(rec.toJSON()));
-                                if (res) {
+                                if (bir) {
                                     response.should_exist = saved_recs;
                                 } else {
                                     response.should_not_exist = saved_recs;
                                 }
-                                return _context.abrupt("return", response);
+                                cb(response);
+                                _context.next = 14;
+                                return rec.save();
 
-                            case 18:
+                            case 14:
+                                res = _context.sent;
+
+                                console.log(res);
+
+                                if (!res) {
+                                    _context.next = 19;
+                                    break;
+                                }
+
+                                _context.next = 19;
+                                return oo.commit();
+
+                            case 19:
                             case "end":
                                 return _context.stop();
                         }
@@ -73,7 +74,7 @@ var ORMBrowserTests = function () {
                 }, _callee, this);
             }));
 
-            function test1() {
+            function test1(_x, _x2, _x3) {
                 return ref.apply(this, arguments);
             }
 

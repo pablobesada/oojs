@@ -67,7 +67,7 @@ class ClientRecord extends Parent {
                         return;
                     }
                     if (data.calltype == 'instance') {
-                        classmanager.getClass("Record").fromJSON(result.self, rec)
+                        cm.getClass("Record").fromJSON(result.self, rec)
                     }
                     var response = 'response' in result ? result.response : null;
                     resolve(response);

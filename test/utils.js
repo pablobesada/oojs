@@ -2,7 +2,7 @@
 
 let _ = require("underscore")
 let chance = new require("chance")()
-let moment = require("momentjs")
+let moment = require("moment")
 
 let utils = {}
 

@@ -1,5 +1,7 @@
 "use strict";
+
 var oo = require("openorange")
+console.log("requiring oo en Embedded_Window", oo)
 var _ = require("underscore")
 
 var WindowDescription = {
@@ -15,12 +17,12 @@ class Embedded_Window {
     }
 
     open() {
-        var wm = Object.create(window.WindowManager).init(this)
+        var wm = Object.create(oo.windowmanager).init(this)
         wm.render($('#content')[0])
     }
 
     setFocus() {
-        window.WindowManager.setFocus(this)
+        oo.windowmanager.setFocus(this)
     }
 
     static initClass(descriptor) {

@@ -13,7 +13,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 //"use strict";
 var oo = require("openorange");
 var _ = require("underscore");
-var moment = require("momentjs");
+var moment = require("moment");
 var Query = oo.query;
 
 //var Field = Object.create(null);
@@ -90,7 +90,7 @@ var DateField = function (_Field) {
             var vv;
             if (v == null) {
                 vv = null;
-            } else if (v instanceof moment) {
+            } else if (moment.isMoment(v)) {
                 vv = v;
             } else if (v instanceof Date) {
                 vv = moment(v);

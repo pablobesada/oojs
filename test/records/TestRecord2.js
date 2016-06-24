@@ -14,6 +14,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var cm = require('openorange').classmanager;
 var _ = require("underscore");
 var chance = require("chance")();
+var moment = require("moment");
 
 var Description = {
     name: 'TestRecord2',

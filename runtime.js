@@ -125,15 +125,9 @@ router.get('/explorer/search', function (req, res, next) {
 
 
 router.post('/login', function (req, res, next) {
-    console.log(req.body)
     let data = req.body;
     console.log("login user: ", data)
     req.session.user = data.user
-    cm.getClass("Customer").new().ppp();
-    req.session.user = 'pepito'
-    setTimeout(function () {
-        cm.getClass("Customer").new().ppp();
-    }, 6000)
     res.send({ok: true})
 });
 

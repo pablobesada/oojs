@@ -7,7 +7,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var continuationLocalStorage = require('continuation-local-storage');
-var contextSession = continuationLocalStorage.createNamespace('contextSession');
+var context = continuationLocalStorage.createNamespace('openorange-async-session-context');
 
 var ContextManager = function () {
     function ContextManager() {
@@ -19,22 +19,21 @@ var ContextManager = function () {
         value: function expressMiddleware() {
 
             return function (req, res, next) {
-                contextSession.bindEmitter(req);
-                contextSession.bindEmitter(res);
+                context.bindEmitter(req);
+                context.bindEmitter(res);
                 //console.log("en middleware")
-                contextSession.run(function () {
-                    //console.log("en middleware 2", req.session, req.session.user)
+                context.run(function () {
+                    //console.log("en middleware 2", req.session)
                     //console.log("req.sessionID: ", req.sessionID, "   session.id: " + req.session.id)
-                    contextSession.set('session', req.session);
-
+                    context.set('request-session', req.session);
                     next();
                 });
             };
         }
     }, {
-        key: 'getSession',
-        value: function getSession() {
-            return contextSession.get('session') || { id: '123' };
+        key: 'getRequestSession',
+        value: function getRequestSession() {
+            return context.get('request-session') || { id: 'local-session' };
         }
     }, {
         key: 'getDBConnection',
@@ -46,7 +45,7 @@ var ContextManager = function () {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                session = this.getSession();
+                                session = this.getRequestSession();
 
                                 console.log("SID: " + session.id);
                                 if (!this.dbconnections[session.id]) this.dbconnections[session.id] = [];
@@ -187,6 +186,12 @@ var ContextManager = function () {
 
             return rollback;
         }()
+    }, {
+        key: 'currentUser',
+        value: function currentUser() {
+            var session = this.getRequestSession();
+            return session.user;
+        }
     }]);
 
     return ContextManager;

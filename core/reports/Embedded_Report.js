@@ -10,7 +10,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var cm = require('openorange').classmanager;
+var oo = require('openorange');
+var cm = oo.classmanager;
 
 var Description = {
     name: 'Embedded_Report',
@@ -130,7 +131,7 @@ var Embedded_Report = function () {
                             case 0:
                                 self = this;
 
-                                self.container = Object.create(window.ReportManager).init(self);
+                                self.container = Object.create(oo.reportmanager).init(self);
                                 self.container.appendToWorkspace();
                                 _context.next = 5;
                                 return self.run();
@@ -189,7 +190,7 @@ var Embedded_Report = function () {
     }, {
         key: 'setFocus',
         value: function setFocus() {
-            window.ReportManager.setFocus(this);
+            oo.reportamanager.setFocus(this);
         }
 
         /*
@@ -272,10 +273,10 @@ var Embedded_Report = function () {
             var options = options != null ? options : {};
             var onclick = '';
             if ('Window' in options && 'FieldName' in options) {
-                onclick = 'onclick="cm.getClass(\'Embedded_Report\').findReport(' + this.getId() + ').__std_zoomin__(\'' + options['Window'] + '\',\'' + options['FieldName'] + '\',\'' + value + '\')"';
+                onclick = 'onclick="oo.reportmanager.findReport(' + this.getId() + ').__std_zoomin__(\'' + options['Window'] + '\',\'' + options['FieldName'] + '\',\'' + value + '\')"';
             } else if ('CallMethod' in options) {
                 var param = 'Parameter' in options ? "'" + options['Parameter'] + "'" : '';
-                onclick = 'onclick="cm.getClass(\'Embedded_Report\').findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
+                onclick = 'onclick="oo.reportmanager.findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
             }
             this.__html__.push("<td " + onclick + ">" + value + "</td>");
         }
@@ -289,7 +290,7 @@ var Embedded_Report = function () {
                         switch (_context3.prev = _context3.next) {
                             case 0:
                                 wnd = cm.getClass(w).new();
-                                rec = cm.getClass(wnd.getDescription().recordClass).new();
+                                rec = cm.getClass(wnd.__class__.getDescription().recordClass).new();
 
                                 rec[fn] = v;
                                 _context3.next = 5;

@@ -2,6 +2,7 @@
 var cm = require('openorange').classmanager
 let _ = require("underscore")
 let chance = require("chance")()
+let moment = require("moment")
 
 
 var Description = {

@@ -7,6 +7,7 @@ var Query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
+var moment = require('moment')
 let utils = null;
 
 describe("Embedded_Record", function () {
@@ -15,11 +16,18 @@ describe("Embedded_Record", function () {
     let rec = null;
     let original_rec = null;
 
+    it("create new record and set some field values", async () => {
+        rec = cls.new();
+        rec.String_Field = 'ABCD'
+        let now = moment();
+        rec.Date_Field = now
+        should(rec.String_Field).be.equal('ABCD');
+        should(rec.Date_Field).be.equal(now);
+    });
+
     it("create new record and store it", async () => {
-        return;
         await (await oo.contextmanager.getDBConnection()).beginTransaction()
-        rec = cls.new()
-        utils.fillRecord(rec);
+        rec = cls.new().fillWithRandomValues()
         let res = await rec.store();
         res.should.be.true();
         original_rec = rec.clone();
@@ -27,9 +35,10 @@ describe("Embedded_Record", function () {
     })
 
     it("load", async () => {
-        return
         rec = cls.new()
         rec.internalId = original_rec.internalId;
+        rec.Date_Field = original_rec.Date_Field;
+        console.log(original_rec.Date_Field)
         var res = await rec.load();
         res.should.be.true("no se grabo");
         original_rec.syncOldFields();
@@ -37,7 +46,6 @@ describe("Embedded_Record", function () {
     })
 
     it("Concurrent store (storing with old syncVersion)", async () => {
-        return
         await (await oo.contextmanager.getDBConnection()).beginTransaction()
         let r1 = await cls.newSavedRecord();
         let r2 = await cls.findOne({internalId: r1.internalId})
@@ -52,7 +60,6 @@ describe("Embedded_Record", function () {
     })
 
     it("Detail integrity against master syncVersion", async () => {
-        return
         let r1 = await cls.newSavedRecord();
         let r2 = await cls.findOne({internalId: r1.internalId})
         should(r1.isEqual(r2)).be.true()
@@ -64,7 +71,6 @@ describe("Embedded_Record", function () {
     })
 
     it("Save new OK", async ()=> {
-        return
         rec = cls.new()
         utils.fillRecord(rec);
         should(await rec.save()).be.true("El save no grabo")
@@ -72,7 +78,6 @@ describe("Embedded_Record", function () {
     })
 
     it("Save with Check fail", async ()=> {
-        return
         let internalId = rec.internalId;
         rec = await cls.findOne({internalId: rec.internalId})
         should.exist(rec);
@@ -84,7 +89,6 @@ describe("Embedded_Record", function () {
     })
 
     it("Save with beforeInsert fail", async ()=> {
-        return
         let rec = cls.new()
         utils.fillRecord(rec)
         rec.beforeInsertReturnValue = false;
@@ -104,7 +108,6 @@ describe("Embedded_Record", function () {
     });
 
     it("Save with beforeUpdate fail", async ()=> {
-        return
         let rec = cls.new()
         utils.fillRecord(rec)
         rec.beforeUpdateReturnValue = false;

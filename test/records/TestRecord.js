@@ -13,6 +13,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var cm = require('openorange').classmanager;
 var _ = require("underscore");
 var chance = require("chance")();
+var moment = require("moment");
 
 var Description = {
     name: 'TestRecord',
@@ -22,6 +23,7 @@ var Description = {
         SubTestName: { type: "string", length: 60 },
         String_Field: { type: "string", length: 60 },
         Integer_Field: { type: "integer" },
+        Date_Field: { type: "date" },
         Rows: { type: "detail", class: "TestRecordRow" }
     },
     filename: __filename
@@ -67,9 +69,13 @@ var TestRecord = function (_Parent) {
                                 return _context.abrupt("return", res);
 
                             case 5:
+                                _context.next = 7;
+                                return TestRecord.wait(2000);
+
+                            case 7:
                                 return _context.abrupt("return", this.checkReturnValue);
 
-                            case 6:
+                            case 8:
                             case "end":
                                 return _context.stop();
                         }
@@ -87,57 +93,62 @@ var TestRecord = function (_Parent) {
         key: "beforeInsert",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-                var res, i, record, _res;
+                var self, res, i, record, _res;
 
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                _context2.next = 2;
+                                self = this;
+                                _context2.next = 3;
                                 return Parent.tryCall(this, true, "beforeInsert");
 
-                            case 2:
+                            case 3:
                                 res = _context2.sent;
 
                                 if (res) {
-                                    _context2.next = 5;
+                                    _context2.next = 6;
                                     break;
                                 }
 
                                 return _context2.abrupt("return", res);
 
-                            case 5:
+                            case 6:
                                 _context2.t0 = regeneratorRuntime.keys(this.beforeInsert_recordsToStore);
 
-                            case 6:
+                            case 7:
                                 if ((_context2.t1 = _context2.t0()).done) {
-                                    _context2.next = 16;
+                                    _context2.next = 19;
                                     break;
                                 }
 
                                 i = _context2.t1.value;
                                 record = this.beforeInsert_recordsToStore[i];
-                                _context2.next = 11;
+                                _context2.next = 12;
+                                return TestRecord.wait(2000);
+
+                            case 12:
+                                _context2.next = 14;
                                 return record.store();
 
-                            case 11:
+                            case 14:
                                 _res = _context2.sent;
 
                                 if (_res) {
-                                    _context2.next = 14;
+                                    _context2.next = 17;
                                     break;
                                 }
 
                                 throw new Error("no se pudo grabar registro dentro de beforeInsert");
 
-                            case 14:
-                                _context2.next = 6;
+                            case 17:
+                                _context2.next = 7;
                                 break;
 
-                            case 16:
-                                return _context2.abrupt("return", this.beforeInsertReturnValue);
+                            case 19:
+                                return _context2.abrupt("return", self.beforeInsertReturnValue);
 
-                            case 17:
+                            case 20:
                             case "end":
                                 return _context2.stop();
                         }
@@ -196,14 +207,25 @@ var TestRecord = function (_Parent) {
             return this.__class__.fillRecordWithRandomValues(this);
         }
     }], [{
+        key: "wait",
+        value: function wait(t) {
+            return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                    resolve();
+                }, t);
+            });
+        }
+    }, {
         key: "fillRecordWithRandomValues",
         value: function fillRecordWithRandomValues(record) {
+            console.log("AAAAASDASDASDASDASDASDS");
             var cls = this;
             var fields = record.__class__.getDescription().fields;
             _(fields).forEach(function (fielddef, fn) {
                 if (fn == 'internalId') return;
                 if (fn == 'masterId') return;
                 if (fn == 'rowNr') return;
+                console.log(fn, fielddef);
                 switch (fielddef.type) {
                     case 'string':
                         record[fn] = chance.word({ length: fielddef.length });
@@ -212,7 +234,9 @@ var TestRecord = function (_Parent) {
                         record[fn] = chance.integer({ min: -10000, max: 10000 });
                         break;
                     case 'date':
-                        record[fn] = moment();
+                        var v = new moment();
+                        record[fn] = v;
+                        console.log(v, record[fn]);
                         break;
                     case 'time':
                         //record[fn] = moment()

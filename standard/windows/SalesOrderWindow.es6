@@ -10,6 +10,7 @@ var Description = {
         {type: "column", content: [
             {field: 'syncVersion', label: 'sync2'},
             {type: "line", content: [
+                {field: 'User', label: 'Usuario'},
                 {field: 'SerNr', label: 'Numero'},
                 {field: 'CustCode'},
                 {field: 'TransTime'},

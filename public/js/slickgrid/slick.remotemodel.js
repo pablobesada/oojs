@@ -8,7 +8,7 @@
      */
     var oo = require("openorange");
 
-    function RemoteModel() {
+    function RemoteModel(rClass) {
         // private
         var PAGESIZE = 50;
         var data = {length: 0};
@@ -17,7 +17,7 @@
         var sortdir = 1;
         var h_request = null;
         var req = null; // ajax request
-
+        let recordClass = rClass;
         // events
         var onDataLoading = new Slick.Event();
         var onDataLoaded = new Slick.Event();
@@ -78,8 +78,8 @@
             var start = fromPage * PAGESIZE;
             var limit = ((toPage - fromPage) * PAGESIZE) + PAGESIZE;
 
-            console.log("sortcol: ", sortcol)
-            var query = oo.classmanager.getClass("Customer").select().offset(start).limit(limit);
+            //console.log("sortcol: ", sortcol)
+            var query = recordClass.select().offset(start).limit(limit);
             if (sortcol != null) query.order(sortcol, sortdir == -1 ? "DESC" : "ASC");
             if (searchstr != '') query.where({Name__like: '%'+searchstr+'%'})
             //var url = "http://api.thriftdb.com/api.hnsearch.com/items/_search?filter[fields][type][]=submission&q=" + searchstr + "&start=" + (fromPage * PAGESIZE) + "&limit=" + (((toPage - fromPage) * PAGESIZE) + PAGESIZE);

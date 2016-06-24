@@ -8,6 +8,7 @@ var Description = {
         Status: {type: "integer"},
         TransDate: {type: "date"},
         TransTime: {type: "time"},
+        User: {type: "string", linkto: "user" ,length: "10"}
     },
     filename: __filename
 }
@@ -18,6 +19,12 @@ class Transaction extends Parent {
 
     constructor() {
         super()
+    }
+
+    async defaults() {
+        super.defaults()
+        let self = this;
+        self.User = oo.currentUser();
     }
 }
 

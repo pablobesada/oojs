@@ -16,13 +16,12 @@ var async = require('async')
 var utils = require("./utils")
 
 
-cm.addScriptDir("test")
+//cm.addScriptDir("test")
 
-cm.getClass("Company")
-//require("./core/records/Embedded_RecordTest")(utils)
+require("./core/records/Embedded_RecordTest")(utils)
 //require("./core/windows/Embedded_WindowTest")(utils)
 //require("./local/ReportTest.js")
-require("./tools/ormTest")
+//require("./tools/ormTest")
 
 
 

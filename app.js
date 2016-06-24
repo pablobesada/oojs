@@ -34,7 +34,7 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(cookieParser());
 
 app.use(session({
@@ -51,7 +51,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 //app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
-app.use('/openorange/lib', express.static(path.join(__dirname, 'node_modules/openorange/lib')));
+app.use('/openorange/lib/client', express.static(path.join(__dirname, 'node_modules/openorange/lib/client')));
+app.use('/openorange/lib/both', express.static(path.join(__dirname, 'node_modules/openorange/lib/both')));
 
 
 app.use('/', routes);
@@ -92,8 +93,9 @@ app.use(function (err, req, res, next) {
     });
 });
 
-app.serve = function () {
-    app.listen(4000);
+app.serve = function (port) {
+    if (port ==null) port = 4000;
+    app.listen(port);
     console.log("Application Listening")
 }
 
