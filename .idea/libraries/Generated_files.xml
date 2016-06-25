@@ -55,7 +55,7 @@
         <item url="file://$PROJECT_DIR$/node_modules/mysql/lib/protocol/packets/EmptyPacket-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/lib/interfaces/common-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/lib/protocol/packets/index-compiled.js" />
-        <item url="file://$PROJECT_DIR$/openorange/lib/listwindowmanager.js" />
+        <item url="file://$PROJECT_DIR$/openorange/lib/client/ui/listwindowmanager.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/lib/runner-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/lib/protocol/packets/Field-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/lib/pending-compiled.js" />
@@ -174,8 +174,10 @@
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/bignumber.js/bignumber.min-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/doctypes-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/bignumber.js/bignumber-compiled.js" />
+        <item url="file://$PROJECT_DIR$/test/records/NonPersistent_TestRecordRow.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/filters-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/isarray/build/build-compiled.js" />
+        <item url="file://$PROJECT_DIR$/test/core/records/Embedded_RecordTest.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/runtime-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/isarray/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/parser-compiled.js" />
@@ -184,9 +186,11 @@
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/inherits/test-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/testing/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/inherits/inherits_browser-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/client/reportmanager.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/core-util-is/lib/util-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/core-util-is/test-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/client/listwindowmanager.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/transform-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/runtime-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/string_decoder/index-compiled.js" />
@@ -321,7 +325,7 @@
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/util-compiled.js" />
         <item url="file://$PROJECT_DIR$/base/windows/SalesOrderWindow.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/assertion-error-compiled.js" />
-        <item url="file://$PROJECT_DIR$/openorange/lib/reportmanager.js" />
+        <item url="file://$PROJECT_DIR$/openorange/lib/client/ui/reportmanager.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/assertion-compiled.js" />
         <item url="file://$PROJECT_DIR$/standard/windows/SalesOrderWindow.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/ext/property-compiled.js" />
@@ -347,8 +351,6 @@
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/mocha-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/should.min-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/orm.js" />
-        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/reportmanager.js" />
-        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/listwindowmanager.js" />
         <item url="file://$PROJECT_DIR$/base/records/FinancialTrans.js" />
       </sourceFilesUrls>
     </properties>
@@ -491,6 +493,10 @@
       <root url="file://$PROJECT_DIR$/test/records/TestRecordXXX.js" />
       <root url="file://$PROJECT_DIR$/test/records/TestRecordXXX.js" />
       <root url="file://$PROJECT_DIR$/base/records/TestRecord.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/reportmanager.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/listwindowmanager.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/reportmanager.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/listwindowmanager.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/lib/browser/debug-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/bin/mocha-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/lib/browser/tty-compiled.js" />
@@ -544,7 +550,7 @@
       <root url="file://$PROJECT_DIR$/node_modules/mysql/lib/protocol/packets/EmptyPacket-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/lib/interfaces/common-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/lib/protocol/packets/index-compiled.js" />
-      <root url="file://$PROJECT_DIR$/openorange/lib/client/listwindowmanager.js" />
+      <root url="file://$PROJECT_DIR$/openorange/lib/client/ui/listwindowmanager.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/lib/runner-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/lib/protocol/packets/Field-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/lib/pending-compiled.js" />
@@ -663,8 +669,10 @@
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/bignumber.js/bignumber.min-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/doctypes-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/bignumber.js/bignumber-compiled.js" />
+      <root url="file://$PROJECT_DIR$/test/records/NonPersistent_TestRecordRow.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/filters-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/isarray/build/build-compiled.js" />
+      <root url="file://$PROJECT_DIR$/test/core/records/Embedded_RecordTest.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/runtime-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/isarray/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/parser-compiled.js" />
@@ -673,9 +681,11 @@
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/inherits/test-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/testing/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/inherits/inherits_browser-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/client/reportmanager.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/core-util-is/lib/util-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/core-util-is/test-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/client/listwindowmanager.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/transform-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/runtime-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/string_decoder/index-compiled.js" />
@@ -810,7 +820,7 @@
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/util-compiled.js" />
       <root url="file://$PROJECT_DIR$/base/windows/SalesOrderWindow.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/assertion-error-compiled.js" />
-      <root url="file://$PROJECT_DIR$/openorange/lib/client/reportmanager.js" />
+      <root url="file://$PROJECT_DIR$/openorange/lib/client/ui/reportmanager.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/assertion-compiled.js" />
       <root url="file://$PROJECT_DIR$/standard/windows/SalesOrderWindow.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/property-compiled.js" />
@@ -836,8 +846,6 @@
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/mocha-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/should.min-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/orm.js" />
-      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/reportmanager.js" />
-      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/listwindowmanager.js" />
       <root url="file://$PROJECT_DIR$/base/records/FinancialTrans.js" />
     </CLASSES>
     <SOURCES />

@@ -39,17 +39,20 @@ var ContextManager = function () {
         key: 'getDBConnection',
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-                var session, connections, i, _conn, conn;
+                var session, sid, connections, i, _conn, conn;
 
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
                                 session = this.getRequestSession();
+                                //console.log("SID: " + session.id)
 
-                                console.log("SID: " + session.id);
-                                if (!this.dbconnections[session.id]) this.dbconnections[session.id] = [];
-                                connections = this.dbconnections[session.id];
+                                sid = session.id;
+                                //sid = '123'
+
+                                if (!this.dbconnections[sid]) this.dbconnections[sid] = [];
+                                connections = this.dbconnections[sid];
                                 _context.t0 = regeneratorRuntime.keys(connections);
 
                             case 5:
@@ -79,7 +82,7 @@ var ContextManager = function () {
                             case 14:
                                 conn = _context.sent;
 
-                                this.dbconnections[session.id].push(conn);
+                                this.dbconnections[sid].push(conn);
                                 return _context.abrupt('return', conn);
 
                             case 17:

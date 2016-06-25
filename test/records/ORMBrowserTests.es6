@@ -7,6 +7,8 @@ class ORMBrowserTests {
         let cls = oo.classmanager.getClass("TestRecord")
         let cls2 = oo.classmanager.getClass("TestRecord2")
         let rec = cls.new().fillWithRandomValues();
+        rec.waitBeforeReturningFromCheck = 2000;
+        rec.waitBeforeStoringRecordsInBeforeInsert = 2000;
         for (let i in rec.Rows) rec.Rows[i].String_Field = 'ROW ' + t;
         rec.beforeInsertReturnValue = bir;
         rec.SubTestName = 'TEST ' + t;

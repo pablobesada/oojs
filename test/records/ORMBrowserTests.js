@@ -28,6 +28,8 @@ var ORMBrowserTests = function () {
                                 cls2 = oo.classmanager.getClass("TestRecord2");
                                 rec = cls.new().fillWithRandomValues();
 
+                                rec.waitBeforeReturningFromCheck = 2000;
+                                rec.waitBeforeStoringRecordsInBeforeInsert = 2000;
                                 for (i in rec.Rows) {
                                     rec.Rows[i].String_Field = 'ROW ' + t;
                                 }rec.beforeInsertReturnValue = bir;
@@ -50,23 +52,23 @@ var ORMBrowserTests = function () {
                                     response.should_not_exist = saved_recs;
                                 }
                                 cb(response);
-                                _context.next = 14;
+                                _context.next = 16;
                                 return rec.save();
 
-                            case 14:
+                            case 16:
                                 res = _context.sent;
 
                                 console.log(res);
 
                                 if (!res) {
-                                    _context.next = 19;
+                                    _context.next = 21;
                                     break;
                                 }
 
-                                _context.next = 19;
+                                _context.next = 21;
                                 return oo.commit();
 
-                            case 19:
+                            case 21:
                             case "end":
                                 return _context.stop();
                         }

@@ -38,13 +38,17 @@ var Field = function () {
         this.linkto = linkto;
         this.value = null;
         this.listener = null;
-        return this;
     }
 
     _createClass(Field, [{
         key: "getValue",
         value: function getValue() {
             //console.log("en get value: " + this.value)
+            return this.value;
+        }
+    }, {
+        key: "cloneValue",
+        value: function cloneValue() {
             return this.value;
         }
     }, {
@@ -91,7 +95,7 @@ var DateField = function (_Field) {
             if (v == null) {
                 vv = null;
             } else if (moment.isMoment(v)) {
-                vv = v;
+                vv = moment([v.year(), v.month(), v.date()]);
             } else if (v instanceof Date) {
                 vv = moment(v);
             } else if (typeof v == 'string') {
@@ -104,6 +108,11 @@ var DateField = function (_Field) {
                 this.value = vv;
                 if (this.listener) this.listener.fieldModified(this, oldvalue);
             }
+        }
+    }, {
+        key: "cloneValue",
+        value: function cloneValue() {
+            return this.value == null ? null : this.value.clone();
         }
     }, {
         key: "getSQLValue",
@@ -147,6 +156,11 @@ var TimeField = function (_Field2) {
             }
         }
     }, {
+        key: "cloneValue",
+        value: function cloneValue() {
+            return this.value == null ? null : this.value.clone();
+        }
+    }, {
         key: "getSQLValue",
         value: function getSQLValue() {
             return this.value == null ? null : this.value;
@@ -156,8 +170,8 @@ var TimeField = function (_Field2) {
     return TimeField;
 }(Field);
 
-var DetailField = Object.create(Array.prototype);
-DetailField.init = function (name, description, listener) {
+var DetailField = Object.create(Array.prototype); //class DetailField extends Array no funciona bien
+DetailField.init = function init(name, description, listener) {
     this.name = name;
     this.__description__ = description;
     this.type = this.__description__.type;
@@ -179,6 +193,7 @@ DetailField.clearRemovedRows = function clearRemovedRows() {
 DetailField.fieldNames = function fieldNames() {
     return this.getRowClass().__description__.fieldnames;
 };
+
 DetailField.newRow = function newRow() {
     return this.getRowClass().new();
 };
@@ -260,12 +275,12 @@ var RecordDescription = {
 };
 
 /*
-var Embedded_Record = Object.create({
-    '__super__': null,
-    '__description__': RecordDescription,
-    '__filename__': __filename,
-})
-*/
+ var Embedded_Record = Object.create({
+ '__super__': null,
+ '__description__': RecordDescription,
+ '__filename__': __filename,
+ })
+ */
 
 function propFieldGetter(fn) {
     return function () {
@@ -321,9 +336,17 @@ var Embedded_Record = function () {
             newdesc.fieldnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
                 return newdesc.fields[fn].type != 'detail';
             });
+            newdesc.persistentFieldNames = _(newdesc.fieldnames).filter(function (fn) {
+                return 'persistent' in newdesc.fields[fn] ? newdesc.fields[fn].persistent : true;
+            });
+
             newdesc.detailnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
                 return newdesc.fields[fn].type == 'detail';
             });
+            newdesc.persistentDetailNames = _(newdesc.detailnames).filter(function (fn) {
+                return 'persistent' in newdesc.fields[fn] ? newdesc.fields[fn].persistent : true;
+            });
+
             this.__super__ = Reflect.getPrototypeOf(this);
             this.__description__ = newdesc;
             return this;
@@ -416,9 +439,19 @@ var Embedded_Record = function () {
             this.__listeners__.push(listener);
         }
     }, {
+        key: "persistentFieldNames",
+        value: function persistentFieldNames() {
+            return this.__class__.__description__.persistentFieldNames;
+        }
+    }, {
         key: "fieldNames",
         value: function fieldNames() {
             return this.__class__.__description__.fieldnames;
+        }
+    }, {
+        key: "persistentDetailNames",
+        value: function persistentDetailNames() {
+            return this.__class__.__description__.persistentDetailNames;
         }
     }, {
         key: "detailNames",
@@ -611,16 +644,16 @@ var Embedded_Record = function () {
         key: "syncOldFields",
         value: function syncOldFields() {
             var self = this;
-            _(this.__class__.__description__.fields).forEach(function (fdef, fn) {
-                if (fdef.type != 'detail') {
-                    self.oldFields(fn).setValue(self[fn]);
-                } else {
-                    var detail = self[fn];
-                    for (var j = 0; j < detail.length; j++) {
-                        detail[j].syncOldFields();
-                    }
-                    detail.clearRemovedRows();
+            _(this.__class__.__description__.persistentFieldNames).forEach(function (fn) {
+                self.oldFields(fn).setValue(self[fn]);
+            });
+            _(this.__class__.__description__.persistentDetailNames).forEach(function (dn) {
+                //esto tiene que iterar sobre PersistentDetails!!!
+                var detail = self[dn];
+                for (var j = 0; j < detail.length; j++) {
+                    detail[j].syncOldFields();
                 }
+                detail.clearRemovedRows();
             });
             self.setModifiedFlag(false);
         }
@@ -828,13 +861,25 @@ var Embedded_Record = function () {
         key: "load",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee11() {
+                var res;
                 return regeneratorRuntime.wrap(function _callee11$(_context11) {
                     while (1) {
                         switch (_context11.prev = _context11.next) {
                             case 0:
-                                return _context11.abrupt("return", oo.orm.load(this));
+                                res = oo.orm.load(this);
 
-                            case 1:
+                                if (!res) {
+                                    _context11.next = 4;
+                                    break;
+                                }
+
+                                _context11.next = 4;
+                                return this.afterLoad();
+
+                            case 4:
+                                return _context11.abrupt("return", res);
+
+                            case 5:
                             case "end":
                                 return _context11.stop();
                         }
@@ -847,6 +892,27 @@ var Embedded_Record = function () {
             }
 
             return load;
+        }()
+    }, {
+        key: "afterLoad",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee12() {
+                return regeneratorRuntime.wrap(function _callee12$(_context12) {
+                    while (1) {
+                        switch (_context12.prev = _context12.next) {
+                            case 0:
+                            case "end":
+                                return _context12.stop();
+                        }
+                    }
+                }, _callee12, this);
+            }));
+
+            function afterLoad() {
+                return ref.apply(this, arguments);
+            }
+
+            return afterLoad;
         }()
     }, {
         key: "isNew",
@@ -911,7 +977,7 @@ var Embedded_Record = function () {
             var fieldnames = this.fieldNames();
             for (var i = 0; i < fieldnames.length; i++) {
                 var fn = fieldnames[i];
-                newrec[fn] = this[fn];
+                newrec[fn] = this.fields(fn).cloneValue();
             }
             var detailnames = this.detailNames();
             for (var i = 0; i < detailnames.length; i++) {
@@ -934,7 +1000,18 @@ var Embedded_Record = function () {
             var fieldnames = this.fieldNames();
             for (var i = 0; i < fieldnames.length; i++) {
                 var fn = fieldnames[i];
-                if (rec[fn] != this[fn]) return false;
+                if (rec.fields(fn).type != this.fields(fn).type) return false;
+                if (rec.fields(fn).type == 'date') {
+                    if (rec[fn] != this[fn] && !rec[fn].isSame(this[fn])) {
+                        console.log(fn, rec[fn], this[fn]);
+                        return false;
+                    }
+                } else {
+                    if (rec[fn] != this[fn]) {
+                        console.log(fn, rec[fn], this[fn]);
+                        return false;
+                    }
+                }
             }
             var detailnames = this.detailNames();
             for (var i = 0; i < detailnames.length; i++) {
@@ -968,39 +1045,39 @@ var Embedded_Record = function () {
     }], [{
         key: "findOne",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee12(whereClause) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee13(whereClause) {
                 var rec, fn, res;
-                return regeneratorRuntime.wrap(function _callee12$(_context12) {
+                return regeneratorRuntime.wrap(function _callee13$(_context13) {
                     while (1) {
-                        switch (_context12.prev = _context12.next) {
+                        switch (_context13.prev = _context13.next) {
                             case 0:
                                 rec = this.new();
 
                                 for (fn in whereClause) {
                                     rec[fn] = whereClause[fn];
                                 }
-                                _context12.next = 4;
+                                _context13.next = 4;
                                 return rec.load();
 
                             case 4:
-                                res = _context12.sent;
+                                res = _context13.sent;
 
                                 if (res) {
-                                    _context12.next = 7;
+                                    _context13.next = 7;
                                     break;
                                 }
 
-                                return _context12.abrupt("return", null);
+                                return _context13.abrupt("return", null);
 
                             case 7:
-                                return _context12.abrupt("return", rec);
+                                return _context13.abrupt("return", rec);
 
                             case 8:
                             case "end":
-                                return _context12.stop();
+                                return _context13.stop();
                         }
                     }
-                }, _callee12, this);
+                }, _callee13, this);
             }));
 
             function findOne(_x) {

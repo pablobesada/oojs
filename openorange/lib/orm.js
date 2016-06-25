@@ -11,8 +11,8 @@ var save_details_and_finish_function = function () {
                         funcs = [];
                         _context2.next = 4;
                         return new Promise(function (resolve, reject) {
-                            for (var i = 0; i < record.detailNames().length; i++) {
-                                var f = saveDetailFunction(conn, record, record.detailNames()[i]);
+                            for (var i = 0; i < record.persistentDetailNames().length; i++) {
+                                var f = saveDetailFunction(conn, record, record.persistentDetailNames()[i]);
                                 funcs.push(f);
                             }
                             resolve();
@@ -206,7 +206,7 @@ function saveDetailFunction(connection, record, detailname) {
 }
 
 orm.generate_insert_sql = function generate_insert_sql(record) {
-    var fieldnames = record.fieldNames();
+    var fieldnames = record.persistentFieldNames();
     var questions = [];
     var values = [];
     var fnames = [];
@@ -227,7 +227,7 @@ orm.generate_insert_sql = function generate_insert_sql(record) {
 };
 
 orm.generate_update_sql = function generate_update_sql(record) {
-    var fieldnames = record.fieldNames();
+    var fieldnames = record.persistentFieldNames();
     var values = [];
     var setfields = [];
     var where = [];
@@ -347,7 +347,7 @@ orm.load = function () {
 
                         funcs = [];
 
-                        record.detailNames().forEach(function (dn) {
+                        record.persistentDetailNames().forEach(function (dn) {
                             funcs.push(select_detail_function(conn, record, dn));
                         });
                         _context.next = 18;
@@ -384,7 +384,7 @@ orm.load = function () {
 //console.log(err, conn)
 //}
 orm.generate_load_sql = function generate_load_sql(record) {
-    var fieldnames = record.fieldNames();
+    var fieldnames = record.persistentFieldNames();
     var questions = [];
     var values = [];
     var snames = [];
@@ -393,14 +393,17 @@ orm.generate_load_sql = function generate_load_sql(record) {
     for (var i = 0; i < fieldnames.length; i++) {
         var fn = fieldnames[i];
         snames.push("`" + fn + "`");
-        var value = record[fn];
+        var value = record.fields(fn).getSQLValue();
         if (value != null) {
             where.push("`" + fn + "` = ?");
-            values.push(record[fn]);
+            values.push(value);
         }
     }
-    if (where.length == 0) throw new Error("Imposible hacer select sin valores");
     var sql = "SELECT " + snames.join(",") + " FROM " + record.__class__.__description__.name + " WHERE " + where.join(" AND ") + " LIMIT 1";
+    if (where.length == 0) {
+        console.log(sql);
+        throw new Error("Imposible hacer select sin valores");
+    }
     return { sql: sql, values: values };
 };
 

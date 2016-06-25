@@ -13,8 +13,10 @@ var Description = {
         SubTestName: {type: "string", length: 60},
         String_Field: {type: "string", length: 60},
         Integer_Field: {type: "integer"},
+        NonPersistent_Field: {type: "string", length:60, persistent: false},
         Date_Field: {type: "date"},
-        Rows: {type: "detail", class: "TestRecordRow"}
+        Rows: {type: "detail", class: "TestRecordRow"},
+        NonPersistent_Rows: {type: "detail", class: "NonPersistent_TestRecordRow", persistent: false}
     },
     filename: __filename,
 }
@@ -25,6 +27,8 @@ class TestRecord extends Parent {
 
     constructor() {
         super()
+        this.waitBeforeReturningFromCheck = 0;
+        this.waitBeforeStoringRecordsInBeforeInsert = 0;
         this.checkReturnValue = true;
         this.beforeInsertReturnValue = true;
         this.beforeUpdateReturnValue = true;
@@ -34,7 +38,7 @@ class TestRecord extends Parent {
     async check(){
         let res = await Parent.tryCall(this, true, "check");
         if (!res) return res;
-        await TestRecord.wait(2000)
+        if (this.waitBeforeReturningFromCheck > 0) await TestRecord.wait(this.waitBeforeReturningCheck);
         return this.checkReturnValue;
     }
 
@@ -51,7 +55,7 @@ class TestRecord extends Parent {
         if (!res) return res;
         for (let i in this.beforeInsert_recordsToStore) {
             let record = this.beforeInsert_recordsToStore[i];
-            await TestRecord.wait(2000);
+            if (this.waitBeforeStoringRecordsInBeforeInsert > 0) await TestRecord.wait(this.waitBeforeStoringRecordsInBeforeInsert);
             let res = await record.store();
             if (!res) throw new Error("no se pudo grabar registro dentro de beforeInsert")
         }
@@ -65,14 +69,12 @@ class TestRecord extends Parent {
     }
 
     static fillRecordWithRandomValues(record) {
-        console.log("AAAAASDASDASDASDASDASDS")
         let cls = this;
-        var fields = record.__class__.getDescription().fields
-        _(fields).forEach(function(fielddef, fn) {
+        _(record.persistentFieldNames()).forEach(function(fn) {
+            let fielddef = record.fields(fn)
             if (fn == 'internalId') return;
             if (fn == 'masterId') return;
             if (fn == 'rowNr') return;
-            console.log(fn, fielddef)
             switch (fielddef.type) {
                 case 'string':
                     record[fn] = chance.word({length: fielddef.length});
@@ -83,20 +85,20 @@ class TestRecord extends Parent {
                 case 'date':
                     let v = new moment()
                     record[fn] = v
-                    console.log(v, record[fn])
                     break;
                 case 'time':
-                    //record[fn] = moment()
                     record[fn] = '07:04:33'
                     break;
-                case 'detail':
-                    var nrows = chance.natural({min: 4, max: 13})
-                    for (var j=0;j<nrows;j++) {
-                        //console.log(fn)
-                        var row = record[fn].newRow()
-                        cls.fillRecordWithRandomValues(row)
-                        record[fn].push(row);
-                    }
+            }
+        });
+        _(record.persistentDetailNames()).forEach(function (dn) {
+            let detail = record[dn];
+            var nrows = chance.natural({min: 4, max: 13})
+            for (var j = 0; j < nrows; j++) {
+                //console.log(fn)
+                var row = detail.newRow()
+                cls.fillRecordWithRandomValues(row)
+                detail.push(row);
             }
         });
         return record;

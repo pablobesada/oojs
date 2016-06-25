@@ -43,7 +43,7 @@ describe('ORM with Selenium', function () {
             let driver = new webdriver.Builder().forBrowser('chrome').build();
             driver.get(`localhost:${port}/app/index`);
             driver.manage().timeouts().setScriptTimeout(200000);
-            let command = `cm.getClass('ORMBrowserTests').test1('T${i}', ${runs[i]}, arguments[arguments.length - 1])`
+            let command = `require("openorange").classmanager.getClass('ORMBrowserTests').test1('T${i}', ${runs[i]}, arguments[arguments.length - 1])`
             console.log(command)
             let resp = driver.executeAsyncScript(command)//.then(function (res) {callback(res)})")
             responses.push([driver, resp]);

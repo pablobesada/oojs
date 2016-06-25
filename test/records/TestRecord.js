@@ -23,8 +23,10 @@ var Description = {
         SubTestName: { type: "string", length: 60 },
         String_Field: { type: "string", length: 60 },
         Integer_Field: { type: "integer" },
+        NonPersistent_Field: { type: "string", length: 60, persistent: false },
         Date_Field: { type: "date" },
-        Rows: { type: "detail", class: "TestRecordRow" }
+        Rows: { type: "detail", class: "TestRecordRow" },
+        NonPersistent_Rows: { type: "detail", class: "NonPersistent_TestRecordRow", persistent: false }
     },
     filename: __filename
 };
@@ -39,6 +41,8 @@ var TestRecord = function (_Parent) {
 
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TestRecord).call(this));
 
+        _this.waitBeforeReturningFromCheck = 0;
+        _this.waitBeforeStoringRecordsInBeforeInsert = 0;
         _this.checkReturnValue = true;
         _this.beforeInsertReturnValue = true;
         _this.beforeUpdateReturnValue = true;
@@ -69,13 +73,18 @@ var TestRecord = function (_Parent) {
                                 return _context.abrupt("return", res);
 
                             case 5:
-                                _context.next = 7;
-                                return TestRecord.wait(2000);
+                                if (!(this.waitBeforeReturningFromCheck > 0)) {
+                                    _context.next = 8;
+                                    break;
+                                }
 
-                            case 7:
-                                return _context.abrupt("return", this.checkReturnValue);
+                                _context.next = 8;
+                                return TestRecord.wait(this.waitBeforeReturningCheck);
 
                             case 8:
+                                return _context.abrupt("return", this.checkReturnValue);
+
+                            case 9:
                             case "end":
                                 return _context.stop();
                         }
@@ -118,37 +127,43 @@ var TestRecord = function (_Parent) {
 
                             case 7:
                                 if ((_context2.t1 = _context2.t0()).done) {
-                                    _context2.next = 19;
+                                    _context2.next = 20;
                                     break;
                                 }
 
                                 i = _context2.t1.value;
                                 record = this.beforeInsert_recordsToStore[i];
-                                _context2.next = 12;
-                                return TestRecord.wait(2000);
 
-                            case 12:
-                                _context2.next = 14;
+                                if (!(this.waitBeforeStoringRecordsInBeforeInsert > 0)) {
+                                    _context2.next = 13;
+                                    break;
+                                }
+
+                                _context2.next = 13;
+                                return TestRecord.wait(this.waitBeforeStoringRecordsInBeforeInsert);
+
+                            case 13:
+                                _context2.next = 15;
                                 return record.store();
 
-                            case 14:
+                            case 15:
                                 _res = _context2.sent;
 
                                 if (_res) {
-                                    _context2.next = 17;
+                                    _context2.next = 18;
                                     break;
                                 }
 
                                 throw new Error("no se pudo grabar registro dentro de beforeInsert");
 
-                            case 17:
+                            case 18:
                                 _context2.next = 7;
                                 break;
 
-                            case 19:
+                            case 20:
                                 return _context2.abrupt("return", self.beforeInsertReturnValue);
 
-                            case 20:
+                            case 21:
                             case "end":
                                 return _context2.stop();
                         }
@@ -218,14 +233,12 @@ var TestRecord = function (_Parent) {
     }, {
         key: "fillRecordWithRandomValues",
         value: function fillRecordWithRandomValues(record) {
-            console.log("AAAAASDASDASDASDASDASDS");
             var cls = this;
-            var fields = record.__class__.getDescription().fields;
-            _(fields).forEach(function (fielddef, fn) {
+            _(record.persistentFieldNames()).forEach(function (fn) {
+                var fielddef = record.fields(fn);
                 if (fn == 'internalId') return;
                 if (fn == 'masterId') return;
                 if (fn == 'rowNr') return;
-                console.log(fn, fielddef);
                 switch (fielddef.type) {
                     case 'string':
                         record[fn] = chance.word({ length: fielddef.length });
@@ -236,20 +249,20 @@ var TestRecord = function (_Parent) {
                     case 'date':
                         var v = new moment();
                         record[fn] = v;
-                        console.log(v, record[fn]);
                         break;
                     case 'time':
-                        //record[fn] = moment()
                         record[fn] = '07:04:33';
                         break;
-                    case 'detail':
-                        var nrows = chance.natural({ min: 4, max: 13 });
-                        for (var j = 0; j < nrows; j++) {
-                            //console.log(fn)
-                            var row = record[fn].newRow();
-                            cls.fillRecordWithRandomValues(row);
-                            record[fn].push(row);
-                        }
+                }
+            });
+            _(record.persistentDetailNames()).forEach(function (dn) {
+                var detail = record[dn];
+                var nrows = chance.natural({ min: 4, max: 13 });
+                for (var j = 0; j < nrows; j++) {
+                    //console.log(fn)
+                    var row = detail.newRow();
+                    cls.fillRecordWithRandomValues(row);
+                    detail.push(row);
                 }
             });
             return record;

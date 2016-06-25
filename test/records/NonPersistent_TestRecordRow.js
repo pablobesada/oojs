@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6,29 +6,32 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-//"use strict";
 var cm = require('openorange').classmanager;
 
 var Description = {
-    name: 'TestRecord2',
-    inherits: 'TestRecord',
+    name: 'NonPersistent_TestRecordRow',
+    inherits: 'Row',
+    fields: {
+        String_Field: { type: "string", length: 60 },
+        Integer_Field: { type: "integer" }
+    },
     filename: __filename
 };
 
 var Parent = cm.SuperClass(Description);
 
-var TestRecord2 = function (_Parent) {
-    _inherits(TestRecord2, _Parent);
+var NonPersistent_TestRecordRow = function (_Parent) {
+    _inherits(NonPersistent_TestRecordRow, _Parent);
 
-    function TestRecord2() {
-        _classCallCheck(this, TestRecord2);
+    function NonPersistent_TestRecordRow() {
+        _classCallCheck(this, NonPersistent_TestRecordRow);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(TestRecord2).apply(this, arguments));
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(NonPersistent_TestRecordRow).call(this));
     }
 
-    return TestRecord2;
+    return NonPersistent_TestRecordRow;
 }(Parent);
 
-module.exports = TestRecord2.initClass(Description);
+module.exports = NonPersistent_TestRecordRow.initClass(Description);
 
-//# sourceMappingURL=TestRecord2.js.map
+//# sourceMappingURL=NonPersistent_TestRecordRow.js.map

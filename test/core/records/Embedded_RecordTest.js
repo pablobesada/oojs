@@ -29,11 +29,11 @@ describe("Embedded_Record", function () {
                     case 0:
                         rec = cls.new();
                         rec.String_Field = 'ABCD';
-                        now = moment();
+                        now = moment([2014, 4 - 1, 3]);
 
                         rec.Date_Field = now;
                         should(rec.String_Field).be.equal('ABCD');
-                        should(rec.Date_Field).be.equal(now);
+                        should(rec.Date_Field.isSame(now)).ok();
 
                     case 6:
                     case "end":
@@ -50,30 +50,22 @@ describe("Embedded_Record", function () {
                 switch (_context2.prev = _context2.next) {
                     case 0:
                         _context2.next = 2;
-                        return oo.contextmanager.getDBConnection();
+                        return oo.beginTransaction();
 
                     case 2:
-                        _context2.next = 4;
-                        return _context2.sent.beginTransaction();
-
-                    case 4:
                         rec = cls.new().fillWithRandomValues();
-                        _context2.next = 7;
+                        _context2.next = 5;
                         return rec.store();
 
-                    case 7:
+                    case 5:
                         res = _context2.sent;
 
                         res.should.be.true();
                         original_rec = rec.clone();
-                        _context2.next = 12;
-                        return oo.contextmanager.getDBConnection();
+                        _context2.next = 10;
+                        return oo.commit();
 
-                    case 12:
-                        _context2.next = 14;
-                        return _context2.sent.commit();
-
-                    case 14:
+                    case 10:
                     case "end":
                         return _context2.stop();
                 }
@@ -81,27 +73,42 @@ describe("Embedded_Record", function () {
         }, _callee2, _this);
     })));
 
-    it("load", _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
-        var res;
+    it("control for non-persistent fields", _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
+        var row, res, loaded_rec;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
                 switch (_context3.prev = _context3.next) {
                     case 0:
-                        rec = cls.new();
-                        rec.internalId = original_rec.internalId;
-                        rec.Date_Field = original_rec.Date_Field;
-                        console.log(original_rec.Date_Field);
-                        _context3.next = 6;
-                        return rec.load();
+                        _context3.next = 2;
+                        return oo.beginTransaction();
 
-                    case 6:
+                    case 2:
+                        rec = cls.new().fillWithRandomValues();
+                        rec.NonPersistent_Field = "esto no deberia persistir";
+                        row = rec.NonPersistent_Rows.newRow();
+
+                        cls.fillRecordWithRandomValues(row);
+                        rec.NonPersistent_Rows.push(row);
+                        _context3.next = 9;
+                        return rec.store();
+
+                    case 9:
                         res = _context3.sent;
 
-                        res.should.be.true("no se grabo");
-                        original_rec.syncOldFields();
-                        rec.isEqual(original_rec).should.be.true("registros diferentes");
+                        res.should.be.true();
+                        _context3.next = 13;
+                        return cls.findOne({ internalId: rec.internalId });
 
-                    case 10:
+                    case 13:
+                        loaded_rec = _context3.sent;
+
+                        should(loaded_rec.NonPersistent_Field).be.null();
+                        should(loaded_rec.Rows.length).be.greaterThan(0);
+                        should(loaded_rec.NonPersistent_Rows.length).be.equal(0);
+                        _context3.next = 19;
+                        return oo.commit();
+
+                    case 19:
                     case "end":
                         return _context3.stop();
                 }
@@ -109,51 +116,27 @@ describe("Embedded_Record", function () {
         }, _callee3, _this);
     })));
 
-    it("Concurrent store (storing with old syncVersion)", _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
-        var r1, r2;
+    it("load", _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+        var res;
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
                 switch (_context4.prev = _context4.next) {
                     case 0:
-                        _context4.next = 2;
-                        return oo.contextmanager.getDBConnection();
-
-                    case 2:
-                        _context4.next = 4;
-                        return _context4.sent.beginTransaction();
-
-                    case 4:
+                        rec = cls.new();
+                        rec.internalId = original_rec.internalId;
+                        rec.Date_Field = original_rec.Date_Field;
+                        console.log(original_rec.Date_Field);
                         _context4.next = 6;
-                        return cls.newSavedRecord();
+                        return rec.load();
 
                     case 6:
-                        r1 = _context4.sent;
-                        _context4.next = 9;
-                        return cls.findOne({ internalId: r1.internalId });
+                        res = _context4.sent;
 
-                    case 9:
-                        r2 = _context4.sent;
+                        res.should.be.true("no se grabo");
+                        original_rec.syncOldFields();
+                        rec.isEqual(original_rec).should.be.true("registros diferentes");
 
-                        should(r1.isEqual(r2)).be.true();
-                        r1.String_Field = 'r1';
-                        r1.Integer_Field++;
-                        _context4.next = 15;
-                        return r1.store();
-
-                    case 15:
-                        _context4.t0 = _context4.sent;
-                        should(_context4.t0).ok();
-
-                        r2.Integer_Field--;
-                        r2.String_Field = 'r2';
-                        _context4.next = 21;
-                        return r2.store();
-
-                    case 21:
-                        _context4.t1 = _context4.sent;
-                        should(_context4.t1).not.ok();
-
-                    case 23:
+                    case 10:
                     case "end":
                         return _context4.stop();
                 }
@@ -161,42 +144,51 @@ describe("Embedded_Record", function () {
         }, _callee4, _this);
     })));
 
-    //await (await oo.contextmanager.getDBConnection()).commit()
-    it("Detail integrity against master syncVersion", _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+    it("Concurrent store (storing with old syncVersion)", _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
         var r1, r2;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
                         _context5.next = 2;
-                        return cls.newSavedRecord();
+                        return oo.contextmanager.getDBConnection();
 
                     case 2:
+                        _context5.next = 4;
+                        return _context5.sent.beginTransaction();
+
+                    case 4:
+                        _context5.next = 6;
+                        return cls.newSavedRecord();
+
+                    case 6:
                         r1 = _context5.sent;
-                        _context5.next = 5;
+                        _context5.next = 9;
                         return cls.findOne({ internalId: r1.internalId });
 
-                    case 5:
+                    case 9:
                         r2 = _context5.sent;
 
                         should(r1.isEqual(r2)).be.true();
-                        r1.Rows[0].Integer_Field++;
-                        _context5.next = 10;
+                        r1.String_Field = 'r1';
+                        r1.Integer_Field++;
+                        _context5.next = 15;
                         return r1.store();
 
-                    case 10:
+                    case 15:
                         _context5.t0 = _context5.sent;
                         should(_context5.t0).ok();
 
-                        r2.Rows[0].Integer_Field--;
-                        _context5.next = 15;
+                        r2.Integer_Field--;
+                        r2.String_Field = 'r2';
+                        _context5.next = 21;
                         return r2.store();
 
-                    case 15:
+                    case 21:
                         _context5.t1 = _context5.sent;
                         should(_context5.t1).not.ok();
 
-                    case 17:
+                    case 23:
                     case "end":
                         return _context5.stop();
                 }
@@ -204,29 +196,45 @@ describe("Embedded_Record", function () {
         }, _callee5, _this);
     })));
 
-    it("Save new OK", _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
+    //await (await oo.contextmanager.getDBConnection()).commit()
+    it("Detail integrity against master syncVersion", _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
+        var r1, r2;
         return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
                 switch (_context6.prev = _context6.next) {
                     case 0:
-                        rec = cls.new();
-                        utils.fillRecord(rec);
-                        _context6.next = 4;
-                        return rec.save();
+                        _context6.next = 2;
+                        return cls.newSavedRecord();
 
-                    case 4:
+                    case 2:
+                        r1 = _context6.sent;
+                        _context6.next = 5;
+                        return cls.findOne({ internalId: r1.internalId });
+
+                    case 5:
+                        r2 = _context6.sent;
+
+                        should(r1.isEqual(r2)).be.true();
+                        console.log(r1);
+                        console.log(r1.Rows);
+                        console.log(r1.Rows.length);
+                        r1.Rows[0].Integer_Field++;
+                        _context6.next = 13;
+                        return r1.store();
+
+                    case 13:
                         _context6.t0 = _context6.sent;
-                        should(_context6.t0).be.true("El save no grabo");
-                        _context6.t1 = should;
-                        _context6.next = 9;
-                        return cls.findOne({ internalId: rec.internalId, Integer_Field: rec.Integer_Field });
+                        should(_context6.t0).ok();
 
-                    case 9:
-                        _context6.t2 = _context6.sent;
+                        r2.Rows[0].Integer_Field--;
+                        _context6.next = 18;
+                        return r2.store();
 
-                        _context6.t1.exist.call(_context6.t1, _context6.t2, "El save devolvio true, pero el registro no esta en la DB");
+                    case 18:
+                        _context6.t1 = _context6.sent;
+                        should(_context6.t1).not.ok();
 
-                    case 11:
+                    case 20:
                     case "end":
                         return _context6.stop();
                 }
@@ -234,39 +242,28 @@ describe("Embedded_Record", function () {
         }, _callee6, _this);
     })));
 
-    it("Save with Check fail", _asyncToGenerator(regeneratorRuntime.mark(function _callee7() {
-        var internalId, res;
+    it("Save new OK", _asyncToGenerator(regeneratorRuntime.mark(function _callee7() {
         return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
                 switch (_context7.prev = _context7.next) {
                     case 0:
-                        internalId = rec.internalId;
+                        rec = cls.new().fillWithRandomValues();
                         _context7.next = 3;
-                        return cls.findOne({ internalId: rec.internalId });
-
-                    case 3:
-                        rec = _context7.sent;
-
-                        should.exist(rec);
-                        rec.checkReturnValue = false;
-                        rec.Integer_Field++;
-                        _context7.next = 9;
                         return rec.save();
 
-                    case 9:
-                        res = _context7.sent;
-
-                        res.should.be.false("El save grabo y no deberia haberse grabado");
-                        _context7.t0 = should.not;
-                        _context7.next = 14;
+                    case 3:
+                        _context7.t0 = _context7.sent;
+                        should(_context7.t0).be.true("El save no grabo");
+                        _context7.t1 = should;
+                        _context7.next = 8;
                         return cls.findOne({ internalId: rec.internalId, Integer_Field: rec.Integer_Field });
 
-                    case 14:
-                        _context7.t1 = _context7.sent;
+                    case 8:
+                        _context7.t2 = _context7.sent;
 
-                        _context7.t0.exist.call(_context7.t0, _context7.t1, "El save devolvio false, pero igual grabo el registro");
+                        _context7.t1.exist.call(_context7.t1, _context7.t2, "El save devolvio true, pero el registro no esta en la DB");
 
-                    case 16:
+                    case 10:
                     case "end":
                         return _context7.stop();
                 }
@@ -274,16 +271,55 @@ describe("Embedded_Record", function () {
         }, _callee7, _this);
     })));
 
-    it("Save with beforeInsert fail", _asyncToGenerator(regeneratorRuntime.mark(function _callee8() {
-        var rec, i, record, res, _i, _record;
-
+    it("Save with Check fail", _asyncToGenerator(regeneratorRuntime.mark(function _callee8() {
+        var internalId, res;
         return regeneratorRuntime.wrap(function _callee8$(_context8) {
             while (1) {
                 switch (_context8.prev = _context8.next) {
                     case 0:
-                        rec = cls.new();
+                        internalId = rec.internalId;
+                        _context8.next = 3;
+                        return cls.findOne({ internalId: rec.internalId });
 
-                        utils.fillRecord(rec);
+                    case 3:
+                        rec = _context8.sent;
+
+                        should.exist(rec);
+                        rec.checkReturnValue = false;
+                        rec.Integer_Field++;
+                        _context8.next = 9;
+                        return rec.save();
+
+                    case 9:
+                        res = _context8.sent;
+
+                        res.should.be.false("El save grabo y no deberia haberse grabado");
+                        _context8.t0 = should.not;
+                        _context8.next = 14;
+                        return cls.findOne({ internalId: rec.internalId, Integer_Field: rec.Integer_Field });
+
+                    case 14:
+                        _context8.t1 = _context8.sent;
+
+                        _context8.t0.exist.call(_context8.t0, _context8.t1, "El save devolvio false, pero igual grabo el registro");
+
+                    case 16:
+                    case "end":
+                        return _context8.stop();
+                }
+            }
+        }, _callee8, _this);
+    })));
+
+    it("Save with beforeInsert fail", _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
+        var rec, i, record, res, _i, _record;
+
+        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+            while (1) {
+                switch (_context9.prev = _context9.next) {
+                    case 0:
+                        rec = cls.new().fillWithRandomValues();
+
                         rec.beforeInsertReturnValue = false;
                         for (i = 0; i < 3; i++) {
                             record = cls.new().fillWithRandomValues();
@@ -292,87 +328,45 @@ describe("Embedded_Record", function () {
                             rec.beforeInsert_recordsToStore.push(record);
                         }
                         rec.SubTestName = 'PARENT';
-                        _context8.next = 7;
+                        _context9.next = 6;
                         return rec.save();
 
-                    case 7:
-                        res = _context8.sent;
+                    case 6:
+                        res = _context9.sent;
 
                         should(res).be.false("No deberia haber grabado");
-                        _context8.t0 = should.not;
-                        _context8.next = 12;
-                        return cls.findOne({ internalId: rec.internalId });
-
-                    case 12:
-                        _context8.t1 = _context8.sent;
-
-                        _context8.t0.exist.call(_context8.t0, _context8.t1, "El save devolvio false, pero igual grabo el registro");
-
-                        _context8.t2 = regeneratorRuntime.keys(rec.beforeInsert_recordsToStore);
-
-                    case 15:
-                        if ((_context8.t3 = _context8.t2()).done) {
-                            _context8.next = 25;
-                            break;
-                        }
-
-                        _i = _context8.t3.value;
-                        _record = rec.beforeInsert_recordsToStore[_i];
-                        _context8.t4 = should.not;
-                        _context8.next = 21;
-                        return cls.findOne({ internalId: _record.internalId, String_Field: _record.String_Field });
-
-                    case 21:
-                        _context8.t5 = _context8.sent;
-
-                        _context8.t4.exist.call(_context8.t4, _context8.t5, "El save devolvio false, pero igual grabo registros dentro del beforeInsert");
-
-                        _context8.next = 15;
-                        break;
-
-                    case 25:
-                    case "end":
-                        return _context8.stop();
-                }
-            }
-        }, _callee8, _this);
-    })));
-
-    it("Save with beforeUpdate fail", _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
-        var rec, res;
-        return regeneratorRuntime.wrap(function _callee9$(_context9) {
-            while (1) {
-                switch (_context9.prev = _context9.next) {
-                    case 0:
-                        rec = cls.new();
-
-                        utils.fillRecord(rec);
-                        rec.beforeUpdateReturnValue = false;
-                        _context9.next = 5;
-                        return rec.save();
-
-                    case 5:
-                        res = _context9.sent;
-
-                        should(res).be.true("Deberia haber grabado");
-                        rec.Integer_Field++;
-                        _context9.next = 10;
-                        return rec.save();
-
-                    case 10:
-                        res = _context9.sent;
-
-                        should(res).be.false("No Deberia haber grabado");
                         _context9.t0 = should.not;
-                        _context9.next = 15;
-                        return cls.findOne({ internalId: rec.internalId, Integer_Field: rec.Integer_Field });
+                        _context9.next = 11;
+                        return cls.findOne({ String_Field: rec.String_Field });
 
-                    case 15:
+                    case 11:
                         _context9.t1 = _context9.sent;
 
                         _context9.t0.exist.call(_context9.t0, _context9.t1, "El save devolvio false, pero igual grabo el registro");
 
-                    case 17:
+                        _context9.t2 = regeneratorRuntime.keys(rec.beforeInsert_recordsToStore);
+
+                    case 14:
+                        if ((_context9.t3 = _context9.t2()).done) {
+                            _context9.next = 24;
+                            break;
+                        }
+
+                        _i = _context9.t3.value;
+                        _record = rec.beforeInsert_recordsToStore[_i];
+                        _context9.t4 = should.not;
+                        _context9.next = 20;
+                        return cls.findOne({ internalId: _record.internalId, String_Field: _record.String_Field });
+
+                    case 20:
+                        _context9.t5 = _context9.sent;
+
+                        _context9.t4.exist.call(_context9.t4, _context9.t5, "El save devolvio false, pero igual grabo registros dentro del beforeInsert");
+
+                        _context9.next = 14;
+                        break;
+
+                    case 24:
                     case "end":
                         return _context9.stop();
                 }
@@ -380,13 +374,55 @@ describe("Embedded_Record", function () {
         }, _callee9, _this);
     })));
 
-    it("Check if it makes rollback when storing record with wrong fields", _asyncToGenerator(regeneratorRuntime.mark(function _callee10() {
-        var rec, i, record, res;
+    it("Save with beforeUpdate fail", _asyncToGenerator(regeneratorRuntime.mark(function _callee10() {
+        var rec, res;
         return regeneratorRuntime.wrap(function _callee10$(_context10) {
             while (1) {
                 switch (_context10.prev = _context10.next) {
                     case 0:
-                        _context10.next = 2;
+                        rec = cls.new();
+
+                        utils.fillRecord(rec);
+                        rec.beforeUpdateReturnValue = false;
+                        _context10.next = 5;
+                        return rec.save();
+
+                    case 5:
+                        res = _context10.sent;
+
+                        should(res).be.true("Deberia haber grabado");
+                        rec.Integer_Field++;
+                        _context10.next = 10;
+                        return rec.save();
+
+                    case 10:
+                        res = _context10.sent;
+
+                        should(res).be.false("No Deberia haber grabado");
+                        _context10.t0 = should.not;
+                        _context10.next = 15;
+                        return cls.findOne({ internalId: rec.internalId, Integer_Field: rec.Integer_Field });
+
+                    case 15:
+                        _context10.t1 = _context10.sent;
+
+                        _context10.t0.exist.call(_context10.t0, _context10.t1, "El save devolvio false, pero igual grabo el registro");
+
+                    case 17:
+                    case "end":
+                        return _context10.stop();
+                }
+            }
+        }, _callee10, _this);
+    })));
+
+    it("Check if it makes rollback when storing record with wrong fields", _asyncToGenerator(regeneratorRuntime.mark(function _callee11() {
+        var rec, i, record, res;
+        return regeneratorRuntime.wrap(function _callee11$(_context11) {
+            while (1) {
+                switch (_context11.prev = _context11.next) {
+                    case 0:
+                        _context11.next = 2;
                         return oo.beginTransaction();
 
                     case 2:
@@ -403,20 +439,20 @@ describe("Embedded_Record", function () {
                             rec.beforeInsert_recordsToStore.push(record);
                         }
 
-                        _context10.next = 8;
+                        _context11.next = 8;
                         return rec.save();
 
                     case 8:
-                        res = _context10.sent;
-                        _context10.next = 11;
+                        res = _context11.sent;
+                        _context11.next = 11;
                         return oo.commit();
 
                     case 11:
                     case "end":
-                        return _context10.stop();
+                        return _context11.stop();
                 }
             }
-        }, _callee10, _this);
+        }, _callee11, _this);
     })));
 });
 

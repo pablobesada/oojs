@@ -19,19 +19,35 @@ describe("Embedded_Record", function () {
     it("create new record and set some field values", async () => {
         rec = cls.new();
         rec.String_Field = 'ABCD'
-        let now = moment();
+        let now = moment([2014,4-1,3]);
         rec.Date_Field = now
         should(rec.String_Field).be.equal('ABCD');
-        should(rec.Date_Field).be.equal(now);
+        should(rec.Date_Field.isSame(now)).ok()
     });
 
     it("create new record and store it", async () => {
-        await (await oo.contextmanager.getDBConnection()).beginTransaction()
+        await oo.beginTransaction()
         rec = cls.new().fillWithRandomValues()
         let res = await rec.store();
         res.should.be.true();
         original_rec = rec.clone();
-        await (await oo.contextmanager.getDBConnection()).commit()
+        await oo.commit()
+    })
+
+    it("control for non-persistent fields", async () => {
+        await oo.beginTransaction()
+        rec = cls.new().fillWithRandomValues()
+        rec.NonPersistent_Field = "esto no deberia persistir"
+        let row = rec.NonPersistent_Rows.newRow();
+        cls.fillRecordWithRandomValues(row)
+        rec.NonPersistent_Rows.push(row)
+        let res = await rec.store();
+        res.should.be.true();
+        let loaded_rec = await cls.findOne({internalId: rec.internalId})
+        should(loaded_rec.NonPersistent_Field).be.null();
+        should(loaded_rec.Rows.length).be.greaterThan(0);
+        should(loaded_rec.NonPersistent_Rows.length).be.equal(0);
+        await oo.commit()
     })
 
     it("load", async () => {
@@ -63,6 +79,9 @@ describe("Embedded_Record", function () {
         let r1 = await cls.newSavedRecord();
         let r2 = await cls.findOne({internalId: r1.internalId})
         should(r1.isEqual(r2)).be.true()
+        console.log(r1)
+        console.log(r1.Rows)
+        console.log(r1.Rows.length)
         r1.Rows[0].Integer_Field++;
         should(await r1.store()).ok()
         r2.Rows[0].Integer_Field--;
@@ -71,8 +90,7 @@ describe("Embedded_Record", function () {
     })
 
     it("Save new OK", async ()=> {
-        rec = cls.new()
-        utils.fillRecord(rec);
+        rec = cls.new().fillWithRandomValues()
         should(await rec.save()).be.true("El save no grabo")
         should.exist(await cls.findOne({internalId: rec.internalId, Integer_Field: rec.Integer_Field}), "El save devolvio true, pero el registro no esta en la DB")
     })
@@ -89,8 +107,7 @@ describe("Embedded_Record", function () {
     })
 
     it("Save with beforeInsert fail", async ()=> {
-        let rec = cls.new()
-        utils.fillRecord(rec)
+        let rec = cls.new().fillWithRandomValues()
         rec.beforeInsertReturnValue = false;
         for (let i=0;i<3;i++) {
             let record = cls.new().fillWithRandomValues()
@@ -100,7 +117,7 @@ describe("Embedded_Record", function () {
         rec.SubTestName = 'PARENT'
         let res = await rec.save()
         should(res).be.false("No deberia haber grabado")
-        should.not.exist(await cls.findOne({internalId: rec.internalId}), "El save devolvio false, pero igual grabo el registro")
+        should.not.exist(await cls.findOne({String_Field: rec.String_Field}), "El save devolvio false, pero igual grabo el registro")
         for (let i in rec.beforeInsert_recordsToStore) {
             let record = rec.beforeInsert_recordsToStore[i]
             should.not.exist(await cls.findOne({internalId: record.internalId, String_Field: record.String_Field}), "El save devolvio false, pero igual grabo registros dentro del beforeInsert")

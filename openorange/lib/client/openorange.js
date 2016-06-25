@@ -28,7 +28,7 @@
     let require = function require(module) {
         if (module == "openorange") return window.oo; //devuelvo window.oo porque ese objeto va a haber si extendido por windowmanager, listiwndowmanger, etc, etc, etc.
         if (module == "underscore") return _;
-        if (module == "momentjs") return moment;
+        if (module == "moment") return moment;
         if (module == "chance") return Chance;
         return loadModule(module)
     }

@@ -21,11 +21,14 @@ class Field {
         this.linkto = linkto;
         this.value = null;
         this.listener = null;
-        return this;
     }
 
     getValue() {
         //console.log("en get value: " + this.value)
+        return this.value;
+    }
+
+    cloneValue() {
         return this.value;
     }
 
@@ -58,7 +61,7 @@ class DateField extends Field {
         if (v == null) {
             vv = null;
         } else if (moment.isMoment(v)) {
-            vv = v
+            vv = moment([v.year(), v.month(), v.date()])
         } else if (v instanceof Date) {
             vv = moment(v)
         } else if (typeof v == 'string') {
@@ -71,6 +74,10 @@ class DateField extends Field {
             this.value = vv;
             if (this.listener) this.listener.fieldModified(this, oldvalue);
         }
+    }
+
+    cloneValue() {
+        return this.value == null ? null : this.value.clone();
     }
 
 
@@ -103,15 +110,18 @@ class TimeField extends Field {
         }
     }
 
+    cloneValue() {
+        return this.value == null ? null : this.value.clone();
+    }
+
     getSQLValue() {
         return this.value == null ? null : this.value;
     }
 }
 
 
-
-var DetailField = Object.create(Array.prototype);
-DetailField.init = function(name, description, listener) {
+var DetailField = Object.create(Array.prototype); //class DetailField extends Array no funciona bien
+DetailField.init = function init(name, description, listener) {
     this.name = name;
     this.__description__ = description;
     this.type = this.__description__.type
@@ -133,6 +143,7 @@ DetailField.clearRemovedRows = function clearRemovedRows() {
 DetailField.fieldNames = function fieldNames() {
     return this.getRowClass().__description__.fieldnames
 }
+
 DetailField.newRow = function newRow() {
     return this.getRowClass().new();
 }
@@ -141,14 +152,14 @@ DetailField.push = function push(obj) {
     obj.rowNr = this.length;
     Array.prototype.push.call(this, obj)
     obj.addListener(this);
-    if (this.listener) this.listener.rowInserted(this, obj, this.length-1);
+    if (this.listener) this.listener.rowInserted(this, obj, this.length - 1);
 }
 
 DetailField.insert = function insert(obj, pos) {
     //return this.push(obj)
     obj.rowNr = pos;
     Array.prototype.splice.call(this, pos, 0, obj)
-    for (var i=pos+1;i<this.length;i++) {
+    for (var i = pos + 1; i < this.length; i++) {
         this[i].rowNr = i;
     }
     obj.addListener(this);
@@ -165,9 +176,11 @@ DetailField.clear = function clear() {
 DetailField.splice = function splice() {
     var self = this;
     var removed = Array.prototype.splice.apply(this, arguments)
-    removed.forEach(function (element) {self.__removed_rows__.push(element)});
-    if (removed.length >0) {
-        for (var i=removed[0].rowNr; i<self.length; i++) {
+    removed.forEach(function (element) {
+        self.__removed_rows__.push(element)
+    });
+    if (removed.length > 0) {
+        for (var i = removed[0].rowNr; i < self.length; i++) {
             self[i].rowNr = i;
         }
         if (this.listener) this.listener.fieldModified(this);
@@ -179,6 +192,7 @@ DetailField.fieldModified = function fieldModified(record, field, oldvalue) {
     //[].unshift.call(arguments, this);
     if (this.listener) this.listener.fieldModified.call(this.listener, this, record, field, oldvalue)
 }
+
 
 var RecordListener = Object.create(null);
 RecordListener.init = function (fieldModified) {
@@ -212,12 +226,12 @@ var RecordDescription = {
 }
 
 /*
-var Embedded_Record = Object.create({
-    '__super__': null,
-    '__description__': RecordDescription,
-    '__filename__': __filename,
-})
-*/
+ var Embedded_Record = Object.create({
+ '__super__': null,
+ '__description__': RecordDescription,
+ '__filename__': __filename,
+ })
+ */
 
 function propFieldGetter(fn) {
     return function () {
@@ -262,9 +276,17 @@ class Embedded_Record {
         newdesc.fieldnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
             return newdesc.fields[fn].type != 'detail'
         })
+        newdesc.persistentFieldNames = _(newdesc.fieldnames).filter(function (fn) {
+            return 'persistent' in newdesc.fields[fn] ? newdesc.fields[fn].persistent : true;
+        })
+
         newdesc.detailnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
             return newdesc.fields[fn].type == 'detail'
         })
+        newdesc.persistentDetailNames = _(newdesc.detailnames).filter(function (fn) {
+            return 'persistent' in newdesc.fields[fn] ? newdesc.fields[fn].persistent : true;
+        })
+
         this.__super__ = Reflect.getPrototypeOf(this);
         this.__description__ = newdesc
         return this;
@@ -334,7 +356,7 @@ class Embedded_Record {
         }
     }
 
-   rowInserted(detail, row, position) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
+    rowInserted(detail, row, position) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
         this.setModifiedFlag(true);
         for (var i = 0; i < this.__listeners__.length; i++) {
             this.__listeners__[i].rowInserted(this, detail, row, position);
@@ -352,8 +374,16 @@ class Embedded_Record {
         this.__listeners__.push(listener);
     }
 
+    persistentFieldNames() {
+        return this.__class__.__description__.persistentFieldNames
+    }
+
     fieldNames() {
         return this.__class__.__description__.fieldnames
+    }
+
+    persistentDetailNames() {
+        return this.__class__.__description__.persistentDetailNames
     }
 
     detailNames() {
@@ -424,16 +454,15 @@ class Embedded_Record {
 
     syncOldFields() {
         var self = this;
-        _(this.__class__.__description__.fields).forEach(function (fdef, fn) {
-            if (fdef.type != 'detail') {
-                self.oldFields(fn).setValue(self[fn])
-            } else {
-                var detail = self[fn]
-                for (var j = 0; j < detail.length; j++) {
-                    detail[j].syncOldFields();
-                }
-                detail.clearRemovedRows();
+        _(this.__class__.__description__.persistentFieldNames).forEach(function (fn) {
+            self.oldFields(fn).setValue(self[fn])
+        });
+        _(this.__class__.__description__.persistentDetailNames).forEach(function (dn) { //esto tiene que iterar sobre PersistentDetails!!!
+            var detail = self[dn]
+            for (var j = 0; j < detail.length; j++) {
+                detail[j].syncOldFields();
             }
+            detail.clearRemovedRows();
         })
         self.setModifiedFlag(false)
     }
@@ -473,7 +502,12 @@ class Embedded_Record {
     }
 
     async load() {
-        return oo.orm.load(this);
+        let res = oo.orm.load(this);
+        if (res) await this.afterLoad();
+        return res;
+    }
+
+    async afterLoad() {
     }
 
     static async findOne(whereClause) {
@@ -571,7 +605,7 @@ class Embedded_Record {
         var fieldnames = this.fieldNames();
         for (var i = 0; i < fieldnames.length; i++) {
             var fn = fieldnames[i];
-            newrec[fn] = this[fn]
+            newrec[fn] = this.fields(fn).cloneValue();
         }
         var detailnames = this.detailNames();
         for (var i = 0; i < detailnames.length; i++) {
@@ -593,7 +627,19 @@ class Embedded_Record {
         var fieldnames = this.fieldNames();
         for (var i = 0; i < fieldnames.length; i++) {
             var fn = fieldnames[i];
-            if (rec[fn] != this[fn]) return false;
+            if (rec.fields(fn).type != this.fields(fn).type) return false;
+            if (rec.fields(fn).type == 'date') {
+                if ((rec[fn] != this[fn]) && !rec[fn].isSame(this[fn])) {
+                    console.log(fn, rec[fn], this[fn])
+                    return false;
+                }
+            }
+            else {
+                if (rec[fn] != this[fn]) {
+                    console.log(fn, rec[fn], this[fn])
+                    return false;
+                }
+            }
         }
         var detailnames = this.detailNames();
         for (var i = 0; i < detailnames.length; i++) {

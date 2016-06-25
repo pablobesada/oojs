@@ -25,18 +25,19 @@ class ContextManager {
 
     static async getDBConnection() {
         let session = this.getRequestSession();
-        console.log("SID: " + session.id)
-        if (!this.dbconnections[session.id]) this.dbconnections[session.id] = []
-        let connections = this.dbconnections[session.id];
+        //console.log("SID: " + session.id)
+        let sid = session.id
+        //sid = '123'
+        if (!this.dbconnections[sid]) this.dbconnections[sid] = []
+        let connections = this.dbconnections[sid];
         for (let i in connections) {
             let conn = connections[i];
             if (!conn.busy) {
-                //console.log("returing existing: ", conn)
                 return conn;
             }
         }
         let conn = await require("./db").getConnection();
-        this.dbconnections[session.id].push(conn)
+        this.dbconnections[sid].push(conn)
         return conn;
     }
 
