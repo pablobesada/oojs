@@ -26,6 +26,11 @@ class Master extends Parent {
     static async bring(Code) {
         return this.findOne({Code: Code})
     }
+
+    static uniqueKey() {
+        return ['Code']
+    }
+
 }
 
 module.exports = Master.initClass(Description)

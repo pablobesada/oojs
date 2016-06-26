@@ -12,7 +12,7 @@ let utils = null;
 //oo.isServer = false;
 
 describe("Embedded_Window", function () {
-    let cls = cm.getClass("SalesOrderWindow");
+    let cls = cm.getClass("TestRecordWindow");
     let wnd = null;
     it("Instantiate a window", async () => {
         wnd = cls.new()
@@ -24,8 +24,15 @@ describe("Embedded_Window", function () {
     })
     it("AfterEdit", async () => {
         //let c = cm.getClass("SalesTransactionWindow").new()
-        await wnd.call_afterEdit('CustCode', 'C00001')
-        'Cliente 1'.should.be.equal(wnd.getRecord().CustName)
+        await wnd.call_afterEdit('LinkTo_Field', 'C00001')
+        'Cliente 1'.should.be.equal(wnd.getRecord().String_Field)
+    })
+
+    it("Apply Window Patch", async () => {
+        //wnd = cm.getClass("TestRecordWindow")
+        let wnd2 = cm.getClass("TestRecord2Window")
+        //console.log(wnd.getDescription().form)
+        console.log(wnd2.getDescription().form)
     })
 });
 

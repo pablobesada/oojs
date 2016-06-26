@@ -17,7 +17,7 @@ var utils = null;
 describe("Embedded_Window", function () {
     var _this = this;
 
-    var cls = cm.getClass("SalesOrderWindow");
+    var cls = cm.getClass("TestRecordWindow");
     var wnd = null;
     it("Instantiate a window", _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -57,10 +57,10 @@ describe("Embedded_Window", function () {
                 switch (_context3.prev = _context3.next) {
                     case 0:
                         _context3.next = 2;
-                        return wnd.call_afterEdit('CustCode', 'C00001');
+                        return wnd.call_afterEdit('LinkTo_Field', 'C00001');
 
                     case 2:
-                        'Cliente 1'.should.be.equal(wnd.getRecord().CustName);
+                        'Cliente 1'.should.be.equal(wnd.getRecord().String_Field);
 
                     case 3:
                     case "end":
@@ -68,6 +68,26 @@ describe("Embedded_Window", function () {
                 }
             }
         }, _callee3, _this);
+    })));
+
+    it("Apply Window Patch", _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+        var wnd2;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            while (1) {
+                switch (_context4.prev = _context4.next) {
+                    case 0:
+                        //wnd = cm.getClass("TestRecordWindow")
+                        wnd2 = cm.getClass("TestRecord2Window");
+                        //console.log(wnd.getDescription().form)
+
+                        console.log(wnd2.getDescription().form);
+
+                    case 2:
+                    case "end":
+                        return _context4.stop();
+                }
+            }
+        }, _callee4, _this);
     })));
 });
 

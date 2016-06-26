@@ -12,6 +12,7 @@ var Description = {
         TestName: {type: "string", length: 60},
         SubTestName: {type: "string", length: 60},
         String_Field: {type: "string", length: 60},
+        LinkTo_Field: {type: "string", linkto: "Customer"},
         Integer_Field: {type: "integer"},
         NonPersistent_Field: {type: "string", length:60, persistent: false},
         Date_Field: {type: "date"},
@@ -114,6 +115,15 @@ class TestRecord extends Parent {
         return null;
 
     }
+
+    async pasteLinkTo_Field() {
+        var self = this;
+        if (this.LinkTo_Field) {
+            let customer = await cm.getClass("Customer").bring(this.LinkTo_Field);
+            if (customer) self.String_Field = customer.Name;
+        }
+    }
+
 
 }
 

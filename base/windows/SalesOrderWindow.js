@@ -21,11 +21,11 @@ var Description = {
     title: "Sales Order",
     form: [{ field: 'syncVersion', label: 'sync' }, { field: 'SerNr', label: 'Numero' }, { field: 'CustCode' }, { field: 'CustName', pastewindow: "CustomerPasteWindow" }, {
         type: 'tabs', pages: [{
-            label: "TAB1", content: [{
+            label: "TAB1", name: 'TAB1Page', content: [{
                 field: 'Items', columns: [{ field: 'rowNr' }, { field: 'ArtCode', label: 'Codigo' }, { field: 'Name', label: 'Descripcion' }]
             }]
         }, {
-            label: "TAB2", content: [{
+            label: "TAB2", name: 'TAB2Page', content: [{
                 field: 'Items', columns: [{ field: 'rowNr' }, { field: 'ArtCode', label: 'Codigo' }, { field: 'Name', label: 'Descripcion' }]
             }]
         }]
@@ -33,9 +33,7 @@ var Description = {
     filename: __filename
 };
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 var Parent = cm.SuperClass(Description);
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 
 var SalesOrderWindow = function (_Parent) {
     _inherits(SalesOrderWindow, _Parent);

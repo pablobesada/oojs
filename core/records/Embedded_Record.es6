@@ -16,9 +16,10 @@ class Field {
     constructor(name, type, length, persistent, linkto) {
         this.name = name;
         this.type = type;
-        this.length = length;
+        this.__length__ = length;
         this.persistent = persistent;
         this.linkto = linkto;
+        this.__linkto_recordClass__ = null;
         this.value = null;
         this.listener = null;
     }
@@ -28,6 +29,22 @@ class Field {
         return this.value;
     }
 
+    getMaxLength() {
+        if (this.__length__ != null && this.__length__ != undefined) return this.__length__;
+        if (this.linkto) {
+            let cls = this.getLinktoRecordClass();
+            this.__length__ = cls.getDescription().fields[cls.uniqueKey()[0]].length;
+        }
+        return this.__length__;
+    }
+
+    getLinktoRecordClass() {
+        if (!this.linkto) return null;
+        if (!this.__linkto_recordClass__) {
+            this.__linkto_recordClass__ = oo.classmanager.getClass(this.linkto);
+        }
+        return this.__linkto_recordClass__;
+    }
     cloneValue() {
         return this.value;
     }
@@ -270,7 +287,9 @@ class Embedded_Record {
             newdesc.fields[fn] = parentdesc.fields[fn];
         }
         for (var fn in descriptor.fields) {
-            newdesc.fields[fn] = descriptor.fields[fn];
+            let fdef = descriptor.fields[fn]
+            newdesc.fields[fn] = fdef;
+            if (fdef.type == 'string' && fdef.linkto) newdesc.fields[fn].length = null;
         }
         newdesc.name = descriptor.name;
         newdesc.fieldnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
@@ -421,7 +440,6 @@ class Embedded_Record {
     }
 
     async save() {
-        console.log("en save de Embedded_Record")
         let self = this;
         let res = await self.check()
         if (res) {
@@ -518,6 +536,10 @@ class Embedded_Record {
         let res = await rec.load();
         if (!res) return null;
         return rec;
+    }
+
+    static uniqueKey() {
+        return []
     }
 
     static select() {

@@ -25,6 +25,13 @@ describe("Embedded_Record", function () {
         should(rec.Date_Field.isSame(now)).ok()
     });
 
+    it("Linkto fields must get its length from the linked record", async () => {
+        rec = cls.new();
+        let linkto_class = rec.fields("LinkTo_Field").getLinktoRecordClass()
+        should(rec.fields("LinkTo_Field").getMaxLength()).be.equal(linkto_class.getDescription().fields[linkto_class.uniqueKey()[0]].length)
+        should(rec.fields("String_Field").getMaxLength()).be.equal(cls.getDescription().fields.String_Field.length)
+    });
+
     it("create new record and store it", async () => {
         await oo.beginTransaction()
         rec = cls.new().fillWithRandomValues()

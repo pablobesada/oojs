@@ -13,42 +13,46 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var cm = require('openorange').classmanager;
 
 var Description = {
-    name: 'Master',
-    inherits: 'Record',
-    fields: {
-        Code: { type: "string", length: 30 },
-        Name: { type: "string", length: 100 }
-    },
+    name: 'TestRecordWindow',
+    inherits: 'Window',
+    record: 'TestRecord',
+    title: "Test Record Window",
+    form: [{ field: 'SubTestName' }, { field: 'String_Field' }, { field: 'Integer_Field' }, {
+        type: 'tabs', name: 'tabs', pages: [{
+            label: "TAB1", name: 'TAB1Page', content: [{
+                field: 'Rows', columns: [{ field: 'rowNr' }, { field: 'String_Field' }, { field: 'LinkTo_Field', name: 'LTF' }, { field: 'Integer_Field' }]
+            }]
+        }]
+    }],
     filename: __filename
 };
 
 var Parent = cm.SuperClass(Description);
 
-var Master = function (_Parent) {
-    _inherits(Master, _Parent);
+var TestRecordWindow = function (_Parent) {
+    _inherits(TestRecordWindow, _Parent);
 
-    function Master() {
-        _classCallCheck(this, Master);
+    function TestRecordWindow() {
+        _classCallCheck(this, TestRecordWindow);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(Master).call(this));
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(TestRecordWindow).call(this));
     }
 
-    _createClass(Master, [{
-        key: 'inspect',
-        value: function inspect() {
-            return "<" + this.__class__.__description__.name + " " + this.Code + ">";
-        }
-    }], [{
-        key: 'bring',
+    _createClass(TestRecordWindow, [{
+        key: 'changed LinkTo_Field',
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(Code) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                return _context.abrupt('return', this.findOne({ Code: Code }));
+                                _context.next = 2;
+                                return Parent.tryCall(this, null, "changed LinkTo_Field");
 
-                            case 1:
+                            case 2:
+                                return _context.abrupt('return', this.getRecord().pasteLinkTo_Field());
+
+                            case 3:
                             case 'end':
                                 return _context.stop();
                         }
@@ -56,22 +60,17 @@ var Master = function (_Parent) {
                 }, _callee, this);
             }));
 
-            function bring(_x) {
+            function changedLinkTo_Field() {
                 return ref.apply(this, arguments);
             }
 
-            return bring;
+            return changedLinkTo_Field;
         }()
-    }, {
-        key: 'uniqueKey',
-        value: function uniqueKey() {
-            return ['Code'];
-        }
     }]);
 
-    return Master;
+    return TestRecordWindow;
 }(Parent);
 
-module.exports = Master.initClass(Description);
+module.exports = TestRecordWindow.initClass(Description);
 
-//# sourceMappingURL=Master.js.map
+//# sourceMappingURL=TestRecordWindow.js.map

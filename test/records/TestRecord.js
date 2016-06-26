@@ -22,6 +22,7 @@ var Description = {
         TestName: { type: "string", length: 60 },
         SubTestName: { type: "string", length: 60 },
         String_Field: { type: "string", length: 60 },
+        LinkTo_Field: { type: "string", linkto: "Customer" },
         Integer_Field: { type: "integer" },
         NonPersistent_Field: { type: "string", length: 60, persistent: false },
         Date_Field: { type: "date" },
@@ -221,6 +222,44 @@ var TestRecord = function (_Parent) {
         value: function fillWithRandomValues() {
             return this.__class__.fillRecordWithRandomValues(this);
         }
+    }, {
+        key: "pasteLinkTo_Field",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+                var self, customer;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                self = this;
+
+                                if (!this.LinkTo_Field) {
+                                    _context4.next = 6;
+                                    break;
+                                }
+
+                                _context4.next = 4;
+                                return cm.getClass("Customer").bring(this.LinkTo_Field);
+
+                            case 4:
+                                customer = _context4.sent;
+
+                                if (customer) self.String_Field = customer.Name;
+
+                            case 6:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function pasteLinkTo_Field() {
+                return ref.apply(this, arguments);
+            }
+
+            return pasteLinkTo_Field;
+        }()
     }], [{
         key: "wait",
         value: function wait(t) {
@@ -270,33 +309,33 @@ var TestRecord = function (_Parent) {
     }, {
         key: "newSavedRecord",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
                 var rec;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
                     while (1) {
-                        switch (_context4.prev = _context4.next) {
+                        switch (_context5.prev = _context5.next) {
                             case 0:
                                 rec = this.new().fillWithRandomValues();
-                                _context4.next = 3;
+                                _context5.next = 3;
                                 return rec.store();
 
                             case 3:
-                                if (!_context4.sent) {
-                                    _context4.next = 5;
+                                if (!_context5.sent) {
+                                    _context5.next = 5;
                                     break;
                                 }
 
-                                return _context4.abrupt("return", rec);
+                                return _context5.abrupt("return", rec);
 
                             case 5:
-                                return _context4.abrupt("return", null);
+                                return _context5.abrupt("return", null);
 
                             case 6:
                             case "end":
-                                return _context4.stop();
+                                return _context5.stop();
                         }
                     }
-                }, _callee4, this);
+                }, _callee5, this);
             }));
 
             function newSavedRecord() {

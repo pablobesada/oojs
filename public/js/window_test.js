@@ -79,10 +79,11 @@
     };
 
     function test() {
-        var wcust = cm.getClass("CustomerWindow").new()
-        var rec = cm.getClass("Customer").new()
+        var wcust = cm.getClass("TestRecordWindow").new()
+        var rec = wcust.getRecordClass().new().fillWithRandomValues()
         wcust.setRecord(rec)
         wcust.open()
+        wcust.setFocus()
     }
 
 })();

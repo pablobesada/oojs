@@ -33,9 +33,10 @@ var Field = function () {
 
         this.name = name;
         this.type = type;
-        this.length = length;
+        this.__length__ = length;
         this.persistent = persistent;
         this.linkto = linkto;
+        this.__linkto_recordClass__ = null;
         this.value = null;
         this.listener = null;
     }
@@ -45,6 +46,25 @@ var Field = function () {
         value: function getValue() {
             //console.log("en get value: " + this.value)
             return this.value;
+        }
+    }, {
+        key: "getMaxLength",
+        value: function getMaxLength() {
+            if (this.__length__ != null && this.__length__ != undefined) return this.__length__;
+            if (this.linkto) {
+                var cls = this.getLinktoRecordClass();
+                this.__length__ = cls.getDescription().fields[cls.uniqueKey()[0]].length;
+            }
+            return this.__length__;
+        }
+    }, {
+        key: "getLinktoRecordClass",
+        value: function getLinktoRecordClass() {
+            if (!this.linkto) return null;
+            if (!this.__linkto_recordClass__) {
+                this.__linkto_recordClass__ = oo.classmanager.getClass(this.linkto);
+            }
+            return this.__linkto_recordClass__;
         }
     }, {
         key: "cloneValue",
@@ -330,7 +350,9 @@ var Embedded_Record = function () {
                 newdesc.fields[fn] = parentdesc.fields[fn];
             }
             for (var fn in descriptor.fields) {
-                newdesc.fields[fn] = descriptor.fields[fn];
+                var fdef = descriptor.fields[fn];
+                newdesc.fields[fn] = fdef;
+                if (fdef.type == 'string' && fdef.linkto) newdesc.fields[fn].length = null;
             }
             newdesc.name = descriptor.name;
             newdesc.fieldnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
@@ -520,113 +542,112 @@ var Embedded_Record = function () {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                console.log("en save de Embedded_Record");
                                 self = this;
-                                _context2.next = 4;
+                                _context2.next = 3;
                                 return self.check();
 
-                            case 4:
+                            case 3:
                                 res = _context2.sent;
 
                                 if (!res) {
-                                    _context2.next = 35;
+                                    _context2.next = 34;
                                     break;
                                 }
 
                                 if (!self.isNew()) {
-                                    _context2.next = 22;
+                                    _context2.next = 21;
                                     break;
                                 }
 
-                                _context2.next = 9;
+                                _context2.next = 8;
                                 return self.beforeInsert();
 
-                            case 9:
+                            case 8:
                                 res = _context2.sent;
 
                                 if (!res) {
-                                    _context2.next = 20;
+                                    _context2.next = 19;
                                     break;
                                 }
 
-                                _context2.next = 13;
+                                _context2.next = 12;
                                 return self.store();
 
-                            case 13:
+                            case 12:
                                 res = _context2.sent;
 
                                 if (res) {
-                                    _context2.next = 16;
+                                    _context2.next = 15;
                                     break;
                                 }
 
                                 return _context2.abrupt("return", res);
 
-                            case 16:
-                                _context2.next = 18;
+                            case 15:
+                                _context2.next = 17;
                                 return self.afterInsert();
 
-                            case 18:
+                            case 17:
                                 res = _context2.sent;
 
                                 if (res == null) res = true;
 
-                            case 20:
-                                _context2.next = 35;
+                            case 19:
+                                _context2.next = 34;
                                 break;
 
-                            case 22:
-                                _context2.next = 24;
+                            case 21:
+                                _context2.next = 23;
                                 return self.beforeUpdate();
 
-                            case 24:
+                            case 23:
                                 res = _context2.sent;
 
                                 if (!res) {
-                                    _context2.next = 35;
+                                    _context2.next = 34;
                                     break;
                                 }
 
-                                _context2.next = 28;
+                                _context2.next = 27;
                                 return self.store();
 
-                            case 28:
+                            case 27:
                                 res = _context2.sent;
 
                                 if (res) {
-                                    _context2.next = 31;
+                                    _context2.next = 30;
                                     break;
                                 }
 
                                 return _context2.abrupt("return", res);
 
-                            case 31:
-                                _context2.next = 33;
+                            case 30:
+                                _context2.next = 32;
                                 return self.afterUpdate();
 
-                            case 33:
+                            case 32:
                                 res = _context2.sent;
 
                                 if (res == null) res = true;
 
-                            case 35:
+                            case 34:
                                 if (!res) {
-                                    _context2.next = 39;
+                                    _context2.next = 38;
                                     break;
                                 }
 
                                 self.syncOldFields();
-                                _context2.next = 41;
+                                _context2.next = 40;
                                 break;
 
-                            case 39:
-                                _context2.next = 41;
+                            case 38:
+                                _context2.next = 40;
                                 return oo.rollback();
 
-                            case 41:
+                            case 40:
                                 return _context2.abrupt("return", res);
 
-                            case 42:
+                            case 41:
                             case "end":
                                 return _context2.stop();
                         }
@@ -1086,6 +1107,11 @@ var Embedded_Record = function () {
 
             return findOne;
         }()
+    }, {
+        key: "uniqueKey",
+        value: function uniqueKey() {
+            return [];
+        }
     }, {
         key: "select",
         value: function select() {

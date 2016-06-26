@@ -14,7 +14,7 @@ var Description = {
         {
             type: 'tabs', pages: [
             {
-                label: "TAB1", content: [
+                label: "TAB1", name: 'TAB1Page', content: [
                 {
                     field: 'Items', columns: [
                     {field: 'rowNr'},
@@ -25,7 +25,7 @@ var Description = {
             ]
             },
             {
-                label: "TAB2", content: [
+                label: "TAB2", name: 'TAB2Page', content: [
                 {
                     field: 'Items', columns: [
                     {field: 'rowNr'},
@@ -41,9 +41,7 @@ var Description = {
     filename: __filename
 }
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 var Parent = cm.SuperClass(Description)
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 class SalesOrderWindow extends Parent {
     constructor() {
         super()

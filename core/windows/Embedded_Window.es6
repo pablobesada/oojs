@@ -1,7 +1,6 @@
 "use strict";
 
 var oo = require("openorange")
-console.log("requiring oo en Embedded_Window", oo)
 var _ = require("underscore")
 
 var WindowDescription = {
@@ -32,7 +31,10 @@ class Embedded_Window {
         newdesc.name = descriptor.name;
         newdesc.title = descriptor.title;
         newdesc.recordClass = descriptor.record
-        newdesc.form = descriptor.form;
+        newdesc.form = descriptor.form || parentdesc.form;
+        if (descriptor.override) {
+            newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override)
+        }
         newdesc.filename = descriptor.filename;
         this.__description__ = newdesc;
         this.__recordClass__ = null;
@@ -186,6 +188,65 @@ class Embedded_Window {
         var rec = this.getRecord();
         if (rec != null) return rec.save();
         return false;
+    }
+
+    static applyFormOverride(form, patcheslist, path) {
+        let findNodePath = function findNodePath(json, name, path) {
+            if (json instanceof Array) {
+                for (let i=0;i<json.length;i++) {
+                    path.push(i)
+                    let res = findNodePath(json[i], name, path)
+                    if (res) return true;
+                    path.pop()
+                }
+            }
+            console.log(json)
+            if (json.name == name) {
+                return true;
+            }
+            let attr = 'content' in json? 'content': 'columns' in json? 'columns' : 'pages' in json? 'pages' : null
+            if (attr) {
+                path.push(attr)
+                let res = findNodePath(json[attr], name, path)
+                if (res) return true;
+                path.pop()
+            }
+            return false;
+        }
+
+        let newform = form;
+        for (let i in patcheslist) {
+            let patch = patcheslist[i];
+            if ('addafter' in patch || 'addbefore' in patch || 'replace' in patch || 'remove' in patch) {
+                let action = 'addafter' in patch? 'addafter' : 'addbefore' in patch? 'addbefore' : 'replace' in patch? 'replace' : 'remove';
+                let nodepath = []
+                let res = findNodePath(form, patch[action], nodepath);
+                if (res) {
+                    let nodeidx = nodepath.pop();
+                    let parentnode = form;
+                    for (let j=0;j<nodepath.length;j++) parentnode = parentnode[nodepath[j]];
+                    switch (action) {
+                        case 'addafter':
+                            parentnode.splice(nodeidx+1, 0, patch.content);
+                            break;
+                        case 'addbefore':
+                            parentnode.splice(nodeidx, 0, patch.content);
+                            break;
+                        case 'replace':
+                            parentnode.splice(nodeidx, 1, patch.content);
+                            break;
+                        case 'remove':
+                            parentnode.splice(nodeidx, 1);
+                            break;
+                    }
+                }
+            } else if ('add') {
+                form.push(patch.add)
+            } else {
+                throw new Error("Form override error. Wrong action. Needs to be addbefore, addafter, replace, add or remove.")
+            }
+        }
+        return newform
     }
 }
 
