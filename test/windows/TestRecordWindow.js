@@ -17,13 +17,14 @@ var Description = {
     inherits: 'Window',
     record: 'TestRecord',
     title: "Test Record Window",
-    form: [{ field: 'SubTestName' }, { field: 'String_Field' }, { field: 'Integer_Field' }, {
+    form: [{ field: 'SubTestName' }, { field: 'String_Field' }, { field: 'LinkTo_Field', name: 'LTF' }, { field: 'Integer_Field' }, {
         type: 'tabs', name: 'tabs', pages: [{
             label: "TAB1", name: 'TAB1Page', content: [{
-                field: 'Rows', columns: [{ field: 'rowNr' }, { field: 'String_Field' }, { field: 'LinkTo_Field', name: 'LTF' }, { field: 'Integer_Field' }]
+                field: 'Rows', columns: [{ field: 'rowNr' }, { field: 'String_Field' }, { field: 'Integer_Field' }]
             }]
         }]
     }],
+    actions: [{ label: 'Test Action', methodname: 'testAction' }, { label: 'Test Action2', methodname: 'testAction2' }],
     filename: __filename
 };
 
@@ -66,6 +67,16 @@ var TestRecordWindow = function (_Parent) {
 
             return changedLinkTo_Field;
         }()
+    }, {
+        key: 'testAction',
+        value: function testAction() {
+            console.log("en testAction");
+        }
+    }, {
+        key: 'testAction2',
+        value: function testAction2() {
+            console.log("en testAction2");
+        }
     }]);
 
     return TestRecordWindow;

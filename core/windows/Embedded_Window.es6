@@ -6,6 +6,7 @@ var _ = require("underscore")
 var WindowDescription = {
     name: 'Embedded_Window',
     inherits: null,
+    actions: [],
     filename: __filename,
 }
 
@@ -34,6 +35,10 @@ class Embedded_Window {
         newdesc.form = descriptor.form || parentdesc.form;
         if (descriptor.override) {
             newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override)
+        }
+        newdesc.actions = parentdesc.actions
+        if (descriptor.actions) {
+            for (let i=0;i<descriptor.actions.length;i++) newdesc.actions.push(descriptor.actions[i])
         }
         newdesc.filename = descriptor.filename;
         this.__description__ = newdesc;
@@ -182,6 +187,11 @@ class Embedded_Window {
         if ('changed ' + fieldname + '.' + rowfieldname in this) {
             this['changed ' + fieldname + '.' + rowfieldname](rownr)
         }
+    }
+
+    async call_action(methodname) {
+        if (this[methodname]) return this[methodname]();
+        console.log(`action ${methodname} not found in window`)
     }
 
     async save() {

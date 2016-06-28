@@ -15,7 +15,7 @@ classmanager.addScriptDir("core");
 classmanager.addScriptDir("base");
 classmanager.addScriptDir("standard");
 classmanager.addScriptDir("test")
-classmanager.lookupdirs = ["records", "windows", "reports", "modules", "tools"];
+classmanager.lookupdirs = ["records", "windows", "reports", "modules", "tools", "documents"];
 
 classmanager.getClassFilename = function getClassFilename(name, max_script_dir_index) {
     var ms = max_script_dir_index;

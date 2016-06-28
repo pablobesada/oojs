@@ -124,11 +124,24 @@ router.get('/explorer/search', function (req, res, next) {
 });
 
 
+/*
 router.post('/login', function (req, res, next) {
     let data = req.body;
     console.log("login user: ", data)
     req.session.user = data.user
     res.send({ok: true})
+});
+*/
+
+router.get('/getcurrentuser', function (req, res, next) {
+    res.send({ok: true, currentuser: req.session.user})
+});
+
+router.post('/login', function (req, res, next) {
+    console.log(req.body)
+    console.log("login user: ", req.body.username)
+    req.session.user = req.body.username
+    res.redirect("/app")
 });
 
 router.post('/oo/rollback', function (req, res, next) {

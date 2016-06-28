@@ -12,6 +12,7 @@ var _ = require("underscore");
 var WindowDescription = {
     name: 'Embedded_Window',
     inherits: null,
+    actions: [],
     filename: __filename
 };
 
@@ -45,6 +46,12 @@ var Embedded_Window = function () {
             newdesc.form = descriptor.form || parentdesc.form;
             if (descriptor.override) {
                 newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override);
+            }
+            newdesc.actions = parentdesc.actions;
+            if (descriptor.actions) {
+                for (var i = 0; i < descriptor.actions.length; i++) {
+                    newdesc.actions.push(descriptor.actions[i]);
+                }
             }
             newdesc.filename = descriptor.filename;
             this.__description__ = newdesc;
@@ -253,32 +260,64 @@ var Embedded_Window = function () {
             return afterEditRow;
         }()
     }, {
-        key: "save",
+        key: "call_action",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
-                var rec;
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(methodname) {
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                rec = this.getRecord();
-
-                                if (!(rec != null)) {
-                                    _context3.next = 3;
+                                if (!this[methodname]) {
+                                    _context3.next = 2;
                                     break;
                                 }
 
-                                return _context3.abrupt("return", rec.save());
+                                return _context3.abrupt("return", this[methodname]());
+
+                            case 2:
+                                console.log("action " + methodname + " not found in window");
 
                             case 3:
-                                return _context3.abrupt("return", false);
-
-                            case 4:
                             case "end":
                                 return _context3.stop();
                         }
                     }
                 }, _callee3, this);
+            }));
+
+            function call_action(_x7) {
+                return ref.apply(this, arguments);
+            }
+
+            return call_action;
+        }()
+    }, {
+        key: "save",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+                var rec;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                rec = this.getRecord();
+
+                                if (!(rec != null)) {
+                                    _context4.next = 3;
+                                    break;
+                                }
+
+                                return _context4.abrupt("return", rec.save());
+
+                            case 3:
+                                return _context4.abrupt("return", false);
+
+                            case 4:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
             }));
 
             function save() {
