@@ -17,7 +17,7 @@ var Description = {
     inherits: 'Record',
     fields: {
         Code: { type: "string", length: 30 },
-        Name: { type: "string", length: 100 }
+        Closed: { type: "boolean" }
     },
     filename: __filename
 };

@@ -35,11 +35,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         w.append(toolBar);
         w.append('<div class="grid-header" style="width:100%"> <label>lalala</label> <span style="float:right;display:inline-block;">Search: <input type="text" id="txtSearch" value="buscar"> </span> </div>');
         w.append('<div class="listwindow_grid" style="width:600px;height:200px;"></div>');
-
-        //w.append('<p>HOLA MUNDO</p>');
-        //w.append(self.createToolBar());
-        //w.append('<table class="recordlist"><thead></thead><tbody></tbody></table>')
-        //self.fillTable(w)
         this.tab_id = "tab_listwindow_" + (ListWindowContainer.listwindows.length + 1);
         console.log("setting tab_id: " + this.tab_id);
         ListWindowContainer.listwindows.push({
@@ -48,9 +43,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             tab_id: this.tab_id,
             container: self
         });
-        //w.append(self.createComponent(this.windowjson));
-        //w.append(self.createPasteWindow());
-        //console.log(this.windowjson)
         this.__element__ = w;
         this.displayWindow(w);
     };
@@ -68,7 +60,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
         $('ul.tabs').tabs();
 
-        //var recordClass = cm.getClass(self.listwindow.__description__.recordClass);
         var recordClass = self.listwindow.getRecordClass();
         var columns = self.listwindow.__class__.__description__.columns;
 
@@ -85,12 +76,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         grid = new Slick.Grid(windowElement.find(".listwindow_grid"), loader.data, self.grid_columns, options);
         grid.onClick.subscribe(function (e, args) {
             var item = args.item;
-            //console.log(args)
             self.recordSelectedInListWindow(args.grid.getData()[args.row]);
         });
         grid.onViewportChanged.subscribe(function (e, args) {
             var vp = grid.getViewport();
-            //console.log(vp.top, vp.bottom);
             loader.ensureData(vp.top, vp.bottom);
         });
         loader.onDataLoaded.subscribe(function (e, args) {
@@ -210,7 +199,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         return recordSelectedInListWindow;
     }();
 
-    $.extend(true, window.oo, { listwindowmanager: ListWindowContainer });
+    $.extend(true, window.oo.ui, { listwindowmanager: ListWindowContainer });
     //window.ListWindowManager = ListWindowContainer; //para hacer global la variable WindowManager
 })();
 

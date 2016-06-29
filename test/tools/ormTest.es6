@@ -26,7 +26,6 @@ function wait(t) {
 let Record = cm.getClass("Record");
 describe('ORM with Selenium', function () {
     before(async ()=> {
-        console.log("en before")
         app.serve(port);
         let q = await oo.getDBConnection()
         await q.query("delete from TestRecord")
@@ -41,7 +40,7 @@ describe('ORM with Selenium', function () {
         let responses = [];
         for (let i in runs) {
             let driver = new webdriver.Builder().forBrowser('chrome').build();
-            driver.get(`localhost:${port}/app/index`);
+            driver.get(`localhost:${port}/app`);
             driver.manage().timeouts().setScriptTimeout(200000);
             let command = `require("openorange").classmanager.getClass('ORMBrowserTests').test1('T${i}', ${runs[i]}, arguments[arguments.length - 1])`
             console.log(command)

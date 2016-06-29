@@ -39,9 +39,11 @@
 
         wso = cm.getClass("SalesOrderListWindow").new()
         wso.open()
+        wso = cm.getClass("DocumentSpecListWindow").new()
+        wso.open()
         wso = cm.getClass("SalesOrderWindow").new()
         wso.open()
-
+        //wso.print()
         return cm.getClass("SalesOrder").bring(n)
             .then(function (ss) {
                 so = ss;

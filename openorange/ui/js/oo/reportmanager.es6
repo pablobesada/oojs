@@ -61,7 +61,7 @@
         return require('openorange').classmanager.getClass('Embedded_Report').findReport(id);
     }
 
-    $.extend(true, window.oo, {reportmanager: ReportContainer})
+    $.extend(true, window.oo.ui, {reportmanager: ReportContainer})
     //window.ReportManager = ReportContainer; //para hacer global la variable ReportContainer
 })();
 

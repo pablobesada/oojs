@@ -292,6 +292,8 @@ class Embedded_Record {
             if (fdef.type == 'string' && fdef.linkto) newdesc.fields[fn].length = null;
         }
         newdesc.name = descriptor.name;
+        newdesc.persistent = 'persistent' in descriptor? descriptor.persistent : true;
+
         newdesc.fieldnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
             return newdesc.fields[fn].type != 'detail'
         })
@@ -397,6 +399,10 @@ class Embedded_Record {
         return this.__class__.__description__.persistentFieldNames
     }
 
+    isPersistent() {
+        return this.__class__.__description__.persistent;
+    }
+
     fieldNames() {
         return this.__class__.__description__.fieldnames
     }
@@ -483,6 +489,11 @@ class Embedded_Record {
             detail.clearRemovedRows();
         })
         self.setModifiedFlag(false)
+    }
+
+    async getDocument() {
+        //esto va al documentlink y vuelve un objeto de tipo Document (que es la especificacion del documento)
+        return await oo.classmanager.getClass("DocumentSpec").findOne({RecordName: this.__class__.getDescription().name})
     }
 
     async defaults() {
@@ -684,12 +695,6 @@ class Embedded_Record {
         return true;
     }
 
-    ppp() {
-        console.log("en ppp: " + oo.contextmanager.getSession().user)
-        //let session = require('continuation-local-storage').getNamespace('contextSession')
-        //let req = session.get('req')
-        //console.log("A", req.params)
-    }
 }
 Embedded_Record.__description__ = RecordDescription
 module.exports = Embedded_Record

@@ -36,6 +36,8 @@ html(lang='en')
      #login-page.row
        .col.s12.z-depth-4.card-panel
          form.login-form(name='login', action='/runtime/login', method='post')
+           input(name='redirect_on_success', type='hidden', value='/app')
+           input#md5pass(name='md5pass', type='hidden')
            .row
              .input-field.col.s12.center
                img.responsive-img.valign(src='images/logo_open.png', alt='')
@@ -66,6 +68,7 @@ html(lang='en')
                  a(href='page-forgot-password.html') Forgot password ?
      // jQuery Library
      script(type='text/javascript', src='js/plugins/jquery/jquery-1.11.2.min.js')
+     script(src='/openorange/lib/client/md5.min.js')
      // materialize js
      script(type='text/javascript', src='js/plugins/materialize/materialize.min.js')
      // prism
@@ -76,4 +79,3 @@ html(lang='en')
      script(type='text/javascript', src='js/plugins/login/login.js')
      // custom-script.js - Add your own theme custom JS
      // script type="text/javascript" src="../js/custom-script.js"></script
- 

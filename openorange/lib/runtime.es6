@@ -7,8 +7,8 @@ var fs = require("fs")
 
 var oo = require('openorange')
 
-var cm = oo.classmanager
-var orm = oo.orm
+var cm = require('./classmanager')
+var orm = require('./orm')
 
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
@@ -103,7 +103,11 @@ router.get('/select', function (req, res, next) {
     var recClass = cm.getClass(recordname);
     recClass.select()
         .then(function (records) {
-            res.send({ok:true, records: _(records).map(function (rec) {return JSON.stringify(rec)}) });
+            res.send({
+                ok: true, records: _(records).map(function (rec) {
+                    return JSON.stringify(rec)
+                })
+            });
         })
         .catch(function (err) {
             console.log(err)
@@ -115,7 +119,7 @@ router.get('/explorer/search', function (req, res, next) {
     //console.log(req.query.txt)
     oo.explorer.search(req.query.txt)
         .then(function (result) {
-            res.send({ok:true, response: result});
+            res.send({ok: true, response: result});
         })
         .catch(function (err) {
             console.log(err)
@@ -125,13 +129,13 @@ router.get('/explorer/search', function (req, res, next) {
 
 
 /*
-router.post('/login', function (req, res, next) {
-    let data = req.body;
-    console.log("login user: ", data)
-    req.session.user = data.user
-    res.send({ok: true})
-});
-*/
+ router.post('/login', function (req, res, next) {
+ let data = req.body;
+ console.log("login user: ", data)
+ req.session.user = data.user
+ res.send({ok: true})
+ });
+ */
 
 router.get('/getcurrentuser', function (req, res, next) {
     res.send({ok: true, currentuser: req.session.user})
@@ -140,14 +144,38 @@ router.get('/getcurrentuser', function (req, res, next) {
 router.post('/login', function (req, res, next) {
     console.log(req.body)
     console.log("login user: ", req.body.username)
-    req.session.user = req.body.username
-    res.redirect("/app")
+    try {
+        oo.login(req.body.username, req.body.md5pass)
+            .then(function (found) {
+                console.log("en then")
+                if (found) {
+                    console.log("user found")
+                    req.session.user = req.body.username
+                    if (req.body.redirect_on_success) {
+                        res.redirect(req.body.redirect_on_success)
+                    } else {
+                        res.send({ok: true})
+                    }
+
+
+                } else {
+                    console.log("user not found")
+                    res.send({ok: false, error: 'wrong user or password'})
+                }
+            })
+            .catch(function (err) {
+                console.log("ERR")
+                console.log(err.stack)
+            });
+    } catch (err) {
+        console.log(err.stack)
+    }
 });
 
 router.post('/oo/rollback', function (req, res, next) {
     oo.rollback()
         .then(function (result) {
-            res.send({ok:true, response: result});
+            res.send({ok: true, response: result});
         })
         .catch(function (err) {
             console.log(err)
@@ -158,7 +186,18 @@ router.post('/oo/rollback', function (req, res, next) {
 router.post('/oo/commit', function (req, res, next) {
     oo.commit()
         .then(function (result) {
-            res.send({ok:true, response: result});
+            res.send({ok: true, response: result});
+        })
+        .catch(function (err) {
+            console.log(err)
+            res.send({ok: false, error: err})
+        });
+});
+
+router.post('/oo/begintransaction', function (req, res, next) {
+    oo.beginTransaction()
+        .then(function (result) {
+            res.send({ok: true, response: result});
         })
         .catch(function (err) {
             console.log(err)

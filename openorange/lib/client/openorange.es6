@@ -30,6 +30,7 @@
         if (module == "underscore") return _;
         if (module == "moment") return moment;
         if (module == "chance") return Chance;
+        if (module == "js-md5") return md5;
         return loadModule(module)
     }
 
@@ -186,16 +187,21 @@
         $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
     })
 
-    let login = function (user, password) {
+    let login = function (user, pass) {
+        let password = pass || '';
         $.ajax({
             url: '/runtime/login',
             contentType: 'application/json; charset=utf-8',
             async: true,
             type: "POST",
             dataType: "json",
-            data: JSON.stringify({user: user, password: password}),
+            data: JSON.stringify({username: user, md5pass: md5(password)}),
             success: function (result) {
-                if (result.ok == true) __currentUser__ = user;
+                if (result.ok == true) {
+                    __currentUser__ = user;
+                } else {
+                    console.log(result.error)
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown)
@@ -237,6 +243,35 @@
         });
     }
 
+    let beginTransaction = function beginTransaction() {
+        return new Promise(function (resolve, reject) {
+            var url = '/runtime/oo/begintransaction';
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                dataType: "json",
+                async: true,
+                //data: JSON.stringify(data),
+                success: function (result) {
+                    if (!result.ok) {
+                        reject(result.error);
+                        return;
+                    }
+                    var response = 'response' in result ? result.response : null;
+                    resolve(response);
+                    return;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //console.log("en fail")
+                    reject(errorThrown);
+                },
+                complete: function () {
+                    //console.log("en load::complete");
+                }
+            });
+        });
+    }
 
     let commit = function commit() {
         return new Promise(function (resolve, reject) {
@@ -273,44 +308,52 @@
     }
 
     let fetchCurrentUser = async function fetchCurrentUser() {
-        $.ajax({
-            type: "GET",
-            url: '/runtime/getcurrentuser',
-            contentType: 'application/json; charset=utf-8',
-            dataType: "json",
-            async: true,
-            success: function (result) {
-                if (!result.ok) {
-                    reject(result.error);
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: "GET",
+                url: '/runtime/getcurrentuser',
+                contentType: 'application/json; charset=utf-8',
+                dataType: "json",
+                async: true,
+                success: function (result) {
+                    if (!result.ok) {
+                        reject(result.error);
+                        return;
+                    }
+                    var response = 'response' in result ? result.response : null;
+                    __currentUser__ = result.currentuser;
+                    resolve(result.currentuser);
                     return;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    reject(errorThrown);
+                },
+                complete: function () {
+                    //console.log("en load::complete");
                 }
-                var response = 'response' in result ? result.response : null;
-                __currentUser__ = result.currentuser;
-                resolve(result.currentuser);
-                return;
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                reject(errorThrown);
-            },
-            complete: function () {
-                //console.log("en load::complete");
-            }
+            });
         });
-
     }
 
+
+
     let oo = {
+        ui: {},
         classmanager: classmanager,
         orm: orm,
         isServer: false,
         isClient: true,
         login: login,
+        beginTransaction: beginTransaction,
         rollback: rollback,
         commit: commit,
         currentUser: currentUser,
+        md5: md5
+        //ready: ready,
     }
 
     fetchCurrentUser();
     //window.require = require
+
     $.extend(true, window, {require: require, oo: oo})
 })(jQuery)

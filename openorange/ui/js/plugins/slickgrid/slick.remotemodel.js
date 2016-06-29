@@ -1,11 +1,6 @@
 "use strict";
 
 (function ($) {
-    /***
-     * A sample AJAX data store implementation.
-     * Right now, it's hooked up to load Hackernews stories, but can
-     * easily be extended to support any JSONP-compatible backend that accepts paging parameters.
-     */
     var oo = require("openorange");
 
     function RemoteModel(rClass) {
@@ -26,7 +21,6 @@
         function init() {
         }
 
-
         function isDataLoaded(from, to) {
             for (var i = from; i <= to; i++) {
                 if (data[i] == undefined || data[i] == null) {
@@ -36,7 +30,6 @@
 
             return true;
         }
-
 
         function clear() {
             for (var key in data) {
@@ -78,15 +71,9 @@
             var start = fromPage * PAGESIZE;
             var limit = ((toPage - fromPage) * PAGESIZE) + PAGESIZE;
 
-            //console.log("sortcol: ", sortcol)
             var query = recordClass.select().offset(start).limit(limit);
             if (sortcol != null) query.order(sortcol, sortdir == -1 ? "DESC" : "ASC");
             if (searchstr != '') query.where({Name__like: '%'+searchstr+'%'})
-            //var url = "http://api.thriftdb.com/api.hnsearch.com/items/_search?filter[fields][type][]=submission&q=" + searchstr + "&start=" + (fromPage * PAGESIZE) + "&limit=" + (((toPage - fromPage) * PAGESIZE) + PAGESIZE);
-
-            //if (sortcol != null) {
-            //   url += ("&sortby=" + sortcol + ((sortdir > 0) ? "+asc" : "+desc"));
-            //}
 
             if (h_request != null) {
                 clearTimeout(h_request);
@@ -107,17 +94,6 @@
                         onError(fromPage, toPage)
                     })
 
-                /*req = $.ajax({
-                 url: url,
-                 callbackParameter: "callback",
-                 cache: true,
-                 success: onSuccess,
-                 error: function () {
-                 onError(fromPage, toPage)
-                 }
-                 });
-                 req.fromPage = fromPage;
-                 req.toPage = toPage;*/
             }, 50);
         }
 

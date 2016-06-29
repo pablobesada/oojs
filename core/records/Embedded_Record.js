@@ -355,6 +355,8 @@ var Embedded_Record = function () {
                 if (fdef.type == 'string' && fdef.linkto) newdesc.fields[fn].length = null;
             }
             newdesc.name = descriptor.name;
+            newdesc.persistent = 'persistent' in descriptor ? descriptor.persistent : true;
+
             newdesc.fieldnames = _(Object.keys(newdesc.fields)).filter(function (fn) {
                 return newdesc.fields[fn].type != 'detail';
             });
@@ -464,6 +466,11 @@ var Embedded_Record = function () {
         key: "persistentFieldNames",
         value: function persistentFieldNames() {
             return this.__class__.__description__.persistentFieldNames;
+        }
+    }, {
+        key: "isPersistent",
+        value: function isPersistent() {
+            return this.__class__.__description__.persistent;
         }
     }, {
         key: "fieldNames",
@@ -679,21 +686,49 @@ var Embedded_Record = function () {
             self.setModifiedFlag(false);
         }
     }, {
-        key: "defaults",
+        key: "getDocument",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                return _context3.abrupt("return");
+                                _context3.next = 2;
+                                return oo.classmanager.getClass("DocumentSpec").findOne({ RecordName: this.__class__.getDescription().name });
 
-                            case 1:
+                            case 2:
+                                return _context3.abrupt("return", _context3.sent);
+
+                            case 3:
                             case "end":
                                 return _context3.stop();
                         }
                     }
                 }, _callee3, this);
+            }));
+
+            function getDocument() {
+                return ref.apply(this, arguments);
+            }
+
+            return getDocument;
+        }()
+    }, {
+        key: "defaults",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                return _context4.abrupt("return");
+
+                            case 1:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
             }));
 
             function defaults() {
@@ -704,30 +739,6 @@ var Embedded_Record = function () {
         }()
     }, {
         key: "check",
-        value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
-                    while (1) {
-                        switch (_context4.prev = _context4.next) {
-                            case 0:
-                                return _context4.abrupt("return", true);
-
-                            case 1:
-                            case "end":
-                                return _context4.stop();
-                        }
-                    }
-                }, _callee4, this);
-            }));
-
-            function check() {
-                return ref.apply(this, arguments);
-            }
-
-            return check;
-        }()
-    }, {
-        key: "beforeInsert",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
                 return regeneratorRuntime.wrap(function _callee5$(_context5) {
@@ -744,14 +755,14 @@ var Embedded_Record = function () {
                 }, _callee5, this);
             }));
 
-            function beforeInsert() {
+            function check() {
                 return ref.apply(this, arguments);
             }
 
-            return beforeInsert;
+            return check;
         }()
     }, {
-        key: "beforeUpdate",
+        key: "beforeInsert",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
                 return regeneratorRuntime.wrap(function _callee6$(_context6) {
@@ -768,14 +779,14 @@ var Embedded_Record = function () {
                 }, _callee6, this);
             }));
 
-            function beforeUpdate() {
+            function beforeInsert() {
                 return ref.apply(this, arguments);
             }
 
-            return beforeUpdate;
+            return beforeInsert;
         }()
     }, {
-        key: "afterInsert",
+        key: "beforeUpdate",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7() {
                 return regeneratorRuntime.wrap(function _callee7$(_context7) {
@@ -792,14 +803,14 @@ var Embedded_Record = function () {
                 }, _callee7, this);
             }));
 
-            function afterInsert() {
+            function beforeUpdate() {
                 return ref.apply(this, arguments);
             }
 
-            return afterInsert;
+            return beforeUpdate;
         }()
     }, {
-        key: "afterUpdate",
+        key: "afterInsert",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8() {
                 return regeneratorRuntime.wrap(function _callee8$(_context8) {
@@ -816,6 +827,30 @@ var Embedded_Record = function () {
                 }, _callee8, this);
             }));
 
+            function afterInsert() {
+                return ref.apply(this, arguments);
+            }
+
+            return afterInsert;
+        }()
+    }, {
+        key: "afterUpdate",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
+                return regeneratorRuntime.wrap(function _callee9$(_context9) {
+                    while (1) {
+                        switch (_context9.prev = _context9.next) {
+                            case 0:
+                                return _context9.abrupt("return", true);
+
+                            case 1:
+                            case "end":
+                                return _context9.stop();
+                        }
+                    }
+                }, _callee9, this);
+            }));
+
             function afterUpdate() {
                 return ref.apply(this, arguments);
             }
@@ -825,27 +860,27 @@ var Embedded_Record = function () {
     }, {
         key: "store",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee10() {
                 var res;
-                return regeneratorRuntime.wrap(function _callee9$(_context9) {
+                return regeneratorRuntime.wrap(function _callee10$(_context10) {
                     while (1) {
-                        switch (_context9.prev = _context9.next) {
+                        switch (_context10.prev = _context10.next) {
                             case 0:
-                                _context9.next = 2;
+                                _context10.next = 2;
                                 return oo.orm.store(this);
 
                             case 2:
-                                res = _context9.sent;
+                                res = _context10.sent;
 
                                 if (res) this.syncOldFields();
-                                return _context9.abrupt("return", res);
+                                return _context10.abrupt("return", res);
 
                             case 5:
                             case "end":
-                                return _context9.stop();
+                                return _context10.stop();
                         }
                     }
-                }, _callee9, this);
+                }, _callee10, this);
             }));
 
             function store() {
@@ -857,19 +892,19 @@ var Embedded_Record = function () {
     }, {
         key: "delete",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee10() {
-                return regeneratorRuntime.wrap(function _callee10$(_context10) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee11() {
+                return regeneratorRuntime.wrap(function _callee11$(_context11) {
                     while (1) {
-                        switch (_context10.prev = _context10.next) {
+                        switch (_context11.prev = _context11.next) {
                             case 0:
-                                return _context10.abrupt("return", oo.orm.delete(this));
+                                return _context11.abrupt("return", oo.orm.delete(this));
 
                             case 1:
                             case "end":
-                                return _context10.stop();
+                                return _context11.stop();
                         }
                     }
-                }, _callee10, this);
+                }, _callee11, this);
             }));
 
             function _delete() {
@@ -881,31 +916,31 @@ var Embedded_Record = function () {
     }, {
         key: "load",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee11() {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee12() {
                 var res;
-                return regeneratorRuntime.wrap(function _callee11$(_context11) {
+                return regeneratorRuntime.wrap(function _callee12$(_context12) {
                     while (1) {
-                        switch (_context11.prev = _context11.next) {
+                        switch (_context12.prev = _context12.next) {
                             case 0:
                                 res = oo.orm.load(this);
 
                                 if (!res) {
-                                    _context11.next = 4;
+                                    _context12.next = 4;
                                     break;
                                 }
 
-                                _context11.next = 4;
+                                _context12.next = 4;
                                 return this.afterLoad();
 
                             case 4:
-                                return _context11.abrupt("return", res);
+                                return _context12.abrupt("return", res);
 
                             case 5:
                             case "end":
-                                return _context11.stop();
+                                return _context12.stop();
                         }
                     }
-                }, _callee11, this);
+                }, _callee12, this);
             }));
 
             function load() {
@@ -917,16 +952,16 @@ var Embedded_Record = function () {
     }, {
         key: "afterLoad",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee12() {
-                return regeneratorRuntime.wrap(function _callee12$(_context12) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee13() {
+                return regeneratorRuntime.wrap(function _callee13$(_context13) {
                     while (1) {
-                        switch (_context12.prev = _context12.next) {
+                        switch (_context13.prev = _context13.next) {
                             case 0:
                             case "end":
-                                return _context12.stop();
+                                return _context13.stop();
                         }
                     }
-                }, _callee12, this);
+                }, _callee13, this);
             }));
 
             function afterLoad() {
@@ -1055,50 +1090,42 @@ var Embedded_Record = function () {
             if (rowfieldname == 'rowNr') return false;
             return true;
         }
-    }, {
-        key: "ppp",
-        value: function ppp() {
-            console.log("en ppp: " + oo.contextmanager.getSession().user);
-            //let session = require('continuation-local-storage').getNamespace('contextSession')
-            //let req = session.get('req')
-            //console.log("A", req.params)
-        }
     }], [{
         key: "findOne",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee13(whereClause) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee14(whereClause) {
                 var rec, fn, res;
-                return regeneratorRuntime.wrap(function _callee13$(_context13) {
+                return regeneratorRuntime.wrap(function _callee14$(_context14) {
                     while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context14.prev = _context14.next) {
                             case 0:
                                 rec = this.new();
 
                                 for (fn in whereClause) {
                                     rec[fn] = whereClause[fn];
                                 }
-                                _context13.next = 4;
+                                _context14.next = 4;
                                 return rec.load();
 
                             case 4:
-                                res = _context13.sent;
+                                res = _context14.sent;
 
                                 if (res) {
-                                    _context13.next = 7;
+                                    _context14.next = 7;
                                     break;
                                 }
 
-                                return _context13.abrupt("return", null);
+                                return _context14.abrupt("return", null);
 
                             case 7:
-                                return _context13.abrupt("return", rec);
+                                return _context14.abrupt("return", rec);
 
                             case 8:
                             case "end":
-                                return _context13.stop();
+                                return _context14.stop();
                         }
                     }
-                }, _callee13, this);
+                }, _callee14, this);
             }));
 
             function findOne(_x) {

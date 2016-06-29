@@ -85,7 +85,7 @@ var Connection = function () {
                                             reject(err);
                                             return;
                                         }
-                                        resolve();
+                                        resolve(true);
                                     });
                                 }));
 

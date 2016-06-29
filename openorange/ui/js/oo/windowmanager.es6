@@ -75,6 +75,7 @@
         var self = this;
         var html = '<div class="row">';
         html += '<a class="btn waves-effect waves-light" action="save"><i class="mdi">done</i></a>';
+        html += '<a class="btn waves-effect waves-light" action="print"><i class="mdi">print</i></a>';
         for (let i=0;i<self.window.__class__.getDescription().actions.length;i++) {
             let action = self.window.__class__.getDescription().actions[i]
             html += `<a class="btn waves-effect waves-light" action="${action.methodname}">${action.label}</a>`;
@@ -84,6 +85,7 @@
         var res = $(html);
         //res.find("a").click(function (event) {self.save(event)});
         res.find("a[action=save]").click(this.save.bind(this));
+        res.find("a[action=print]").click(this.print.bind(this));
         for (let i=0;i<self.window.__class__.getDescription().actions.length;i++) {
             let action = self.window.__class__.getDescription().actions[i];
             let params = {self: self, methodname: action.methodname}
@@ -302,8 +304,13 @@
     };
 
 
-    WindowContainer.save = function save() {
-        this.window.save()
+    WindowContainer.save = async function save() {
+        let res = await this.window.save()
+        return res;
+    };
+
+    WindowContainer.print = function print() {
+        this.window.print()
     };
 
     WindowContainer.string = function string(json, cls, field) {
@@ -776,9 +783,10 @@
         var self = this;
         self.pastewindow_id = "PASTEWINDOW_" + WindowContainer.element_ids++;
         var html = '';
-        html += '<div id="' + self.pastewindow_id + '" class="modal modal-fixed-footer green white-text pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
+        html += '<div id="' + self.pastewindow_id + '" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
         html += '  <div class="modal-content">';
-        html += '    <table class="recordlist"><thead></thead><tbody></tbody></table>';
+        //html += '    <table class="recordlist"><thead></thead><tbody></tbody></table>';
+        html += '    <div class="pastewindow_grid" style="width:600px;height:200px;"></div>';
         html += '  </div>';
         html += '  <div class="modal-footer green lighten-4">';
         html += '    <a href="#" class="waves-effect waves-red btn-flat modal-action modal-close">Disagree</a>';
@@ -787,7 +795,6 @@
         html += '</div>';
         var pastewindow = $(html);
         return pastewindow;
-
     };
 
     WindowContainer.openPasteWindow = function openPasteWindow(event) {
@@ -798,7 +805,7 @@
         var pw = cm.getClass(fieldjson.pastewindow);
         var pwelement = self.__element__.find(".pastewindow");
         var recordClass = cm.getClass(pw.__description__.recordClass);
-        var columns = pw.__description__.columns;
+        let columns = pw.__description__.columns;
         var readonly = null;
         if (params.detailname == null) {
             readonly = !Boolean(self.window.beforeEdit(fieldjson.field));
@@ -806,6 +813,74 @@
             readonly = !Boolean(self.window.beforeEditRow(params.detailname, fieldjson.field, params.rownr));
         }
         if (readonly) return;
+
+
+        let generateColumns = function generateColumns() {
+            let self = this;
+            grid_columns = [];
+            for (let i = 0; i < columns.length; i++) {
+                let col = columns[i];
+                grid_columns.push({id: col.field, name: col.field, field: col.field, sortable: true})
+            }
+            return grid_columns;
+        }
+
+        //var recordClass = self.listwindow.getRecordClass();
+        //var columns = self.listwindow.__class__.__description__.columns;
+
+        var grid;
+        var loader = new Slick.Data.RemoteModel(recordClass);
+        var options = {
+            enableCellNavigation: true,
+            enableColumnReorder: false,
+            //showHeaderRow: true,
+
+        };
+
+        let grid_columns = generateColumns();
+        console.log("pwelement1", pwelement)
+        grid = new Slick.Grid(pwelement.find(".pastewindow_grid"), loader.data, grid_columns, options);
+        grid.onClick.subscribe(function (e, args) {
+            var item = args.item;
+            console.log("PWELEMENT2", pwelement)
+            var pasteparams = {
+                self: self,
+                detailname: params.detailname,
+                rownr: params.rownr,
+                field: field,
+                fieldjson: fieldjson,
+                pastewindow: pw,
+                pastewindowelement: pwelement,
+                editor: params.editor,
+                record: args.grid.getData()[args.row]
+            };
+
+            //args.grid.getData()[args.row]
+
+            self.recordSelectedInPasteWindow(pasteparams)
+        });
+        grid.onViewportChanged.subscribe(function (e, args) {
+            var vp = grid.getViewport();
+            loader.ensureData(vp.top, vp.bottom);
+        });
+        loader.onDataLoaded.subscribe(function (e, args) {
+            for (var i = args.from; i <= args.to; i++) {
+                grid.invalidateRow(i);
+            }
+            grid.updateRowCount();
+            grid.render();
+            //loadingIndicator.fadeOut();
+        });
+
+
+        grid.onSort.subscribe(function (e, args) {
+            loader.setSort(args.sortCol.field, args.sortAsc ? 1 : -1);
+            var vp = grid.getViewport();
+            loader.ensureData(vp.top, vp.bottom);
+        });
+        grid.onViewportChanged.notify();
+
+        /*
         var res = recordClass.select().fetch()
             .then(function (records) {
                 var thead = pwelement.find(".recordlist>thead");
@@ -841,12 +916,13 @@
                     tbody.append(tr)
                 }
             });
+            */
         pwelement.openModal();
     };
 
-    WindowContainer.recordSelectedInPasteWindow = function recordSelectedInPasteWindow() {
-        var params = this;
-        var self = params.self
+    WindowContainer.recordSelectedInPasteWindow = function recordSelectedInPasteWindow(params) {
+        //var params = this;
+        var self = this;
         params.pastewindowelement.closeModal()
         var readonly = null;
         if (params.detailname == null) {
@@ -879,6 +955,6 @@
         await self.window.call_action(methodname);
     }
 
-    $.extend(true, window.oo, {windowmanager: WindowContainer})
+    $.extend(true, window.oo.ui, {windowmanager: WindowContainer})
     //window.WindowManager = WindowContainer; //para hacer global la variable WindowManager
 })(jQuery);

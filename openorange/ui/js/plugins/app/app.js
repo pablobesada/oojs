@@ -20,7 +20,7 @@ $(function () {
     $(window).load(function () {
         setTimeout(function () {
             $("body").addClass("loaded")
-        }, 200)
+        }, 50)
     }), $(".header-search-input").focus(function () {
         $(this).parent("div").addClass("header-search-wrapper-focus")
     }).blur(function () {

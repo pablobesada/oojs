@@ -69,7 +69,7 @@ class Connection {
                     reject(err);
                     return;
                 }
-                resolve();
+                resolve(true);
             })
         })
     }

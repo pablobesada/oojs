@@ -20,21 +20,22 @@ var redisClient = redis.createClient()
 var routes = require('./routes/index');
 
 var oo = require('openorange');
-var clientRuntime = require('./runtime');
 
 var Promise = require("bluebird")
 
 var app = express();
 
 // view engine setup
+app.set('views', path.join(__dirname, 'node_modules/openorange/ui/html'));
+app.set('view engine', 'jade');
 app.use('/app/', express.static(path.join(__dirname, 'node_modules/openorange/ui/')));
 //app.use('/openorange/ui/css/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/css/')));
 //app.use('/openorange/ui/font/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/font/')));
 //app.use('/openorange/ui/iconfont/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/iconfont/')));
 //app.use('/openorange/ui/images/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/images/')));
-app.set('views', path.join(__dirname, 'node_modules/openorange/ui/html'));
+
 //app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -58,13 +59,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
 app.use('/openorange/lib/client', express.static(path.join(__dirname, 'node_modules/openorange/lib/client')));
 app.use('/openorange/lib/both', express.static(path.join(__dirname, 'node_modules/openorange/lib/both')));
-app.use('/openorange/lib/ui', express.static(path.join(__dirname, 'node_modules/openorange/lib/ui')));
 
 
 app.use('/', routes);
 
 app.use('/runtime', oo.contextmanager.expressMiddleware()); //aca manejan usuario actual, conexion actual, etc. para ser usadas con toda la app. Son variables definidas por request/cookie
-app.use('/runtime', clientRuntime);
+app.use('/runtime', oo.getRouteManager());
 //app.use('/db', db);
 
 // catch 404 and forward to error handler
@@ -78,12 +78,13 @@ app.use(function (req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (false && app.get('env') === 'development') {
+if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
-            error: err
+            status: err.status,
+            stack: err.stack,
         });
     });
 }
@@ -94,7 +95,8 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
-        error: err
+        status: err.status,
+        stack: err.stack,
     });
 });
 

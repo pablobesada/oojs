@@ -16,17 +16,24 @@ class Embedded_Window {
         return res;
     }
 
+    async print() {
+        let record = this.getRecord();
+        if (record) {
+            let document = await record.getDocument();
+            if (document) document.open();
+        }
+    }
+
     open() {
-        var wm = Object.create(oo.windowmanager).init(this)
+        var wm = Object.create(oo.ui.windowmanager).init(this)
         wm.render($('#content')[0])
     }
 
     setFocus() {
-        oo.windowmanager.setFocus(this)
+        oo.ui.windowmanager.setFocus(this)
     }
 
     static initClass(descriptor) {
-        //var childclass = Object.create(this)
         let parentdesc = this.__description__;
         let newdesc = {};
         newdesc.name = descriptor.name;
@@ -196,7 +203,14 @@ class Embedded_Window {
 
     async save() {
         var rec = this.getRecord();
-        if (rec != null) return rec.save();
+        if (rec != null) {
+            let res = await oo.beginTransaction()
+            if (!res) return res;
+            res = await rec.save();
+            if (!res) return res;
+            res = oo.commit()
+            return res;
+        }
         return false;
     }
 

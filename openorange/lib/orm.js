@@ -454,7 +454,7 @@ orm.store = function () {
                     case 0:
                         res = true;
 
-                        if (!(!record.isNew() && !record.isModified())) {
+                        if (!(!record.isPersistent() || !record.isNew() && !record.isModified())) {
                             _context5.next = 3;
                             break;
                         }

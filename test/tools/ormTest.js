@@ -36,28 +36,27 @@ describe('ORM with Selenium', function () {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
-                        console.log("en before");
                         app.serve(port);
-                        _context.next = 4;
+                        _context.next = 3;
                         return oo.getDBConnection();
 
-                    case 4:
+                    case 3:
                         q = _context.sent;
-                        _context.next = 7;
+                        _context.next = 6;
                         return q.query("delete from TestRecord");
 
-                    case 7:
-                        _context.next = 9;
+                    case 6:
+                        _context.next = 8;
                         return q.query("delete from TestRecordRow");
 
-                    case 9:
-                        _context.next = 11;
+                    case 8:
+                        _context.next = 10;
                         return q.query("delete from TestRecord2");
 
-                    case 11:
+                    case 10:
                         oo.commit();
 
-                    case 12:
+                    case 11:
                     case "end":
                         return _context.stop();
                 }
@@ -79,7 +78,7 @@ describe('ORM with Selenium', function () {
                         for (i in runs) {
                             driver = new webdriver.Builder().forBrowser('chrome').build();
 
-                            driver.get("localhost:" + port + "/app/index");
+                            driver.get("localhost:" + port + "/app");
                             driver.manage().timeouts().setScriptTimeout(200000);
                             command = "require(\"openorange\").classmanager.getClass('ORMBrowserTests').test1('T" + i + "', " + runs[i] + ", arguments[arguments.length - 1])";
 

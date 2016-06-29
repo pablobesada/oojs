@@ -18,15 +18,53 @@ var WindowDescription = {
 
 var Embedded_Window = function () {
     _createClass(Embedded_Window, [{
+        key: "print",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+                var record, document;
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                record = this.getRecord();
+
+                                if (!record) {
+                                    _context.next = 6;
+                                    break;
+                                }
+
+                                _context.next = 4;
+                                return record.getDocument();
+
+                            case 4:
+                                document = _context.sent;
+
+                                if (document) document.open();
+
+                            case 6:
+                            case "end":
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function print() {
+                return ref.apply(this, arguments);
+            }
+
+            return print;
+        }()
+    }, {
         key: "open",
         value: function open() {
-            var wm = Object.create(oo.windowmanager).init(this);
+            var wm = Object.create(oo.ui.windowmanager).init(this);
             wm.render($('#content')[0]);
         }
     }, {
         key: "setFocus",
         value: function setFocus() {
-            oo.windowmanager.setFocus(this);
+            oo.ui.windowmanager.setFocus(this);
         }
     }], [{
         key: "new",
@@ -37,7 +75,6 @@ var Embedded_Window = function () {
     }, {
         key: "initClass",
         value: function initClass(descriptor) {
-            //var childclass = Object.create(this)
             var parentdesc = this.__description__;
             var newdesc = {};
             newdesc.name = descriptor.name;
@@ -192,11 +229,11 @@ var Embedded_Window = function () {
     }, {
         key: "call_afterEdit",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(fieldname, value) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(fieldname, value) {
                 var self;
-                return regeneratorRuntime.wrap(function _callee$(_context) {
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
-                        switch (_context.prev = _context.next) {
+                        switch (_context2.prev = _context2.next) {
                             case 0:
                                 self = this;
                                 //console.log(self.getRecord())
@@ -205,22 +242,22 @@ var Embedded_Window = function () {
                                 //console.log(self.getRecord()[fieldname])
 
                                 if (!('changed ' + fieldname in self)) {
-                                    _context.next = 6;
+                                    _context2.next = 6;
                                     break;
                                 }
 
-                                _context.next = 5;
+                                _context2.next = 5;
                                 return this['changed ' + fieldname]();
 
                             case 5:
-                                return _context.abrupt("return", _context.sent);
+                                return _context2.abrupt("return", _context2.sent);
 
                             case 6:
                             case "end":
-                                return _context.stop();
+                                return _context2.stop();
                         }
                     }
-                }, _callee, this);
+                }, _callee2, this);
             }));
 
             function call_afterEdit(_x, _x2) {
@@ -232,11 +269,11 @@ var Embedded_Window = function () {
     }, {
         key: "afterEditRow",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(fieldname, rowfieldname, rownr, value) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(fieldname, rowfieldname, rownr, value) {
                 var self;
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
-                        switch (_context2.prev = _context2.next) {
+                        switch (_context3.prev = _context3.next) {
                             case 0:
                                 self = this;
 
@@ -247,10 +284,10 @@ var Embedded_Window = function () {
 
                             case 3:
                             case "end":
-                                return _context2.stop();
+                                return _context3.stop();
                         }
                     }
-                }, _callee2, this);
+                }, _callee3, this);
             }));
 
             function afterEditRow(_x3, _x4, _x5, _x6) {
@@ -262,27 +299,27 @@ var Embedded_Window = function () {
     }, {
         key: "call_action",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(methodname) {
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(methodname) {
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context4.prev = _context4.next) {
                             case 0:
                                 if (!this[methodname]) {
-                                    _context3.next = 2;
+                                    _context4.next = 2;
                                     break;
                                 }
 
-                                return _context3.abrupt("return", this[methodname]());
+                                return _context4.abrupt("return", this[methodname]());
 
                             case 2:
                                 console.log("action " + methodname + " not found in window");
 
                             case 3:
                             case "end":
-                                return _context3.stop();
+                                return _context4.stop();
                         }
                     }
-                }, _callee3, this);
+                }, _callee4, this);
             }));
 
             function call_action(_x7) {
@@ -294,30 +331,59 @@ var Embedded_Window = function () {
     }, {
         key: "save",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
-                var rec;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+                var rec, res;
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
                     while (1) {
-                        switch (_context4.prev = _context4.next) {
+                        switch (_context5.prev = _context5.next) {
                             case 0:
                                 rec = this.getRecord();
 
                                 if (!(rec != null)) {
-                                    _context4.next = 3;
+                                    _context5.next = 14;
                                     break;
                                 }
 
-                                return _context4.abrupt("return", rec.save());
-
-                            case 3:
-                                return _context4.abrupt("return", false);
+                                _context5.next = 4;
+                                return oo.beginTransaction();
 
                             case 4:
+                                res = _context5.sent;
+
+                                if (res) {
+                                    _context5.next = 7;
+                                    break;
+                                }
+
+                                return _context5.abrupt("return", res);
+
+                            case 7:
+                                _context5.next = 9;
+                                return rec.save();
+
+                            case 9:
+                                res = _context5.sent;
+
+                                if (res) {
+                                    _context5.next = 12;
+                                    break;
+                                }
+
+                                return _context5.abrupt("return", res);
+
+                            case 12:
+                                res = oo.commit();
+                                return _context5.abrupt("return", res);
+
+                            case 14:
+                                return _context5.abrupt("return", false);
+
+                            case 15:
                             case "end":
-                                return _context4.stop();
+                                return _context5.stop();
                         }
                     }
-                }, _callee4, this);
+                }, _callee5, this);
             }));
 
             function save() {

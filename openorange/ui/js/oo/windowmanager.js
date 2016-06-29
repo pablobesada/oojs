@@ -78,6 +78,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         var self = this;
         var html = '<div class="row">';
         html += '<a class="btn waves-effect waves-light" action="save"><i class="mdi">done</i></a>';
+        html += '<a class="btn waves-effect waves-light" action="print"><i class="mdi">print</i></a>';
         for (var i = 0; i < self.window.__class__.getDescription().actions.length; i++) {
             var action = self.window.__class__.getDescription().actions[i];
             html += "<a class=\"btn waves-effect waves-light\" action=\"" + action.methodname + "\">" + action.label + "</a>";
@@ -87,6 +88,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         var res = $(html);
         //res.find("a").click(function (event) {self.save(event)});
         res.find("a[action=save]").click(this.save.bind(this));
+        res.find("a[action=print]").click(this.print.bind(this));
         for (var _i = 0; _i < self.window.__class__.getDescription().actions.length; _i++) {
             var _action = self.window.__class__.getDescription().actions[_i];
             var params = { self: self, methodname: _action.methodname };
@@ -302,8 +304,37 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         return component;
     };
 
-    WindowContainer.save = function save() {
-        this.window.save();
+    WindowContainer.save = function () {
+        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+            var res;
+            return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            _context.next = 2;
+                            return this.window.save();
+
+                        case 2:
+                            res = _context.sent;
+                            return _context.abrupt("return", res);
+
+                        case 4:
+                        case "end":
+                            return _context.stop();
+                    }
+                }
+            }, _callee, this);
+        }));
+
+        function save() {
+            return ref.apply(this, arguments);
+        }
+
+        return save;
+    }();
+
+    WindowContainer.print = function print() {
+        this.window.print();
     };
 
     WindowContainer.string = function string(json, cls, field) {
@@ -774,9 +805,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         var self = this;
         self.pastewindow_id = "PASTEWINDOW_" + WindowContainer.element_ids++;
         var html = '';
-        html += '<div id="' + self.pastewindow_id + '" class="modal modal-fixed-footer green white-text pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
+        html += '<div id="' + self.pastewindow_id + '" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
         html += '  <div class="modal-content">';
-        html += '    <table class="recordlist"><thead></thead><tbody></tbody></table>';
+        //html += '    <table class="recordlist"><thead></thead><tbody></tbody></table>';
+        html += '    <div class="pastewindow_grid" style="width:600px;height:200px;"></div>';
         html += '  </div>';
         html += '  <div class="modal-footer green lighten-4">';
         html += '    <a href="#" class="waves-effect waves-red btn-flat modal-action modal-close">Disagree</a>';
@@ -803,46 +835,114 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             readonly = !Boolean(self.window.beforeEditRow(params.detailname, fieldjson.field, params.rownr));
         }
         if (readonly) return;
-        var res = recordClass.select().fetch().then(function (records) {
-            var thead = pwelement.find(".recordlist>thead");
-            thead.find("tr").remove();
-            var tbody = pwelement.find(".recordlist>tbody");
-            tbody.find("tr").remove();
-            var tr = $("<tr></tr>");
+
+        var generateColumns = function generateColumns() {
+            var self = this;
+            grid_columns = [];
             for (var i = 0; i < columns.length; i++) {
-                tr.append($('<th>' + columns[i].field + '</th>'));
+                var col = columns[i];
+                grid_columns.push({ id: col.field, name: col.field, field: col.field, sortable: true });
             }
-            thead.append(tr);
-            for (var j = 0; j < records.length; j++) {
-                var rec = records[j];
+            return grid_columns;
+        };
+
+        //var recordClass = self.listwindow.getRecordClass();
+        //var columns = self.listwindow.__class__.__description__.columns;
+
+        var grid;
+        var loader = new Slick.Data.RemoteModel(recordClass);
+        var options = {
+            enableCellNavigation: true,
+            enableColumnReorder: false
+        };
+
+        //showHeaderRow: true,
+
+        var grid_columns = generateColumns();
+        console.log("pwelement1", pwelement);
+        grid = new Slick.Grid(pwelement.find(".pastewindow_grid"), loader.data, grid_columns, options);
+        grid.onClick.subscribe(function (e, args) {
+            var item = args.item;
+            console.log("PWELEMENT2", pwelement);
+            var pasteparams = {
+                self: self,
+                detailname: params.detailname,
+                rownr: params.rownr,
+                field: field,
+                fieldjson: fieldjson,
+                pastewindow: pw,
+                pastewindowelement: pwelement,
+                editor: params.editor,
+                record: args.grid.getData()[args.row]
+            };
+
+            //args.grid.getData()[args.row]
+
+            self.recordSelectedInPasteWindow(pasteparams);
+        });
+        grid.onViewportChanged.subscribe(function (e, args) {
+            var vp = grid.getViewport();
+            loader.ensureData(vp.top, vp.bottom);
+        });
+        loader.onDataLoaded.subscribe(function (e, args) {
+            for (var i = args.from; i <= args.to; i++) {
+                grid.invalidateRow(i);
+            }
+            grid.updateRowCount();
+            grid.render();
+            //loadingIndicator.fadeOut();
+        });
+
+        grid.onSort.subscribe(function (e, args) {
+            loader.setSort(args.sortCol.field, args.sortAsc ? 1 : -1);
+            var vp = grid.getViewport();
+            loader.ensureData(vp.top, vp.bottom);
+        });
+        grid.onViewportChanged.notify();
+
+        /*
+        var res = recordClass.select().fetch()
+            .then(function (records) {
+                var thead = pwelement.find(".recordlist>thead");
+                thead.find("tr").remove()
+                var tbody = pwelement.find(".recordlist>tbody");
+                tbody.find("tr").remove()
                 var tr = $("<tr></tr>");
                 for (var i = 0; i < columns.length; i++) {
-                    var fn = columns[i].field;
-                    var value = rec[fn];
-                    if (value == null) value = '';
-                    tr.append($('<td>' + value + '</td>'));
+                    tr.append($('<th>' + columns[i].field + '</th>'));
                 }
-                var pasteparams = {
-                    self: self,
-                    detailname: params.detailname,
-                    rownr: params.rownr,
-                    field: field,
-                    fieldjson: fieldjson,
-                    pastewindow: pw,
-                    pastewindowelement: pwelement,
-                    editor: params.editor,
-                    record: rec
-                };
-                tr.click(self.recordSelectedInPasteWindow.bind(pasteparams));
-                tbody.append(tr);
-            }
-        });
+                thead.append(tr);
+                for (var j = 0; j < records.length; j++) {
+                    var rec = records[j];
+                    var tr = $("<tr></tr>");
+                    for (var i = 0; i < columns.length; i++) {
+                        var fn = columns[i].field;
+                        var value = rec[fn];
+                        if (value == null) value = '';
+                        tr.append($('<td>' + value + '</td>'));
+                    }
+                    var pasteparams = {
+                        self: self,
+                        detailname: params.detailname,
+                        rownr: params.rownr,
+                        field: field,
+                        fieldjson: fieldjson,
+                        pastewindow: pw,
+                        pastewindowelement: pwelement,
+                        editor: params.editor,
+                        record: rec
+                    };
+                    tr.click(self.recordSelectedInPasteWindow.bind(pasteparams));
+                    tbody.append(tr)
+                }
+            });
+            */
         pwelement.openModal();
     };
 
-    WindowContainer.recordSelectedInPasteWindow = function recordSelectedInPasteWindow() {
-        var params = this;
-        var self = params.self;
+    WindowContainer.recordSelectedInPasteWindow = function recordSelectedInPasteWindow(params) {
+        //var params = this;
+        var self = this;
         params.pastewindowelement.closeModal();
         var readonly = null;
         if (params.detailname == null) {
@@ -869,24 +969,24 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     };
 
     WindowContainer.actionClicked = function () {
-        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(event) {
+        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(event) {
             var params, self, methodname;
-            return regeneratorRuntime.wrap(function _callee$(_context) {
+            return regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) {
-                    switch (_context.prev = _context.next) {
+                    switch (_context2.prev = _context2.next) {
                         case 0:
                             params = this;
                             self = params.self;
                             methodname = params.methodname;
-                            _context.next = 5;
+                            _context2.next = 5;
                             return self.window.call_action(methodname);
 
                         case 5:
                         case "end":
-                            return _context.stop();
+                            return _context2.stop();
                     }
                 }
-            }, _callee, this);
+            }, _callee2, this);
         }));
 
         function actionClicked(_x) {
@@ -896,7 +996,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         return actionClicked;
     }();
 
-    $.extend(true, window.oo, { windowmanager: WindowContainer });
+    $.extend(true, window.oo.ui, { windowmanager: WindowContainer });
     //window.WindowManager = WindowContainer; //para hacer global la variable WindowManager
 })(jQuery);
 

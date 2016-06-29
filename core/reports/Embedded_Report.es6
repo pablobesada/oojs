@@ -83,7 +83,7 @@ class Embedded_Report {
 
     async open() {
         var self = this
-        self.container = Object.create(oo.reportmanager).init(self)
+        self.container = Object.create(oo.ui.reportmanager).init(self)
         self.container.appendToWorkspace()
         await self.run()
         self.render();
@@ -102,7 +102,7 @@ class Embedded_Report {
     }
 
     setFocus() {
-        oo.reportamanager.setFocus(this)
+        oo.ui.reportamanager.setFocus(this)
     }
 
     /*
@@ -176,10 +176,10 @@ class Embedded_Report {
         var options = options != null ? options : {};
         var onclick = ''
         if ('Window' in options && 'FieldName' in options) {
-            onclick = 'onclick="oo.reportmanager.findReport(' + this.getId() + ').__std_zoomin__(\'' + options['Window'] + '\',\'' + options['FieldName'] + '\',\'' + value + '\')"';
+            onclick = 'onclick="oo.ui.reportmanager.findReport(' + this.getId() + ').__std_zoomin__(\'' + options['Window'] + '\',\'' + options['FieldName'] + '\',\'' + value + '\')"';
         } else if ('CallMethod' in options) {
             var param = 'Parameter' in options ? "'" + options['Parameter'] + "'" : '';
-            onclick = 'onclick="oo.reportmanager.findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
+            onclick = 'onclick="oo.ui.reportmanager.findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
         }
         this.__html__.push("<td " + onclick + ">" + value + "</td>")
     }

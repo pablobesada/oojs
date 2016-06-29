@@ -339,7 +339,7 @@ function delete_details_and_finish_function(conn, record) {
 
 orm.store = async function store(record, callback) {
     let res = true;
-    if (!record.isNew() && !record.isModified()) {
+    if (!record.isPersistent() || (!record.isNew() && !record.isModified())) {
         return true;
     }
     try {

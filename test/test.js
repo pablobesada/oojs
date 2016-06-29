@@ -18,8 +18,9 @@ var utils = require("./utils")
 
 //cm.addScriptDir("test")
 
+require("./local/LoginTest")
 //require("./core/records/Embedded_RecordTest")(utils)
-/require("./core/windows/Embedded_WindowTest")(utils)
+//require("./core/windows/Embedded_WindowTest")(utils)
 //require("./local/ReportTest.js")
 //require("./tools/ormTest")
 

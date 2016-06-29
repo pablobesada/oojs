@@ -30,6 +30,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         if (module == "underscore") return _;
         if (module == "moment") return moment;
         if (module == "chance") return Chance;
+        if (module == "js-md5") return md5;
         return loadModule(module);
     };
 
@@ -180,16 +181,21 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead");
     });
 
-    var login = function login(user, password) {
+    var login = function login(user, pass) {
+        var password = pass || '';
         $.ajax({
             url: '/runtime/login',
             contentType: 'application/json; charset=utf-8',
             async: true,
             type: "POST",
             dataType: "json",
-            data: JSON.stringify({ user: user, password: password }),
+            data: JSON.stringify({ username: user, md5pass: md5(password) }),
             success: function success(result) {
-                if (result.ok == true) __currentUser__ = user;
+                if (result.ok == true) {
+                    __currentUser__ = user;
+                } else {
+                    console.log(result.error);
+                }
             },
             error: function error(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -202,6 +208,36 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     var rollback = function rollback() {
         return new Promise(function (resolve, reject) {
             var url = '/runtime/oo/rollback';
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                dataType: "json",
+                async: true,
+                //data: JSON.stringify(data),
+                success: function success(result) {
+                    if (!result.ok) {
+                        reject(result.error);
+                        return;
+                    }
+                    var response = 'response' in result ? result.response : null;
+                    resolve(response);
+                    return;
+                },
+                error: function error(jqXHR, textStatus, errorThrown) {
+                    //console.log("en fail")
+                    reject(errorThrown);
+                },
+                complete: function complete() {
+                    //console.log("en load::complete");
+                }
+            });
+        });
+    };
+
+    var beginTransaction = function beginTransaction() {
+        return new Promise(function (resolve, reject) {
+            var url = '/runtime/oo/begintransaction';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -269,29 +305,31 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
-                            $.ajax({
-                                type: "GET",
-                                url: '/runtime/getcurrentuser',
-                                contentType: 'application/json; charset=utf-8',
-                                dataType: "json",
-                                async: true,
-                                success: function success(result) {
-                                    if (!result.ok) {
-                                        reject(result.error);
+                            return _context.abrupt("return", new Promise(function (resolve, reject) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: '/runtime/getcurrentuser',
+                                    contentType: 'application/json; charset=utf-8',
+                                    dataType: "json",
+                                    async: true,
+                                    success: function success(result) {
+                                        if (!result.ok) {
+                                            reject(result.error);
+                                            return;
+                                        }
+                                        var response = 'response' in result ? result.response : null;
+                                        __currentUser__ = result.currentuser;
+                                        resolve(result.currentuser);
                                         return;
+                                    },
+                                    error: function error(jqXHR, textStatus, errorThrown) {
+                                        reject(errorThrown);
+                                    },
+                                    complete: function complete() {
+                                        //console.log("en load::complete");
                                     }
-                                    var response = 'response' in result ? result.response : null;
-                                    __currentUser__ = result.currentuser;
-                                    resolve(result.currentuser);
-                                    return;
-                                },
-                                error: function error(jqXHR, textStatus, errorThrown) {
-                                    reject(errorThrown);
-                                },
-                                complete: function complete() {
-                                    //console.log("en load::complete");
-                                }
-                            });
+                                });
+                            }));
 
                         case 1:
                         case "end":
@@ -309,18 +347,23 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     }();
 
     var oo = {
+        ui: {},
         classmanager: classmanager,
         orm: orm,
         isServer: false,
         isClient: true,
         login: login,
+        beginTransaction: beginTransaction,
         rollback: rollback,
         commit: commit,
-        currentUser: currentUser
+        currentUser: currentUser,
+        md5: md5
+        //ready: ready,
     };
 
     fetchCurrentUser();
     //window.require = require
+
     $.extend(true, window, { require: require, oo: oo });
 })(jQuery);
 

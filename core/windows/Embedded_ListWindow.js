@@ -46,13 +46,13 @@ var Embedded_ListWindow = function () {
     _createClass(Embedded_ListWindow, [{
         key: 'open',
         value: function open() {
-            var wm = Object.create(oo.listwindowmanager).init(this);
+            var wm = Object.create(oo.ui.listwindowmanager).init(this);
             wm.render($('#content')[0]);
         }
     }, {
         key: 'setFocus',
         value: function setFocus() {
-            oo.listwindowmanager.setFocus(this);
+            oo.ui.listwindowmanager.setFocus(this);
         }
     }, {
         key: 'inspect',
