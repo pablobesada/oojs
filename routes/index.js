@@ -41,7 +41,11 @@ router.get('/app/login', function(req, res, next) {
 });
 
 router.get('/app', function(req, res, next) {
-    res.render('app', { title: 'Express' });
+    if (req.session.user) {
+        res.render('app', {title: 'Express'});
+    } else {
+        res.redirect('/app/login')
+    }
 });
 
 

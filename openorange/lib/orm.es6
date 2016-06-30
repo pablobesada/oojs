@@ -1,10 +1,12 @@
 "use strict";
+let _ = require("underscore")
 var db = require("./db")
 var async = require("async")
 var Promise = require("bluebird")
 var ormutils = require("./ormutils.js")
 var Query = require("./serverquery.js")
 let ctx = require("./contextmanager.js")
+
 
 Promise.config({
     longStackTraces: true
@@ -74,7 +76,7 @@ function saveDetailFunction(connection, record, detailname) {
                 }
             }
         }
-        for (var i = 0; i < detail.__removed_rows__.length; i++) {
+        for (var i = 0; i < detail.__removed_rows__.length; i++) { 
             var row = detail.__removed_rows__[i];
             if (!row.isNew()) {
                 funcs.push(raw_delete_row_function(connection, row))
@@ -286,6 +288,34 @@ async function save_details_and_finish_function(conn, record) {
     }
 }
 
+async function storeSets(conn, record) {
+    let promises = [];
+    if (!record.isNew()) {
+        let fieldnames = record.fieldNames()
+        for (let i=0;i<fieldnames.length;i++) {
+            let field = record.fields(fieldnames[i])
+            let oldvalue = record.oldFields(fieldnames[i]).getValue();
+            if (field.type == 'set' && field.setrecordname && field.getValue() != oldvalue && oldvalue != null && oldvalue != '') {
+                let sql = `DELETE FROM ${field.setrecordname} WHERE masterId=?`
+                let values = [record.oldFields("internalId").getValue()]
+                promises.push(conn.query(sql, values));
+            }
+        }
+    }
+    let fieldnames = record.fieldNames()
+    for (let i=0;i<fieldnames.length;i++) {
+        let field = record.fields(fieldnames[i])
+        if (field.type == 'set' && field.setrecordname && field.getValue() != null) {
+            let setvalues = _(field.getValue().split(",")).map(function (v) {return v.trim()})
+            for (let j=0;j<setvalues.length;j++) {
+                let sql = `INSERT INTO ${field.setrecordname} (masterId, Value, syncVersion) values (?,?,?)`
+                let values = [record.internalId, setvalues[j], 1]
+                promises.push(conn.query(sql, values));
+            }
+        }
+    }
+    return Promise.all(promises)
+}
 
 async function save_new(conn, record) {
     //await conn.beginTransaction()
@@ -293,6 +323,7 @@ async function save_new(conn, record) {
     var info = await conn.query(insert.sql, insert.values)
     record.internalId = info.insertId;
     record.syncVersion = 1;
+    await storeSets(conn, record);
     record.setNewFlag(false);
     record.setModifiedFlag(false);
     return save_details_and_finish_function(conn, record)
@@ -308,6 +339,7 @@ async function save_existing(conn, record) {
     }
     record.syncVersion += 1;
     record.setNewFlag(false);
+    await storeSets(conn, record);
     record.setModifiedFlag(false);
     return save_details_and_finish_function(conn, record);
 }

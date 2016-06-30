@@ -192,6 +192,7 @@
         <item url="file://$PROJECT_DIR$/test/core/records/Embedded_RecordTest.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/runtime-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/isarray/index-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/both/explorer.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/parser-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/inherits/inherits-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/compiler-compiled.js" />
@@ -322,6 +323,7 @@
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/ext/number-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/ext/_assert-compiled.js" />
         <item url="file://$PROJECT_DIR$/core/windows/Embedded_Window.js" />
+        <item url="file://$PROJECT_DIR$/test/local/ExplorerTest.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/config-compiled.js" />
         <item url="file://$PROJECT_DIR$/core/windows/Window.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/ext/contain-compiled.js" />
@@ -330,7 +332,9 @@
         <item url="file://$PROJECT_DIR$/base/windows/FinancialTransWindow.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/base/windows/TransactionWindow.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/runtime.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/should-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/openorange/ui/js/oo/documentmanager.js" />
         <item url="file://$PROJECT_DIR$/base/windows/SalesTransactionWindow.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/util-compiled.js" />
         <item url="file://$PROJECT_DIR$/base/windows/SalesOrderWindow.js" />
@@ -338,6 +342,7 @@
         <item url="file://$PROJECT_DIR$/openorange/ui/js/oo/reportmanager.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/assertion-compiled.js" />
         <item url="file://$PROJECT_DIR$/standard/windows/SalesOrderWindow.js" />
+        <item url="file://$PROJECT_DIR$/test/local/ExplorerTest.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/lib/ext/property-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-type/types-compiled.js" />
         <item url="file://$PROJECT_DIR$/base/records/Master.js" />
@@ -345,6 +350,7 @@
         <item url="file://$PROJECT_DIR$/standard/reports/CustomerListReport.js" />
         <item url="file://$PROJECT_DIR$/test/local/LoginTest.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-equal/format-compiled.js" />
+        <item url="file://$PROJECT_DIR$/openorange/lib/both/explorer.js" />
         <item url="file://$PROJECT_DIR$/core/reports/Report.js" />
         <item url="file://$PROJECT_DIR$/openorange/lib/runtime.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/util-compiled.js" />
@@ -356,13 +362,13 @@
         <item url="file://$PROJECT_DIR$/base/records/User.js" />
         <item url="file://$PROJECT_DIR$/openorange/lib/openorange.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/should-compiled.js" />
-        <item url="file://$PROJECT_DIR$/runtime.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/as-function-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/browser-entry-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/db.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/serverquery.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/tests-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/openorange.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/mocha-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/should/should.min-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/openorange/lib/orm.js" />
@@ -528,6 +534,7 @@
       <root url="file://$PROJECT_DIR$/core/documents/DocumentSpec.js" />
       <root url="file://$PROJECT_DIR$/core/documents/DocumentSpecFieldsRow.js" />
       <root url="file://$PROJECT_DIR$/core/documents/DocumentSpec.js" />
+      <root url="file://$PROJECT_DIR$/runtime.js" />
       <root url="file://$PROJECT_DIR$/runtime.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/lib/browser/debug-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/bin/mocha-compiled.js" />
@@ -719,6 +726,7 @@
       <root url="file://$PROJECT_DIR$/test/core/records/Embedded_RecordTest.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/runtime-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/isarray/index-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/both/explorer.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/parser-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mysql/node_modules/readable-stream/node_modules/inherits/inherits-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/mocha/node_modules/jade/lib/compiler-compiled.js" />
@@ -849,6 +857,7 @@
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/number-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/_assert-compiled.js" />
       <root url="file://$PROJECT_DIR$/core/windows/Embedded_Window.js" />
+      <root url="file://$PROJECT_DIR$/test/local/ExplorerTest.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/config-compiled.js" />
       <root url="file://$PROJECT_DIR$/core/windows/Window.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/contain-compiled.js" />
@@ -857,7 +866,9 @@
       <root url="file://$PROJECT_DIR$/base/windows/FinancialTransWindow.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/base/windows/TransactionWindow.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/runtime.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/should-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/ui/js/oo/documentmanager.js" />
       <root url="file://$PROJECT_DIR$/base/windows/SalesTransactionWindow.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/util-compiled.js" />
       <root url="file://$PROJECT_DIR$/base/windows/SalesOrderWindow.js" />
@@ -865,6 +876,7 @@
       <root url="file://$PROJECT_DIR$/openorange/ui/js/oo/reportmanager.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/assertion-compiled.js" />
       <root url="file://$PROJECT_DIR$/standard/windows/SalesOrderWindow.js" />
+      <root url="file://$PROJECT_DIR$/test/local/ExplorerTest.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/lib/ext/property-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-type/types-compiled.js" />
       <root url="file://$PROJECT_DIR$/base/records/Master.js" />
@@ -872,6 +884,7 @@
       <root url="file://$PROJECT_DIR$/standard/reports/CustomerListReport.js" />
       <root url="file://$PROJECT_DIR$/test/local/LoginTest.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-equal/format-compiled.js" />
+      <root url="file://$PROJECT_DIR$/openorange/lib/both/explorer.js" />
       <root url="file://$PROJECT_DIR$/core/reports/Report.js" />
       <root url="file://$PROJECT_DIR$/openorange/lib/runtime.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/util-compiled.js" />
@@ -883,13 +896,13 @@
       <root url="file://$PROJECT_DIR$/base/records/User.js" />
       <root url="file://$PROJECT_DIR$/openorange/lib/openorange.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/should-compiled.js" />
-      <root url="file://$PROJECT_DIR$/runtime.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/as-function-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/browser-entry-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/db.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/serverquery.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/tests-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/openorange.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/node_modules/should-format/tests/browser/mocha-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/should/should.min-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/openorange/lib/orm.js" />

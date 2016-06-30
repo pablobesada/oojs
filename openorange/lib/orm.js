@@ -43,28 +43,52 @@ var save_details_and_finish_function = function () {
     };
 }();
 
-var save_new = function () {
+var storeSets = function () {
     var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conn, record) {
-        var insert, info;
+        var promises, _fieldnames, i, field, oldvalue, sql, values, fieldnames, _i, _field, setvalues, j, _sql, _values;
+
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
                 switch (_context3.prev = _context3.next) {
                     case 0:
-                        //await conn.beginTransaction()
-                        insert = orm.generate_insert_sql(record);
-                        _context3.next = 3;
-                        return conn.query(insert.sql, insert.values);
+                        promises = [];
 
-                    case 3:
-                        info = _context3.sent;
+                        if (!record.isNew()) {
+                            _fieldnames = record.fieldNames();
 
-                        record.internalId = info.insertId;
-                        record.syncVersion = 1;
-                        record.setNewFlag(false);
-                        record.setModifiedFlag(false);
-                        return _context3.abrupt("return", save_details_and_finish_function(conn, record));
+                            for (i = 0; i < _fieldnames.length; i++) {
+                                field = record.fields(_fieldnames[i]);
+                                oldvalue = record.oldFields(_fieldnames[i]).getValue();
 
-                    case 9:
+                                if (field.type == 'set' && field.setrecordname && field.getValue() != oldvalue && oldvalue != null && oldvalue != '') {
+                                    sql = "DELETE FROM " + field.setrecordname + " WHERE masterId=?";
+                                    values = [record.oldFields("internalId").getValue()];
+
+                                    promises.push(conn.query(sql, values));
+                                }
+                            }
+                        }
+                        fieldnames = record.fieldNames();
+
+                        for (_i = 0; _i < fieldnames.length; _i++) {
+                            _field = record.fields(fieldnames[_i]);
+
+                            if (_field.type == 'set' && _field.setrecordname && _field.getValue() != null) {
+                                setvalues = _(_field.getValue().split(",")).map(function (v) {
+                                    return v.trim();
+                                });
+
+                                for (j = 0; j < setvalues.length; j++) {
+                                    _sql = "INSERT INTO " + _field.setrecordname + " (masterId, Value, syncVersion) values (?,?,?)";
+                                    _values = [record.internalId, setvalues[j], 1];
+
+                                    promises.push(conn.query(_sql, _values));
+                                }
+                            }
+                        }
+                        return _context3.abrupt("return", Promise.all(promises));
+
+                    case 5:
                     case "end":
                         return _context3.stop();
                 }
@@ -72,36 +96,32 @@ var save_new = function () {
         }, _callee3, this);
     }));
 
-    return function save_new(_x4, _x5) {
+    return function storeSets(_x4, _x5) {
         return ref.apply(this, arguments);
     };
 }();
 
-var save_existing = function () {
+var save_new = function () {
     var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conn, record) {
-        var update, info;
+        var insert, info;
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
                 switch (_context4.prev = _context4.next) {
                     case 0:
-                        //await conn.beginTransaction();
-                        update = orm.generate_update_sql(record);
+                        //await conn.beginTransaction()
+                        insert = orm.generate_insert_sql(record);
                         _context4.next = 3;
-                        return conn.query(update.sql, update.values);
+                        return conn.query(insert.sql, insert.values);
 
                     case 3:
                         info = _context4.sent;
 
-                        if (!(info.changedRows != 1)) {
-                            _context4.next = 7;
-                            break;
-                        }
+                        record.internalId = info.insertId;
+                        record.syncVersion = 1;
+                        _context4.next = 8;
+                        return storeSets(conn, record);
 
-                        console.log({ code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user " });
-                        return _context4.abrupt("return", false);
-
-                    case 7:
-                        record.syncVersion += 1;
+                    case 8:
                         record.setNewFlag(false);
                         record.setModifiedFlag(false);
                         return _context4.abrupt("return", save_details_and_finish_function(conn, record));
@@ -114,13 +134,60 @@ var save_existing = function () {
         }, _callee4, this);
     }));
 
-    return function save_existing(_x6, _x7) {
+    return function save_new(_x6, _x7) {
+        return ref.apply(this, arguments);
+    };
+}();
+
+var save_existing = function () {
+    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conn, record) {
+        var update, info;
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+                switch (_context5.prev = _context5.next) {
+                    case 0:
+                        //await conn.beginTransaction();
+                        update = orm.generate_update_sql(record);
+                        _context5.next = 3;
+                        return conn.query(update.sql, update.values);
+
+                    case 3:
+                        info = _context5.sent;
+
+                        if (!(info.changedRows != 1)) {
+                            _context5.next = 7;
+                            break;
+                        }
+
+                        console.log({ code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user " });
+                        return _context5.abrupt("return", false);
+
+                    case 7:
+                        record.syncVersion += 1;
+                        record.setNewFlag(false);
+                        _context5.next = 11;
+                        return storeSets(conn, record);
+
+                    case 11:
+                        record.setModifiedFlag(false);
+                        return _context5.abrupt("return", save_details_and_finish_function(conn, record));
+
+                    case 13:
+                    case "end":
+                        return _context5.stop();
+                }
+            }
+        }, _callee5, this);
+    }));
+
+    return function save_existing(_x8, _x9) {
         return ref.apply(this, arguments);
     };
 }();
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
+var _ = require("underscore");
 var db = require("./db");
 var async = require("async");
 var Promise = require("bluebird");
@@ -445,96 +512,96 @@ function delete_details_and_finish_function(conn, record) {
 }
 
 orm.store = function () {
-    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(record, callback) {
+    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(record, callback) {
         var res, conn, _res, _res2;
 
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-                switch (_context5.prev = _context5.next) {
+                switch (_context6.prev = _context6.next) {
                     case 0:
                         res = true;
 
                         if (!(!record.isPersistent() || !record.isNew() && !record.isModified())) {
-                            _context5.next = 3;
+                            _context6.next = 3;
                             break;
                         }
 
-                        return _context5.abrupt("return", true);
+                        return _context6.abrupt("return", true);
 
                     case 3:
-                        _context5.prev = 3;
-                        _context5.next = 6;
+                        _context6.prev = 3;
+                        _context6.next = 6;
                         return ctx.getDBConnection();
 
                     case 6:
-                        conn = _context5.sent;
+                        conn = _context6.sent;
 
                         if (!record.isNew()) {
-                            _context5.next = 15;
+                            _context6.next = 15;
                             break;
                         }
 
-                        _context5.next = 10;
+                        _context6.next = 10;
                         return save_new(conn, record);
 
                     case 10:
-                        _res = _context5.sent;
+                        _res = _context6.sent;
 
                         if (_res) {
-                            _context5.next = 13;
+                            _context6.next = 13;
                             break;
                         }
 
-                        return _context5.abrupt("return", _res);
+                        return _context6.abrupt("return", _res);
 
                     case 13:
-                        _context5.next = 21;
+                        _context6.next = 21;
                         break;
 
                     case 15:
                         if (!record.isModified()) {
-                            _context5.next = 21;
+                            _context6.next = 21;
                             break;
                         }
 
-                        _context5.next = 18;
+                        _context6.next = 18;
                         return save_existing(conn, record);
 
                     case 18:
-                        _res2 = _context5.sent;
+                        _res2 = _context6.sent;
 
                         if (_res2) {
-                            _context5.next = 21;
+                            _context6.next = 21;
                             break;
                         }
 
-                        return _context5.abrupt("return", _res2);
+                        return _context6.abrupt("return", _res2);
 
                     case 21:
-                        _context5.next = 28;
+                        _context6.next = 28;
                         break;
 
                     case 23:
-                        _context5.prev = 23;
-                        _context5.t0 = _context5["catch"](3);
-                        _context5.next = 27;
+                        _context6.prev = 23;
+                        _context6.t0 = _context6["catch"](3);
+                        _context6.next = 27;
                         return conn.rollback();
 
                     case 27:
-                        throw _context5.t0;
+                        throw _context6.t0;
 
                     case 28:
-                        return _context5.abrupt("return", true);
+                        return _context6.abrupt("return", true);
 
                     case 29:
                     case "end":
-                        return _context5.stop();
+                        return _context6.stop();
                 }
             }
-        }, _callee5, this, [[3, 23]]);
+        }, _callee6, this, [[3, 23]]);
     }));
 
-    function store(_x8, _x9) {
+    function store(_x10, _x11) {
         return ref.apply(this, arguments);
     }
 

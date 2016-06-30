@@ -7,18 +7,19 @@ var Query = oo.query;
 //var Field = Object.create(null);
 class Field {
 
-    static create(name, type, length, persistent, linkto) {
+    static create(name, type, length, persistent, linkto, setrecordname) {
         if (type == 'date') return new DateField(name, type, length, persistent, linkto);
         if (type == 'time') return new TimeField(name, type, length, persistent, linkto);
-        return new Field(name, type, length, persistent, linkto);
+        return new Field(name, type, length, persistent, linkto, setrecordname);
     }
 
-    constructor(name, type, length, persistent, linkto) {
+    constructor(name, type, length, persistent, linkto, setrecordname) {
         this.name = name;
         this.type = type;
         this.__length__ = length;
         this.persistent = persistent;
         this.linkto = linkto;
+        this.setrecordname = setrecordname
         this.__linkto_recordClass__ = null;
         this.value = null;
         this.listener = null;
@@ -349,8 +350,8 @@ class Embedded_Record {
         for (var fn in description.fields) {
             var fd = description.fields[fn]
             if (fd.type != 'detail') {
-                this.__oldfields__[fn] = Field.create(fn, fd.type, fd.length, fd.persistent, fd.linkto);
-                this.__fields__[fn] = Field.create(fn, fd.type, fd.length, fd.persistent, fd.linkto);
+                this.__oldfields__[fn] = Field.create(fn, fd.type, fd.length, fd.persistent, fd.linkto, fd.setrecordname);
+                this.__fields__[fn] = Field.create(fn, fd.type, fd.length, fd.persistent, fd.linkto, fd.setrecordname);
                 this.__fields__[fn].listener = this.__fieldslistener__;
                 props[fn] = {
                     enumerable: true,

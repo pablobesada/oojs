@@ -9,6 +9,7 @@ var Description = {
     fields: {
         String_Field: {type: "string", length: 60},
         Integer_Field: {type: "integer"},
+        Set_Field: {type: "set", length: 60, recordname: 'TestRecordRowSet_Field'}
     },
     filename: __filename,
 }

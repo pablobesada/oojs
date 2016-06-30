@@ -3,7 +3,7 @@
 var chance = new require("chance")();
 var _ = require("underscore")
 var oo = require("openorange")
-var Query = oo.query;
+var query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
@@ -16,6 +16,14 @@ describe("Embedded_Record", function () {
     let rec = null;
     let original_rec = null;
 
+    beforeEach(async () => {
+        await oo.beginTransaction();
+    })
+    after(async () => {
+        await oo.commit();
+    })
+
+    /*
     it("create new record and set some field values", async () => {
         rec = cls.new();
         rec.String_Field = 'ABCD'
@@ -33,16 +41,13 @@ describe("Embedded_Record", function () {
     });
 
     it("create new record and store it", async () => {
-        await oo.beginTransaction()
         rec = cls.new().fillWithRandomValues()
         let res = await rec.store();
         res.should.be.true();
         original_rec = rec.clone();
-        await oo.commit()
     })
 
     it("control for non-persistent fields", async () => {
-        await oo.beginTransaction()
         rec = cls.new().fillWithRandomValues()
         rec.NonPersistent_Field = "esto no deberia persistir"
         let row = rec.NonPersistent_Rows.newRow();
@@ -54,7 +59,6 @@ describe("Embedded_Record", function () {
         should(loaded_rec.NonPersistent_Field).be.null();
         should(loaded_rec.Rows.length).be.greaterThan(0);
         should(loaded_rec.NonPersistent_Rows.length).be.equal(0);
-        await oo.commit()
     })
 
     it("load", async () => {
@@ -69,7 +73,6 @@ describe("Embedded_Record", function () {
     })
 
     it("Concurrent store (storing with old syncVersion)", async () => {
-        await (await oo.contextmanager.getDBConnection()).beginTransaction()
         let r1 = await cls.newSavedRecord();
         let r2 = await cls.findOne({internalId: r1.internalId})
         should(r1.isEqual(r2)).be.true()
@@ -79,7 +82,6 @@ describe("Embedded_Record", function () {
         r2.Integer_Field--;
         r2.String_Field = 'r2'
         should(await r2.store()).not.ok()
-        //await (await oo.contextmanager.getDBConnection()).commit()
     })
 
     it("Detail integrity against master syncVersion", async () => {
@@ -103,6 +105,7 @@ describe("Embedded_Record", function () {
     })
 
     it("Save with Check fail", async ()=> {
+
         let internalId = rec.internalId;
         rec = await cls.findOne({internalId: rec.internalId})
         should.exist(rec);
@@ -135,16 +138,18 @@ describe("Embedded_Record", function () {
         let rec = cls.new()
         utils.fillRecord(rec)
         rec.beforeUpdateReturnValue = false;
+
         let res = await rec.save()
         should(res).be.true("Deberia haber grabado");
         rec.Integer_Field++;
+
         res = await rec.save();
+
         should(res).be.false("No Deberia haber grabado");
         should.not.exist(await cls.findOne({internalId: rec.internalId, Integer_Field: rec.Integer_Field}), "El save devolvio false, pero igual grabo el registro")
     })
 
     it ("Check if it makes rollback when storing record with wrong fields", async () => {
-        await oo.beginTransaction()
         //cls.__description__.fields['DUMMY'] = {type: "string", length: 30}
         //cls.__description__.fieldnames.push("DUMMY")
         let rec = cls.new().fillWithRandomValues();
@@ -155,10 +160,41 @@ describe("Embedded_Record", function () {
             record.SubTestName = rec.SubTestName
             rec.beforeInsert_recordsToStore.push(record);
         }
-
         let res = await rec.save();
-        await oo.commit()
     });
+
+    it ("delete record", async () => {
+        should(true).be.false()
+    })
+
+    it ("delete record check details and sets are gone", async () => {
+        should(true).be.false()
+    })
+*/
+
+    it ("check sets behaviour", async () => {
+        rec = cls.new().fillWithRandomValues()
+        let res = await rec.store();
+        res.should.be.true();
+        let setvalues = _(rec.Set_Field.split(",")).map(function (v) {return v.trim()})
+        let response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields('Set_Field').setrecordname} WHERE masterId=?`, [rec.internalId])
+        let rset = response[0]
+        should(rset.length).be.equal(setvalues.length)
+        for (let i=0;i<setvalues.length;i++) {
+            should(rset[i].Value).be.equal(setvalues[i])
+        }
+        rec.Set_Field = chance.sentence({words: 2}).replace(/ /g, ",").replace(/\./g, "")
+        res = await rec.store();
+        res.should.be.true();
+        setvalues = _(rec.Set_Field.split(",")).map(function (v) {return v.trim()})
+        response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields('Set_Field').setrecordname} WHERE masterId=?`, [rec.internalId])
+        rset = response[0]
+        should(rset.length).be.equal(setvalues.length)
+        for (let i=0;i<setvalues.length;i++) {
+            should(rset[i].Value).be.equal(setvalues[i])
+        }
+
+    })
 });
 
 module.exports = function config(utilsModule) {

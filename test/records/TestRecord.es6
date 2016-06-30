@@ -4,7 +4,6 @@ let _ = require("underscore")
 let chance = require("chance")()
 let moment = require("moment")
 
-
 var Description = {
     name: 'TestRecord',
     inherits: 'Record',
@@ -12,6 +11,7 @@ var Description = {
         TestName: {type: "string", length: 60},
         SubTestName: {type: "string", length: 60},
         String_Field: {type: "string", length: 60},
+        Set_Field: {type: "set", length: 60, linkto: "Customer", setrecordname: "TestRecordSet_Field"},
         LinkTo_Field: {type: "string", linkto: "Customer"},
         Integer_Field: {type: "integer"},
         NonPersistent_Field: {type: "string", length:60, persistent: false},
@@ -69,7 +69,9 @@ class TestRecord extends Parent {
         return this.beforeUpdateReturnValue;
     }
 
-    static fillRecordWithRandomValues(record) {
+    static fillRecordWithRandomValues(record, opts) {
+        if (!opts) opts = {}
+        let nrows = 'nrows' in opts? opts.nrows : chance.natural({min: 4, max: 13});
         let cls = this;
         _(record.persistentFieldNames()).forEach(function(fn) {
             let fielddef = record.fields(fn)
@@ -79,6 +81,9 @@ class TestRecord extends Parent {
             switch (fielddef.type) {
                 case 'string':
                     record[fn] = chance.word({length: fielddef.length});
+                    break;
+                case 'set':
+                    record[fn] = chance.sentence({words: 5}).replace(/ /g, ",").replace(/\./g, "")
                     break;
                 case 'integer':
                     record[fn] = chance.integer({min: -10000, max: 10000});
@@ -94,19 +99,18 @@ class TestRecord extends Parent {
         });
         _(record.persistentDetailNames()).forEach(function (dn) {
             let detail = record[dn];
-            var nrows = chance.natural({min: 4, max: 13})
             for (var j = 0; j < nrows; j++) {
                 //console.log(fn)
                 var row = detail.newRow()
-                cls.fillRecordWithRandomValues(row)
+                cls.fillRecordWithRandomValues(row, opts)
                 detail.push(row);
             }
         });
         return record;
     }
 
-    fillWithRandomValues() {
-        return this.__class__.fillRecordWithRandomValues(this);
+    fillWithRandomValues(opts) {
+        return this.__class__.fillRecordWithRandomValues(this, opts);
     }
 
     static async newSavedRecord() {
