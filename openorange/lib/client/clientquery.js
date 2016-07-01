@@ -14,7 +14,7 @@
     ClientQuery.fetch = function fetch() {
         var self = this;
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/query/fetch';
+            var url = oo.baseurl + '/query/fetch';
             $.ajax({
                 type: "POST",
                 url: url,

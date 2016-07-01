@@ -11,7 +11,8 @@ var utils = require("../utils")
 
 var webdriver = require('selenium-webdriver');
 let By = webdriver.By,
-    until = webdriver.until;
+    until = webdriver.until,
+    actions = webdriver.ActionSequence;
 
 let port = 4001
 
@@ -34,13 +35,25 @@ describe('ORM with Selenium', function () {
         oo.commit();
     });
 
-    this.timeout(30000)
+    this.timeout(40000)
     it('Concurrent transaccions from different browsers', async () => {
         let runs = [true,false,false,true]
         let responses = [];
         for (let i in runs) {
             let driver = new webdriver.Builder().forBrowser('chrome').build();
-            driver.get(`localhost:${port}/app`);
+            driver.get(`localhost:${port}/oo/ui`);
+            //console.log(await driver.findElement(By.id("username")))
+            let usernameElement = (await driver.findElement(By.id("username")))
+            usernameElement.sendKeys("PDB");
+            usernameElement.sendKeys(webdriver.Key.TAB);
+            let passwordElement = (await driver.findElement(By.id("password")))
+            passwordElement.sendKeys("123");
+            passwordElement.sendKeys(webdriver.Key.TAB);
+            let loginFormElement = (await driver.findElement(By.id("loginButton")))
+            await wait(1000) //feo, pero funciona
+            loginFormElement.click();
+            //let action = new actions(driver);
+            //action.moveToElement(loginFormElement).click().perform();
             driver.manage().timeouts().setScriptTimeout(200000);
             let command = `require("openorange").classmanager.getClass('ORMBrowserTests').test1('T${i}', ${runs[i]}, arguments[arguments.length - 1])`
             console.log(command)

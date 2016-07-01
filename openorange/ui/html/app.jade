@@ -141,11 +141,11 @@ script(src="/bower_components/bluebird/js/browser/bluebird.min.js")
 //OPENORANGE
 
 
-script(src='/openorange/lib/client/md5.min.js')
-script(src='/openorange/lib/client/openorange.js')
-script(src='/openorange/lib/both/explorer.js')
-script(src='/openorange/lib/both/basequery.js')
-script(src='/openorange/lib/client/clientquery.js')
+script(src='#{OpenOrangeBaseURL}/lib/client/md5.min.js')
+script(src='#{OpenOrangeBaseURL}/lib/client/openorange.js')
+script(src='#{OpenOrangeBaseURL}/lib/both/explorer.js')
+script(src='#{OpenOrangeBaseURL}/lib/both/basequery.js')
+script(src='#{OpenOrangeBaseURL}/lib/client/clientquery.js')
 script(src='js/oo/windowmanager.js')
 script(src='js/oo/listwindowmanager.js')
 script(src='js/oo/reportmanager.js')
@@ -164,4 +164,37 @@ script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js")
 script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js")
 script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js")
 
+script.
+    let oo = require("openorange")
+    $('#OOSearch.typeahead').focus(function () {
+        $(this).select();
+    })
+    $('#OOSearch.typeahead').typeahead({hint: true}, {
+        async: true,
+        display: 'label',
+        limit: 4,
+        source: function (query, syncResults, asyncResults) {
+            oo.explorer.search(query)
+                    .then(function (results) {
+                        //console.log(results.length)
+                        asyncResults(results)
+                    })
+        },
+    }).on('typeahead:selected', function (obj, datum) {
+        var wnd = null;
+        switch (datum.type) {
+            case 'Record Class':
+                wnd = oo.classmanager.getClass(datum.access).new();
+                break;
+            case 'Report':
+                wnd = oo.classmanager.getClass(datum.name).new();
+                break;
+        }
+        if (wnd != null) {
+            wnd.open()
+            wnd.setFocus()
+        }
+
+    });
+    $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
 

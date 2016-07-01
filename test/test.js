@@ -18,13 +18,12 @@ var utils = require("./utils")
 
 //cm.addScriptDir("test")
 
-//require("./local/ExplorerTest")
-//require("./local/LoginTest")
+require("./local/ExplorerTest")
+require("./local/LoginTest")
 require("./core/records/Embedded_RecordTest")(utils)
-//require("./core/windows/Embedded_WindowTest")(utils)
-//require("./local/ReportTest.js")
-
-//require("./tools/ormTest")
+require("./core/windows/Embedded_WindowTest")(utils)
+require("./local/ReportTest.js")
+require("./tools/ormTest")
 
 
 //console.log(oo.classmanager.getClass("TestRecord").__description__)

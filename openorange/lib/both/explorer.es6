@@ -15,6 +15,7 @@ Explorer.search__server = async function search(txt) {
     var regexp = new RegExp(txt, "i");
     let modules = await self.findAllModules();
     for (let modname in modules) {
+        if (modname == 'ALL') continue //por ahora
         var module = modules[modname];
         for (let j=0;j<module.records.length; j++) {
             var entry = module.records[j];
@@ -31,7 +32,7 @@ Explorer.search__server = async function search(txt) {
 Explorer.search__client = function search(txt) {
     var self = this;
     return new Promise(function (resolve, reject) {
-        var url = '/runtime/explorer/search';
+        var url = require('openorange').baseurl + '/explorer/search';
         $.ajax({
             type: "GET",
             url: url,

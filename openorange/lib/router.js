@@ -2,30 +2,47 @@
 
 var express = require('express');
 var router = express.Router();
-
 var fs = require("fs");
-
 var oo = require('openorange');
-
-var cm = require('./classmanager');
+var cm = oo.classmanager;
 var orm = require('./orm');
-
 var Record = cm.getClass("Embedded_Record");
 var path = require("path");
 var _ = require('underscore');
+//var babel = require("babel-core")
 
-var babel = require("babel-core");
+for (var i = 0; i < cm.reversed_scriptdirs.length; i++) {
+    //esto es xq el navegador pide los archivos .map.js para debugging por consola
+    var sd = cm.reversed_scriptdirs[i];
+    router.use('/sources/' + sd, express.static(path.join(__dirname, '../..', sd)));
+}
+router.use('/', oo.contextmanager.expressMiddleware()); //aca manejan usuario actual, conexion actual, etc. para ser usadas con toda la app. Son variables definidas por request/cookie
 
-function sendModule(res, fn) {
+router.use('/lib/client', express.static(path.join(__dirname, 'client')));
+router.use('/lib/both', express.static(path.join(__dirname, 'both')));
+
+function extractSDRelativePath(fn) {
+    for (var i in cm.reversed_scriptdirs) {
+        var sd = cm.reversed_scriptdirs[i];
+        var idx = fn.lastIndexOf("/" + sd + "/");
+        if (idx >= 0) {
+            return fn.substring(idx);
+        }
+    }
+    return null;
+}
+
+function sendModule(req, res, fn) {
     fs.readFile(fn, 'utf8', function (err, data) {
         if (err) {
             return console.log(err);
         }
+        var relative_fn = extractSDRelativePath(fn);
         var fulldata = "var moduleFunction = (function() {module = {};\n";
-        fulldata = fulldata + "var __dirname = '" + path.dirname(fn) + "';\n";
-        fulldata = fulldata + "var __filename = '" + fn + "';\n";
+        fulldata = fulldata + "var __dirname = '" + path.dirname(relative_fn) + "';\n";
+        fulldata = fulldata + "var __filename = '" + relative_fn + "';\n";
         fulldata = fulldata + data + "\nreturn module.exports;})\n";
-        fulldata = fulldata + "//# sourceURL=" + fn;
+        fulldata = fulldata + ("//# sourceURL= " + req.baseUrl + "/sources" + relative_fn);
         //fulldata = babel.transform(fulldata, {"presets": ["stage-3"]}).code
         res.status(200).send(fulldata);
     });
@@ -69,7 +86,7 @@ router.get('/class', function (req, res, next) {
     try {
         var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
         var fn = cls.__description__.filename || cls.__filename__;
-        sendModule(res, fn);
+        sendModule(req, res, fn);
     } catch (err) {
         console.log(err.stack);
         throw err;
@@ -80,7 +97,7 @@ router.get('/parentclass', function (req, res, next) {
     try {
         var cls = cm.getParentClassFor(req.query.name, req.query.parent, req.query.dirname);
         var fn = cls.__description__.filename || cls.__filename__;
-        sendModule(res, fn);
+        sendModule(req, res, fn);
         //console.log(fn)
     } catch (err) {
         console.log(err.stack);
@@ -90,7 +107,7 @@ router.get('/parentclass', function (req, res, next) {
 
 router.get('/module', function (req, res, next) {
     var fn = req.query.url + ".js";
-    sendModule(res, fn);
+    sendModule(req, res, fn);
 });
 
 router.get('/select', function (req, res, next) {
@@ -113,7 +130,7 @@ router.get('/explorer/search', function (req, res, next) {
     oo.explorer.search(req.query.txt).then(function (result) {
         res.send({ ok: true, response: result });
     }).catch(function (err) {
-        console.log(err);
+        console.log(err.stack);
         res.send({ ok: false, error: err });
     });
 });
@@ -186,4 +203,4 @@ router.post('/oo/begintransaction', function (req, res, next) {
 });
 module.exports = router;
 
-//# sourceMappingURL=runtime.js.map
+//# sourceMappingURL=router.js.map

@@ -67,8 +67,8 @@ oo.rollback = oo.contextmanager.rollback.bind(oo.contextmanager);
 //context user accessors
 oo.currentUser = oo.contextmanager.currentUser.bind(oo.contextmanager);
 oo.login = login;
-oo.getRouteManager = function getRouteManager() {
-    return require("./runtime");
+oo.getRouter = function getRouter() {
+    return require("./router");
 };
 module.exports = oo;
 

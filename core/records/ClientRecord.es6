@@ -1,5 +1,6 @@
 "use strict"
-var cm = require('openorange').classmanager
+let oo = require('openorange');
+let cm = oo.classmanager
 
 var Description = {
     name: 'ClientRecord',
@@ -53,7 +54,7 @@ class ClientRecord extends Parent {
         data.method = methodname;
         data.params = params != null ? params : [];
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/record/' + methodname;
+            var url = oo.baseurl  +'/record/' + methodname;
             $.ajax({
                 type: "POST",
                 url: url,

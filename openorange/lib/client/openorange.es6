@@ -1,6 +1,10 @@
 "use strict";
 
 (function ($) {
+    let oopath = '/lib/client/openorange.js'
+    let ooscriptpath = $('script[src$="'+oopath+'"]').attr('src')
+    let __baseurl__ = ooscriptpath.substring(0, ooscriptpath.length-oopath.length);
+
     let classmanager = {};
     let orm = {};
     let __currentUser__ = null;
@@ -49,7 +53,7 @@
             return classmanager.classes[k]
         }
         //console.log("getclass: fetching " + name + " from server");
-        var url = '/runtime/class';
+        var url = __baseurl__ + '/class';
         var res = null;
         $.ajax({
             url: url,
@@ -84,7 +88,7 @@
             //console.log("getparentclass: returning " + name + " from cache");
             return classmanager.classes[k];
         }
-        var url = '/runtime/parentclass';
+        var url = __baseurl__ + '/parentclass';
         var res = null;
         $.ajax({
             url: url,
@@ -130,7 +134,7 @@
         }
         var res = null;
         $.ajax({
-            url: 'runtime/module',
+            url: __baseurl__ + '/module',
             dataType: "script",
             data: {url: url},
             async: false,
@@ -152,45 +156,12 @@
     }
 
     $(document).ready(function () {
-        var oo = require("openorange")
-        $('#OOSearch.typeahead').typeahead({hint: true}, {
-            async: true,
-            display: 'label',
-            limit: 4,
-            source: function (query, syncResults, asyncResults) {
-
-                //syncResults([])
-                oo.explorer.search(query)
-                    .then(function (results) {
-                        //console.log(results.length)
-                        asyncResults(results)
-
-                    })
-
-            },
-        }).on('typeahead:selected', function (obj, datum) {
-            var wnd = null;
-            switch (datum.type) {
-                case 'Record Class':
-                    wnd = oo.classmanager.getClass(datum.access).new();
-                    break;
-                case 'Report':
-                    wnd = oo.classmanager.getClass(datum.name).new();
-                    break;
-            }
-            if (wnd != null) {
-                wnd.open()
-                wnd.setFocus()
-            }
-
-        });
-        $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
     })
 
     let login = function (user, pass) {
         let password = pass || '';
         $.ajax({
-            url: '/runtime/login',
+            url: __baseurl__ + '/login',
             contentType: 'application/json; charset=utf-8',
             async: true,
             type: "POST",
@@ -215,7 +186,7 @@
 
     let rollback = function rollback() {
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/oo/rollback';
+            var url = __baseurl__ + '/oo/rollback';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -245,7 +216,7 @@
 
     let beginTransaction = function beginTransaction() {
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/oo/begintransaction';
+            var url = __baseurl__ + '/oo/begintransaction';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -275,7 +246,7 @@
 
     let commit = function commit() {
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/oo/commit';
+            var url = __baseurl__ + '/oo/commit';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -311,7 +282,7 @@
         return new Promise(function (resolve, reject) {
             $.ajax({
                 type: "GET",
-                url: '/runtime/getcurrentuser',
+                url: __baseurl__ + '/getcurrentuser',
                 contentType: 'application/json; charset=utf-8',
                 dataType: "json",
                 async: true,
@@ -348,6 +319,7 @@
         rollback: rollback,
         commit: commit,
         currentUser: currentUser,
+        baseurl: __baseurl__,
         md5: md5
         //ready: ready,
     }

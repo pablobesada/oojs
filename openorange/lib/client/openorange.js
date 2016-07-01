@@ -3,6 +3,10 @@
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 (function ($) {
+    var oopath = '/lib/client/openorange.js';
+    var ooscriptpath = $('script[src$="' + oopath + '"]').attr('src');
+    var __baseurl__ = ooscriptpath.substring(0, ooscriptpath.length - oopath.length);
+
     var classmanager = {};
     var orm = {};
     var __currentUser__ = null;
@@ -48,7 +52,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             return classmanager.classes[k];
         }
         //console.log("getclass: fetching " + name + " from server");
-        var url = '/runtime/class';
+        var url = __baseurl__ + '/class';
         var res = null;
         $.ajax({
             url: url,
@@ -83,7 +87,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             //console.log("getparentclass: returning " + name + " from cache");
             return classmanager.classes[k];
         }
-        var url = '/runtime/parentclass';
+        var url = __baseurl__ + '/parentclass';
         var res = null;
         $.ajax({
             url: url,
@@ -128,7 +132,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         }
         var res = null;
         $.ajax({
-            url: 'runtime/module',
+            url: __baseurl__ + '/module',
             dataType: "script",
             data: { url: url },
             async: false,
@@ -149,42 +153,12 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         return res;
     };
 
-    $(document).ready(function () {
-        var oo = require("openorange");
-        $('#OOSearch.typeahead').typeahead({ hint: true }, {
-            async: true,
-            display: 'label',
-            limit: 4,
-            source: function source(query, syncResults, asyncResults) {
-
-                //syncResults([])
-                oo.explorer.search(query).then(function (results) {
-                    //console.log(results.length)
-                    asyncResults(results);
-                });
-            }
-        }).on('typeahead:selected', function (obj, datum) {
-            var wnd = null;
-            switch (datum.type) {
-                case 'Record Class':
-                    wnd = oo.classmanager.getClass(datum.access).new();
-                    break;
-                case 'Report':
-                    wnd = oo.classmanager.getClass(datum.name).new();
-                    break;
-            }
-            if (wnd != null) {
-                wnd.open();
-                wnd.setFocus();
-            }
-        });
-        $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead");
-    });
+    $(document).ready(function () {});
 
     var login = function login(user, pass) {
         var password = pass || '';
         $.ajax({
-            url: '/runtime/login',
+            url: __baseurl__ + '/login',
             contentType: 'application/json; charset=utf-8',
             async: true,
             type: "POST",
@@ -207,7 +181,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
     var rollback = function rollback() {
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/oo/rollback';
+            var url = __baseurl__ + '/oo/rollback';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -237,7 +211,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
     var beginTransaction = function beginTransaction() {
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/oo/begintransaction';
+            var url = __baseurl__ + '/oo/begintransaction';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -267,7 +241,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
     var commit = function commit() {
         return new Promise(function (resolve, reject) {
-            var url = '/runtime/oo/commit';
+            var url = __baseurl__ + '/oo/commit';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -305,10 +279,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
-                            return _context.abrupt("return", new Promise(function (resolve, reject) {
+                            return _context.abrupt('return', new Promise(function (resolve, reject) {
                                 $.ajax({
                                     type: "GET",
-                                    url: '/runtime/getcurrentuser',
+                                    url: __baseurl__ + '/getcurrentuser',
                                     contentType: 'application/json; charset=utf-8',
                                     dataType: "json",
                                     async: true,
@@ -332,7 +306,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                             }));
 
                         case 1:
-                        case "end":
+                        case 'end':
                             return _context.stop();
                     }
                 }
@@ -357,6 +331,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         rollback: rollback,
         commit: commit,
         currentUser: currentUser,
+        baseurl: __baseurl__,
         md5: md5
         //ready: ready,
     };

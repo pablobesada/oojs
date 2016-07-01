@@ -10,7 +10,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var cm = require('openorange').classmanager;
+var oo = require('openorange');
+var cm = oo.classmanager;
 
 var Description = {
     name: 'ClientRecord',
@@ -138,7 +139,7 @@ var ClientRecord = function (_Parent) {
                                 data.method = methodname;
                                 data.params = params != null ? params : [];
                                 return _context4.abrupt('return', new Promise(function (resolve, reject) {
-                                    var url = '/runtime/record/' + methodname;
+                                    var url = oo.baseurl + '/record/' + methodname;
                                     $.ajax({
                                         type: "POST",
                                         url: url,

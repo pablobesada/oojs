@@ -17,18 +17,20 @@ var redisStore = require('connect-redis')(session);
 var redis = require("redis");
 var redisClient = redis.createClient()
 
-var routes = require('./routes/index');
+//var routes = require('./routesXX/index');
 
 var oo = require('openorange');
+let ui = require("openorange/ui")
+
 
 var Promise = require("bluebird")
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'node_modules/openorange/ui/html'));
+//app.set('views', path.join(__dirname, 'node_modules/openorange/ui/html'));
 app.set('view engine', 'jade');
-app.use('/app/', express.static(path.join(__dirname, 'node_modules/openorange/ui/')));
+//app.use('/app/', express.static(path.join(__dirname, 'node_modules/openorange/ui/')));
 //app.use('/openorange/ui/css/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/css/')));
 //app.use('/openorange/ui/font/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/font/')));
 //app.use('/openorange/ui/iconfont/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/iconfont/')));
@@ -57,14 +59,16 @@ app.use(bodyParser.urlencoded({extended: false}));
 //app.use(require('node-compass')({mode: 'expanded'}));
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
-app.use('/openorange/lib/client', express.static(path.join(__dirname, 'node_modules/openorange/lib/client')));
-app.use('/openorange/lib/both', express.static(path.join(__dirname, 'node_modules/openorange/lib/both')));
+//app.use('/openorange/lib/client', express.static(path.join(__dirname, 'node_modules/openorange/lib/client')));
+//app.use('/openorange/lib/both', express.static(path.join(__dirname, 'node_modules/openorange/lib/both')));
+
+app.use('/Users/pablo/WebstormProjects/oojs/base', express.static('/Users/pablo/WebstormProjects/oojs/base'));
+
+let OpenOrangeBaseURL = '/oo/api';
+app.use(OpenOrangeBaseURL, oo.getRouter());
+app.use('/oo/ui', ui({OpenOrangeBaseURL: OpenOrangeBaseURL}));
 
 
-app.use('/', routes);
-
-app.use('/runtime', oo.contextmanager.expressMiddleware()); //aca manejan usuario actual, conexion actual, etc. para ser usadas con toda la app. Son variables definidas por request/cookie
-app.use('/runtime', oo.getRouteManager());
 //app.use('/db', db);
 
 // catch 404 and forward to error handler

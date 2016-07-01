@@ -190,7 +190,7 @@ var Embedded_Report = function () {
     }, {
         key: 'setFocus',
         value: function setFocus() {
-            oo.ui.reportamanager.setFocus(this);
+            oo.ui.reportmanager.setFocus(this);
         }
 
         /*

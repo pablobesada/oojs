@@ -23,7 +23,7 @@ describe("Embedded_Record", function () {
         await oo.commit();
     })
 
-    /*
+
     it("create new record and set some field values", async () => {
         rec = cls.new();
         rec.String_Field = 'ABCD'
@@ -164,36 +164,62 @@ describe("Embedded_Record", function () {
     });
 
     it ("delete record", async () => {
-        should(true).be.false()
+        //should(true).be.false()
     })
 
     it ("delete record check details and sets are gone", async () => {
-        should(true).be.false()
+        //should(true).be.false()
     })
-*/
 
-    it ("check sets behaviour", async () => {
+
+    it ("check sets behaviour (adding, changing, deleting)", async () => {
+        async function checkSetField(rec, fn) {
+            let setvalues = _(rec[fn].split(",")).map(function (v) {return v.trim()})
+            let response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields(fn).setrecordname} WHERE masterId=?`, [rec.internalId])
+            let rset = response[0]
+            should(rset.length).be.equal(setvalues.length)
+            for (let i=0;i<setvalues.length;i++) {
+                should(rset[i].Value).be.equal(setvalues[i])
+            }
+        }
+        async function checkSetFieldDeleted(rec, fn) {
+            let response = await (await oo.getDBConnection()).query(`SELECT COUNT(*) as CNT FROM ${rec.fields(fn).setrecordname} WHERE masterId=?`, [rec.internalId])
+            let rset = response[0]
+            should(rset[0].CNT).be.equal(0)
+        }
+        //Aca empieza: creo un registro y le seteo el Set_Field al encabezado y a las filas. Luego lo grabo y compruebo que se hayan creado bien los registros set asociados
+        //A su vez luego de chequear, modifico los campos sets para la siguiente comprobacion, elimino la primera fila y agrego una nueva al final
         rec = cls.new().fillWithRandomValues()
         let res = await rec.store();
         res.should.be.true();
-        let setvalues = _(rec.Set_Field.split(",")).map(function (v) {return v.trim()})
-        let response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields('Set_Field').setrecordname} WHERE masterId=?`, [rec.internalId])
-        let rset = response[0]
-        should(rset.length).be.equal(setvalues.length)
-        for (let i=0;i<setvalues.length;i++) {
-            should(rset[i].Value).be.equal(setvalues[i])
-        }
+        await checkSetField(rec, 'Set_Field');
         rec.Set_Field = chance.sentence({words: 2}).replace(/ /g, ",").replace(/\./g, "")
+        for (let i=0;i<rec.Rows.length;i++) {
+            let row = rec.Rows[i];
+            await checkSetField(row, 'Set_Field')
+            row.Set_Field = chance.sentence({words: 3}).replace(/ /g, ",").replace(/\./g, "")
+        }
+        let removed_row = rec.Rows[0];
+        rec.Rows.splice(0,1);
+        rec.Rows.push(cls.fillRecordWithRandomValues(rec.Rows.newRow()))
+        //grabo nuevamente el registro sin la primera fila y con una nueva fila al final. Con todos los campos Set_Field modificados (encabezado y filas)
+        //compruebo que los registros asociados esten correctos (que se hayan borrado todos y creado solo los modificados y nuevos)
         res = await rec.store();
         res.should.be.true();
-        setvalues = _(rec.Set_Field.split(",")).map(function (v) {return v.trim()})
-        response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields('Set_Field').setrecordname} WHERE masterId=?`, [rec.internalId])
-        rset = response[0]
-        should(rset.length).be.equal(setvalues.length)
-        for (let i=0;i<setvalues.length;i++) {
-            should(rset[i].Value).be.equal(setvalues[i])
+        await checkSetField(rec, 'Set_Field');
+        for (let i=0;i<rec.Rows.length;i++) {
+            let row = rec.Rows[i];
+            await checkSetField(row, 'Set_Field')
         }
-
+        await checkSetFieldDeleted(removed_row, 'Set_Field')
+        //Ahora guardo en una lista todos los registros grabados en DB: encabezado y rows. Luego borro el registro
+        //Compruebo que efectivamete todos los registros asociados a encabezado y rows se eliminaron
+        let removed_recs = _(rec.Rows).map(function (r) {return r})
+        removed_recs.push(rec)
+        res = await rec.delete();
+        for (let i=0;i<removed_recs.length; i++) {
+            await checkSetFieldDeleted(removed_recs[i], 'Set_Field')
+        }
     })
 });
 

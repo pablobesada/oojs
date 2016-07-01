@@ -13,59 +13,59 @@ Promise.config({
 })
 var orm = {}
 
-function raw_insert_row_function(connection, record) {
+async function raw_insert_row_function(connection, record) {
     var insert = orm.generate_insert_sql(record);
     //console.log(insert.sql)
-    return connection.query(insert.sql, insert.values)
-        .then(function (info) {
-            record.internalId = info.insertId;
-            record.syncVersion = 1;
-            record.setNewFlag(false);
-            record.setModifiedFlag(false);
-        })
+    let info = await connection.query(insert.sql, insert.values)
+    record.internalId = info.insertId;
+    await store_sets(connection, record, true, false);
+    record.syncVersion = 1;
+    record.setNewFlag(false);
+    record.setModifiedFlag(false);
 }
 
-function raw_delete_row_function(connection, record) {
+async function raw_delete_row_function(connection, record) {
     var del = orm.generate_delete_sql(record);
     //console.log(del.sql)
     //console.log(del.values)
-    return connection.query(del.sql, del.values)
-        .then(function (info) {
-            if (info.affectedRows != 1) {
-                throw {code: "ROW_NOT_DELETED", message: "Row couldn't be deleted"}
-                return;
-            }
-        })
+    let info = await connection.query(del.sql, del.values)
+    if (info.affectedRows != 1) {
+        throw {code: "ROW_NOT_DELETED", message: "Row couldn't be deleted"}
+        return;
+    }
+    await store_sets(connection, record, false, true);
 }
 
-function raw_update_row_function(connection, record) {
+async function raw_update_row_function(connection, record) {
     var update = orm.generate_update_sql(record);
     //console.log(update.sql)
-    return connection.query(update.sql, update.values)
-        .then(function (info) {
-            if (info.changedRows != 1) {
-                throw {code: "ROW_NOT_UPDATED", message: "Row couldn't be updated"}
-            } else {
-                record.setNewFlag(false);
-                record.setModifiedFlag(false);
-            }
-        })
+    let info = await connection.query(update.sql, update.values)
+    if (info.changedRows != 1) {
+        throw {code: "ROW_NOT_UPDATED", message: "Row couldn't be updated"}
+    } else {
+        //console.log("raw_update_row_function SET")
+        await store_sets(connection, record, false, false);
+        record.setNewFlag(false);
+        record.setModifiedFlag(false);
+    }
 }
 
-function deleteDetailFunction(connection, record, detailname) {
+async function deleteDetailFunction(connection, record, detailname) {
     var detail = record.details(detailname);
     var del = orm.generate_delete_detail_sql(record, detailname);
-    //console.log(del.sql)
-    //console.log(del.values)
-    return connection.query(del.sql, del.values)
+    let info = await connection.query(del.sql, del.values)
+    for (let i=0;i<detail.length;i++) {
+        let row = detail[i]
+        await store_sets(connection, row, row.isNew(), true)
+    }
 }
 
-function saveDetailFunction(connection, record, detailname) {
+async function saveDetailFunction(connection, record, detailname) {
     var funcs = [];
     return new Promise(function (resolve, reject) {
         var detail = record.details(detailname);
-        for (var i = 0; i < detail.length; i++) {
-            var row = detail[i];
+        for (let i = 0; i < detail.length; i++) {
+            let row = detail[i];
             row.masterId = record.internalId;
             row.rowNr = i;
             if (row.isModified()) {
@@ -76,8 +76,8 @@ function saveDetailFunction(connection, record, detailname) {
                 }
             }
         }
-        for (var i = 0; i < detail.__removed_rows__.length; i++) { 
-            var row = detail.__removed_rows__[i];
+        for (let i = 0; i < detail.__removed_rows__.length; i++) {
+            let row = detail.__removed_rows__[i];
             if (!row.isNew()) {
                 funcs.push(raw_delete_row_function(connection, row))
             }
@@ -85,7 +85,9 @@ function saveDetailFunction(connection, record, detailname) {
         resolve();
     }).then(function () {
         return Promise.all(funcs)
-    })
+    })/*.catch(function (err) {
+        console.log(err)
+    })*/
 }
 
 orm.generate_insert_sql = function generate_insert_sql(record) {
@@ -133,7 +135,7 @@ orm.generate_update_sql = function generate_update_sql(record) {
     return {sql: sql, values: values};
 }
 
-orm.generate_delete_sql = function generate_update_sql(record) {
+orm.generate_delete_sql = function generate_delete_sql(record) {
     var values = [];
     var where = [];
     where.push("`internalId`=?");
@@ -142,7 +144,7 @@ orm.generate_delete_sql = function generate_update_sql(record) {
         where.push("`syncVersion`=?");
         values.push(record.syncVersion);
     }
-    var sql = "DELETE FROM " + record.__description__.name + " WHERE " + where.join(" AND ");
+    var sql = "DELETE FROM " + record.__class__.getDescription().name + " WHERE " + where.join(" AND ");
     return {sql: sql, values: values};
 }
 
@@ -280,37 +282,40 @@ async function save_details_and_finish_function(conn, record) {
             resolve()
         });
         await Promise.all(funcs);
-        //await conn.commit();
         return true;
     } catch (err) {
-        //await conn.rollback(conn);
+        if (err.stack) console.log(err.stack)
         return false;
     }
 }
 
-async function storeSets(conn, record) {
+async function store_sets(conn, record, isNewRecord, isDeleting) {
     let promises = [];
-    if (!record.isNew()) {
+    if (!isNewRecord) {
         let fieldnames = record.fieldNames()
         for (let i=0;i<fieldnames.length;i++) {
             let field = record.fields(fieldnames[i])
             let oldvalue = record.oldFields(fieldnames[i]).getValue();
-            if (field.type == 'set' && field.setrecordname && field.getValue() != oldvalue && oldvalue != null && oldvalue != '') {
+            if (field.type == 'set' && field.setrecordname &&oldvalue != null && oldvalue != '' && (field.getValue() != oldvalue || isDeleting)) {
                 let sql = `DELETE FROM ${field.setrecordname} WHERE masterId=?`
                 let values = [record.oldFields("internalId").getValue()]
                 promises.push(conn.query(sql, values));
             }
         }
     }
-    let fieldnames = record.fieldNames()
-    for (let i=0;i<fieldnames.length;i++) {
-        let field = record.fields(fieldnames[i])
-        if (field.type == 'set' && field.setrecordname && field.getValue() != null) {
-            let setvalues = _(field.getValue().split(",")).map(function (v) {return v.trim()})
-            for (let j=0;j<setvalues.length;j++) {
-                let sql = `INSERT INTO ${field.setrecordname} (masterId, Value, syncVersion) values (?,?,?)`
-                let values = [record.internalId, setvalues[j], 1]
-                promises.push(conn.query(sql, values));
+    if (!isDeleting) {
+        let fieldnames = record.fieldNames()
+        for (let i = 0; i < fieldnames.length; i++) {
+            let field = record.fields(fieldnames[i])
+            if (field.type == 'set' && field.setrecordname && field.getValue() != null) {
+                let setvalues = _(field.getValue().split(",")).map(function (v) {
+                    return v.trim()
+                })
+                for (let j = 0; j < setvalues.length; j++) {
+                    let sql = `INSERT INTO ${field.setrecordname} (masterId, Value, syncVersion) values (?,?,?)`
+                    let values = [record.internalId, setvalues[j], 1]
+                    promises.push(conn.query(sql, values));
+                }
             }
         }
     }
@@ -323,7 +328,7 @@ async function save_new(conn, record) {
     var info = await conn.query(insert.sql, insert.values)
     record.internalId = info.insertId;
     record.syncVersion = 1;
-    await storeSets(conn, record);
+    await store_sets(conn, record, true, false);
     record.setNewFlag(false);
     record.setModifiedFlag(false);
     return save_details_and_finish_function(conn, record)
@@ -339,7 +344,7 @@ async function save_existing(conn, record) {
     }
     record.syncVersion += 1;
     record.setNewFlag(false);
-    await storeSets(conn, record);
+    await store_sets(conn, record, false, false);
     record.setModifiedFlag(false);
     return save_details_and_finish_function(conn, record);
 }
@@ -347,8 +352,8 @@ async function save_existing(conn, record) {
 function delete_details_and_finish_function(conn, record) {
     var funcs = [];
     return new Promise(function (resolve, reject) {
-        for (var i = 0; i < record.detailNames().length; i++) {
-            var f = deleteDetailFunction(conn, record, record.detailNames()[i]);
+        for (var i = 0; i < record.persistentDetailNames().length; i++) {
+            var f = deleteDetailFunction(conn, record, record.persistentDetailNames()[i]);
             funcs.push(f);
         }
         resolve();
@@ -387,43 +392,27 @@ orm.store = async function store(record, callback) {
         //record.syncOldFields(); ya no se hace aca
     } catch (err) {
         await conn.rollback()
+        if (err.stack) console.log(err.stack)
         throw err
     }
     return true;
 }
 
-orm.delete = function (record) {
+orm.delete = async function (record) {
     if (record.isNew()) {
         return Promise.reject({
             code: "NOT_DELETED",
             message: "Record is new. Cannot be deleted"
         });
     }
-    var conn = null;
-    //return db.getConnection()
-    return ctx.getDBConnection()
-    then(function (newconn) {
-        conn = newconn
-        //return conn.beginTransaction();
-        //}).then(function () {
-        var del = orm.generate_delete_sql(record);
-        //console.log(del.sql)
-        //console.log(del.values)
-        return conn.query(del.sql, del.values)
-    }).then(function (info) {
-        //console.log(info)
-        if (info.affectedRows != 1) {
-            //console.log(info.affectedRows)
-            throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
-        }
-        return delete_details_and_finish_function(conn, record);
-    }).finally(function (err) {
-        //if (conn != null) {
-        //    conn.release()
-        //    conn = null;
-        //    //console.log(err, conn)
-        // }
-    })
+    let conn = await ctx.getDBConnection()
+    var del = orm.generate_delete_sql(record);
+    let info = await conn.query(del.sql, del.values)
+    if (info.affectedRows != 1) {
+        throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
+    }
+    await store_sets(conn, record, false, true)
+    return delete_details_and_finish_function(conn, record);
 }
 
 orm.select = function select(recordClass) {

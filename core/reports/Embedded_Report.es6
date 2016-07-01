@@ -102,7 +102,7 @@ class Embedded_Report {
     }
 
     setFocus() {
-        oo.ui.reportamanager.setFocus(this)
+        oo.ui.reportmanager.setFocus(this)
     }
 
     /*

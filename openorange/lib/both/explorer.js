@@ -26,24 +26,44 @@ Explorer.search__server = function () {
 
                     case 5:
                         modules = _context.sent;
+                        _context.t0 = regeneratorRuntime.keys(modules);
 
-                        for (modname in modules) {
-                            module = modules[modname];
-
-                            for (j = 0; j < module.records.length; j++) {
-                                entry = module.records[j];
-
-                                if (entry.label.search(regexp) >= 0) res.push({ type: 'Record Class', name: entry.name, label: entry.label, access: entry.access });
-                            }
-                            for (_j = 0; _j < module.reports.length; _j++) {
-                                entry = module.reports[_j];
-
-                                if (entry.label.search(regexp) >= 0) res.push({ type: 'Report', name: entry.name, label: entry.label, access: entry.access });
-                            }
+                    case 7:
+                        if ((_context.t1 = _context.t0()).done) {
+                            _context.next = 16;
+                            break;
                         }
+
+                        modname = _context.t1.value;
+
+                        if (!(modname == 'ALL')) {
+                            _context.next = 11;
+                            break;
+                        }
+
+                        return _context.abrupt("continue", 7);
+
+                    case 11:
+                        //por ahora
+                        module = modules[modname];
+
+                        for (j = 0; j < module.records.length; j++) {
+                            entry = module.records[j];
+
+                            if (entry.label.search(regexp) >= 0) res.push({ type: 'Record Class', name: entry.name, label: entry.label, access: entry.access });
+                        }
+                        for (_j = 0; _j < module.reports.length; _j++) {
+                            entry = module.reports[_j];
+
+                            if (entry.label.search(regexp) >= 0) res.push({ type: 'Report', name: entry.name, label: entry.label, access: entry.access });
+                        }
+                        _context.next = 7;
+                        break;
+
+                    case 16:
                         return _context.abrupt("return", res);
 
-                    case 8:
+                    case 17:
                     case "end":
                         return _context.stop();
                 }
@@ -61,7 +81,7 @@ Explorer.search__server = function () {
 Explorer.search__client = function search(txt) {
     var self = this;
     return new Promise(function (resolve, reject) {
-        var url = '/runtime/explorer/search';
+        var url = require('openorange').baseurl + '/explorer/search';
         $.ajax({
             type: "GET",
             url: url,
