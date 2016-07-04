@@ -5,12 +5,11 @@ var path = require('path');
 var router = express.Router();
 let OpenOrangeBaseURL = null;
 router.get('/login', function(req, res, next) {
-    console.log("123", req.baseUrl)
     res.render(__dirname + '/html/login', { req: req, OpenOrangeBaseURL: OpenOrangeBaseURL});
 });
 
 router.get('/logout', function(req, res, next) {
-    delete req.session.user
+    delete req.session.user //y de redis tambien lo estoy borrando??
     res.redirect(req.baseUrl + '/')
 });
 

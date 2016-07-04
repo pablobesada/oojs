@@ -414,7 +414,7 @@
     class PushReceiver {
         constructor() {
             let self = this;
-            self.socket = io()
+            self.socket = io({path: __baseurl__  + '/socket.io'})
             self.socket.on('askYesNo', async function (data, fn) {let r = await oo.askYesNo(data); if (fn) fn(r);});
             self.socket.on('inputString', async function (data, fn) {let r= await oo.inputString(data); if (fn) fn(r);});
             //self.socket.on('inputString', async function (data) {self.socket.emit('response',await oo.inputString(data))});

@@ -40,7 +40,6 @@ class ClientRecord extends Parent {
     async ppp() {
         return this.runInServer("ppp");
     }
-
     async runInServer(methodname, params) {
         var rec = this;
         var data = {}

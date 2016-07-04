@@ -35,8 +35,8 @@ html(lang='en')
      // End Page Loading
      #login-page.row
        .col.s12.z-depth-4.card-panel
-         form#loginForm.login-form(name='login', action='#{OpenOrangeBaseURL}/login', method='post')
-           input(name='redirect_on_success', type='hidden', value='#{req.baseUrl}')
+         form#loginForm.login-form(name='login', action=OpenOrangeBaseURL +'/login', method='post')
+           input(name='redirect_on_success', type='hidden', value=req.baseUrl)
            input#md5pass(name='md5pass', type='hidden')
            .row
              .input-field.col.s12.center
@@ -79,3 +79,15 @@ html(lang='en')
      script(type='text/javascript', src='js/plugins/login/login.js')
      // custom-script.js - Add your own theme custom JS
      // script type="text/javascript" src="../js/custom-script.js"></script
+
+     script.
+       $('#loginForm').submit(function () {
+
+         // Find the input with id "file" in the context of
+         // the form (hence the second "this" parameter) and
+         // set it to be disabled
+         $('#password', this).prop('disabled', true);
+
+         // return true to allow the form to submit
+         return true;
+       });

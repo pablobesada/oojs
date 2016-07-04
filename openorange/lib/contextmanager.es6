@@ -10,14 +10,23 @@ class ContextManager {
             context.bindEmitter(res);
             //console.log("en middleware")
             context.run(function() {
-                //console.log("en middleware 2", req.session)
-                //console.log("req.sessionID: ", req.sessionID, "   session.id: " + req.session.id)
                 context.set('request-session', req.session);
                 next();
             });
 
         };
     }
+
+    static socketIOMiddleware() {
+        return function(socket, next) {
+            context.run(function() {
+                context.set('request-session', socket.request.session);
+                next();
+            });
+
+        };
+    }
+
 
     static getContext() {
         return context;

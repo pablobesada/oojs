@@ -15,9 +15,28 @@ var PushServer = function () {
 
         var self = this;
         this.io = socketIO;
-        this.clientconnections = [];
-        this.io.on('connection', function (client) {
-            self.clientconnections[client.request.session.id] = client;
+        this.clientconnections = []; //ver cuando y como se limpia este array!!!
+        this.io.on('connection', function (socket) {
+            if (!(socket.request.session.id in self.clientconnections)) {
+                self.clientconnections[socket.request.session.id] = { socket: socket, msg_queue: [] };
+            } else {
+                self.clientconnections[socket.request.session.id].socket = socket;
+            }
+            var client = self.getClientConnection();
+            while (client.msg_queue.length) {
+                var msg = client.msg_queue.shift();
+                switch (msg.type) {
+                    case 'emit':
+                        self.emit(msg.eventName, msg.data);
+                        break;
+                    case 'broadcast':
+                        self.broadcast(msg.eventName, msg.data);
+                        break;
+                    case 'ask':
+                        self.ask(msg.eventName, msg.data, msg.promise);
+                        break;
+                }
+            }
         });
     }
 
@@ -25,35 +44,45 @@ var PushServer = function () {
         key: "getClientConnection",
         value: function getClientConnection() {
             var session = oo.contextmanager.getRequestSession();
+            if (!(session.id in this.clientconnections)) this.clientconnections[session.id] = { socket: null, msg_queue: [] };
             return this.clientconnections[session.id];
         }
     }, {
         key: "emit",
         value: function emit(eventName, data) {
             var client = this.getClientConnection();
-            client.emit(eventName, data);
+            if (client.socket) {
+                client.socket.emit(eventName, data);
+            } else {
+                client.msg_queue.push({ eventName: eventName, data: data, type: 'emit' });
+            }
         }
     }, {
         key: "ask",
         value: function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(eventName, data) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(eventName, data, resolveToThisPromise) {
                 var promise, client, context, responseListener;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                promise = Promise.pending();
+                                promise = resolveToThisPromise || Promise.pending();
                                 client = this.getClientConnection();
-                                context = oo.contextmanager.getContext();
 
-                                responseListener = function responseListener(response) {
-                                    promise.resolve(response);
-                                };
+                                if (client.socket) {
+                                    context = oo.contextmanager.getContext();
 
-                                client.emit(eventName, data, context.bind(responseListener));
+                                    responseListener = function responseListener(response) {
+                                        promise.resolve(response);
+                                    };
+
+                                    client.socket.emit(eventName, data, context.bind(responseListener));
+                                } else {
+                                    client.msg_queue.push({ eventName: eventName, data: data, type: 'ask', promise: promise });
+                                }
                                 return _context.abrupt("return", promise.promise);
 
-                            case 6:
+                            case 4:
                             case "end":
                                 return _context.stop();
                         }
@@ -61,7 +90,7 @@ var PushServer = function () {
                 }, _callee, this);
             }));
 
-            function ask(_x, _x2) {
+            function ask(_x, _x2, _x3) {
                 return ref.apply(this, arguments);
             }
 
@@ -71,7 +100,11 @@ var PushServer = function () {
         key: "broadcast",
         value: function broadcast(eventName, data) {
             var client = this.getClientConnection();
-            if (client) client.broadcast.emit(eventName, data);
+            if (client.socket) {
+                client.socket.broadcast.emit(eventName, data);
+            } else {
+                client.msg_queue.push({ eventName: eventName, data: data, type: 'broadcast' });
+            }
         }
     }]);
 

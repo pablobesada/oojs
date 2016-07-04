@@ -20,9 +20,8 @@ var Promise = require("bluebird")
 //var routes = require('./routesXX/index');
 var app = express();
 var server = require('http').Server(app);
-var sio = require("socket.io")(server);
+
 var oo = require('openorange')
-oo.setSocketIO(sio);
 let ui = require("openorange/ui")
 
 
@@ -41,8 +40,10 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
 let sessionMiddleware = session({
     secret: 'oojs secret awxsdecf',
@@ -54,16 +55,8 @@ let sessionMiddleware = session({
 
 app.use(sessionMiddleware);
 
-sio.use(function(socket, next) { //aca conecto socket.io con las session para poder acceder a la session desde el onConnect de socket
-    sessionMiddleware(socket.request, socket.request.res, next);
-});
 
-sio.sockets.on("connection", function(socket) {
-    console.log("SIO", socket.request.session) // Now it's available from Socket.IO sockets too! Win!
-});
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
 
 //app.use(require('node-compass')({mode: 'expanded'}));
 //app.use(express.static(path.join(__dirname, 'public')));
@@ -71,10 +64,21 @@ app.use('/bower_components', express.static(path.join(__dirname, '/bower_compone
 //app.use('/openorange/lib/client', express.static(path.join(__dirname, 'node_modules/openorange/lib/client')));
 //app.use('/openorange/lib/both', express.static(path.join(__dirname, 'node_modules/openorange/lib/both')));
 
-app.use('/Users/pablo/WebstormProjects/oojs/base', express.static('/Users/pablo/WebstormProjects/oojs/base'));
+//app.use('/Users/pablo/WebstormProjects/oojs/base', express.static('/Users/pablo/WebstormProjects/oojs/base'));
 
 let OpenOrangeBaseURL = '/oo/api';
+
+let sio = require("socket.io")(server, {path: OpenOrangeBaseURL + '/socket.io'});
+oo.setSocketIO(sio);
+sio.use(function(socket, next) { //aca conecto socket.io con las session para poder acceder a la session desde el onConnect de socket
+    sessionMiddleware(socket.request, socket.request.res, next)
+});
+sio.use(oo.contextmanager.socketIOMiddleware()) //aca contecto socketIO con los contextos para el event 'connect'
+
 app.use(OpenOrangeBaseURL, oo.getRouter());
+
+
+
 app.use('/oo/ui', ui({OpenOrangeBaseURL: OpenOrangeBaseURL}));
 
 

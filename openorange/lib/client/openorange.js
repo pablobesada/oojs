@@ -547,7 +547,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         _classCallCheck(this, PushReceiver);
 
         var self = this;
-        self.socket = io();
+        self.socket = io({ path: __baseurl__ + '/socket.io' });
         self.socket.on('askYesNo', function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(data, fn) {
                 var r;

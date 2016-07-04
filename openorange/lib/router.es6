@@ -172,14 +172,11 @@ router.get('/getcurrentuser', function (req, res, next) {
 });
 
 router.post('/login', function (req, res, next) {
-    console.log(req.body)
-    console.log("login user: ", req.body.username)
+    //console.log(req.body)
     try {
         oo.login(req.body.username, req.body.md5pass)
             .then(function (found) {
-                console.log("en then")
                 if (found) {
-                    console.log("user found")
                     req.session.user = req.body.username
                     if (req.body.redirect_on_success) {
                         res.redirect(req.body.redirect_on_success)
@@ -189,12 +186,10 @@ router.post('/login', function (req, res, next) {
 
 
                 } else {
-                    console.log("user not found")
                     res.send({ok: false, error: 'wrong user or password'})
                 }
             })
             .catch(function (err) {
-                console.log("ERR")
                 console.log(err.stack)
             });
     } catch (err) {
