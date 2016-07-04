@@ -29,6 +29,9 @@ class PushServer {
                 }
             }
 
+            socket.on('BROADCAST_REQUEST', function (data) {
+                socket.broadcast.emit("BROADCAST", `${socket.request.session.user}: ${data}`)
+            })
         });
     };
 

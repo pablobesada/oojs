@@ -1,5 +1,7 @@
 "use strict";
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -543,112 +545,153 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         return postMessage;
     }();
 
-    var PushReceiver = function PushReceiver() {
-        _classCallCheck(this, PushReceiver);
+    var PushReceiver = function () {
+        function PushReceiver() {
+            _classCallCheck(this, PushReceiver);
 
-        var self = this;
-        self.socket = io({ path: __baseurl__ + '/socket.io' });
-        self.socket.on('askYesNo', function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(data, fn) {
-                var r;
-                return regeneratorRuntime.wrap(function _callee6$(_context6) {
-                    while (1) {
-                        switch (_context6.prev = _context6.next) {
-                            case 0:
-                                _context6.next = 2;
-                                return oo.askYesNo(data);
+            var self = this;
+            self.socket = io({ path: __baseurl__ + '/socket.io' });
+            self.socket.on('askYesNo', function () {
+                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(data, fn) {
+                    var r;
+                    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                        while (1) {
+                            switch (_context6.prev = _context6.next) {
+                                case 0:
+                                    _context6.next = 2;
+                                    return oo.askYesNo(data);
 
-                            case 2:
-                                r = _context6.sent;
-                                if (fn) fn(r);
-                            case 4:
-                            case 'end':
-                                return _context6.stop();
+                                case 2:
+                                    r = _context6.sent;
+                                    if (fn) fn(r);
+                                case 4:
+                                case 'end':
+                                    return _context6.stop();
+                            }
                         }
-                    }
-                }, _callee6, this);
-            }));
+                    }, _callee6, this);
+                }));
 
-            return function (_x5, _x6) {
-                return ref.apply(this, arguments);
-            };
-        }());
-        self.socket.on('inputString', function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(data, fn) {
-                var r;
-                return regeneratorRuntime.wrap(function _callee7$(_context7) {
-                    while (1) {
-                        switch (_context7.prev = _context7.next) {
-                            case 0:
-                                _context7.next = 2;
-                                return oo.inputString(data);
+                return function (_x5, _x6) {
+                    return ref.apply(this, arguments);
+                };
+            }());
+            self.socket.on('inputString', function () {
+                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(data, fn) {
+                    var r;
+                    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                        while (1) {
+                            switch (_context7.prev = _context7.next) {
+                                case 0:
+                                    _context7.next = 2;
+                                    return oo.inputString(data);
 
-                            case 2:
-                                r = _context7.sent;
-                                if (fn) fn(r);
-                            case 4:
-                            case 'end':
-                                return _context7.stop();
+                                case 2:
+                                    r = _context7.sent;
+                                    if (fn) fn(r);
+                                case 4:
+                                case 'end':
+                                    return _context7.stop();
+                            }
                         }
-                    }
-                }, _callee7, this);
-            }));
+                    }, _callee7, this);
+                }));
 
-            return function (_x7, _x8) {
-                return ref.apply(this, arguments);
-            };
-        }());
-        //self.socket.on('inputString', async function (data) {self.socket.emit('response',await oo.inputString(data))});
-        self.socket.on('alert', function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(data, fn) {
-                var r;
-                return regeneratorRuntime.wrap(function _callee8$(_context8) {
-                    while (1) {
-                        switch (_context8.prev = _context8.next) {
-                            case 0:
-                                _context8.next = 2;
-                                return oo.alert(data);
+                return function (_x7, _x8) {
+                    return ref.apply(this, arguments);
+                };
+            }());
+            //self.socket.on('inputString', async function (data) {self.socket.emit('response',await oo.inputString(data))});
+            self.socket.on('alert', function () {
+                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(data, fn) {
+                    var r;
+                    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                        while (1) {
+                            switch (_context8.prev = _context8.next) {
+                                case 0:
+                                    _context8.next = 2;
+                                    return oo.alert(data);
 
-                            case 2:
-                                r = _context8.sent;
-                                if (fn) fn(r);
-                            case 4:
-                            case 'end':
-                                return _context8.stop();
+                                case 2:
+                                    r = _context8.sent;
+                                    if (fn) fn(r);
+                                case 4:
+                                case 'end':
+                                    return _context8.stop();
+                            }
                         }
-                    }
-                }, _callee8, this);
-            }));
+                    }, _callee8, this);
+                }));
 
-            return function (_x9, _x10) {
-                return ref.apply(this, arguments);
-            };
-        }());
-        self.socket.on('postMessage', function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9(data, fn) {
-                var r;
-                return regeneratorRuntime.wrap(function _callee9$(_context9) {
-                    while (1) {
-                        switch (_context9.prev = _context9.next) {
-                            case 0:
-                                _context9.next = 2;
-                                return oo.postMessage(data);
+                return function (_x9, _x10) {
+                    return ref.apply(this, arguments);
+                };
+            }());
+            self.socket.on('postMessage', function () {
+                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9(data, fn) {
+                    var r;
+                    return regeneratorRuntime.wrap(function _callee9$(_context9) {
+                        while (1) {
+                            switch (_context9.prev = _context9.next) {
+                                case 0:
+                                    _context9.next = 2;
+                                    return oo.postMessage(data);
 
-                            case 2:
-                                r = _context9.sent;
-                                if (fn) fn(r);
-                            case 4:
-                            case 'end':
-                                return _context9.stop();
+                                case 2:
+                                    r = _context9.sent;
+                                    if (fn) fn(r);
+                                case 4:
+                                case 'end':
+                                    return _context9.stop();
+                            }
                         }
-                    }
-                }, _callee9, this);
-            }));
+                    }, _callee9, this);
+                }));
 
-            return function (_x11, _x12) {
-                return ref.apply(this, arguments);
-            };
-        }());
+                return function (_x11, _x12) {
+                    return ref.apply(this, arguments);
+                };
+            }());
+            self.socket.on('BROADCAST', function () {
+                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee10(data, fn) {
+                    var r;
+                    return regeneratorRuntime.wrap(function _callee10$(_context10) {
+                        while (1) {
+                            switch (_context10.prev = _context10.next) {
+                                case 0:
+                                    _context10.next = 2;
+                                    return oo.postMessage(data);
+
+                                case 2:
+                                    r = _context10.sent;
+                                    if (fn) fn(r);
+                                case 4:
+                                case 'end':
+                                    return _context10.stop();
+                            }
+                        }
+                    }, _callee10, this);
+                }));
+
+                return function (_x13, _x14) {
+                    return ref.apply(this, arguments);
+                };
+            }());
+        }
+
+        _createClass(PushReceiver, [{
+            key: 'broadcast',
+            value: function broadcast(msg) {
+                var self = this;
+                self.socket.emit('BROADCAST_REQUEST', msg);
+            }
+        }]);
+
+        return PushReceiver;
+    }();
+
+    var broadcast = function broadcast(msg) {
+        oo.pushreceiver.broadcast(msg);
     };
 
     var oo = {
@@ -668,6 +711,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         askYesNo: askYesNo,
         inputString: inputString,
         postMessage: postMessage,
+        broadcast: broadcast,
         pushreceiver: new PushReceiver()
     };
 

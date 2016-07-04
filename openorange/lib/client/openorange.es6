@@ -420,7 +420,17 @@
             //self.socket.on('inputString', async function (data) {self.socket.emit('response',await oo.inputString(data))});
             self.socket.on('alert', async function (data, fn) {let r = await oo.alert(data); if (fn) fn(r);});
             self.socket.on('postMessage', async function (data, fn) {let r = await oo.postMessage(data); if (fn) fn(r);});
+            self.socket.on('BROADCAST', async function (data, fn) {let r = await oo.postMessage(data); if (fn) fn(r);});
         }
+
+        broadcast(msg) {
+            let self = this;
+            self.socket.emit('BROADCAST_REQUEST', msg);
+        }
+    }
+
+    let broadcast = function broadcast(msg) {
+        oo.pushreceiver.broadcast(msg)
     }
 
     let oo = {
@@ -440,6 +450,7 @@
         askYesNo: askYesNo,
         inputString: inputString,
         postMessage: postMessage,
+        broadcast: broadcast,
         pushreceiver: new PushReceiver(),
         //ready: ready,
     }

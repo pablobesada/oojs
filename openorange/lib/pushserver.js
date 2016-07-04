@@ -37,6 +37,10 @@ var PushServer = function () {
                         break;
                 }
             }
+
+            socket.on('BROADCAST_REQUEST', function (data) {
+                socket.broadcast.emit("BROADCAST", socket.request.session.user + ": " + data);
+            });
         });
     }
 
