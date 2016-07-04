@@ -62,61 +62,57 @@ var TestRecord = function (_Parent) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                console.log(oo.contextmanager.getRequestSession());
                                 console.log("antes del ask");
-                                console.log(oo.contextmanager.getRequestSession());
-                                _context.next = 5;
-                                return oo.inputString('y Ahora??');
+                                _context.next = 3;
+                                return oo.inputString('ingrese texto');
 
-                            case 5:
+                            case 3:
                                 r = _context.sent;
 
-                                console.log(oo.contextmanager.getRequestSession());
                                 console.log("RESPONSE:", r);
-                                console.log(oo.contextmanager.getRequestSession());
-                                _context.next = 11;
+                                _context.next = 7;
                                 return oo.askYesNo(r);
 
-                            case 11:
+                            case 7:
                                 r = _context.sent;
 
                                 console.log("despues del ask, ", r);
                                 oo.connectedClient.broadcast('alert', r + 'aaaaaaa');
 
                                 if (r) {
-                                    _context.next = 16;
+                                    _context.next = 12;
                                     break;
                                 }
 
                                 return _context.abrupt("return", false);
 
-                            case 16:
-                                _context.next = 18;
+                            case 12:
+                                _context.next = 14;
                                 return Parent.tryCall(this, true, "check");
 
-                            case 18:
+                            case 14:
                                 res = _context.sent;
 
                                 if (res) {
-                                    _context.next = 21;
+                                    _context.next = 17;
                                     break;
                                 }
 
                                 return _context.abrupt("return", res);
 
-                            case 21:
+                            case 17:
                                 if (!(this.waitBeforeReturningFromCheck > 0)) {
-                                    _context.next = 24;
+                                    _context.next = 20;
                                     break;
                                 }
 
-                                _context.next = 24;
+                                _context.next = 20;
                                 return TestRecord.wait(this.waitBeforeReturningCheck);
 
-                            case 24:
+                            case 20:
                                 return _context.abrupt("return", this.checkReturnValue);
 
-                            case 25:
+                            case 21:
                             case "end":
                                 return _context.stop();
                         }

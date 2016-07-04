@@ -14,11 +14,15 @@ var Description = {
     reports: [
         {name: 'CustomerListReport', label: 'Listado de Clientes'},
     ],
+    filename: __filename,
 }
 
-var SalesModule = cm.createClass(Description, __filename )
+var Parent = cm.SuperClass(Description)
 
+class SalesModule extends Parent {
 
-module.exports = SalesModule
+}
+
+module.exports = SalesModule.initClass(Description)
 
 

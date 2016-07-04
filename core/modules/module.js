@@ -5,40 +5,39 @@ var ModuleDescription = {
     inherits: null,
     records: [],
     reports: [],
-    routines: []
+    routines: [],
+    filename: __filename
 }
 
-var Module = Object.create({
-    '__super__': null,
-    '__description__': ModuleDescription,
-    '__filename__': __filename,
-})
+class Module {
 
-Module.new = function () {
-    var res = Object.create(this);
-    res.__class__ = this;
-    return res.init();
+
+    static new() {
+        let res = new this();
+        res.__class__ = this;
+        res;
+    }
+
+
+    static initClass(descriptor) {
+        this.__description__ = {}
+        this.__description__.name = descriptor.name;
+        this.__description__.records = 'records' in descriptor ? descriptor.records : [];
+        this.__description__.reports = 'reports' in descriptor ? descriptor.reports : [];
+        this.__description__.filename = descriptor.filename;
+        this.__super__ = Reflect.getPrototypeOf(this);
+        return this;
+    }
+
+
+
+    static getDescription() {
+        return this.__description__
+    }
 }
 
+Module.__description__ = ModuleDescription
 
-Module.createChildClass = function createChildClass(descriptor, filename) {
-    var childclass = Object.create(this)
-    childclass.__description__ = {}
-    childclass.__description__.name = descriptor.name;
-    childclass.__description__.records = 'records' in descriptor? descriptor.records : [];
-    childclass.__description__.reports = 'reports' in descriptor? descriptor.reports : [];
-    childclass.__filename__ = filename;
-    childclass.__super__ = this;
-    return childclass;
-}
-
-Module.init = function init() {
-    return this;
-}
-
-Module.getDescription = function getDescription() {
-    return this.__description__
-}
 
 module.exports = Module
 

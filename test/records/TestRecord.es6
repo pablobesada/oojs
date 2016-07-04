@@ -38,13 +38,9 @@ class TestRecord extends Parent {
     }
 
     async check(){
-        console.log(oo.contextmanager.getRequestSession())
         console.log("antes del ask")
-        console.log(oo.contextmanager.getRequestSession())
-        let r = await oo.inputString('y Ahora??')
-        console.log(oo.contextmanager.getRequestSession())
+        let r = await oo.inputString('ingrese texto')
         console.log("RESPONSE:", r)
-        console.log(oo.contextmanager.getRequestSession())
         r = await oo.askYesNo(r)
         console.log("despues del ask, ", r)
         oo.connectedClient.broadcast('alert',r + 'aaaaaaa')
