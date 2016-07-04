@@ -70,7 +70,8 @@ var PushServer = function () {
     }, {
         key: "broadcast",
         value: function broadcast(eventName, data) {
-            this.getClientConnection().broadcast.emit(eventName, data);
+            var client = this.getClientConnection();
+            if (client) client.broadcast.emit(eventName, data);
         }
     }]);
 

@@ -115,9 +115,10 @@ app.use(function (err, req, res, next) {
 
 app.serve = function (port) {
 
-    if (port ==null) port = 4000;
+    if (port ==null) port = process.argv[2];
+    if (!port) port = 4000;
     server.listen(port);
-    console.log("Application Listening")
+    console.log("Application Listening on port " + port)
 }
 
 app.module = module

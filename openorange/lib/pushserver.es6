@@ -35,7 +35,9 @@ class PushServer {
     }
 
     broadcast(eventName, data) {
-        this.getClientConnection().broadcast.emit(eventName, data);
+        let client = this.getClientConnection();
+        if (client) client.broadcast.emit(eventName, data);
+
     }
 
 }
