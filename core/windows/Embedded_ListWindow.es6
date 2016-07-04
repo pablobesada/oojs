@@ -9,6 +9,15 @@ var ListWindowDescription = {
 
 class Embedded_ListWindow {
 
+    static addClassListener(listener) {
+        Embedded_ListWindow.__class_listeners__.push(listener);
+    }
+
+    static notifyClassListeners(event) {
+        _(Embedded_ListWindow.__class_listeners__).forEach(function (listener) {
+            listener.update(event);
+        })
+    }
 
     static initClass(descriptor) {
         let newdesc = {}
@@ -32,15 +41,26 @@ class Embedded_ListWindow {
 
     constructor() {
         this.__class__ = this.constructor
+        this.__listeners__ = []
+    }
+
+    addListener(listener) {
+        this.__listeners__.push(listener)
+    }
+
+    notifyListeners(event) {
+        let self = this
+        _(this.__listeners__).forEach(function (listener) {
+            listener.update(event, this);
+        })
     }
 
     open() {
-        var wm = Object.create(oo.ui.listwindowmanager).init(this)
-        wm.render($('#content')[0])
+        Embedded_ListWindow.notifyClassListeners({type: "listwindow", action: "open", data: this})
     }
 
     setFocus() {
-        oo.ui.listwindowmanager.setFocus(this)
+        this.notifyListeners({type: "listwindow", action: "setFocus", data: this})
     }
 
     static tryCall(self, methodname) {
@@ -80,5 +100,5 @@ class Embedded_ListWindow {
 }
 
 Embedded_ListWindow.__description__ = ListWindowDescription;
-
+Embedded_ListWindow.__class_listeners__ = []
 module.exports = Embedded_ListWindow

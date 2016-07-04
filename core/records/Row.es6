@@ -11,9 +11,7 @@ var Description = {
     filename: __filename,
 }
 
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 var Parent = cm.SuperClass(Description)
-//console.log("parentclass of core::item: " + ParentClass.new().__description__.name)
 
 class Row extends Parent {
     constructor() {

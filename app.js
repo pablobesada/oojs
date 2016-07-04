@@ -16,16 +16,15 @@ var session = require('express-session');
 var redisStore = require('connect-redis')(session);
 var redis = require("redis");
 var redisClient = redis.createClient()
-
+var Promise = require("bluebird")
 //var routes = require('./routesXX/index');
-
-var oo = require('openorange');
+var app = express();
+var server = require('http').Server(app);
+var sio = require("socket.io")(server);
+var oo = require('openorange')
+oo.setSocketIO(sio);
 let ui = require("openorange/ui")
 
-
-var Promise = require("bluebird")
-
-var app = express();
 
 // view engine setup
 //app.set('views', path.join(__dirname, 'node_modules/openorange/ui/html'));
@@ -45,13 +44,23 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(cookieParser());
 
-app.use(session({
+let sessionMiddleware = session({
     secret: 'oojs secret awxsdecf',
     // create new redis store.
     store: new redisStore({host: 'localhost', port: 6379, client: redisClient, ttl: 260}),
     saveUninitialized: true,
     resave: false
-}));
+})
+
+app.use(sessionMiddleware);
+
+sio.use(function(socket, next) { //aca conecto socket.io con las session para poder acceder a la session desde el onConnect de socket
+    sessionMiddleware(socket.request, socket.request.res, next);
+});
+
+sio.sockets.on("connection", function(socket) {
+    console.log("SIO", socket.request.session) // Now it's available from Socket.IO sockets too! Win!
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -105,8 +114,9 @@ app.use(function (err, req, res, next) {
 });
 
 app.serve = function (port) {
+
     if (port ==null) port = 4000;
-    app.listen(port);
+    server.listen(port);
     console.log("Application Listening")
 }
 

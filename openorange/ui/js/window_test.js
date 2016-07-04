@@ -3,6 +3,7 @@
 (function () {
     var oo = require("openorange")
     var cm = oo.classmanager
+
     var window_def = {
         title: "Ventana Test",
         form: [
@@ -15,7 +16,9 @@
     var n = n1;
     var itcode = '123'
     $(document).ready(function () {
+        console.log("en docready window_test")
         console.log("ready")
+        //cm.getClass("Embedded_Window").addClassListener(oo.ui.windowmanager);
         //$('ul.tabs').tabs();
 
         $("#addSalesOrder").click(addSalesOrder)
@@ -39,10 +42,13 @@
 
         wso = cm.getClass("SalesOrderListWindow").new()
         wso.open()
-        wso = cm.getClass("DocumentSpecListWindow").new()
-        wso.open()
+
+        let wso2 = cm.getClass("DocumentSpecListWindow").new()
+        wso2.open()
+        //wso2.setFocus()
         wso = cm.getClass("SalesOrderWindow").new()
         wso.open()
+        //wso.setFocus()
         //wso.print()
         return cm.getClass("SalesOrder").bring(n)
             .then(function (ss) {

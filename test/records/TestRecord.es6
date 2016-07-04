@@ -1,5 +1,6 @@
 "use strict";
-var cm = require('openorange').classmanager
+let oo = require('openorange')
+var cm = oo.classmanager
 let _ = require("underscore")
 let chance = require("chance")()
 let moment = require("moment")
@@ -37,6 +38,17 @@ class TestRecord extends Parent {
     }
 
     async check(){
+        console.log(oo.contextmanager.getRequestSession())
+        console.log("antes del ask")
+        console.log(oo.contextmanager.getRequestSession())
+        let r = await oo.inputString('y Ahora??')
+        console.log(oo.contextmanager.getRequestSession())
+        console.log("RESPONSE:", r)
+        console.log(oo.contextmanager.getRequestSession())
+        r = await oo.askYesNo(r)
+        console.log("despues del ask, ", r)
+        oo.connectedClient.broadcast('alert',r + 'aaaaaaa')
+        if (!r) return false;
         let res = await Parent.tryCall(this, true, "check");
         if (!res) return res;
         if (this.waitBeforeReturningFromCheck > 0) await TestRecord.wait(this.waitBeforeReturningCheck);

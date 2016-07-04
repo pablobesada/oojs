@@ -58,15 +58,26 @@ var Embedded_Window = function () {
     }, {
         key: "open",
         value: function open() {
-            var wm = Object.create(oo.ui.windowmanager).init(this);
-            wm.render($('#content')[0]);
+            Embedded_Window.notifyClassListeners({ type: "window", action: "open", data: this });
         }
     }, {
         key: "setFocus",
         value: function setFocus() {
-            oo.ui.windowmanager.setFocus(this);
+            this.notifyListeners({ type: "window", action: "setFocus", data: this });
         }
     }], [{
+        key: "addClassListener",
+        value: function addClassListener(listener) {
+            Embedded_Window.__class_listeners__.push(listener);
+        }
+    }, {
+        key: "notifyClassListeners",
+        value: function notifyClassListeners(event) {
+            _(Embedded_Window.__class_listeners__).forEach(function (listener) {
+                listener.update(event, Embedded_Window);
+            });
+        }
+    }, {
         key: "new",
         value: function _new() {
             var res = new this();
@@ -115,8 +126,9 @@ var Embedded_Window = function () {
     }, {
         key: "notifyListeners",
         value: function notifyListeners(event) {
+            var self = this;
             _(this.__listeners__).forEach(function (listener) {
-                listener.update(event);
+                listener.update(event, this);
             });
         }
     }, {
@@ -474,6 +486,7 @@ var Embedded_Window = function () {
 }();
 
 Embedded_Window.__description__ = WindowDescription;
+Embedded_Window.__class_listeners__ = [];
 
 module.exports = Embedded_Window;
 

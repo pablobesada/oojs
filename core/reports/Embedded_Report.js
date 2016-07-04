@@ -4,10 +4,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var oo = require('openorange');
@@ -27,54 +23,16 @@ var Description = {
 
 var Embedded_Report = function () {
     _createClass(Embedded_Report, null, [{
-        key: 'createChildClass',
-        value: function createChildClass(descriptor, filename) {
-            //console.log("en createChildClass: ", this)
-            //var childclass = Object.create(this)
-            var childclass = function (_ref) {
-                _inherits(childclass, _ref);
-
-                function childclass() {
-                    _classCallCheck(this, childclass);
-
-                    return _possibleConstructorReturn(this, Object.getPrototypeOf(childclass).apply(this, arguments));
-                }
-
-                return childclass;
-            }(this);
-            childclass.__description__ = {};
-            childclass.__description__.name = descriptor.name;
-            childclass.__description__.title = descriptor.title;
-            childclass.__description__.window = descriptor.window ? descriptor.window : null;
-            childclass.__filename__ = filename;
-            childclass.__super__ = this;
-            this.__recordClass__ = null;
-            return childclass;
+        key: 'addClassListener',
+        value: function addClassListener(listener) {
+            Embedded_Report.__class_listeners__.push(listener);
         }
     }, {
-        key: 'prepareParentClass',
-        value: function prepareParentClass(descriptor, filename) {
-            //console.log("en createChildClass: " + this)
-            //var childclass = Object.create(this)
-            var childclass = function (_ref2) {
-                _inherits(childclass, _ref2);
-
-                function childclass() {
-                    _classCallCheck(this, childclass);
-
-                    return _possibleConstructorReturn(this, Object.getPrototypeOf(childclass).apply(this, arguments));
-                }
-
-                return childclass;
-            }(this);
-            childclass.__description__ = {};
-            childclass.__description__.name = descriptor.name;
-            childclass.__description__.title = descriptor.title;
-            childclass.__description__.window = descriptor.window ? descriptor.window : null;
-            childclass.__filename__ = filename;
-            childclass.__super__ = this;
-            this.__recordClass__ = null;
-            return childclass;
+        key: 'notifyClassListeners',
+        value: function notifyClassListeners(event) {
+            _(Embedded_Report.__class_listeners__).forEach(function (listener) {
+                listener.update(event);
+            });
         }
     }, {
         key: 'initClass',
@@ -109,6 +67,7 @@ var Embedded_Report = function () {
 
         this.__html__ = [];
         this.__id__ = Embedded_Report.ids++;
+        this.__listeners__ = [];
         this.__class__ = this.constructor;
         Embedded_Report.__reports__[this.__id__] = this;
         //console.log(Embedded_Report.__reports__);
@@ -131,15 +90,14 @@ var Embedded_Report = function () {
                             case 0:
                                 self = this;
 
-                                self.container = Object.create(oo.ui.reportmanager).init(self);
-                                self.container.appendToWorkspace();
-                                _context.next = 5;
+                                Embedded_Report.notifyClassListeners({ type: "report", action: "open", data: this });
+                                _context.next = 4;
                                 return self.run();
 
-                            case 5:
+                            case 4:
                                 self.render();
 
-                            case 6:
+                            case 5:
                             case 'end':
                                 return _context.stop();
                         }
@@ -185,12 +143,14 @@ var Embedded_Report = function () {
     }, {
         key: 'render',
         value: function render() {
-            this.container.render();
+            this.notifyListeners({ type: "report", action: "render", data: this });
+            //this.container.render();
         }
     }, {
         key: 'setFocus',
         value: function setFocus() {
-            oo.ui.reportmanager.setFocus(this);
+            this.notifyListeners({ type: "report", action: "setFocus", data: this });
+            //oo.ui.reportmanager.setFocus(this)
         }
 
         /*
@@ -203,6 +163,18 @@ var Embedded_Report = function () {
          }
          */
 
+    }, {
+        key: 'addListener',
+        value: function addListener(listener) {
+            this.__listeners__.push(listener);
+        }
+    }, {
+        key: 'notifyListeners',
+        value: function notifyListeners(event) {
+            _(this.__listeners__).forEach(function (listener) {
+                listener.update(event);
+            });
+        }
     }, {
         key: 'inspect',
         value: function inspect() {
@@ -358,6 +330,7 @@ Embedded_Report.__super__ = null;
 Embedded_Report.__description__ = Description;
 Embedded_Report.ids = 1;
 Embedded_Report.__reports__ = [];
+Embedded_Report.__class_listeners__ = [];
 
 module.exports = Embedded_Report;
 

@@ -26,7 +26,9 @@ router.get('/home', function(req, res, next) {
     }
 });
 
+//router.use('bower_components', express.static(path.join(__dirname, '../../bower_components')));
 router.use('/', express.static(path.join(__dirname, '.')));
+
 
 let config = function config(opts) {
     OpenOrangeBaseURL = opts.OpenOrangeBaseURL;

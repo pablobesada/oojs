@@ -481,11 +481,14 @@ describe("Embedded_Record", function () {
         }, _callee14, _this);
     })));
 
-    it("delete record", _asyncToGenerator(regeneratorRuntime.mark(function _callee15() {
+    it.skip("delete record", _asyncToGenerator(regeneratorRuntime.mark(function _callee15() {
         return regeneratorRuntime.wrap(function _callee15$(_context15) {
             while (1) {
                 switch (_context15.prev = _context15.next) {
                     case 0:
+                        should(true).be.false();
+
+                    case 1:
                     case "end":
                         return _context15.stop();
                 }
@@ -493,12 +496,14 @@ describe("Embedded_Record", function () {
         }, _callee15, _this);
     })));
 
-    //should(true).be.false()
-    it("delete record check details and sets are gone", _asyncToGenerator(regeneratorRuntime.mark(function _callee16() {
+    it.skip("delete record check details and sets are gone", _asyncToGenerator(regeneratorRuntime.mark(function _callee16() {
         return regeneratorRuntime.wrap(function _callee16$(_context16) {
             while (1) {
                 switch (_context16.prev = _context16.next) {
                     case 0:
+                        should(true).be.false();
+
+                    case 1:
                     case "end":
                         return _context16.stop();
                 }
@@ -506,7 +511,6 @@ describe("Embedded_Record", function () {
         }, _callee16, _this);
     })));
 
-    //should(true).be.false()
     it("check sets behaviour (adding, changing, deleting)", _asyncToGenerator(regeneratorRuntime.mark(function _callee19() {
         var checkSetField = function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee17(rec, fn) {

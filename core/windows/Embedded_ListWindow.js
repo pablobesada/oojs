@@ -14,6 +14,18 @@ var ListWindowDescription = {
 
 var Embedded_ListWindow = function () {
     _createClass(Embedded_ListWindow, null, [{
+        key: 'addClassListener',
+        value: function addClassListener(listener) {
+            Embedded_ListWindow.__class_listeners__.push(listener);
+        }
+    }, {
+        key: 'notifyClassListeners',
+        value: function notifyClassListeners(event) {
+            _(Embedded_ListWindow.__class_listeners__).forEach(function (listener) {
+                listener.update(event);
+            });
+        }
+    }, {
         key: 'initClass',
         value: function initClass(descriptor) {
             var newdesc = {};
@@ -41,18 +53,31 @@ var Embedded_ListWindow = function () {
         _classCallCheck(this, Embedded_ListWindow);
 
         this.__class__ = this.constructor;
+        this.__listeners__ = [];
     }
 
     _createClass(Embedded_ListWindow, [{
+        key: 'addListener',
+        value: function addListener(listener) {
+            this.__listeners__.push(listener);
+        }
+    }, {
+        key: 'notifyListeners',
+        value: function notifyListeners(event) {
+            var self = this;
+            _(this.__listeners__).forEach(function (listener) {
+                listener.update(event, this);
+            });
+        }
+    }, {
         key: 'open',
         value: function open() {
-            var wm = Object.create(oo.ui.listwindowmanager).init(this);
-            wm.render($('#content')[0]);
+            Embedded_ListWindow.notifyClassListeners({ type: "listwindow", action: "open", data: this });
         }
     }, {
         key: 'setFocus',
         value: function setFocus() {
-            oo.ui.listwindowmanager.setFocus(this);
+            this.notifyListeners({ type: "listwindow", action: "setFocus", data: this });
         }
     }, {
         key: 'inspect',
@@ -100,7 +125,7 @@ var Embedded_ListWindow = function () {
 }();
 
 Embedded_ListWindow.__description__ = ListWindowDescription;
-
+Embedded_ListWindow.__class_listeners__ = [];
 module.exports = Embedded_ListWindow;
 
 //# sourceMappingURL=Embedded_ListWindow.js.map

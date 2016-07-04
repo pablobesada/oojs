@@ -10,21 +10,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var cm = require('openorange').classmanager;
+var oo = require("openorange");
+var cm = oo.classmanager;
 
 var Description = {
     name: 'TestRecordWindow',
     inherits: 'Window',
     record: 'TestRecord',
     title: "Test Record Window",
-    form: [{ field: 'SubTestName' }, { field: 'String_Field' }, { field: 'LinkTo_Field', name: 'LTF' }, { field: 'Integer_Field' }, {
+    form: [{ field: 'syncVersion' }, { field: 'SubTestName' }, { field: 'String_Field' }, { field: 'LinkTo_Field', name: 'LTF' }, { field: 'Integer_Field' }, {
         type: 'tabs', name: 'tabs', pages: [{
             label: "TAB1", name: 'TAB1Page', content: [{
                 field: 'Rows', columns: [{ field: 'rowNr' }, { field: 'String_Field' }, { field: 'Integer_Field' }]
             }]
         }]
     }],
-    actions: [{ label: 'Test Action', methodname: 'testAction' }, { label: 'Test Action2', methodname: 'testAction2' }],
+    actions: [{ label: 'askYesNo Action', methodname: 'askYesNoAction' }, { label: 'Test Action', methodname: 'testAction' }, { label: 'Test Action2', methodname: 'testAction2' }],
     filename: __filename
 };
 
@@ -51,10 +52,10 @@ var TestRecordWindow = function (_Parent) {
                                 return Parent.tryCall(this, null, "changed LinkTo_Field");
 
                             case 2:
-                                return _context.abrupt('return', this.getRecord().pasteLinkTo_Field());
+                                return _context.abrupt("return", this.getRecord().pasteLinkTo_Field());
 
                             case 3:
-                            case 'end':
+                            case "end":
                                 return _context.stop();
                         }
                     }
@@ -68,15 +69,46 @@ var TestRecordWindow = function (_Parent) {
             return changedLinkTo_Field;
         }()
     }, {
-        key: 'testAction',
+        key: "testAction",
         value: function testAction() {
             console.log("en testAction");
         }
     }, {
-        key: 'testAction2',
+        key: "testAction2",
         value: function testAction2() {
             console.log("en testAction2");
         }
+    }, {
+        key: "askYesNoAction",
+        value: function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+                var res;
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                _context2.next = 2;
+                                return oo.inputString("Probando Ask yes no, ok?");
+
+                            case 2:
+                                res = _context2.sent;
+
+                                alert(res);
+
+                            case 4:
+                            case "end":
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
+
+            function askYesNoAction() {
+                return ref.apply(this, arguments);
+            }
+
+            return askYesNoAction;
+        }()
     }]);
 
     return TestRecordWindow;

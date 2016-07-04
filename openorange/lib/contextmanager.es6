@@ -19,6 +19,14 @@ class ContextManager {
         };
     }
 
+    static getContext() {
+        return context;
+    }
+    static recoverContext(session) {
+        continuationLocalStorage.getNamespace('openorange-async-session-context').set('request-session', session);
+        //context.set('request-session', session);
+    }
+
     static getRequestSession() {
         return context.get('request-session') || {id: 'local-session'};
     }
@@ -63,6 +71,6 @@ class ContextManager {
 
 
 }
-ContextManager.dbconnections = {}
+ContextManager.dbconnections = {} ///cuando se liberan borran las connectiosn de este map???
 
 module.exports = ContextManager

@@ -11,6 +11,17 @@ var WindowDescription = {
 }
 
 class Embedded_Window {
+
+    static addClassListener(listener) {
+        Embedded_Window.__class_listeners__.push(listener);
+    }
+
+    static notifyClassListeners(event) {
+        _(Embedded_Window.__class_listeners__).forEach(function (listener) {
+            listener.update(event, Embedded_Window);
+        })
+    }
+
     static new() {
         var res = new this()
         return res;
@@ -25,12 +36,11 @@ class Embedded_Window {
     }
 
     open() {
-        var wm = Object.create(oo.ui.windowmanager).init(this)
-        wm.render($('#content')[0])
+        Embedded_Window.notifyClassListeners({type: "window", action: "open", data: this})
     }
 
     setFocus() {
-        oo.ui.windowmanager.setFocus(this)
+        this.notifyListeners({type: "window", action: "setFocus", data: this})
     }
 
     static initClass(descriptor) {
@@ -66,8 +76,9 @@ class Embedded_Window {
     }
 
     notifyListeners(event) {
+        let self = this
         _(this.__listeners__).forEach(function (listener) {
-            listener.update(event);
+            listener.update(event, this);
         })
     }
 
@@ -275,5 +286,6 @@ class Embedded_Window {
 }
 
 Embedded_Window.__description__ = WindowDescription
+Embedded_Window.__class_listeners__ = []
 
 module.exports = Embedded_Window

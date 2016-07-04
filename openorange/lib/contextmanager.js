@@ -31,6 +31,17 @@ var ContextManager = function () {
             };
         }
     }, {
+        key: 'getContext',
+        value: function getContext() {
+            return context;
+        }
+    }, {
+        key: 'recoverContext',
+        value: function recoverContext(session) {
+            continuationLocalStorage.getNamespace('openorange-async-session-context').set('request-session', session);
+            //context.set('request-session', session);
+        }
+    }, {
         key: 'getRequestSession',
         value: function getRequestSession() {
             return context.get('request-session') || { id: 'local-session' };
@@ -200,7 +211,7 @@ var ContextManager = function () {
     return ContextManager;
 }();
 
-ContextManager.dbconnections = {};
+ContextManager.dbconnections = {}; ///cuando se liberan borran las connectiosn de este map???
 
 module.exports = ContextManager;
 

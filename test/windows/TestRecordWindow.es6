@@ -1,5 +1,6 @@
 "use strict";
-var cm = require('openorange').classmanager
+let oo = require("openorange")
+let cm = oo.classmanager
 
 var Description = {
     name: 'TestRecordWindow',
@@ -7,6 +8,7 @@ var Description = {
     record: 'TestRecord',
     title: "Test Record Window",
     form: [
+        {field: 'syncVersion'},
         {field: 'SubTestName'},
         {field: 'String_Field'},
         {field: 'LinkTo_Field', name: 'LTF'},
@@ -25,6 +27,7 @@ var Description = {
         ]
         }],
     actions: [
+        {label: 'askYesNo Action', methodname: 'askYesNoAction'},
         {label: 'Test Action', methodname: 'testAction'},
         {label: 'Test Action2', methodname: 'testAction2'}
     ],
@@ -51,6 +54,10 @@ class TestRecordWindow extends Parent {
         console.log("en testAction2")
     }
 
+    async askYesNoAction() {
+        let res = await oo.inputString("Probando Ask yes no, ok?")
+        alert(res);
+    }
 }
 
 

@@ -28,14 +28,14 @@ class ClientRecord extends Parent {
         return this.runInServer("store");
     }
 
-    /*
+
     async save() {
-        return super.save();
-        //return this.runInServer("save");
+        //return super.save();
+        return this.runInServer("save");
         // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
             // 1. save de registros locals
             // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
-    }*/
+    }
 
     async ppp() {
         return this.runInServer("ppp");

@@ -163,12 +163,12 @@ describe("Embedded_Record", function () {
         let res = await rec.save();
     });
 
-    it ("delete record", async () => {
-        //should(true).be.false()
+    it.skip("delete record", async () => {
+        should(true).be.false()
     })
 
-    it ("delete record check details and sets are gone", async () => {
-        //should(true).be.false()
+    it.skip("delete record check details and sets are gone", async () => {
+        should(true).be.false()
     })
 
 

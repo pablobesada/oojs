@@ -14,6 +14,7 @@ var _ = require('underscore');
 for (var i = 0; i < cm.reversed_scriptdirs.length; i++) {
     //esto es xq el navegador pide los archivos .map.js para debugging por consola
     var sd = cm.reversed_scriptdirs[i];
+    console.log(i, sd);
     router.use('/sources/' + sd, express.static(path.join(__dirname, '../..', sd)));
 }
 router.use('/', oo.contextmanager.expressMiddleware()); //aca manejan usuario actual, conexion actual, etc. para ser usadas con toda la app. Son variables definidas por request/cookie
@@ -82,11 +83,22 @@ router.post('/query/fetch', function (req, res, next) {
     });
 });
 
+router.get('/classStructure', function (req, res, next) {
+    try {
+        res.send({ ok: true, response: cm.getClassStructure() });
+    } catch (err) {
+        console.log(err.stack);
+        throw err;
+    }
+});
+
 router.get('/class', function (req, res, next) {
     try {
-        var cls = cm.getClass(req.query.name, req.query.max_script_dir_index);
-        var fn = cls.__description__.filename || cls.__filename__;
-        sendModule(req, res, fn);
+        var cls = cm.getClass(req.query.name, { min_sd: req.query.min_sd, max_sd: req.query.max_sd });
+        if (cls) {
+            var fn = cls.__description__.filename || cls.__filename__;
+            sendModule(req, res, fn);
+        } else throw new Error("Class not found: " + req.query.name + " for min_script_dir: " + req.query.min_script_dir_index);
     } catch (err) {
         console.log(err.stack);
         throw err;

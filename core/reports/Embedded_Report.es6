@@ -16,33 +16,16 @@ var Description = {
 
 class Embedded_Report {
 
-    static createChildClass(descriptor, filename) {
-        //console.log("en createChildClass: ", this)
-        //var childclass = Object.create(this)
-        let childclass = class extends this {};
-        childclass.__description__ = {}
-        childclass.__description__.name = descriptor.name;
-        childclass.__description__.title = descriptor.title;
-        childclass.__description__.window = descriptor.window ? descriptor.window : null;
-        childclass.__filename__ = filename;
-        childclass.__super__ = this;
-        this.__recordClass__ = null;
-        return childclass;
+    static addClassListener(listener) {
+        Embedded_Report.__class_listeners__.push(listener);
     }
 
-    static prepareParentClass(descriptor, filename) {
-        //console.log("en createChildClass: " + this)
-        //var childclass = Object.create(this)
-        let childclass = class extends this {};
-        childclass.__description__ = {}
-        childclass.__description__.name = descriptor.name;
-        childclass.__description__.title = descriptor.title;
-        childclass.__description__.window = descriptor.window ? descriptor.window : null;
-        childclass.__filename__ = filename;
-        childclass.__super__ = this;
-        this.__recordClass__ = null;
-        return childclass;
+    static notifyClassListeners(event) {
+        _(Embedded_Report.__class_listeners__).forEach(function (listener) {
+            listener.update(event);
+        })
     }
+
 
     static initClass(descriptor) {
         //var childclass = Object.create(this)
@@ -71,6 +54,7 @@ class Embedded_Report {
     constructor() {
         this.__html__ = [];
         this.__id__ = Embedded_Report.ids++;
+        this.__listeners__ = []
         this.__class__ = this.constructor
         Embedded_Report.__reports__[this.__id__] = this;
         //console.log(Embedded_Report.__reports__);
@@ -82,9 +66,8 @@ class Embedded_Report {
     }
 
     async open() {
-        var self = this
-        self.container = Object.create(oo.ui.reportmanager).init(self)
-        self.container.appendToWorkspace()
+        let self = this
+        Embedded_Report.notifyClassListeners({type: "report", action: "open", data: this})
         await self.run()
         self.render();
     }
@@ -98,11 +81,13 @@ class Embedded_Report {
     }
 
     render() {
-        this.container.render();
+        this.notifyListeners({type: "report", action: "render", data: this})
+        //this.container.render();
     }
 
     setFocus() {
-        oo.ui.reportmanager.setFocus(this)
+        this.notifyListeners({type: "report", action: "setFocus", data: this})
+        //oo.ui.reportmanager.setFocus(this)
     }
 
     /*
@@ -114,6 +99,16 @@ class Embedded_Report {
      }
      }
      */
+
+    addListener(listener) {
+        this.__listeners__.push(listener)
+    }
+
+    notifyListeners(event) {
+        _(this.__listeners__).forEach(function (listener) {
+            listener.update(event);
+        })
+    }
 
     static getDescription() {
         return this.__description__
@@ -206,6 +201,7 @@ Embedded_Report.__super__ = null
 Embedded_Report.__description__ = Description
 Embedded_Report.ids = 1;
 Embedded_Report.__reports__ = [];
+Embedded_Report.__class_listeners__ = []
 
 
 module.exports = Embedded_Report

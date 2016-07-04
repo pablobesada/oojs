@@ -10,7 +10,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var cm = require('openorange').classmanager;
+var oo = require('openorange');
+var cm = oo.classmanager;
 var _ = require("underscore");
 var chance = require("chance")();
 var moment = require("moment");
@@ -56,37 +57,66 @@ var TestRecord = function (_Parent) {
         key: "check",
         value: function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-                var res;
+                var r, res;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                _context.next = 2;
+                                console.log(oo.contextmanager.getRequestSession());
+                                console.log("antes del ask");
+                                console.log(oo.contextmanager.getRequestSession());
+                                _context.next = 5;
+                                return oo.inputString('y Ahora??');
+
+                            case 5:
+                                r = _context.sent;
+
+                                console.log(oo.contextmanager.getRequestSession());
+                                console.log("RESPONSE:", r);
+                                console.log(oo.contextmanager.getRequestSession());
+                                _context.next = 11;
+                                return oo.askYesNo(r);
+
+                            case 11:
+                                r = _context.sent;
+
+                                console.log("despues del ask, ", r);
+                                oo.connectedClient.broadcast('alert', r + 'aaaaaaa');
+
+                                if (r) {
+                                    _context.next = 16;
+                                    break;
+                                }
+
+                                return _context.abrupt("return", false);
+
+                            case 16:
+                                _context.next = 18;
                                 return Parent.tryCall(this, true, "check");
 
-                            case 2:
+                            case 18:
                                 res = _context.sent;
 
                                 if (res) {
-                                    _context.next = 5;
+                                    _context.next = 21;
                                     break;
                                 }
 
                                 return _context.abrupt("return", res);
 
-                            case 5:
+                            case 21:
                                 if (!(this.waitBeforeReturningFromCheck > 0)) {
-                                    _context.next = 8;
+                                    _context.next = 24;
                                     break;
                                 }
 
-                                _context.next = 8;
+                                _context.next = 24;
                                 return TestRecord.wait(this.waitBeforeReturningCheck);
 
-                            case 8:
+                            case 24:
                                 return _context.abrupt("return", this.checkReturnValue);
 
-                            case 9:
+                            case 25:
                             case "end":
                                 return _context.stop();
                         }
