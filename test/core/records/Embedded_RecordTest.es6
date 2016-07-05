@@ -119,24 +119,26 @@ describe("Embedded_Record", function () {
     it("Save with beforeInsert fail", async ()=> {
         let rec = cls.new().fillWithRandomValues()
         rec.beforeInsertReturnValue = false;
+        let recs_to_insert = [];
         for (let i=0;i<3;i++) {
             let record = cls.new().fillWithRandomValues()
             record.SubTestName = "Save with beforeInsert fail"
-            rec.beforeInsert_recordsToStore.push(record);
+            recs_to_insert.push(record)
         }
+        rec.setBeforeInsert_recordsToStore(recs_to_insert);
         rec.SubTestName = 'PARENT'
         let res = await rec.save()
         should(res).be.false("No deberia haber grabado")
         should.not.exist(await cls.findOne({String_Field: rec.String_Field}), "El save devolvio false, pero igual grabo el registro")
-        for (let i in rec.beforeInsert_recordsToStore) {
-            let record = rec.beforeInsert_recordsToStore[i]
+        recs_to_insert = rec.getBeforeInsert_recordsToStore()
+        for (let i in recs_to_insert) {
+            let record = recs_to_insert[i]
             should.not.exist(await cls.findOne({internalId: record.internalId, String_Field: record.String_Field}), "El save devolvio false, pero igual grabo registros dentro del beforeInsert")
         }
     });
 
     it("Save with beforeUpdate fail", async ()=> {
-        let rec = cls.new()
-        utils.fillRecord(rec)
+        let rec = cls.new().fillWithRandomValues()
         rec.beforeUpdateReturnValue = false;
 
         let res = await rec.save()
@@ -155,11 +157,13 @@ describe("Embedded_Record", function () {
         let rec = cls.new().fillWithRandomValues();
         rec.beforeInsertReturnValue = false;
         rec.SubTestName = 'TEST'
+        let recs_to_insert = []
         for (let i=0;i<3;i++) {
             let record = cls2.new().fillWithRandomValues()
             record.SubTestName = rec.SubTestName
-            rec.beforeInsert_recordsToStore.push(record);
+            recs_to_insert.push(record);
         }
+        rec.setBeforeInsert_recordsToStore(recs_to_insert)
         let res = await rec.save();
     });
 
@@ -171,6 +175,12 @@ describe("Embedded_Record", function () {
         should(true).be.false()
     })
 
+
+    it("check serialization", async () => {
+        let rec = cls.new().fillWithRandomValues();
+        should(cls.fromJSON(JSON.stringify(rec.toJSON())).isEqual(rec)).be.ok();
+        rec.newproperty = 'abcde'
+    })
 
     it ("check sets behaviour (adding, changing, deleting)", async () => {
         async function checkSetField(rec, fn) {

@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; 
 var cm = require('openorange').classmanager
 
 var Description = {

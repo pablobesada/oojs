@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; 
 let oo = require("openorange")
 let _ = require("underscore")
 
@@ -12,13 +12,15 @@ class ORMBrowserTests {
         for (let i in rec.Rows) rec.Rows[i].String_Field = 'ROW ' + t;
         rec.beforeInsertReturnValue = bir;
         rec.SubTestName = 'TEST ' + t;
+        let recs_to_insert = []
         for (let i=0;i<3;i++) {
             let record = cls2.new().fillWithRandomValues()
             record.SubTestName = rec.SubTestName
-            rec.beforeInsert_recordsToStore.push(record);
+            recs_to_insert.push(record);
         }
+        rec.setBeforeInsert_recordsToStore(recs_to_insert)
         let response = {should_exist: [], should_not_exist: []}
-        let saved_recs = _(rec.beforeInsert_recordsToStore).map(function (r) {return JSON.stringify(r.toJSON())});
+        let saved_recs = _(rec.getBeforeInsert_recordsToStore()).map(function (r) {return JSON.stringify(r.toJSON())});
         saved_recs.push(JSON.stringify(rec.toJSON()));
         if (bir) {
             response.should_exist = saved_recs

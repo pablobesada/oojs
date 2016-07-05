@@ -17,8 +17,6 @@ class Module {
         res.__class__ = this;
         res;
     }
-
-
     static initClass(descriptor) {
         this.__description__ = {}
         this.__description__.name = descriptor.name;

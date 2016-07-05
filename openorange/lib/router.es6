@@ -172,7 +172,7 @@ router.get('/getcurrentuser', function (req, res, next) {
 });
 
 router.post('/login', function (req, res, next) {
-    //console.log(req.body)
+    // console.log(req.body)
     try {
         oo.login(req.body.username, req.body.md5pass)
             .then(function (found) {

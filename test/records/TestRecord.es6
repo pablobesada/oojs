@@ -15,10 +15,18 @@ var Description = {
         Set_Field: {type: "set", length: 60, linkto: "Customer", setrecordname: "TestRecordSet_Field"},
         LinkTo_Field: {type: "string", linkto: "Customer"},
         Integer_Field: {type: "integer"},
-        NonPersistent_Field: {type: "string", length:60, persistent: false},
+        NonPersistent_Field: {type: "string", length: 60, persistent: false},
         Date_Field: {type: "date"},
         Rows: {type: "detail", class: "TestRecordRow"},
-        NonPersistent_Rows: {type: "detail", class: "NonPersistent_TestRecordRow", persistent: false}
+        NonPersistent_Rows: {type: "detail", class: "NonPersistent_TestRecordRow", persistent: false},
+
+        waitBeforeReturningFromCheck: {type: "integer", persistent: false},
+        waitBeforeStoringRecordsInBeforeInsert: {type: "integer", persistent: false},
+        checkReturnValue: {type: "boolean", persistent: false},
+        beforeInsertReturnValue: {type: "boolean", persistent: false},
+        beforeUpdateReturnValue: {type: "boolean", persistent: false},
+        beforeInsert_recordsToStore: {type: "string", length: 2048, persistent: false},
+
     },
     filename: __filename,
 }
@@ -34,17 +42,22 @@ class TestRecord extends Parent {
         this.checkReturnValue = true;
         this.beforeInsertReturnValue = true;
         this.beforeUpdateReturnValue = true;
-        this.beforeInsert_recordsToStore = [];
+        this.beforeInsert_recordsToStore = JSON.stringify([]);
     }
 
-    async check(){
-        console.log("antes del ask")
-        let r = await oo.inputString('ingrese texto')
-        console.log("RESPONSE:", r)
-        r = await oo.askYesNo(r)
-        console.log("despues del ask, ", r)
-        oo.connectedClient.broadcast('alert',r + 'aaaaaaa')
-        if (!r) return false;
+    setBeforeInsert_recordsToStore(recs) {
+        this.beforeInsert_recordsToStore = JSON.stringify(_(recs).map((r) => {
+            return r.toJSON()
+        }))
+    }
+
+    getBeforeInsert_recordsToStore() {
+        return _(JSON.parse(this.beforeInsert_recordsToStore)).map((jsonrec) => {
+            return TestRecord.fromJSON(jsonrec)
+        })
+    }
+
+    async check() {
         let res = await Parent.tryCall(this, true, "check");
         if (!res) return res;
         if (this.waitBeforeReturningFromCheck > 0) await TestRecord.wait(this.waitBeforeReturningCheck);
@@ -55,15 +68,17 @@ class TestRecord extends Parent {
         return new Promise(function (resolve, reject) {
             setTimeout(function () {
                 resolve()
-            },t)
+            }, t)
         });
     }
-    async beforeInsert(){
+
+    async beforeInsert() {
         let self = this;
         let res = await Parent.tryCall(this, true, "beforeInsert");
         if (!res) return res;
-        for (let i in this.beforeInsert_recordsToStore) {
-            let record = this.beforeInsert_recordsToStore[i];
+        let recs_to_insert = self.getBeforeInsert_recordsToStore();
+        for (let i in recs_to_insert) {
+            let record = recs_to_insert[i];
             if (this.waitBeforeStoringRecordsInBeforeInsert > 0) await TestRecord.wait(this.waitBeforeStoringRecordsInBeforeInsert);
             let res = await record.store();
             if (!res) throw new Error("no se pudo grabar registro dentro de beforeInsert")
@@ -71,7 +86,7 @@ class TestRecord extends Parent {
         return self.beforeInsertReturnValue;
     }
 
-    async beforeUpdate(){
+    async beforeUpdate() {
         let res = await Parent.tryCall(this, true, "beforeUpdate");
         if (!res) return res;
         return this.beforeUpdateReturnValue;
@@ -79,13 +94,15 @@ class TestRecord extends Parent {
 
     static fillRecordWithRandomValues(record, opts) {
         if (!opts) opts = {}
-        let nrows = 'nrows' in opts? opts.nrows : chance.natural({min: 4, max: 13});
+        let nrows = 'nrows' in opts ? opts.nrows : chance.natural({min: 4, max: 13});
         let cls = this;
-        _(record.persistentFieldNames()).forEach(function(fn) {
+        _(record.persistentFieldNames()).forEach(function (fn) {
             let fielddef = record.fields(fn)
             if (fn == 'internalId') return;
             if (fn == 'masterId') return;
             if (fn == 'rowNr') return;
+            if (fn == 'rowNr') return;
+            //if (fn == 'waitBeforeReturningFromCheck' || fn == 'waitBeforeStoringRecordsInBeforeInsert' || fn == 'checkReturnValue' || fn == 'beforeInsertReturnValue' || fn == 'beforeUpdateReturnValue' || fn == 'beforeInsert_recordsToStore') return;
             switch (fielddef.type) {
                 case 'string':
                     record[fn] = chance.word({length: fielddef.length});

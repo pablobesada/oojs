@@ -14,7 +14,7 @@ let By = webdriver.By,
     until = webdriver.until,
     actions = webdriver.ActionSequence;
 
-let port = 4001
+let port = 3999
 
 function wait(t) {
     return new Promise(function (resolve, reject) {
@@ -37,7 +37,8 @@ describe('ORM with Selenium', function () {
 
     this.timeout(40000)
     it('Concurrent transaccions from different browsers', async () => {
-        let runs = [true,false,false,true]
+        //let runs = [true,false,false,true]
+        let runs = [false]
         let responses = [];
         for (let i in runs) {
             let driver = new webdriver.Builder().forBrowser('chrome').build();
@@ -62,6 +63,8 @@ describe('ORM with Selenium', function () {
         }
         console.log("-----------------------------------------------------------------------------------------------")
         await wait(20000);
+        await oo.rollback(); //para poder ver los cambios
+        await oo.beginTransaction(); //para poder ver los cambios
         for (let i in responses) {
             let resp = responses[i][1];
             let driver = responses[i][0];
@@ -72,11 +75,11 @@ describe('ORM with Selenium', function () {
             let res = responses[j]
             for (let i = 0; i < res.should_exist.length; i++) {
                 let r = Record.fromJSON(JSON.parse(res.should_exist[i]))
-                should.exist(await cm.getClass(r.__class__.__description__.name).findOne({internalId: r.internalId, String_Field: r.String_Field}), "El registro deberia existir")
+                should.exist(await cm.getClass(r.__class__.__description__.name).findOne({internalId: r.internalId, String_Field: r.String_Field}), "El registro deberia existir: " + r.String_Field)
             }
             for (let i = 0; i < res.should_not_exist.length; i++) {
                 let r = Record.fromJSON(JSON.parse(res.should_not_exist[i]))
-                should.not.exist(await cm.getClass(r.__class__.__description__.name).findOne({String_Field: r.String_Field}), "El registro deberia existir")
+                should.not.exist(await cm.getClass(r.__class__.__description__.name).findOne({String_Field: r.String_Field}), "El registro no deberia existir: " + r.String_Field)
             }
         }
     });
