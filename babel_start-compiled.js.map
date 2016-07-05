@@ -1,1 +1,0 @@
-{"version":3,"sources":["babel_start.js"],"names":[],"mappings":"AAAA;;AACA,QAAQ,gBAAR;AACA,QAAQ,gBAAR;AACA,QAAQ,OAAR","file":"babel_start-compiled.js","sourcesContent":["\"use strict\";\nrequire('babel-register');\nrequire(\"babel-polyfill\");\nrequire(\"./app\")"]}
