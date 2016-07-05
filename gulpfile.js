@@ -18,7 +18,7 @@ var sourcemaps = require("gulp-sourcemaps");
 var babel = require("gulp-babel");
 //var concat = require("gulp-concat");
 
-gulp.task('default', ['oo-watch', 'ui-watch', 'sd-watch']);
+gulp.task('watch', ['oo-watch', 'ui-watch', 'sd-watch']);
 
 gulp.task('oo-watch', function () {
     gulp.watch('openorange/src/**/*.es6', ['oo-babel']);
@@ -130,3 +130,5 @@ gulp.task("sd-js", function () {
             return file.base
         }));
 });
+
+gulp.task('init-project', ['oo-babel', 'oo-js','ui-babel','ui-js','sd-babel', 'sd-js']);
