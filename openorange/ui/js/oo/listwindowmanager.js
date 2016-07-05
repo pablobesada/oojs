@@ -251,5 +251,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     //$.extend(true, window.oo.ui, {listwindowmanager: ListWindowContainer})
     //window.ListWindowManager = ListWindowContainer; //para hacer global la variable WindowManager
 })();
-
 //# sourceMappingURL=listwindowmanager.js.map

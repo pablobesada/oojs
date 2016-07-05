@@ -1023,5 +1023,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     //$.extend(true, window.oo.ui, {windowmanager: WindowContainer})
     //window.WindowManager = WindowContainer; //para hacer global la variable WindowManager
 })(jQuery);
-
 //# sourceMappingURL=windowmanager.js.map

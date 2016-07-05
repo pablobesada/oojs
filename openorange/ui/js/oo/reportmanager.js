@@ -98,5 +98,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     //$.extend(true, window.oo.ui, {reportmanager: ReportContainer})
     //window.ReportManager = ReportContainer; //para hacer global la variable ReportContainer
 })(jQuery);
-
 //# sourceMappingURL=reportmanager.js.map
