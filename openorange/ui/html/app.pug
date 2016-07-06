@@ -1,0 +1,194 @@
+doctype html
+html(lang='en')
+    head
+        meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='msapplication-tap-highlight', content='no')
+        meta(name='description', content="Materialize is a Material Design Admin Template,It's modern, responsive and based on Material Design by Google. ")
+        meta(name='keywords', content='materialize, admin template, dashboard template, flat admin template, responsive admin template,')
+        title Materialize - Material Design Admin Template
+        // Favicons
+        link(rel='icon', href='images/favicon/favicon-32x32.png', sizes='32x32')
+        // Favicons
+        link(rel='apple-touch-icon-precomposed', href='images/favicon/apple-touch-icon-152x152.png')
+        // For iPhone
+        meta(name='msapplication-TileColor', content='#00bcd4')
+        meta(name='msapplication-TileImage', content='images/favicon/mstile-144x144.png')
+        // For Windows Phone
+        // CORE CSS
+        link(href='css/materialize.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(rel='stylesheet', href='iconfont/material-icons.css')
+        //link(href='/bower_components/Materialize/dist/css/materialize.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(href='css/style.css', type='text/css', rel='stylesheet', media='screen,projection')
+        // Custome CSS
+        // INCLUDED PLUGIN CSS ON THIS PAGE
+        link(href='css/perfect-scrollbar.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(href='css/app.css', type='text/css', rel='stylesheet', media='screen,projection')
+
+        //SLICKGRID
+        link(rel="stylesheet",href="css/slickgrid/slick.grid.css",type="text/css")
+        link(rel="stylesheet",href="css/slickgrid/examples.css",type="text/css")
+
+
+
+body
+        // Start Page Loading
+        #loader-wrapper
+            #loader
+            .loader-section.section-left
+            .loader-section.section-right
+        // End Page Loading
+        // ////////////////////////////////////////////////////////////////////////////
+        // START HEADER
+        header#header.page-topbar
+            // start header nav
+            .navbar-fixed
+                nav.navbar-color
+                    .nav-wrapper
+                        ul.left
+                            li
+                                h1.logo-wrapper
+                                    a.brand-logo.darken-1(href='index.html')
+                                        img(src='images/materialize-logo.png', alt='materialize logo')
+                                    span.logo-text Materialize
+                        .header-search-wrapper.hide-on-med-and-down
+                            i.mdi-action-search
+                            //input.header-search-input.z-depth-2(type='text', name='Search', id="OOSearch", placeholder='explore openorange')
+                            input#OOSearch.header-search-input.z-depth-2.typeahead(type="text",placeholder="explore openorange")
+
+            // end header nav
+        // END HEADER
+        // ////////////////////////////////////////////////////////////////////////////
+        // START MAIN
+        #main
+            // START WRAPPER
+            .wrapper
+                // START LEFT SIDEBAR NAV
+                aside#left-sidebar-nav
+                    ul#slide-out.side-nav.fixed.leftside-navigation
+                        li.user-details.cyan.darken-2
+                            .row
+                                .col.col.s4.m4.l4
+                                    img.circle.responsive-img.valign.profile-image(src='images/avatar.jpg', alt='')
+                        li.bold.active
+                            a.waves-effect.waves-cyan(href='index.html')
+                                i.mdi-action-dashboard
+                                |  Dashboard
+                    a.sidebar-collapse.btn-floating.btn-medium.waves-effect.waves-light.hide-on-large-only.cyan(href='#', data-activates='slide-out')
+                        i.mdi-navigation-menu
+                // END LEFT SIDEBAR NAV
+                // ////////////////////////////////////////////////////////////////////////////
+                // START CONTENT
+                section#content_section
+                    // start container
+                    .container
+                        // chart dashboard start
+                        #chart-dashboard
+                            .row
+                                .col.s12.m12.l12
+                                    .card
+                                        .move-up
+                                            .fixed-action-btn.horizontal
+                                                a.btn-floating.btn-large.green
+                                                    i.large.mdi add
+                                                ul
+                                                    li
+                                                        a.btn-floating.blue#addSalesOrder
+                                                            i.mdi line_weight
+                                                    li
+                                                        a.btn-floating.yellow.darken-1#addItem
+                                                            i.mdi card_giftcard
+                                                    li
+                                                        a.btn-floating.red.darken-1#test
+                                                            i.mdi done
+                                            div.row#workspace
+                                                div.col.s12
+                                                    ul.tabs.workspace
+                                            div#content
+
+        footer.page-footer
+            .footer-copyright
+                .container
+                    | Copyright © 2016
+                    a.grey-text.text-lighten-4(href='#', target='_blank') OpenOrange
+                    |  All rights reserved.
+                    span.right
+                        | Design and Developed by
+                        a.grey-text.text-lighten-4(href='http://openorange.com/') OpenOrange
+        // END FOOTER
+        //
+          ================================================
+          Scripts
+          ================================================
+        // jQuery Library
+        //script(type='text/javascript', src='js/plugins/jquery-1.11.2.min.js')
+
+script(type='text/javascript', src='js/plugins/jquery/jquery-1.11.2.min.js')
+script(type='text/javascript', src='js/plugins/babel/polyfill.min.js')
+script(src='/bower_components/moment/moment.js')
+script(src='/bower_components/chance/dist/chance.min.js')
+script(src='/bower_components/jquery-mask-plugin/dist/jquery.mask.min.js')
+script(src='/bower_components/underscore/underscore-min.js')
+script(src="/bower_components/bluebird/js/browser/bluebird.min.js")
+//OPENORANGE
+
+script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js')
+script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
+script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js')
+script(src=OpenOrangeBaseURL+'/lib/both/explorer.js')
+script(src=OpenOrangeBaseURL+'/lib/both/basequery.js')
+script(src=OpenOrangeBaseURL+'/lib/client/clientquery.js')
+script(src='js/oo/windowmanager.js')
+script(src='js/oo/listwindowmanager.js')
+script(src='js/oo/reportmanager.js')
+script(src='js/oo/documentmanager.js')
+script(src='js/oo/dialogs.js')
+script(src='js/window_test.js')
+
+script(src='js/plugins/typeahead/typeahead.bundle.min.js')
+script(type='text/javascript', src='js/plugins/materialize/materialize.min.js')
+script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js')
+
+script(type='text/javascript', src='js/plugins/app/app.js')
+
+script(type='text/javascript', src="js/plugins/slickgrid/jquery.event.drag-2.2.js")
+
+script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js")
+script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js")
+script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js")
+
+script.
+    let oo = require("openorange")
+    $('#OOSearch.typeahead').focus(function () {
+        $(this).select();
+    })
+    $('#OOSearch.typeahead').typeahead({hint: true}, {
+        async: true,
+        display: 'label',
+        limit: 4,
+        source: function (query, syncResults, asyncResults) {
+            oo.explorer.search(query)
+                    .then(function (results) {
+                        //console.log(results.length)
+                        asyncResults(results)
+                    })
+        },
+    }).on('typeahead:selected', function (obj, datum) {
+        var wnd = null;
+        switch (datum.type) {
+            case 'Record Class':
+                wnd = oo.classmanager.getClass(datum.access).new();
+                break;
+            case 'Report':
+                wnd = oo.classmanager.getClass(datum.name).new();
+                break;
+        }
+        if (wnd != null) {
+            wnd.open()
+            wnd.setFocus()
+        }
+
+    });
+    $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
+

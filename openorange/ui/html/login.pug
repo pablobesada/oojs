@@ -1,0 +1,72 @@
+doctype html
+html(lang='en')
+   head
+     meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no')
+     meta(http-equiv='X-UA-Compatible', content='IE=edge')
+     meta(name='msapplication-tap-highlight', content='no')
+     meta(name='description', content="Materialize is a Material Design Admin Template,It's modern, responsive and based on Material Design by Google. ")
+     meta(name='keywords', content='materialize, admin template, dashboard template, flat admin template, responsive admin template,')
+     title Login Page  Materialize - Material Design Admin Template
+     link(rel='icon', href='images/favicon/favicon-32x32.png', sizes='32x32')
+
+     link(rel='apple-touch-icon-precomposed', href='images/favicon/apple-touch-icon-152x152.png')
+
+     meta(name='msapplication-TileColor', content='#00bcd4')
+     meta(name='msapplication-TileImage', content='images/favicon/mstile-144x144.png')
+
+     // CORE CSS
+     link(href='css/materialize.min.css', type='text/css', rel='stylesheet', media='screen,projection')
+     link(href='css/login.css', type='text/css', rel='stylesheet', media='screen,projection')
+
+   body.cyan
+     // Start Page Loading
+     #loader-wrapper
+       #loader
+       .loader-section.section-left
+       .loader-section.section-right
+     // End Page Loading
+     #login-page.row
+       .col.s12.z-depth-4.card-panel
+         form#loginForm.login-form(name='login', action=OpenOrangeBaseURL +'/login', method='post')
+           input(name='redirect_on_success', type='hidden', value=req.baseUrl)
+           input#md5pass(name='md5pass', type='hidden')
+           .row
+             .input-field.col.s12.center
+               img.responsive-img.valign(src='images/logo_open.png', alt='')
+               p.center.login-form-text
+           .row.margin
+             .input-field.col.s12
+               i.mdi-social-person-outline.prefix
+               input#username(name='username', type='text')
+               label.center-align(for='username') Username
+           .row.margin
+             .input-field.col.s12
+               i.mdi-action-lock-outline.prefix
+               input#password(name='password', type='password')
+               label(for='password') Password
+           .row
+             .input-field.col.s12.m12.l12.login-text
+               input#remember-me(type='checkbox')
+               label(for='remember-me') Remember me
+             .row
+               .input-field.col.s12
+               button#loginButton.btn.waves-effect.waves-light.col.s12(type='submit', value='LOGIN') Login
+           .row
+             .input-field.col.s6.m6.l6
+               p.margin.medium-small
+                 a(href='page-register.html') Register Now!
+             .input-field.col.s6.m6.l6
+               p.margin.right-align.medium-small
+                 a(href='page-forgot-password.html') Forgot password ?
+
+     script(type='text/javascript', src='js/plugins/jquery/jquery-1.11.2.min.js')
+     script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
+     script(type='text/javascript', src='js/plugins/materialize/materialize.min.js')
+     script(type='text/javascript', src='js/plugins/login/login.js')
+
+     script.
+       $('#loginForm').submit(function () {
+         $('#password', this).prop('disabled', true);
+         return true;
+       });
