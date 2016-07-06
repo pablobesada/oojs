@@ -1,25 +1,22 @@
 "use strict";
 //require('source-map-support').install();
-var Promise = require("bluebird")
+let Promise = require("bluebird")
 /*Promise.config({
  longStackTraces: true
  })*/
-var mysql = require('mysql');
-// Note that the library's classes are not properties of the main export
-// so we require and promisifyAll them manually
-//Promise.promisifyAll(require("mysql/lib/Connection").prototype);
-//var mysql_pool = Promise.promisifyAll(require("mysql/lib/Pool").prototype);
-//var mysql     =    require('mysql');
-var db = {}
+let mysql = require('mysql');
 
-db.pool = mysql.createPool({
-    connectionLimit: 100, //important
-    host: 'localhost',
-    user: 'root',
-    password: 'rootXy',
-    database: 'oo',
-    debug: false
-});
+var db = {}
+db.init = function init(opts) {
+    db.pool = mysql.createPool({
+        connectionLimit: 100, //important
+        host: opts.host,
+        user: opts.user,
+        password: opts.password,
+        database: opts.database,
+        debug: false
+    });
+}
 
 function handle_database(req, res) {
 

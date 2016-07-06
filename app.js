@@ -2,7 +2,7 @@
 require('source-map-support').install(); //solo debe usarse para debugging
 require('continuation-local-storage'); //hay que importarlo muy rapido para que no tire warnings
 
-
+let args = require("minimist")(process.argv.slice(2))
 global.__main__ = module
 var express = require('express');
 
@@ -22,6 +22,10 @@ var app = express();
 var server = require('http').Server(app);
 
 var oo = require('openorange')
+oo.init( {
+    db: {host: 'localhost', user: 'root', password: 'rootXy', database: 'oo'}
+})
+
 let ui = require("openorange/ui")
 
 
@@ -117,11 +121,10 @@ app.use(function (err, req, res, next) {
     });
 });
 
-app.serve = function (port) {
-
-    if (port ==null) port = process.argv[2];
-    if (!port) port = 4000;
+app.serve = function () {
+    let port = args.port || 4000;
     server.listen(port);
+    app.port = port;
     console.log("Application Listening on port " + port)
 }
 

@@ -4,7 +4,7 @@ var chance = new require("chance")()
 var oo = require("openorange")
 var query = oo.query;
 var cm = oo.classmanager
-var md5 = require('js-md5')
+var md5 = require('md5')
 
 describe("Login", function () {
     let User = cm.getClass("User")

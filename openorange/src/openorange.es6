@@ -39,4 +39,12 @@ oo.inputString = async function (txt) {return oo.connectedClient.ask('inputStrin
 oo.alert = async function (txt) {return oo.connectedClient.ask('alert', txt)}
 oo.postMessage = async function (txt) {return oo.connectedClient.ask('postMessage', txt)}
 
+oo.init = function(opts) {
+    oo.initDB(opts.db)
+}
+
+oo.initDB = function (dbopts) {
+    require("./db").init(dbopts)
+}
+
 module.exports = oo;

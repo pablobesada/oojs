@@ -14,7 +14,7 @@ let By = webdriver.By,
     until = webdriver.until,
     actions = webdriver.ActionSequence;
 
-let port = 3999
+//let port = 3999
 
 function wait(t) {
     return new Promise(function (resolve, reject) {
@@ -27,7 +27,7 @@ function wait(t) {
 let Record = cm.getClass("Record");
 describe('ORM with Selenium', function () {
     before(async ()=> {
-        app.serve(port);
+        app.serve();
         let q = await oo.getDBConnection()
         await q.query("delete from TestRecord")
         await q.query("delete from TestRecordRow")
@@ -37,12 +37,12 @@ describe('ORM with Selenium', function () {
 
     this.timeout(40000)
     it('Concurrent transaccions from different browsers', async () => {
-        //let runs = [true,false,false,true]
-        let runs = [false]
+        let runs = [true,false,false,true]
+        //let runs = [false]
         let responses = [];
         for (let i in runs) {
             let driver = new webdriver.Builder().forBrowser('chrome').build();
-            driver.get(`localhost:${port}/oo/ui`);
+            driver.get(`localhost:${app.port}/oo/ui`);
             //console.log(await driver.findElement(By.id("username")))
             let usernameElement = (await driver.findElement(By.id("username")))
             usernameElement.sendKeys("PDB");
