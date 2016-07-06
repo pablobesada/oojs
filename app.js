@@ -27,7 +27,7 @@ let ui = require("openorange/ui")
 
 // view engine setup
 //app.set('views', path.join(__dirname, 'node_modules/openorange/ui/html'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 //app.use('/app/', express.static(path.join(__dirname, 'node_modules/openorange/ui/')));
 //app.use('/openorange/ui/css/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/css/')));
 //app.use('/openorange/ui/font/', express.static(path.join(__dirname, 'node_modules/openorange/lib/client/ui/font/')));
