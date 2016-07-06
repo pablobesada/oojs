@@ -131,4 +131,6 @@ gulp.task("sd-js", function () {
         }));
 });
 
-gulp.task('init-project', ['oo-babel', 'oo-js','ui-babel','ui-js','sd-babel', 'sd-js']);
+gulp.task('init-project', ['oo-babel', 'oo-js','ui-babel','ui-js','sd-babel', 'sd-js'], function () {
+    fs.symlinkSync('../openorange/', 'node_modules/openorange');
+});
