@@ -198,36 +198,24 @@ function select_detail_function(conn, record, dn) {
 
 
 orm.load = async function load(record) {
-    try {
-        //var conn = await db.getConnection()
-        var conn = await ctx.getDBConnection()
-        var select = orm.generate_load_sql(record);
-        //console.log(select.sql)
-        var qres = await conn.query(select.sql, select.values);
-        var rows = qres[0], fields = qres[1];
-        if (rows == 0) {
-            return false;
-        }
-        ormutils.fill_record_with_query_result(record, rows[0], fields)
-        record.setNewFlag(false);
-        record.setModifiedFlag(false);
-
-        var funcs = [];
-        record.persistentDetailNames().forEach(function (dn) {
-            funcs.push(select_detail_function(conn, record, dn))
-        })
-        await Promise.all(funcs);
-        //conn.release();
-        //conn = null;
-        record.syncOldFields();
-        return true;
-    } finally {
-        //if (conn != null) {
-        //    conn.release()
-        //    conn = null;
-        //console.log(err, conn)
-        //}
+    var conn = await ctx.getDBConnection()
+    var select = orm.generate_load_sql(record);
+    var qres = await conn.query(select.sql, select.values);
+    var rows = qres[0], fields = qres[1];
+    if (rows == 0) {
+        return false;
     }
+    ormutils.fill_record_with_query_result(record, rows[0], fields)
+    record.setNewFlag(false);
+    record.setModifiedFlag(false);
+
+    var funcs = [];
+    record.persistentDetailNames().forEach(function (dn) {
+        funcs.push(select_detail_function(conn, record, dn))
+    })
+    await Promise.all(funcs);
+    record.syncOldFields();
+    return true;
 }
 
 orm.generate_load_sql = function generate_load_sql(record) {
@@ -456,6 +444,85 @@ orm.generate_select_sql = function generate_select_sql(record) {
     }
     var sql = "SELECT " + snames.join(",") + " FROM " + record.__description__.name; // + " WHERE " + where.join(" AND ") + " LIMIT 1";
     return {sql: sql, values: values};
+}
+
+orm.syncTable = async function syncTable(recordClass) {
+    let conn = await ctx.getDBConnection();
+    let qres = await conn.query('SHOW TABLES LIKE ?', [recordClass.getDescription().name]);
+    let rows = qres[0], fields = qres[1];
+    if (rows.length == 0) {
+        return orm.createTable(recordClass)
+    } else {
+        return orm.alterTable(recordClass)
+    }
+}
+
+orm.get_db_type_name = function get_db_type_name(ftype, length) {
+    let d = {
+        "string": `varchar(${length})`,
+        "memo": "mediumtext",
+        "blob": "longblog",
+        "set": `varchar(${length})`,
+        "integer": "bigint",
+        "boolean": "tinyint(1)",
+        "date": "date",
+        "time": "time",
+        "internalid": "integer",
+        "masterid": "integer",
+        "value": "double"
+    }
+    return d[ftype]
+}
+
+orm.column_def_sql = function column_def_sql(name,fielddef) {
+    let type = orm.get_db_type_name(fielddef.type, fielddef.getMaxLength());
+    let opts = (name == 'internalId')? 'NOT NULL AUTO_INCREMENT' : 'DEFAULT NULL'
+    return `${name} ${type} ${opts}`
+}
+orm.createTable = async function createTable(recordClass) {
+    let def = recordClass.getDescription();
+    let tablename = def.name;
+    let columns = _(def.persistentFieldNames).map((fn) => {return orm.column_def_sql(fn, def.fields[fn])});
+    let indexes = []
+    indexes.push('PRIMARY KEY (`internalId`)');
+    let sql = `CREATE TABLE ${tablename} (${columns.join(",\n")}, ${indexes.join(",\n")} ) ENGINE=InnoDB DEFAULT CHARSET=utf8`
+    let conn = await ctx.getDBConnection();
+    return conn.query(sql);
+}
+
+orm.alterTable = async function alterTable(recordClass) {
+    let def = recordClass.getDescription();
+    let conn = await ctx.getDBConnection();
+    let qres = await conn.query('SHOW COLUMNS FROM ' + def.name );
+    let rows = qres[0], queryfields = qres[1];
+    let adds = [], dels = [], upds = []
+    let table_current_fields = {}
+    for (let i=0;i < rows.length; i++) {
+        let row = rows[i];
+        table_current_fields[row.Field] = row;
+        if (def.persistentFieldNames.indexOf(row.Field) < 0) {
+            dels.push(row.Field)
+        } else {
+            let field = def.fields[row.Field]
+            //console.log(row.Field, field)
+            if (row.Type != orm.get_db_type_name(field.type, field.getMaxLength())) upds.push(row.Field);
+        }
+    }
+    for (let i=0; i<def.persistentFieldNames.length; i++) {
+        let fn = def.persistentFieldNames[i];
+        if (!(fn in table_current_fields)) adds.push(fn);
+    }
+
+    console.log("ADDS: ", adds)
+    console.log("DELS: ", dels)
+    console.log("UPDS: ", upds)
+
+    let tablename = def.name;
+    let columns = _(adds).map((fn) => {return "ADD " + orm.column_def_sql(fn, def.fields[fn])})
+    columns =  columns.concat(_(upds).map((fn) => {return "MODIFY " + orm.column_def_sql(fn, def.fields[fn])}))
+    columns =  columns.concat(_(dels).map((fn) => {return "DROP " + fn}))
+    let sql = `ALTER TABLE ${tablename} (${columns.join(",\n")})`
+    console.log(sql)
 }
 
 module.exports = orm

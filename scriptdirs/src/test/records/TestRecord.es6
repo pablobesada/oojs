@@ -15,6 +15,7 @@ var Description = {
         Set_Field: {type: "set", length: 60, linkto: "Customer", setrecordname: "TestRecordSet_Field"},
         LinkTo_Field: {type: "string", linkto: "Customer"},
         Integer_Field: {type: "integer"},
+        Added_Field: {type: "integer"},
         NonPersistent_Field: {type: "string", length: 60, persistent: false},
         Date_Field: {type: "date"},
         Rows: {type: "detail", class: "TestRecordRow"},

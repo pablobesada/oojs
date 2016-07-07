@@ -20,11 +20,9 @@ var Promise = require("bluebird")
 //var routes = require('./routesXX/index');
 var app = express();
 var server = require('http').Server(app);
-
+let settings = require(path.resolve(args.settingsfile || './oo.json'))
 var oo = require('openorange')
-oo.init( {
-    db: {host: 'localhost', user: 'root', password: 'rootXy', database: 'oo'}
-})
+oo.init(settings)
 
 let ui = require("openorange/ui")
 
@@ -122,7 +120,7 @@ app.use(function (err, req, res, next) {
 });
 
 app.serve = function () {
-    let port = args.port || 4000;
+    let port = args.port || settings.port;
     server.listen(port);
     app.port = port;
     console.log("Application Listening on port " + port)

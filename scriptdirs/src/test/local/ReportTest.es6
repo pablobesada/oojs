@@ -6,7 +6,6 @@ var Query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
-var utils = require("../utils")
 
 describe("Report", function () {
     it("create a report", async () => {

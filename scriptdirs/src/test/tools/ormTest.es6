@@ -7,7 +7,6 @@ var Query = oo.query;
 var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
-var utils = require("../utils")
 
 var webdriver = require('selenium-webdriver');
 let By = webdriver.By,
@@ -36,7 +35,7 @@ describe('ORM with Selenium', function () {
     });
 
     this.timeout(40000)
-    it('Concurrent transaccions from different browsers', async () => {
+    it.skip('Concurrent transaccions from different browsers', async () => {
         let runs = [true,false,false,true]
         //let runs = [false]
         let responses = [];
@@ -83,4 +82,10 @@ describe('ORM with Selenium', function () {
             }
         }
     });
+
+
+    it ("Sync Table", async () => {
+        let cls = cm.getClass("TestRecord")
+        await oo.orm.syncTable(cls)
+    })
 });

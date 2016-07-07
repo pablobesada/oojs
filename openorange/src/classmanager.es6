@@ -35,7 +35,10 @@ classmanager.createClassStructure = function loadClassStructure() {
     return classStructure;
 }
 
-classmanager.init = function init() {
+classmanager.init = function init(scriptdirs) {
+    console.log("INITIATING CLASS MANAGER")
+    classmanager.scriptdirs = scriptdirs
+    classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
     this.__class_structure__ = this.createClassStructure();
     return this;
 }
@@ -47,10 +50,6 @@ classmanager.addScriptDir = function addScriptDir(sd) {
     classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
 }
 
-classmanager.addScriptDir("core");
-classmanager.addScriptDir("base");
-classmanager.addScriptDir("standard");
-classmanager.addScriptDir("test")
 classmanager.lookupdirs = ["records", "windows", "reports", "modules", "tools", "documents"];
 
 classmanager.getClassFilename = function getClassFilename(name, min_script_dir_index) {
@@ -74,6 +73,7 @@ classmanager.createClass = function createClass(description, filename) {
 }
 
 classmanager.getClassStructure = function getClassStructur() {
+    console.log("GETTING CLASS STRUCTURE")
     return this.__class_structure__;
 }
 

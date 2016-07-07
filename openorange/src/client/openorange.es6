@@ -9,8 +9,8 @@
     let orm = {};
     let __currentUser__ = null;
     classmanager.lookupdirs = ["records", "windows", "reports", "modules", "tools", "documents"];
-    classmanager.scriptdirs = ["core", "base", "standard", "test"];
-    classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
+    //classmanager.scriptdirs = ["core", "base", "standard"];
+    //classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
     classmanager.extractScriptDir = function extractScriptDir(dirname) {
         for (var i in classmanager.reversed_scriptdirs) {
             var sd = classmanager.reversed_scriptdirs[i];
@@ -57,7 +57,10 @@
                 data: {},
                 async: false,
                 success: function (result) {
-                    self.__class_structure__ = result.response;
+                    self.__class_structure__ = result.response.class_structure;
+                    self.scriptdirs = result.response.scriptdirs;
+                    self.reversed_scriptdirs = Array.prototype.slice.call(self.scriptdirs).reverse()
+
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown)
@@ -74,6 +77,7 @@
         return classmanager.classes;
     }
     classmanager.getClass = function getClass(name, options) {
+        let classStructure = classmanager.getClassStructure(); //esto es importante que este al principio para la inicializacion
         let opts = options || {min_sd: 0, max_sd: classmanager.reversed_scriptdirs.length-1};
         let min_sd = 'min_sd' in opts? opts.min_sd : 0;
         let max_sd = 'max_sd' in opts? opts.max_sd : classmanager.reversed_scriptdirs.length-1;
@@ -86,7 +90,7 @@
                 }
             }
         }
-        let classStructure = classmanager.getClassStructure();
+
         for (let i = min_sd; i <= max_sd; i++) {
             var sd = classmanager.reversed_scriptdirs[i];
             for (let j = 0; j < classmanager.lookupdirs.length; j++) {

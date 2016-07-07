@@ -36,6 +36,3 @@ describe("Embedded_Window", function () {
     })
 });
 
-module.exports = function config(utilsModule) {
-    utils = utilsModule
-}

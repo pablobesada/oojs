@@ -2,6 +2,7 @@
 let path = require('path')
 var fs = require('fs');
 
+
 //var gulp = require("gulp");
 //var babel = require("gulp-babel");
 
@@ -14,9 +15,31 @@ var fs = require('fs');
 //});
 
 var gulp = require("gulp");
+var print = require('gulp-print');
+var cache = require('gulp-cached');
+var plumber = require('gulp-plumber');
+var gutil = require('gulp-util');
+
+
+
 var sourcemaps = require("gulp-sourcemaps");
 var babel = require("gulp-babel");
 //var concat = require("gulp-concat");
+
+
+var gulp_src = gulp.src;
+gulp.src = function() {
+    return gulp_src.apply(gulp, arguments)
+        .pipe(plumber(function(error) {
+                // Output an error message
+                gutil.log(gutil.colors.red('Error (' + error.plugin + '): ' + error.message));
+                // emit the end event, to properly end the task
+                this.emit('end');
+            })
+        )
+        .pipe(cache('processing'))
+        .pipe(print());
+};
 
 gulp.task('watch', ['oo-watch', 'ui-watch', 'sd-watch']);
 

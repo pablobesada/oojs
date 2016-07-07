@@ -8,7 +8,6 @@ var cm = oo.classmanager
 var should = require('should');
 var async = require('async')
 var moment = require('moment')
-let utils = null;
 
 describe("Embedded_Record", function () {
     let cls = cm.getClass("TestRecord");
@@ -233,6 +232,3 @@ describe("Embedded_Record", function () {
     })
 });
 
-module.exports = function config(utilsModule) {
-    utils = utilsModule
-};

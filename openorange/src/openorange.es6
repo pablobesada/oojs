@@ -1,6 +1,6 @@
 "use strict"
 require("babel-polyfill");
-let cm = require("./classmanager").init();
+let cm = require("./classmanager");
 async function login(usercode, md5pass) {
     if (!usercode || usercode == '') return false;
     if (!md5pass) md5pass = '';
@@ -22,6 +22,7 @@ oo.explorer = require("./both/explorer")
 //context related accessors
 oo.contextmanager = require("./contextmanager")
 //context db accessors
+//console.log("DBC", oo.contextmanager.getDBConnection)
 oo.getDBConnection = oo.contextmanager.getDBConnection.bind(oo.contextmanager);
 oo.beginTransaction = oo.contextmanager.beginTransaction.bind(oo.contextmanager);
 oo.commit = oo.contextmanager.commit.bind(oo.contextmanager);
@@ -41,10 +42,14 @@ oo.postMessage = async function (txt) {return oo.connectedClient.ask('postMessag
 
 oo.init = function(opts) {
     oo.initDB(opts.db)
+    oo.initClassManager(opts.scriptdirs)
 }
 
 oo.initDB = function (dbopts) {
     require("./db").init(dbopts)
 }
 
+oo.initClassManager = function (scriptdirs) {
+    oo.classmanager.init(scriptdirs)
+}
 module.exports = oo;

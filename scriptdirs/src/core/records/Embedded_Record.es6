@@ -46,6 +46,7 @@ class Field {
         }
         return this.__linkto_recordClass__;
     }
+
     cloneValue() {
         return this.value;
     }
@@ -236,7 +237,7 @@ var RecordDescription = {
     name: 'Embedded_Record',
     inherits: null,
     fields: {
-        internalId: {type: "integer"},
+        internalId: {type: "integer", persistent: true, getMaxLength: () => {return null}, getLinkToRecordClass: () => {return null}},
     },
     fieldnames: ['internalId'],
     detailnames: [],
@@ -289,8 +290,26 @@ class Embedded_Record {
         }
         for (var fn in descriptor.fields) {
             let fdef = descriptor.fields[fn]
-            newdesc.fields[fn] = fdef;
-            if (fdef.type == 'string' && fdef.linkto) newdesc.fields[fn].length = null;
+            let newfdef = fdef;
+            newfdef.persistent = 'persistent' in fdef? fdef.persistent : true;
+            if (fdef.type == 'string' && fdef.linkto) newfdef.length = null;
+            newfdef.getMaxLength = () => {
+                if (newfdef.length != null && newfdef.length != undefined) return newfdef.length;
+                if (newfdef.linkto) {
+                    let cls = newfdef.getLinktoRecordClass();
+                    newfdef.length = cls.getDescription().fields[cls.uniqueKey()[0]].length;
+                }
+                return newfdef.length;
+            }
+
+            newfdef.getLinktoRecordClass = () => {
+                if (!newfdef.linkto) return null;
+                if (!newfdef.__linkto_recordClass__) {
+                    newfdef.__linkto_recordClass__ = oo.classmanager.getClass(newfdef.linkto);
+                }
+                return newfdef.__linkto_recordClass__;
+            }
+            newdesc.fields[fn] = newfdef
         }
         newdesc.name = descriptor.name;
         newdesc.persistent = 'persistent' in descriptor? descriptor.persistent : true;

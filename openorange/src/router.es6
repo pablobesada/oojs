@@ -99,7 +99,11 @@ router.post('/query/fetch', function (req, res, next) {
 
 router.get('/classStructure', function (req, res, next) {
     try {
-        res.send({ok: true, response: cm.getClassStructure()});
+        let response = {
+            class_structure: cm.getClassStructure(),
+            scriptdirs: cm.scriptdirs,
+        }
+        res.send({ok: true, response: response});
     } catch (err) {
         console.log(err.stack);
         throw err;
