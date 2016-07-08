@@ -80,7 +80,7 @@ class Embedded_ListWindow {
     }
 
     getTitle() {
-        return "RECORDS";
+        return "List of " + this.getRecordClass().getDescription().name;
     }
 
     getRecordClass() {
