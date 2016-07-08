@@ -537,6 +537,7 @@ orm.syncAllTables = async function syncAllTables() {
     let scriptdirs = cm.getClassStructure();
     _(scriptdirs).each((sd) => {
         _(sd.records).each((value, key) => {classes[key] = 1})
+        _(sd.documents).each((value, key) => {classes[key] = 1}) //necesario esto?
     })
 
     for (let classname in classes) {
