@@ -160,6 +160,8 @@ gulp.task('init-project', ['oo-babel', 'oo-js', 'ui-babel', 'ui-js', 'sd-babel',
     fs.symlinkSync('../openorange/', 'node_modules/openorange');
 });
 
+gulp.task('build', ['oo-babel', 'oo-js', 'sd-babel', 'sd-js'])
+
 gulp.task('sync-tables', () => {
     global.__main__ = module
     let oo = require("openorange")
