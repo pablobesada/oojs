@@ -48,7 +48,7 @@ class Connection {
     constructor(conn) {
         this.id = Connection.__nextid__++;
         this.log_queries = true;
-        this.log_query_values = true;
+        this.log_query_values = false;
         this.__conn__ = conn
         this.busy = false;
         if (this.log_queries) console.log(`(${this.id}) NEW connnection`)
@@ -75,7 +75,7 @@ class Connection {
         var self = this;
         return new Promise(function (resolve, reject) {
             if (self.log_queries) console.log(`(${self.id}) ${sql}`)
-            if (self.log_query_values) console.log(values)
+            if (self.log_query_values && values) console.log(values)
             self.busy = true;
             self.__conn__.query(sql, values, function (err, result, fields) {
                 self.busy = false;

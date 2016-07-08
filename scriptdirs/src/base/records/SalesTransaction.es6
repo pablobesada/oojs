@@ -4,6 +4,7 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'SalesTransaction',
     inherits: 'FinancialTrans',
+    persistent: false,
     fields: {
         CustCode: {type: "string", length: 30, linkto: 'Customer'},
         CustName: {type: "string", length: 30},

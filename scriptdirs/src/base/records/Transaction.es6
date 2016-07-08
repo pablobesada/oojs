@@ -4,11 +4,10 @@ var Description = {
     name: 'Transaction',
     inherits: 'Numerable',
     fields: {
-        User: {type: "string", length: "10"},
         Status: {type: "integer"},
         TransDate: {type: "date"},
         TransTime: {type: "time"},
-        User: {type: "string", linkto: "user" ,length: "10"}
+        User: {type: "string", linkto: "User"}
     },
     filename: __filename
 }

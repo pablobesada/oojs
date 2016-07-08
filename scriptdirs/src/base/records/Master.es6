@@ -5,6 +5,7 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'Master',
     inherits: 'Record',
+    persistent: false,
     fields: {
         Code: {type: "string", length: 30},
         Closed: {type: "boolean"},

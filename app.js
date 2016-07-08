@@ -22,7 +22,7 @@ var app = express();
 var server = require('http').Server(app);
 let settings = require(path.resolve(args.settingsfile || './oo.json'))
 var oo = require('openorange')
-oo.init(settings)
+oo.init()
 
 let ui = require("openorange/ui")
 

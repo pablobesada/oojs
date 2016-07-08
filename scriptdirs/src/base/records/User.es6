@@ -9,7 +9,7 @@ var Description = {
         AccessGroup: {type: "string", length: 10},
         SalesGroup: {type: "string", length: 10},
         Department: {type: "string", length: 20},
-        Person: {type: "string", length: 10, linkto: "Person"},
+        Person: {type: "string", length: 10},
         Office: {type: "string", length: 20},
         Label: {type: "set", length: 20},
         StockDepo: {type: "string", length: 10},

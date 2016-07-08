@@ -28,6 +28,7 @@ describe('ORM with Selenium', function () {
     before(async ()=> {
         app.serve();
         let q = await oo.getDBConnection()
+        //await oo.orm.syncTable(cm.getClass("TestRecord"))
         await q.query("delete from TestRecord")
         await q.query("delete from TestRecordRow")
         await q.query("delete from TestRecord2")
@@ -85,7 +86,13 @@ describe('ORM with Selenium', function () {
 
 
     it ("Sync Table", async () => {
+        let conn = await oo.getDBConnection()
         let cls = cm.getClass("TestRecord")
+        await conn.query("DROP TABLE " + cls.getDescription().name)
         await oo.orm.syncTable(cls)
+        await conn.query(`ALTER TABLE ${cls.getDescription().name} \nADD added_col int DEFAULT NULL,\n DROP String_Field, \nMODIFY Integer_Field varchar(10) DEFAULT NULL`)
+        await oo.orm.syncTable(cls)
+        console.log("-----------")
+        await oo.orm.syncAllTables()
     })
 });

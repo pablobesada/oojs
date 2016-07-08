@@ -3,6 +3,7 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'FinancialTrans',
     inherits: 'Transaction',
+    persistent: false,
     fields: {
         Currency: {type: "string", length: 3},
     },

@@ -1,5 +1,4 @@
 "use strict"
-require("babel-polyfill");
 let cm = require("./classmanager");
 async function login(usercode, md5pass) {
     if (!usercode || usercode == '') return false;
@@ -41,6 +40,11 @@ oo.alert = async function (txt) {return oo.connectedClient.ask('alert', txt)}
 oo.postMessage = async function (txt) {return oo.connectedClient.ask('postMessage', txt)}
 
 oo.init = function(opts) {
+    if (!opts) {
+        let args = require("minimist")(process.argv.slice(2))
+        let settings = require(require('path').resolve(args.settingsfile || './oo.json'))
+        opts = settings
+    }
     oo.initDB(opts.db)
     oo.initClassManager(opts.scriptdirs)
 }

@@ -236,6 +236,7 @@ FieldsListener.detailCleared = function (detail, row, position) {
 var RecordDescription = {
     name: 'Embedded_Record',
     inherits: null,
+    persistent: false,
     fields: {
         internalId: {type: "integer", persistent: true, getMaxLength: () => {return null}, getLinkToRecordClass: () => {return null}},
     },
@@ -293,21 +294,31 @@ class Embedded_Record {
             let newfdef = fdef;
             newfdef.persistent = 'persistent' in fdef? fdef.persistent : true;
             if (fdef.type == 'string' && fdef.linkto) newfdef.length = null;
-            newfdef.getMaxLength = () => {
-                if (newfdef.length != null && newfdef.length != undefined) return newfdef.length;
-                if (newfdef.linkto) {
-                    let cls = newfdef.getLinktoRecordClass();
-                    newfdef.length = cls.getDescription().fields[cls.uniqueKey()[0]].length;
+            if (fdef.type != 'detail') {
+                newfdef.getMaxLength = () => {
+                    if (newfdef.length != null && newfdef.length != undefined) return newfdef.length;
+                    if (newfdef.linkto) {
+                        let cls = newfdef.getLinktoRecordClass();
+                        newfdef.length = cls.getDescription().fields[cls.uniqueKey()[0]].length;
+                    }
+                    return newfdef.length;
                 }
-                return newfdef.length;
-            }
 
-            newfdef.getLinktoRecordClass = () => {
-                if (!newfdef.linkto) return null;
-                if (!newfdef.__linkto_recordClass__) {
-                    newfdef.__linkto_recordClass__ = oo.classmanager.getClass(newfdef.linkto);
+                newfdef.getLinktoRecordClass = () => {
+                    if (!newfdef.linkto) return null;
+                    if (!newfdef.__linkto_recordClass__) {
+                        newfdef.__linkto_recordClass__ = oo.classmanager.getClass(newfdef.linkto);
+                        if (!newfdef.__linkto_recordClass__) throw new Error(`LinkTo Error: Class ${newfdef.linkto} not found. Referenced in ${descriptor.name}:${newfdef.name}`)
+                    }
+                    return newfdef.__linkto_recordClass__;
                 }
-                return newfdef.__linkto_recordClass__;
+            } else {
+                newfdef.getRowClass = () => {
+                    if (!newfdef.__rowClass__) {
+                        newfdef.__rowClass__ = oo.classmanager.getClass(newfdef.class);
+                    }
+                    return newfdef.__rowClass__;
+                }
             }
             newdesc.fields[fn] = newfdef
         }

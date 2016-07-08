@@ -1,4 +1,6 @@
 "use strict"
+require('source-map-support').install(); //solo debe usarse para debugging
+require("babel-polyfill");
 let path = require('path')
 var fs = require('fs');
 
@@ -157,3 +159,10 @@ gulp.task("sd-js", function () {
 gulp.task('init-project', ['oo-babel', 'oo-js','ui-babel','ui-js','sd-babel', 'sd-js'], function () {
     fs.symlinkSync('../openorange/', 'node_modules/openorange');
 });
+
+gulp.task('sync-tables', () => {
+    global.__main__ = module
+    let oo = require("openorange")
+    oo.init();
+    oo.orm.syncAllTables()
+})

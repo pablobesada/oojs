@@ -66,7 +66,7 @@ Explorer.findAllModules = function findAllModules() {
     var path = require("path")
     var res = {ALL: {records: {}, windows: {}, documents: {}, reports: {}, routines: {}, tools: {}}};
     function searchFolder(sd, lookupdir) {
-        var folder = "./" + sd + "/" + lookupdir;
+        var folder = "scriptdirs/lib/" + sd + "/" + lookupdir;
         let promise = Promise.pending();
         fs.readdir(folder, function (err, files)  {
             if (err) {

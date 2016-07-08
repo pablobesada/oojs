@@ -5,7 +5,8 @@ let _ = require("underscore")
 let Description = {
     name: 'LocalRecord',
     inherits: 'Record',
-    filename: __filename
+    filename: __filename,
+    persistent: false,
 }
 
 var Parent = cm.SuperClass(Description)

@@ -73,7 +73,6 @@ classmanager.createClass = function createClass(description, filename) {
 }
 
 classmanager.getClassStructure = function getClassStructur() {
-    console.log("GETTING CLASS STRUCTURE")
     return this.__class_structure__;
 }
 
@@ -88,7 +87,7 @@ classmanager.getClass = function getClass(name, options) {
             let ld = this.lookupdirs[j]
             if (name in this.__class_structure__[i][ld]) {
                 let modname = "./" + path.join(sdbasedir,sd,ld,name);
-                console.log("requiring " + modname)
+                //let r = global.__main__.require(modname);
                 let r = global.__main__.require(modname);
                 return r;
             }

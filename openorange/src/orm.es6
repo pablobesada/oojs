@@ -447,13 +447,15 @@ orm.generate_select_sql = function generate_select_sql(record) {
 }
 
 orm.syncTable = async function syncTable(recordClass) {
+    if (!recordClass.getDescription().persistent) return;
+    console.log("sync: ", recordClass.getDescription().name)
     let conn = await ctx.getDBConnection();
-    let qres = await conn.query('SHOW TABLES LIKE ?', [recordClass.getDescription().name]);
+    let qres = await conn.query('SHOW TABLES LIKE ?', recordClass.getDescription().name);
     let rows = qres[0], fields = qres[1];
     if (rows.length == 0) {
-        return orm.createTable(recordClass)
+        await orm.createTable(recordClass)
     } else {
-        return orm.alterTable(recordClass)
+        await orm.alterTable(recordClass)
     }
 }
 
@@ -463,7 +465,7 @@ orm.get_db_type_name = function get_db_type_name(ftype, length) {
         "memo": "mediumtext",
         "blob": "longblog",
         "set": `varchar(${length})`,
-        "integer": "bigint",
+        "integer": "bigint(20)",
         "boolean": "tinyint(1)",
         "date": "date",
         "time": "time",
@@ -504,7 +506,6 @@ orm.alterTable = async function alterTable(recordClass) {
             dels.push(row.Field)
         } else {
             let field = def.fields[row.Field]
-            //console.log(row.Field, field)
             if (row.Type != orm.get_db_type_name(field.type, field.getMaxLength())) upds.push(row.Field);
         }
     }
@@ -513,16 +514,36 @@ orm.alterTable = async function alterTable(recordClass) {
         if (!(fn in table_current_fields)) adds.push(fn);
     }
 
-    console.log("ADDS: ", adds)
-    console.log("DELS: ", dels)
-    console.log("UPDS: ", upds)
+    //console.log("ADDS: ", adds)
+    //console.log("DELS: ", dels)
+    //console.log("UPDS: ", upds)
 
     let tablename = def.name;
     let columns = _(adds).map((fn) => {return "ADD " + orm.column_def_sql(fn, def.fields[fn])})
     columns =  columns.concat(_(upds).map((fn) => {return "MODIFY " + orm.column_def_sql(fn, def.fields[fn])}))
-    columns =  columns.concat(_(dels).map((fn) => {return "DROP " + fn}))
-    let sql = `ALTER TABLE ${tablename} (${columns.join(",\n")})`
-    console.log(sql)
+    //columns =  columns.concat(_(dels).map((fn) => {return "DROP " + fn})) // por el momento no vamos a eliminar columnas, xq puede haber problemas al borrar campos creador por OpenOrange Legacy y que sigan en uso
+    if (columns.length) {
+        let sql = `ALTER TABLE ${tablename} ${columns.join(",\n")}`
+        return await conn.query(sql);
+    }
+    return true;
+}
+
+orm.syncAllTables = async function syncAllTables() {
+    let classes = {}
+    let cm = require("openorange").classmanager
+    //console.log(cm.getClass("Row").getDescription())
+
+    let scriptdirs = cm.getClassStructure();
+    _(scriptdirs).each((sd) => {
+        _(sd.records).each((value, key) => {classes[key] = 1})
+    })
+
+    for (let classname in classes) {
+        let cls = cm.getClass(classname);
+        if (cls.getDescription().persistent) await orm.syncTable(cls)
+    }
+    return true;
 }
 
 module.exports = orm

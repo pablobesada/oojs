@@ -4,6 +4,7 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'Numerable',
     inherits: 'Record',
+    persistent: false,
     fields: {
         SerNr: {type: "integer"},
     },

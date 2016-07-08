@@ -6,6 +6,7 @@ var cm = oo.classmanager
 var Description = {
     name: 'Record',
     inherits: 'Embedded_Record',
+    persistent: false,
     fields: {
         syncVersion: {type: "integer"},
     },

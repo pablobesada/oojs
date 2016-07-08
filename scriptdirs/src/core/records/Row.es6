@@ -4,6 +4,7 @@ var cm = require('openorange').classmanager
 var Description = {
     name: 'Row',
     inherits: 'Embedded_Record',
+    persistent: false,
     fields: {
         rowNr: {type: "integer"},
         masterId: {type: "integer"},
