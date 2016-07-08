@@ -82,6 +82,9 @@ app.use(OpenOrangeBaseURL, oo.getRouter());
 
 
 app.use('/oo/ui', ui({OpenOrangeBaseURL: OpenOrangeBaseURL}));
+app.get("/", function (req, res, next) {
+    res.redirect('oo/ui')
+})
 
 
 //app.use('/db', db);
