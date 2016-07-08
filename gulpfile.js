@@ -1,6 +1,7 @@
 "use strict"
 require('source-map-support').install(); //solo debe usarse para debugging
 require("babel-polyfill");
+
 let path = require('path')
 var fs = require('fs');
 
@@ -23,16 +24,15 @@ var plumber = require('gulp-plumber');
 var gutil = require('gulp-util');
 
 
-
 var sourcemaps = require("gulp-sourcemaps");
 var babel = require("gulp-babel");
 //var concat = require("gulp-concat");
 
 
 var gulp_src = gulp.src;
-gulp.src = function() {
+gulp.src = function () {
     return gulp_src.apply(gulp, arguments)
-        .pipe(plumber(function(error) {
+        .pipe(plumber(function (error) {
                 // Output an error message
                 gutil.log(gutil.colors.red('Error (' + error.plugin + '): ' + error.message));
                 // emit the end event, to properly end the task
@@ -156,7 +156,7 @@ gulp.task("sd-js", function () {
         }));
 });
 
-gulp.task('init-project', ['oo-babel', 'oo-js','ui-babel','ui-js','sd-babel', 'sd-js'], function () {
+gulp.task('init-project', ['oo-babel', 'oo-js', 'ui-babel', 'ui-js', 'sd-babel', 'sd-js'], function () {
     fs.symlinkSync('../openorange/', 'node_modules/openorange');
 });
 
@@ -165,4 +165,27 @@ gulp.task('sync-tables', () => {
     let oo = require("openorange")
     oo.init();
     oo.orm.syncAllTables()
+})
+
+gulp.task('create-openorange-user', (done) => {
+    global.__main__ = module
+    let oo = require("openorange")
+    oo.init();
+    var conn = null;
+    oo.getDBConnection()
+        .then((newconn) => {
+            conn = newconn
+            return conn.query("INSERT into User (Code) values (?)", ['openorange'])
+        })
+        .then(() => {
+            return conn.commit()
+        })
+        .then(() => {
+            gutil.log.colors.red('User openorange (no password) is now available for login');
+            done()
+        })
+        .catch((err) => {
+            gutil.log.colors.red(err.message);
+            done()
+        })
 })
