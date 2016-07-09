@@ -31,6 +31,7 @@
 
     let require = function require(module) {
         if (module == "openorange") return window.oo; //devuelvo window.oo porque ese objeto va a haber si extendido por windowmanager, listiwndowmanger, etc, etc, etc.
+        if (module == "./both/BaseEntity") return window.oo.BaseEntity; //devuelvo window.oo porque ese objeto va a haber si extendido por windowmanager, listiwndowmanger, etc, etc, etc.
         if (module == "underscore") return _;
         if (module == "moment") return moment;
         if (module == "chance") return Chance;
@@ -425,11 +426,19 @@
             self.socket.on('alert', async function (data, fn) {let r = await oo.alert(data); if (fn) fn(r);});
             self.socket.on('postMessage', async function (data, fn) {let r = await oo.postMessage(data); if (fn) fn(r);});
             self.socket.on('BROADCAST', async function (data, fn) {let r = await oo.postMessage(data); if (fn) fn(r);});
+            self.socket.on('ENTITY', async function (data, fn) {
+                oo.eventmanager.emit(data.eventName, data.event)
+            });
         }
 
         broadcast(msg) {
             let self = this;
             self.socket.emit('BROADCAST_REQUEST', msg);
+        }
+
+        emitFromEntity(eventName, event) {
+            let self = this;
+            self.socket.emit('ENTITY', {eventName: eventName, event: event});
         }
     }
 

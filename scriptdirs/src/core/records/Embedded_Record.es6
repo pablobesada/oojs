@@ -273,7 +273,7 @@ function propDetailGetter(fn) {
         return this.__details__[fn]
     }
 }
-class Embedded_Record {
+class Embedded_Record extends oo.BaseEntity {
 
     static new() {
         var res = new this()
@@ -282,6 +282,7 @@ class Embedded_Record {
 
 
     static initClass(descriptor) {
+        super.initClass(descriptor);
         //var childclass = Object.create(this)
         //console.log("en initClass: this.__description__: " + this.__description__)
         let parentdesc = this.__description__;
@@ -339,7 +340,6 @@ class Embedded_Record {
             return 'persistent' in newdesc.fields[fn] ? newdesc.fields[fn].persistent : true;
         })
 
-        this.__super__ = Reflect.getPrototypeOf(this);
         this.__description__ = newdesc
         return this;
     }
@@ -361,11 +361,8 @@ class Embedded_Record {
         }
     }
 
-    static getDescription() {
-        return this.__description__
-    }
-
     constructor() {
+        super()
         this.__class__ = this.constructor;
         this.__isnew__ = true;
         this.__ismodified__ = false;

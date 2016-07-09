@@ -23,7 +23,8 @@ var async = require('async')
 //require("../core/windows/Embedded_WindowTest")
 //require("../local/ReportTest.js")
 //require("../local/ClassManagerTest")
-require("../tools/ormTest")
+//require("../tools/ormTest")
+require("../tools/BaseEntity")
 
 
 //console.log(oo.classmanager.getClass("TestRecord").__description__)

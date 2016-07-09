@@ -10,22 +10,7 @@ var WindowDescription = {
     filename: __filename,
 }
 
-class Embedded_Window {
-
-    static addClassListener(listener) {
-        Embedded_Window.__class_listeners__.push(listener);
-    }
-
-    static notifyClassListeners(event) {
-        _(Embedded_Window.__class_listeners__).forEach(function (listener) {
-            listener.update(event, Embedded_Window);
-        })
-    }
-
-    static new() {
-        var res = new this()
-        return res;
-    }
+class Embedded_Window extends oo.BaseEntity {
 
     async print() {
         let record = this.getRecord();
@@ -36,14 +21,17 @@ class Embedded_Window {
     }
 
     open() {
-        Embedded_Window.notifyClassListeners({type: "window", action: "open", data: this})
+        Embedded_Window.emit("open", {data: this})
+        this.__isopen__ = true;
+        if (this.getRecord() && this.getRecord().internalId) Embedded_Window.emit(`start editing record ${this.getRecord().__class__.getDescription().name}:${this.getRecord().internalId}`, {record: this.getRecord()})
     }
 
     setFocus() {
-        this.notifyListeners({type: "window", action: "setFocus", data: this})
+        this.emit('focus required', {data: this})
     }
 
     static initClass(descriptor) {
+        super.initClass(descriptor)
         let parentdesc = this.__description__;
         let newdesc = {};
         newdesc.name = descriptor.name;
@@ -60,26 +48,15 @@ class Embedded_Window {
         newdesc.filename = descriptor.filename;
         this.__description__ = newdesc;
         this.__recordClass__ = null;
-        this.__super__ = Reflect.getPrototypeOf(this)
         return this;
     }
 
     constructor() {
+        super()
         this.__class__ = this.constructor
         this.__record__ = null;
-        this.__listeners__ = []
         this.__title__ = this.__class__.__description__.title;
-    }
-
-    addListener(listener) {
-        this.__listeners__.push(listener)
-    }
-
-    notifyListeners(event) {
-        let self = this
-        _(this.__listeners__).forEach(function (listener) {
-            listener.update(event, this);
-        })
+        this.__isopen__ = false;
     }
 
     getRecordClass() {
@@ -98,10 +75,6 @@ class Embedded_Window {
         }
     }
 
-    static getDescription() {
-        return this.__description__
-    }
-
     inspect() {
         return "<" + this.__description__.name + ", from " + this.__filename__ + ">"
     }
@@ -115,25 +88,25 @@ class Embedded_Window {
     }
 
     notifyTitleChanged() {
-        this.notifyListeners({type: "title", action: "modified", data: this.getTitle()})
+        this.emit('title changed', {data: this.getTitle()})
     }
 
     setTitle(title) {
         this.__title__ = title;
-        this.notifyListeners({type: "title", action: "modified", data: title})
+        this.emit('title changed', {data: title})
     }
 
     setRecord(rec) {
         if (this.__record__ != rec) {
             this.__record__ = rec;
             this.__record__.addListener(this)
-            this.notifyListeners({type: 'record', action: 'replaced', data: rec});
+            this.emit('record replaced', {data: rec})
+            if (this.__isopen__ && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
         }
     }
 
     fieldModified(record, field, row, rowfield, oldvalue) {
-        this.notifyListeners({
-            type: 'field', action: 'modified', data: {
+        this.emit('field modified', {data: {
                 record: record,
                 field: field,
                 row: row,
@@ -144,8 +117,7 @@ class Embedded_Window {
     }
 
     rowInserted(record, detail, row, position) {
-        this.notifyListeners({
-            type: 'field', action: 'row inserted', data: {
+        this.emit('detail row inserted', {data: {
                 record: record,
                 detail: detail,
                 row: row,
@@ -155,8 +127,7 @@ class Embedded_Window {
     }
 
     detailCleared(record, detail, row, position) {
-        this.notifyListeners({
-            type: 'field', action: 'detail cleared', data: {
+        this.emit('detail cleared', {data: {
                 record: record,
                 detail: detail,
             }

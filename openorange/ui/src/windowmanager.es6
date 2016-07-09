@@ -42,6 +42,7 @@
         };
 
         displayWindow(windowElement) {
+            let self = this;
             var tab = $('<li class="tab col s3"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
             $('ul.tabs.workspace').append(tab);
             windowElement.attr('id', this.tab_id);
@@ -50,9 +51,13 @@
             //$('.modal-trigger').leanModal();
             windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
             //$('input.editor[timeeditor=true]').mask('00:00:00');
-            if (this.window.getRecord() != null) this.bindRecordToWindow(this.window.getRecord());
-            this.window.addListener(this);
-        };
+            if (this.window.getRecord() != null) {
+                console.log("DW")
+                this.bindRecordToWindow(this.window.getRecord());
+            }
+            //this.window.addListener(this);
+            this.window.onAny(this.update.bind(this));
+        }
 
         createToolBar() {
             var self = this;
@@ -450,15 +455,17 @@
                     _(addedRow.fieldNames()).forEach(function (fn) {
                         var value = addedRow[fn];
                         if (value != null) {
-                            self.update({
-                                type: 'field', action: 'modified', data: {
-                                    record: self.window.getRecord(),
-                                    field: self.window.getRecord().details(params.detailname),
-                                    row: addedRow,
-                                    rowfield: addedRow.fields(fn),
-                                    oldvalue: value
-                                }
-                            });
+                            self.update(
+                                {
+                                    data: {
+                                        record: self.window.getRecord(),
+                                        field: self.window.getRecord().details(params.detailname),
+                                        row: addedRow,
+                                        rowfield: addedRow.fields(fn),
+                                        oldvalue: value,
+                                        _meta: {name: 'field modified'}
+                                    }
+                                });
                         }
                     });
                     self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
@@ -547,52 +554,51 @@
 
         update(event) {
             var self = this;
-            switch (event.type) {
-                case "window":
+            switch (event._meta.name) {
+                case "focus required":
                     //el action 'open' es en event de clase y no entra por aca. ver final de este archivo.
-                    if (event.action == 'setFocus') self.setFocus()
-                case "record":
-                    if (event.action == 'replaced') self.bindRecordToWindow(event.data);
+                    self.setFocus()
                     break;
-                case "field":
-                    //console.log(event)
-                    if (event.action == 'modified') {
-                        var field = event.data.field;
-                        if (field.type != "detail") {
-                            self.setEditorValue(field.name, field.type, field.getValue());
-                            Materialize.updateTextFields();
-                        } else {
-                            console.log("row: " + event.data.rowfield.name)
-                            var rowNr = event.data.row.rowNr;
-                            if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
-                            console.log(event.data.field.name, rowNr, event.data.rowfield.name, event.data.rowfield.type, event.data.rowfield.getValue())
-                            self.setRowEditorValue(event.data.field.name, rowNr, event.data.rowfield.name, event.data.rowfield.type, event.data.rowfield.getValue());
-                            Materialize.updateTextFields();
-                        }
-                    } else if (event.action == 'row inserted') {
-                        var detail = event.data.detail;
-                        if (detail.name in this.matrix_json_map) {
-                            _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
-                                var tbody = matrixjson.__element__.find("tbody[matrix_idx]");
-                                self.insertMatrixRow(event.data.record, matrixjson, event.data.row, tbody);
-                            })
+                case "record replaced":
+                    console.log("ED", event)
+                    self.bindRecordToWindow(event.data);
+                    break;
+                case "field modified":
+                    var field = event.data.field;
+                    if (field.type != "detail") {
+                        self.setEditorValue(field.name, field.type, field.getValue());
+                        Materialize.updateTextFields();
+                    } else {
+                        console.log("row: " + event.data.rowfield.name)
+                        var rowNr = event.data.row.rowNr;
+                        if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
+                        console.log(event.data.field.name, rowNr, event.data.rowfield.name, event.data.rowfield.type, event.data.rowfield.getValue())
+                        self.setRowEditorValue(event.data.field.name, rowNr, event.data.rowfield.name, event.data.rowfield.type, event.data.rowfield.getValue());
+                        Materialize.updateTextFields();
+                    }
+                    break;
+                case "detail row inserted":
+                    var detail = event.data.detail;
+                    if (detail.name in this.matrix_json_map) {
+                        _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
+                            var tbody = matrixjson.__element__.find("tbody[matrix_idx]");
+                            self.insertMatrixRow(event.data.record, matrixjson, event.data.row, tbody);
+                        })
 
-                        }
-                    } else if (event.action == 'detail cleared') {
-                        var detail = event.data.detail;
-                        if (detail.name in this.matrix_json_map) {
-                            _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
-                                var tbody = matrixjson.__element__.find("tbody");
-                                tbody.find("tr").not('[rowNr=null]').remove();
-                            })
-                        }
                     }
                     break;
-                case "title":
-                    if (event.action == "modified") {
-                        self.setWindowTitle(event.data)
+                case "detail cleared":
+                    var detail = event.data.detail;
+                    if (detail.name in this.matrix_json_map) {
+                        _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
+                            var tbody = matrixjson.__element__.find("tbody");
+                            tbody.find("tr").not('[rowNr=null]').remove();
+                        })
                     }
                     break;
+                case "title changed":
+                    self.setWindowTitle(event.data)
+                    break
             }
         }
 
@@ -753,6 +759,9 @@
         };
 
         bindRecordToWindow(record) {
+            console.log("RECORD: ", record)
+            if (this.current_record_id) oo.eventmanager.off(`start editing record ${this.window.getRecordClass().getDescription().name}:${this.current_record_id}`)
+            this.current_record_id = null;
             var self = this;
             _(record.detailNames()).forEach(function (dn) {
                 var vt = record[dn].newRow();
@@ -763,7 +772,14 @@
             self.setWindowTitle(this.window.getTitle());
             Materialize.updateTextFields();
             self.__element__.find("select").material_select()
+            if (record && record.internalId) {
+                this.current_record_id = record.internalId
+                if (this.current_record_id) oo.eventmanager.on(`start editing record ${this.window.getRecordClass().getDescription().name}:${this.current_record_id}`, (event) => {
+                    oo.postMessage(`Warning! User ${event._meta.user} just started editing this record.`)
+                })
+            }
         };
+
 
         createPasteWindow() {
             var self = this;
@@ -919,13 +935,11 @@
         }
     };
     $(document).ready(function () {
-        console.log("en docready windowmanager")
-        cm.getClass("Embedded_Window").addClassListener({
-            update: function (event) {
-                if (event.type =='window' && event.action =='open') {
-                    let wm = new WindowContainer(event.data)
-                    wm.render()
-                }
+        cm.getClass("Embedded_Window").onAny(function (event) {
+            console.log(event)
+            if (event._meta.name == 'open') {
+                let wm = new WindowContainer(event.data)
+                wm.render()
             }
         });
     })

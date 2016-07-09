@@ -13,6 +13,7 @@ async function login(usercode, md5pass) {
 }
 
 var oo = {}
+oo.BaseEntity = require("./both/BaseEntity")
 oo.isServer = true;
 oo.isClient = !oo.isServer;
 oo.classmanager = cm;
@@ -34,6 +35,7 @@ oo.getRouter = function getRouter() {return require("./router")};
 oo.setSocketIO = function (socketIO) {
     oo.connectedClient = require('./pushserver')(socketIO);
 }
+oo.eventmanager = new oo.BaseEntity();
 
 oo.askYesNo = async function (txt) {return oo.connectedClient.ask('askYesNo', txt)}
 oo.inputString = async function (txt) {return oo.connectedClient.ask('inputString', txt)}
@@ -48,6 +50,7 @@ oo.init = function(opts) {
     }
     oo.initDB(opts.db)
     oo.initClassManager(opts.scriptdirs)
+    oo.initEventManager()
 }
 
 oo.initDB = function (dbopts) {
@@ -56,5 +59,8 @@ oo.initDB = function (dbopts) {
 
 oo.initClassManager = function (scriptdirs) {
     oo.classmanager.init(scriptdirs)
+}
+
+oo.initEventManager = function () {
 }
 module.exports = oo;
