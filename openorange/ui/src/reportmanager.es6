@@ -65,7 +65,6 @@
     ReportContainer.reports = [];
 
     $(document).ready(function () {
-        console.log("en docready reportmanager")
         cm.getClass("Embedded_Report").addClassListener({
             update: function (event) {
                 if (event.type == 'report' && event.action == 'open') {

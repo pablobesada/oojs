@@ -13,9 +13,7 @@ let getOO = function getOO() {
 }
 
 EventEmitter.emit = function emit(eventName, event) {
-    if (!event) event = {};
-    event._meta = {user: getOO().currentUser(), name: eventName}
-    console.log(this, "EMITTING " + eventName)
+    event = this.newEvent(eventName, event);
     if (eventName in this.__ev__) {
         for (let i = 0; i < this.__ev__[eventName].length; i++) {
             this.__ev__[eventName][i].call(this, event);
@@ -46,6 +44,11 @@ EventEmitter.offAny = function offAny(cb) {
     if (idx >= 0) this.__anyev__.splice(idx, 1)
 }
 
+EventEmitter.newEvent = function newEvent(eventName, data) {
+    if (!data) data = {};
+    data._meta = {user: getOO().currentUser(), name: eventName}
+    return data
+}
 
 class BaseEntity {
 
@@ -63,6 +66,7 @@ class BaseEntity {
     }
 
     constructor() {
+        this.__class__ = this.constructor
         this.__ev__ = {}
         this.__anyev__ = []
         this.emit = EventEmitter.emit.bind(this);
@@ -70,6 +74,11 @@ class BaseEntity {
         this.onAny = EventEmitter.onAny.bind(this);
         this.off = EventEmitter.off.bind(this);
         this.offAny = EventEmitter.offAny.bind(this);
+        this.newEvent = EventEmitter.newEvent.bind(this)
+    }
+
+    inspect() {
+        return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
     }
 
     /*emit(eventName) {
@@ -106,6 +115,7 @@ class BaseEntity {
     }
 }
 
+BaseEntity.__description__ = Descriptor
 BaseEntity.__ev__ = {}
 BaseEntity.__anyev__ = []
 BaseEntity.emit = EventEmitter.emit.bind(BaseEntity);
@@ -113,6 +123,7 @@ BaseEntity.on = EventEmitter.on.bind(BaseEntity);
 BaseEntity.onAny = EventEmitter.onAny.bind(BaseEntity);
 BaseEntity.off = EventEmitter.off.bind(BaseEntity);
 BaseEntity.offAny = EventEmitter.offAny.bind(BaseEntity);
+BaseEntity.newEvent = EventEmitter.newEvent.bind(BaseEntity);
 
 
 if (typeof window == 'undefined') {
@@ -122,7 +133,6 @@ if (typeof window == 'undefined') {
     window.oo.eventmanager = BaseEntity.new();
     $(document).ready(function () {
         window.oo.classmanager.getClass("Embedded_Window").onAny(function (event) {
-            console.log("Embedded_Window EMITED: ", event._meta.name, event)
             window.oo.pushreceiver.emitFromEntity(event._meta.name, event)
         })
     });

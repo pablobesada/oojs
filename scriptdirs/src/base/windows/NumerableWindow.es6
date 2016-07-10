@@ -21,9 +21,9 @@ class NumerableWindow extends Parent {
         return title;
     }
 
-    fieldModified(record, field, row, rowfield, oldvalue) {
-        super.fieldModified(record, field, row, rowfield, oldvalue)
-        if (field.name == 'SerNr') this.notifyTitleChanged();
+    fieldModified(event) {
+        super.fieldModified(event)
+        if (event.field.name == 'SerNr') this.notifyTitleChanged();
     }
 
 

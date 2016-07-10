@@ -36,7 +36,6 @@ classmanager.createClassStructure = function loadClassStructure() {
 }
 
 classmanager.init = function init(scriptdirs) {
-    console.log("INITIATING CLASS MANAGER")
     classmanager.scriptdirs = scriptdirs
     classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
     this.__class_structure__ = this.createClassStructure();
@@ -87,7 +86,7 @@ classmanager.getClass = function getClass(name, options) {
             let ld = this.lookupdirs[j]
             if (name in this.__class_structure__[i][ld]) {
                 let modname = "./" + path.join(sdbasedir,sd,ld,name);
-                //let r = global.__main__.require(modname);
+                //console.log("requiring " + modname)
                 let r = global.__main__.require(modname);
                 return r;
             }

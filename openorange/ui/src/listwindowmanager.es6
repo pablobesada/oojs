@@ -22,7 +22,6 @@
             for (var i = 0; i < ListWindowContainer.listwindows.length; i++) {
                 var w = ListWindowContainer.listwindows[i];
                 if (w.listwindow === window) {
-                    console.log("window found: " + w.tab_id)
                     $('ul.tabs').tabs('select_tab', w.tab_id);
                 }
             }
@@ -38,7 +37,6 @@
             w.append('<div class="grid-header" style="width:100%"> <label>lalala</label> <span style="float:right;display:inline-block;">Search: <input type="text" id="txtSearch" value="buscar"> </span> </div>');
             w.append('<div class="listwindow_grid" style="width:600px;height:200px;"></div>')
             this.tab_id = "tab_listwindow_" + (ListWindowContainer.listwindows.length + 1);
-            console.log("setting tab_id: " + this.tab_id)
             ListWindowContainer.listwindows.push({
                 listwindow: this.listwindow,
                 element: w,
@@ -145,7 +143,6 @@
 
         async recordSelectedInListWindow(record) {
             var self = this;
-            console.log("aca")
             let res = await record.load()
             if (res) {
                 var window = cm.getClass(self.listwindow.__class__.getDescription().windowClass).new();
@@ -170,7 +167,6 @@
     }
 
     $(document).ready(function () {
-        console.log("en docready listwindowmanager")
         cm.getClass("Embedded_ListWindow").addClassListener({
             update: function (event) {
                 if (event.type =='listwindow' && event.action =='open') {

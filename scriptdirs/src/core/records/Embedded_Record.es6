@@ -170,7 +170,8 @@ DetailField.newRow = function newRow() {
 DetailField.push = function push(obj) {
     obj.rowNr = this.length;
     Array.prototype.push.call(this, obj)
-    obj.addListener(this);
+    //obj.addListener(this);
+    obj.on('field modified', this.fieldModified.bind(this))
     if (this.listener) this.listener.rowInserted(this, obj, this.length - 1);
 }
 
@@ -181,13 +182,15 @@ DetailField.insert = function insert(obj, pos) {
     for (var i = pos + 1; i < this.length; i++) {
         this[i].rowNr = i;
     }
-    obj.addListener(this);
+    //obj.addListener(this);
+    obj.on('field modified', this.fieldModified.bind(this))
     if (this.listener) this.listener.rowInserted(this, obj, pos);
 }
 
 DetailField.clear = function clear() {
     if (this.length != 0) {
         this.length = 0;
+        console.log("CLEARED")
         if (this.listener) this.listener.detailCleared(this);
     }
 }
@@ -207,9 +210,14 @@ DetailField.splice = function splice() {
     return removed;
 }
 
-DetailField.fieldModified = function fieldModified(record, field, oldvalue) {
+/*DetailField.fieldModified = function fieldModified(record, field, oldvalue) {
     //[].unshift.call(arguments, this);
     if (this.listener) this.listener.fieldModified.call(this.listener, this, record, field, oldvalue)
+}*/
+DetailField.fieldModified = function fieldModified(event) {
+    //[].unshift.call(arguments, this);
+    //console.log("en detail modified: ", event)
+    if (this.listener) this.listener.fieldModified.call(this.listener, this, event.record, event.field, event.oldvalue)
 }
 
 
@@ -274,12 +282,6 @@ function propDetailGetter(fn) {
     }
 }
 class Embedded_Record extends oo.BaseEntity {
-
-    static new() {
-        var res = new this()
-        return res;
-    }
-
 
     static initClass(descriptor) {
         super.initClass(descriptor);
@@ -400,23 +402,26 @@ class Embedded_Record extends oo.BaseEntity {
     fieldModified(p1, p2, p3, p4) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield, p4: oldvalue}
         this.setModifiedFlag(true);
         //[].unshift.call(arguments, this);
-        for (var i = 0; i < this.__listeners__.length; i++) {
-            this.__listeners__[i].fieldModified.call(this.__listeners__[i], this, p1, p2, p3, p4);
-        }
+        this.emit("field modified", {record:this, field: p1, row: p2, rowfield: p3, oldvalue: p4})
+        //for (var i = 0; i < this.__listeners__.length; i++) {
+        //    this.__listeners__[i].fieldModified.call(this.__listeners__[i], this, p1, p2, p3, p4);
+        //}
     }
 
     rowInserted(detail, row, position) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
         this.setModifiedFlag(true);
-        for (var i = 0; i < this.__listeners__.length; i++) {
-            this.__listeners__[i].rowInserted(this, detail, row, position);
-        }
+        this.emit("row inserted", {record:this, detail: detail, row: row, position: position})
+        //for (var i = 0; i < this.__listeners__.length; i++) {
+        //    this.__listeners__[i].rowInserted(this, detail, row, position);
+        //}
     }
 
     detailCleared(detail) {  //{p1: detail}
         this.setModifiedFlag(true);
-        for (var i = 0; i < this.__listeners__.length; i++) {
-            this.__listeners__[i].detailCleared(this, detail);
-        }
+        this.emit("detail cleared", {record:this, detail: detail})
+        //for (var i = 0; i < this.__listeners__.length; i++) {
+        //    this.__listeners__[i].detailCleared(this, detail);
+        //}
     }
 
     addListener(listener) {
@@ -595,7 +600,9 @@ class Embedded_Record extends oo.BaseEntity {
     }
 
     setModifiedFlag(b) {
-        this.__ismodified__ = b;
+        if (b != this.__ismodified__) {
+            this.__ismodified__ = b;
+        }
     }
 
     setNewFlag(b) {

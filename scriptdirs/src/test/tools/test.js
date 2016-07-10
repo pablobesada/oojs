@@ -17,14 +17,16 @@ var async = require('async')
 
 //cm.addScriptDir("test")
 
-//require("../local/ExplorerTest")
-//require("../local/LoginTest")
-//require("../core/records/Embedded_RecordTest")
-//require("../core/windows/Embedded_WindowTest")
-//require("../local/ReportTest.js")
-//require("../local/ClassManagerTest")
-//require("../tools/ormTest")
+
 require("../tools/BaseEntity")
+require("../local/ExplorerTest")
+require("../local/LoginTest")
+require("../core/records/Embedded_RecordTest")
+require("../core/windows/Embedded_WindowTest")
+require("../local/ReportTest.js")
+require("../local/ClassManagerTest")
+require("../tools/ormTest")
+
 
 
 //console.log(oo.classmanager.getClass("TestRecord").__description__)

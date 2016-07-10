@@ -36,7 +36,7 @@ describe('ORM with Selenium', function () {
     });
 
     this.timeout(40000)
-    it.skip('Concurrent transaccions from different browsers', async () => {
+    it('Concurrent transaccions from different browsers', async () => {
         let runs = [true,false,false,true]
         //let runs = [false]
         let responses = [];
@@ -45,10 +45,10 @@ describe('ORM with Selenium', function () {
             driver.get(`localhost:${app.port}/oo/ui`);
             //console.log(await driver.findElement(By.id("username")))
             let usernameElement = (await driver.findElement(By.id("username")))
-            usernameElement.sendKeys("PDB");
+            usernameElement.sendKeys("openorange");
             usernameElement.sendKeys(webdriver.Key.TAB);
             let passwordElement = (await driver.findElement(By.id("password")))
-            passwordElement.sendKeys("123");
+            passwordElement.sendKeys("");
             passwordElement.sendKeys(webdriver.Key.TAB);
             let loginFormElement = (await driver.findElement(By.id("loginButton")))
             await wait(1000) //feo, pero funciona

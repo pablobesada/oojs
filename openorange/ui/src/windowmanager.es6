@@ -52,7 +52,6 @@
             windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
             //$('input.editor[timeeditor=true]').mask('00:00:00');
             if (this.window.getRecord() != null) {
-                console.log("DW")
                 this.bindRecordToWindow(this.window.getRecord());
             }
             //this.window.addListener(this);
@@ -93,6 +92,7 @@
             if ('type' in json && json.type == 'tabs') return self.createTabsComponent(json);
             if ('type' in json && json.type == 'column') return self.createColumnComponent(json);
             if ('type' in json && json.type == 'line') return self.createLineComponent(json);
+            if ('type' in json && json.type == 'card') return self.createCardComponent(json);
             if ('content' in json) return self.createComponent(json.content);
             if (json instanceof Array) {
                 var container = $('<div class="container"></div>');
@@ -104,6 +104,21 @@
             }
         };
 
+
+        createCardComponent(json) {
+            let self = this;
+            let component = $('<div class="col s12 m6"></div>')
+            if (json.name) {
+                let card = self.window.getCard(json.name)
+                card.on('content updated', function (event) {
+                    component.html('')
+                    component.append(event.DOMComponent)
+                })
+                card.play()
+            }
+            json.__element__ = component;
+            return component;
+        };
 
         createColumnComponent(json) {
             var self = this;
@@ -430,7 +445,6 @@
         };
 
         beforeEditRow(event) {
-            console.log("en before edit row");
             if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
             var params = this;
             var self = params.self;
@@ -455,17 +469,13 @@
                     _(addedRow.fieldNames()).forEach(function (fn) {
                         var value = addedRow[fn];
                         if (value != null) {
-                            self.update(
-                                {
-                                    data: {
-                                        record: self.window.getRecord(),
-                                        field: self.window.getRecord().details(params.detailname),
-                                        row: addedRow,
-                                        rowfield: addedRow.fields(fn),
-                                        oldvalue: value,
-                                        _meta: {name: 'field modified'}
-                                    }
-                                });
+                            self.update(self.window.newEvent('field modified', {
+                                    record: self.window.getRecord(),
+                                    field: self.window.getRecord().details(params.detailname),
+                                    row: addedRow,
+                                    rowfield: addedRow.fields(fn),
+                                    oldvalue: value
+                                }));
                         }
                     });
                     self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
@@ -513,7 +523,6 @@
 
         afterEdit(event) {
             var self = this;
-            console.log("afteredit");
             var value = event.currentTarget.value;
             if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
                 var ftype = self.window.getRecord().fields(event.currentTarget.name).type;
@@ -530,7 +539,6 @@
         };
 
         afterEditRow(event) {
-            console.log("en after edit row");
             var params = this;
             var self = params.self;
             var target = $(event.currentTarget);
@@ -560,35 +568,32 @@
                     self.setFocus()
                     break;
                 case "record replaced":
-                    console.log("ED", event)
-                    self.bindRecordToWindow(event.data);
+                    self.bindRecordToWindow(event.record);
                     break;
                 case "field modified":
-                    var field = event.data.field;
+                    var field = event.field;
                     if (field.type != "detail") {
                         self.setEditorValue(field.name, field.type, field.getValue());
                         Materialize.updateTextFields();
                     } else {
-                        console.log("row: " + event.data.rowfield.name)
-                        var rowNr = event.data.row.rowNr;
-                        if (event.data.rowfield.name == 'rowNr') rowNr = event.data.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
-                        console.log(event.data.field.name, rowNr, event.data.rowfield.name, event.data.rowfield.type, event.data.rowfield.getValue())
-                        self.setRowEditorValue(event.data.field.name, rowNr, event.data.rowfield.name, event.data.rowfield.type, event.data.rowfield.getValue());
+                        var rowNr = event.row.rowNr;
+                        if (event.rowfield.name == 'rowNr') rowNr = event.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
+                        self.setRowEditorValue(event.field.name, rowNr, event.rowfield.name, event.rowfield.type, event.rowfield.getValue());
                         Materialize.updateTextFields();
                     }
                     break;
-                case "detail row inserted":
-                    var detail = event.data.detail;
+                case "row inserted":
+                    var detail = event.detail;
                     if (detail.name in this.matrix_json_map) {
                         _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
                             var tbody = matrixjson.__element__.find("tbody[matrix_idx]");
-                            self.insertMatrixRow(event.data.record, matrixjson, event.data.row, tbody);
+                            self.insertMatrixRow(event.record, matrixjson, event.row, tbody);
                         })
 
                     }
                     break;
                 case "detail cleared":
-                    var detail = event.data.detail;
+                    var detail = event.detail;
                     if (detail.name in this.matrix_json_map) {
                         _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
                             var tbody = matrixjson.__element__.find("tbody");
@@ -597,7 +602,7 @@
                     }
                     break;
                 case "title changed":
-                    self.setWindowTitle(event.data)
+                    self.setWindowTitle(event.title)
                     break
             }
         }
@@ -759,16 +764,19 @@
         };
 
         bindRecordToWindow(record) {
-            console.log("RECORD: ", record)
             if (this.current_record_id) oo.eventmanager.off(`start editing record ${this.window.getRecordClass().getDescription().name}:${this.current_record_id}`)
             this.current_record_id = null;
             var self = this;
-            _(record.detailNames()).forEach(function (dn) {
-                var vt = record[dn].newRow();
-                //vt.rowNr =
-                self.virtual_rows[dn] = vt;
-            });
-            self.bindRecordToComponent(record, self.windowjson);
+            self.virtual_rows = {}
+            if (record) {
+                _(record.detailNames()).forEach(function (dn) {
+                    var vt = record[dn].newRow();
+                    //vt.rowNr =
+                    self.virtual_rows[dn] = vt;
+                });
+                self.bindRecordToComponent(record, self.windowjson);
+            }
+
             self.setWindowTitle(this.window.getTitle());
             Materialize.updateTextFields();
             self.__element__.find("select").material_select()
@@ -840,11 +848,9 @@
             };
 
             let grid_columns = generateColumns();
-            console.log("pwelement1", pwelement)
             grid = new Slick.Grid(pwelement.find(".pastewindow_grid"), loader.data, grid_columns, options);
             grid.onClick.subscribe(function (e, args) {
                 var item = args.item;
-                console.log("PWELEMENT2", pwelement)
                 var pasteparams = {
                     self: self,
                     detailname: params.detailname,
@@ -900,7 +906,6 @@
                 self.setEditorValue(params.fieldjson.field, params.field.type, params.record[params.pastewindow.__description__.pastefieldname])
                 self.afterEdit(event)
             } else {
-                console.log(params.detailname, params.rownr, params.fieldjson.field, params.field.type, params.record[params.pastewindow.__description__.pastefieldname])
                 self.setRowEditorValue(params.detailname, params.rownr, params.fieldjson.field, params.field.type, params.record[params.pastewindow.__description__.pastefieldname])
                 var bind_params = {
                     self: self,
@@ -936,9 +941,8 @@
     };
     $(document).ready(function () {
         cm.getClass("Embedded_Window").onAny(function (event) {
-            console.log(event)
             if (event._meta.name == 'open') {
-                let wm = new WindowContainer(event.data)
+                let wm = new WindowContainer(event.window)
                 wm.render()
             }
         });

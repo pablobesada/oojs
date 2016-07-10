@@ -1,6 +1,7 @@
 "use strict";
 
 var oo = require("openorange")
+var cm = oo.classmanager
 var _ = require("underscore")
 
 var WindowDescription = {
@@ -21,7 +22,7 @@ class Embedded_Window extends oo.BaseEntity {
     }
 
     open() {
-        Embedded_Window.emit("open", {data: this})
+        Embedded_Window.emit("open", {window: this})
         this.__isopen__ = true;
         if (this.getRecord() && this.getRecord().internalId) Embedded_Window.emit(`start editing record ${this.getRecord().__class__.getDescription().name}:${this.getRecord().internalId}`, {record: this.getRecord()})
     }
@@ -43,7 +44,7 @@ class Embedded_Window extends oo.BaseEntity {
         }
         newdesc.actions = parentdesc.actions
         if (descriptor.actions) {
-            for (let i=0;i<descriptor.actions.length;i++) newdesc.actions.push(descriptor.actions[i])
+            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
         }
         newdesc.filename = descriptor.filename;
         this.__description__ = newdesc;
@@ -53,10 +54,12 @@ class Embedded_Window extends oo.BaseEntity {
 
     constructor() {
         super()
-        this.__class__ = this.constructor
         this.__record__ = null;
         this.__title__ = this.__class__.__description__.title;
         this.__isopen__ = false;
+        this.fieldModified = this.fieldModified.bind(this)
+        this.detailCleared = this.detailCleared.bind(this)
+        this.rowInserted = this.rowInserted.bind(this)
     }
 
     getRecordClass() {
@@ -76,7 +79,7 @@ class Embedded_Window extends oo.BaseEntity {
     }
 
     inspect() {
-        return "<" + this.__description__.name + ", from " + this.__filename__ + ">"
+        return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
     }
 
     getOriginalTitle() {
@@ -88,49 +91,58 @@ class Embedded_Window extends oo.BaseEntity {
     }
 
     notifyTitleChanged() {
-        this.emit('title changed', {data: this.getTitle()})
+        this.emit('title changed', {title: this.getTitle()})
     }
 
     setTitle(title) {
         this.__title__ = title;
-        this.emit('title changed', {data: title})
+        this.emit('title changed', {title: title})
     }
 
     setRecord(rec) {
         if (this.__record__ != rec) {
+            if (this.__record__ != null) {
+                this.__record__.off('field modified', this.fieldModified);
+                this.__record__.off('detail cleared', this.rowInserted);
+                this.__record__.off('row inserted', this.rowInserted)
+            }
             this.__record__ = rec;
-            this.__record__.addListener(this)
-            this.emit('record replaced', {data: rec})
-            if (this.__isopen__ && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
+            if (this.__record__) {
+                //this.__record__.addListener(this)
+                this.__record__.on('field modified', this.fieldModified)
+                this.__record__.on('detail cleared', this.detailCleared)
+                this.__record__.on('row inserted', this.rowInserted)
+            }
+            this.emit('record replaced', {record: rec})
+            if (this.__record__ && this.__isopen__ && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
         }
     }
 
-    fieldModified(record, field, row, rowfield, oldvalue) {
-        this.emit('field modified', {data: {
-                record: record,
-                field: field,
-                row: row,
-                rowfield: rowfield,
-                oldvalue: oldvalue
-            }
+    fieldModified(event) {
+        console.log("en listener field modified de window")
+        this.emit('field modified', {
+            record: event.record,
+            field: event.field,
+            row: event.row,
+            rowfield: event.rowfield,
+            oldvalue: event.oldvalue
         })
     }
 
-    rowInserted(record, detail, row, position) {
-        this.emit('detail row inserted', {data: {
-                record: record,
-                detail: detail,
-                row: row,
-                position: position
-            }
+    rowInserted(event) {
+        this.emit('row inserted', {
+                record: event.record,
+                detail: event.detail,
+                row: event.row,
+                position: event.position
         })
     }
 
-    detailCleared(record, detail, row, position) {
-        this.emit('detail cleared', {data: {
-                record: record,
-                detail: detail,
-            }
+    detailCleared(event) {
+        console.log("receiving detail cleared")
+        this.emit('detail cleared', {
+            record: event.record,
+            detail: event.detail,
         })
     }
 
@@ -196,10 +208,25 @@ class Embedded_Window extends oo.BaseEntity {
         return false;
     }
 
+    getCard(cardname) {
+        let card = cm.getClass(cardname).new(this)
+        let card_description = card.__class__.getDescription();
+        let params = {}
+        for (p in card_description.params) {
+            if (this.getRecord() instanceof card_description.params[p]) {
+                card.setParam(p,this.getRecord())
+                this.on('record replaced', function (event) {
+                    card.setParam(p,event.record);
+                })
+            }
+        }
+        return card
+    }
+
     static applyFormOverride(form, patcheslist, path) {
         let findNodePath = function findNodePath(json, name, path) {
             if (json instanceof Array) {
-                for (let i=0;i<json.length;i++) {
+                for (let i = 0; i < json.length; i++) {
                     path.push(i)
                     let res = findNodePath(json[i], name, path)
                     if (res) return true;
@@ -210,7 +237,7 @@ class Embedded_Window extends oo.BaseEntity {
             if (json.name == name) {
                 return true;
             }
-            let attr = 'content' in json? 'content': 'columns' in json? 'columns' : 'pages' in json? 'pages' : null
+            let attr = 'content' in json ? 'content' : 'columns' in json ? 'columns' : 'pages' in json ? 'pages' : null
             if (attr) {
                 path.push(attr)
                 let res = findNodePath(json[attr], name, path)
@@ -224,16 +251,16 @@ class Embedded_Window extends oo.BaseEntity {
         for (let i in patcheslist) {
             let patch = patcheslist[i];
             if ('addafter' in patch || 'addbefore' in patch || 'replace' in patch || 'remove' in patch) {
-                let action = 'addafter' in patch? 'addafter' : 'addbefore' in patch? 'addbefore' : 'replace' in patch? 'replace' : 'remove';
+                let action = 'addafter' in patch ? 'addafter' : 'addbefore' in patch ? 'addbefore' : 'replace' in patch ? 'replace' : 'remove';
                 let nodepath = []
                 let res = findNodePath(form, patch[action], nodepath);
                 if (res) {
                     let nodeidx = nodepath.pop();
                     let parentnode = form;
-                    for (let j=0;j<nodepath.length;j++) parentnode = parentnode[nodepath[j]];
+                    for (let j = 0; j < nodepath.length; j++) parentnode = parentnode[nodepath[j]];
                     switch (action) {
                         case 'addafter':
-                            parentnode.splice(nodeidx+1, 0, patch.content);
+                            parentnode.splice(nodeidx + 1, 0, patch.content);
                             break;
                         case 'addbefore':
                             parentnode.splice(nodeidx, 0, patch.content);
@@ -257,6 +284,4 @@ class Embedded_Window extends oo.BaseEntity {
 }
 
 Embedded_Window.__description__ = WindowDescription
-Embedded_Window.__class_listeners__ = []
-
 module.exports = Embedded_Window

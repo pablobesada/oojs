@@ -22,6 +22,17 @@ describe("Embedded_Record", function () {
         await oo.commit();
     })
 
+    it("isModified", async () => {
+        rec = cls.new().fillWithRandomValues();
+        //console.log("--------------------------")
+        rec.setModifiedFlag(false)
+        rec.isModified().should.be.false();
+        rec.String_Field = 'ABCD'
+        rec.isModified().should.be.true('isModified not right after setting header value');
+        rec.setModifiedFlag(false)
+        rec.Rows[0].Integer_Field++
+        rec.isModified().should.be.true('isModified not right after settings row field value');
+    })
 
     it("create new record and set some field values", async () => {
         rec = cls.new();
@@ -181,7 +192,7 @@ describe("Embedded_Record", function () {
         rec.newproperty = 'abcde'
     })
 
-    it ("check sets behaviour (adding, changing, deleting)", async () => {
+    it("check sets behaviour (adding, changing, deleting)", async () => {
         async function checkSetField(rec, fn) {
             let setvalues = _(rec[fn].split(",")).map(function (v) {return v.trim()})
             let response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields(fn).setrecordname} WHERE masterId=?`, [rec.internalId])
@@ -215,6 +226,7 @@ describe("Embedded_Record", function () {
         //compruebo que los registros asociados esten correctos (que se hayan borrado todos y creado solo los modificados y nuevos)
         res = await rec.store();
         res.should.be.true();
+
         await checkSetField(rec, 'Set_Field');
         for (let i=0;i<rec.Rows.length;i++) {
             let row = rec.Rows[i];

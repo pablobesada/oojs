@@ -60,10 +60,8 @@ router.post('/record/:method', function (req, res, next) {
             rec = cm.getClass(params.recordclass);
         }
         res.setHeader('Content-Type', 'application/json');
-        console.log(params.method)
         rec[params.method].apply(rec, params.params)
             .then(function (response) {
-                console.log("en el then")
                 if (params.calltype == 'instance') {
                     res.send({ok: true, self: JSON.stringify(rec), response: response});
                 } else {
@@ -71,7 +69,6 @@ router.post('/record/:method', function (req, res, next) {
                 }
             })
             .catch(function (err) {
-                console.log("en el catch 1")
                 res.send({ok: false, error: err})
                 console.log(err.stack)
             });

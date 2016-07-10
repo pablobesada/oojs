@@ -19,7 +19,8 @@ var Description = {
             ]},
             {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         ]},
-
+        {type: 'card', name: 'CustomerSalesOrdersCard'},
+        {type: 'card', name: 'TimerCard'},
         {field: 'TransDate'},
         {field: 'TransDate', editor: 'string'},
         {field: 'TransDate', editor: 'string'},

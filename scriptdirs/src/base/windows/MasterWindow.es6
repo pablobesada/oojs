@@ -21,9 +21,9 @@ class MasterWindow extends Parent {
         return title;
     }
 
-    fieldModified(record, field, row, rowfield, oldvalue) {
-        super.fieldModified(record, field, row, rowfield, oldvalue)
-        if (field.name == 'Code') this.notifyTitleChanged();
+    fieldModified(event) {
+        super.fieldModified(event)
+        if (event.field.name == 'Code') this.notifyTitleChanged();
     }
 }
 module.exports = MasterWindow.initClass(Description)
