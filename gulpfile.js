@@ -1,6 +1,4 @@
 "use strict"
-require('source-map-support').install(); //solo debe usarse para debugging
-require("babel-polyfill");
 
 let path = require('path')
 var fs = require('fs');
@@ -161,20 +159,25 @@ gulp.task("sd-js", function () {
 });
 
 gulp.task('init-project', ['oo-babel', 'oo-js', 'ui-babel', 'ui-js', 'sd-babel', 'sd-js'], function () {
-    fs.symlinkSync('../openorange/', 'node_modules/openorange');
+    if (!fs.existsSync('node_modules/openorange')) fs.symlinkSync('../openorange/', 'node_modules/openorange');
 });
 
 gulp.task('build', ['oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'sd-babel', 'sd-js'])
 
-gulp.task('sync-tables', () => {
+gulp.task('prepare openorange', () => {
+    require('source-map-support').install(); //solo debe usarse para debugging
+    require("babel-polyfill");
     global.__main__ = module
+})
+
+gulp.task('sync-tables', ['prepare openorange'], () => {
     let oo = require("openorange")
     oo.init();
     oo.orm.syncAllTables()
 })
 
-gulp.task('create-openorange-user', (done) => {
-    global.__main__ = module
+
+gulp.task('create-openorange-user', ['prepare openorange'], (done) => {
     let oo = require("openorange")
     oo.init();
     var conn = null;
