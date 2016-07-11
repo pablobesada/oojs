@@ -64,7 +64,7 @@ app.use(sessionMiddleware);
 
 //app.use(require('node-compass')({mode: 'expanded'}));
 //app.use(express.static(path.join(__dirname, 'public')));
-app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
+app.use('/bower_components', express.static(path.join(__dirname, '/bower_components'), { maxAge: 60*60*24*7*1000}));
 //app.use('/openorange/lib/client', express.static(path.join(__dirname, 'node_modules/openorange/lib/client')));
 //app.use('/openorange/lib/both', express.static(path.join(__dirname, 'node_modules/openorange/lib/both')));
 

@@ -26,7 +26,13 @@ router.get('/home', function(req, res, next) {
 });
 
 //router.use('bower_components', express.static(path.join(__dirname, '../../bower_components')));
-router.use('/', express.static(path.join(__dirname, '.')));
+router.use('/css/', express.static(path.join(__dirname, 'css')));
+router.use('/font/', express.static(path.join(__dirname, 'font'), { maxAge: 60*60*24*7*1000}));
+router.use('/images/', express.static(path.join(__dirname, 'images'), { maxAge: 60*60*24*7*1000}));
+router.use('/html/', express.static(path.join(__dirname, 'html')));
+router.use('/js/oo/', express.static(path.join(__dirname, 'js/oo')));
+router.use('/js/plugins/', express.static(path.join(__dirname, 'js/plugins'), { maxAge: 60*60*24*7*1000}));
+router.use('/js/', express.static(path.join(__dirname, 'js')));
 
 
 let config = function config(opts) {
