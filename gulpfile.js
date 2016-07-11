@@ -158,8 +158,12 @@ gulp.task("sd-js", function () {
         }));
 });
 
-gulp.task('init-project', ['oo-babel', 'oo-js', 'ui-babel', 'ui-js', 'sd-babel', 'sd-js'], function () {
+gulp.task('create-openorange-symlink', () => {
     if (!fs.existsSync('node_modules/openorange')) fs.symlinkSync('../openorange/', 'node_modules/openorange');
+})
+
+gulp.task('init-project', ['build', 'create-openorange-symlink', 'sync-tables'], function () {
+
 });
 
 gulp.task('build', ['oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'sd-babel', 'sd-js'])
