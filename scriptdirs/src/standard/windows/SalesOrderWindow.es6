@@ -7,48 +7,20 @@ var Description = {
     record: 'SalesOrder',
     title: "Sales Order",
     form: [
-        {type: "column", content: [
-            {field: 'syncVersion', label: 'sync2'},
-            {type: "line", content: [
-                {field: 'User', label: 'Usuario'},
-                {field: 'SerNr', label: 'Numero'},
-                {field: 'CustCode'},
-                {field: 'TransTime'},
-                {field: 'TransTime', editor: 'string'},
-                {field: 'TransTime', editor: 'string'},
-            ]},
-            {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
-        ]},
+        {field: 'User', label: 'Usuario'},
+        {field: 'SerNr', label: 'Numero'},
+        {field: 'CustName'},
+        {field: 'TransTime'},
+        {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         {type: 'card', name: 'CustomerSalesOrdersCard'},
         {type: 'card', name: 'TimerCard'},
         {field: 'TransDate'},
-        {field: 'TransDate', editor: 'string'},
-        {field: 'TransDate', editor: 'string'},
-        {field: 'CustName'},
-        {field: 'CustName'},
-        {field: 'PrintFormat'},
-        {field: 'PrintFormat', editor: 'radiobutton', options: [
-            {label: 'Normal', value: 0},
-            {label: 'Sum per Item', value: 1},
-            {label: 'Sum per Origin', value: 3},
-        ]},
         {field: 'PrintFormat', editor: 'combobox', options: [
             {label: 'Normal', value: 0},
             {label: 'Sum per Item', value: 1},
             {label: 'Sum per Origin', value: 3},
         ]},
-        {field: 'User'},
         {field: "Status", editor: "checkbox"},
-        {field: "Status", editor: "integer"},
-        {field: 'Status', editor: 'combobox', options: [
-            {label: 'NO', value: 0},
-            {label: 'YES', value: 1},
-        ]},
-        {field: 'Status', editor: 'radiobutton', options: [
-            {label: 'NO', value: 0},
-            {label: 'YES', value: 1},
-        ]},
-        //{field: "Status", editor: "integer"},
         {
             type: 'tabs', pages: [
             {
@@ -57,20 +29,12 @@ var Description = {
                     field: 'Items', columns: [
                     {field: 'rowNr'},
                     {field: 'masterId'},
-                    {field: 'DeliveryTimeRow', editor: "string"},
                     {field: 'DeliveryTimeRow', editor: "time"},
-                    {field: 'DeliveryDateRow', editor: "string"},
                     {field: 'DeliveryDateRow', editor: "date"},
                     {field: 'OriginType', editor: "string"},
                     {field: 'OriginType', editor: "checkbox"},
                     {field: 'ArtCode', label: 'Codigo', pastewindow: "ItemPasteWindow"},
-                    {field: 'Name', label: 'Name'},
-                    {field: 'Name', label: 'Descripcion', editor: 'combobox', options: [
-                        {label: 'Normal', value: 0},
-                        {label: 'Sum per Item', value: 1},
-                        {label: 'Sum per Origin', value: 3},
-                    ]},
-                ]
+                    {field: 'Name', label: 'Name'}]
                 }
             ]
             },
@@ -109,9 +73,14 @@ class SalesOrderWindow extends Parent {
 
 
     async "changed Items.ArtCode"(rowNr) {
+        console.log(4, rowNr)
         var self = this;
-        await super["changed Items.ArtCode"](rowNr)
-        self.getRecord().Items[rowNr].Name += 'X'
+        console.log(5)
+        await Parent.tryCall(this, null, "changed Items.ArtCode", rowNr);
+        console.log(6)
+        //await super["changed Items.ArtCode"](rowNr)
+        self.getRecord().Items[rowNr].pasteArtCode(self)
+        console.log(7)
     }
 }
 module.exports = SalesOrderWindow.initClass(Description)

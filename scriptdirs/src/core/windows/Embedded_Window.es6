@@ -69,6 +69,7 @@ class Embedded_Window extends oo.BaseEntity {
         return this.__class__.__recordClass__
     }
 
+    /*
     static tryCall(self, defaultResponse, methodname) {
         if (methodname == null) throw new Error("methodname can not be null")
         if (methodname in this.prototype) {
@@ -76,7 +77,7 @@ class Embedded_Window extends oo.BaseEntity {
         } else {
             return defaultResponse;
         }
-    }
+    }*/
 
     inspect() {
         return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"

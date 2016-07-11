@@ -36,6 +36,7 @@
         if (module == "moment") return moment;
         if (module == "chance") return Chance;
         if (module == "js-md5") return md5;
+        if (module == "bluebird") return Promise;
         return loadModule(module)
     }
 
@@ -74,6 +75,16 @@
         return self.__class_structure__;
     }
 
+    classmanager.registerClass = function registerClass(cls) {
+        //console.log("registering class ", cls)
+        let name = cls.__description__.name;
+        let sd_idx = classmanager.reversed_scriptdirs.indexOf(classmanager.extractScriptDir(cls.__description__.filename))
+        if (!(name in classmanager.classes)) classmanager.classes[name] = []
+        classmanager.classes[name].push({sd_idx: sd_idx, cls: cls});
+        classmanager.classes[name].sort(function (a,b) {return a.sd_idx - b.sd_idx});
+        classmanager.__last_received_class__ = cls;
+        console.log(name + " REGISTERED")
+    }
     classmanager.getClasses = function getClasses() {
         return classmanager.classes;
     }
@@ -87,6 +98,7 @@
             for (let c=0;c<classmanager.classes[name].length;c++) {
                 let clsinfo = classmanager.classes[name][c]
                 if (clsinfo.sd_idx >= min_sd && clsinfo.sd_idx <= max_sd) {
+                    console.log(`REQUESTING ${name} (${min_sd}-${max_sd}) FOUND`)
                     return clsinfo.cls;
                 }
             }
@@ -97,6 +109,7 @@
             for (let j = 0; j < classmanager.lookupdirs.length; j++) {
                 let ld = classmanager.lookupdirs[j]
                 if (name in classStructure[i][ld]) {
+                    console.log(`REQUESTING ${name} (${min_sd}-${max_sd}) NOT FOUND`)
                     //console.log(`fetching from server`)
                     let url = __baseurl__ + '/class';
                     let res = null;
@@ -106,13 +119,12 @@
                         data: {name: name, min_sd: i, max_sd: i},
                         async: false,
                         success: function (result) {
-                            //console.log("A) loading class: " + name)
-                            res = moduleFunction();
-                            //let sd = classmanager.extractScriptDir(res.getDescription().filename);
-                            //console.log("SD: ", sd)
+                            //console.log("SUCCESS",classmanager.__last_received_class__)
+                            res = classmanager.__last_received_class__;
+                            /*res = moduleFunction();
                             if (!(name in classmanager.classes)) classmanager.classes[name] = []
                             classmanager.classes[name].push({sd_idx: i, cls: res});
-                            classmanager.classes[name].sort(function (a,b) {return a.sd_idx - b.sd_idx});
+                            classmanager.classes[name].sort(function (a,b) {return a.sd_idx - b.sd_idx});*/
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.log(errorThrown)
@@ -144,69 +156,6 @@
         if (cls != null) return cls;
         var cls = classmanager.getClass(parent);
         return cls;
-
-        /*
-
-
-
-         let modname = null;
-         var ms = max_script_dir_index;
-         if (ms == null) ms = 0;
-         for (let i = ms; i < this.reversed_scriptdirs.length; i++) {
-         var sd = this.reversed_scriptdirs[i];
-         for (let j = 0; j < this.lookupdirs.length; j++) {
-         let ld = this.lookupdirs[j]
-         if (name in this.__class_structure__[i][ld]) {
-         return getClass(name, i)
-         }
-         if (modname) break
-         }
-         if (modname) break
-         }
-
-         var k = name + "|" + parent + "|" + dirname;
-         if (k in classmanager.classes) {
-         //console.log("getparentclass: returning " + name + " from cache");
-         return classmanager.classes[k];
-         }
-         var url = __baseurl__ + '/parentclass';
-         var res = null;
-         $.ajax({
-         url: url,
-         dataType: "script",
-         async: false,
-         data: {name: name, parent: parent, dirname: dirname},
-         success: function (result) {
-         console.log("B) loading class: " + name + " " + parent)
-         res = moduleFunction();
-         //console.log("en parent success: " + name +"/" + parent + "   " + res.__filename__);
-         classmanager.classes[k] = res;
-         //console.log("getparentclass: fetching " + name + "/" + parent + "/" + dirname + " from server");
-         //console.log(res)
-         if (res.__description__.name != name) {
-         //console.log("storing as: " + res.__description__.name + " and " + res.__description__.name + "|0");
-         classmanager.classes[res.__description__.name + "|0"] = res;
-         }
-         var sd_idx = classmanager.reversed_scriptdirs.indexOf(classmanager.extractScriptDir(res.__description__.filename));
-         if (sd_idx != 0) {
-         classmanager.classes[res.__description__.name + "|" + sd_idx] = res;
-         }
-
-         },
-         error: function (jqXHR, textStatus, errorThrown) {
-         if (textStatus == 'parsererror') {
-         //evaluo el codigo que para vuelva a saltar el error y aparezca en el debugger
-         eval(jqXHR.responseText)
-         }
-         console.log(errorThrown)
-         throw errorThrown;
-         },
-         complete: function () {
-         //console.log("en getparentclass::complete");
-         }
-         });
-         return res;
-         */
     }
 
     let loadedModules = {}
@@ -386,6 +335,24 @@
         });
     }
 
+    let prefetchClasses = function prefetchClasses() {
+        $.ajax({
+            url:  __baseurl__ + '/prefetchclasses',
+            dataType: "script",
+            data: {},
+            async: false,
+            success: function (result) {
+                console.log("CLASSES PREFETCHED")
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown)
+                throw errorThrown;
+            },
+            complete: function () {
+            }
+        });
+    }
+
     let askYesNo = async function askYesNo(txt) {
         if (oo.ui && oo.ui.dialogs && oo.ui.dialogs.askYesNo) {
             return oo.ui.dialogs.askYesNo(txt);
@@ -468,14 +435,18 @@
         //ready: ready,
     }
 
+    console.log(classmanager.getClassStructure());
     fetchCurrentUser();
-
-
-
 
 
 
     window.oo = oo
     window.require = require
+
+    $(document).ready(function () {
+        console.log("DOC READY OPENORANGE")
+        prefetchClasses();
+    })
+
     //$.extend(true, window, {require: require, oo: oo})
 })(jQuery)

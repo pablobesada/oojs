@@ -61,6 +61,15 @@ class BaseEntity {
         return this;
     }
 
+    static tryCall(self, defaultResponse, methodname) {
+        if (methodname == null) throw new Error("methodname can not be null")
+        if (methodname in this.prototype) {
+            return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(3));
+        } else {
+            return defaultResponse;
+        }
+    }
+
     static getDescription() {
         return this.__description__
     }
@@ -79,39 +88,6 @@ class BaseEntity {
 
     inspect() {
         return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
-    }
-
-    /*emit(eventName) {
-        let args = Array.prototype.slice.call(arguments, 1)
-        args.push(eventName);
-        if (eventName in this.__ev__) {
-            for (let i = 0; i < this.__ev__[eventName].length; i++) {
-                this.__ev__[eventName][i].apply(this, args);
-            }
-        }
-        for (let i=0;i<this.__anyev__.length; i++) {
-            this.__anyev__[i].apply(this, args);
-        }
-    }
-
-    on(eventName, cb) {
-        if (!(eventName in this.__ev__)) this.__ev__[eventName] = []
-        this.__ev__[eventName].push(cb);
-    }
-
-    onAny(cb) {
-        this.__anyev__.push(cb);
-    }
-
-    off(eventName, cb) {
-        if (!(eventName in this.__ev__)) return;
-        let idx = this.__ev__[eventName].indexOf(cb)
-        if (idx >= 0) this.__ev__[eventName].splice(idx, 1)
-    }*/
-
-    offAny(cb) {
-        let idx = this.__anyev__.indexOf(cb)
-        if (idx >= 0) this.__anyev__.splice(idx, 1)
     }
 }
 

@@ -68,4 +68,21 @@ describe('BaseEntity', function () {
         calls.should.be.equal(3)
 
     })
+
+    it('Parent.TryCall',async ()=> {
+        //SYNC
+        let cls2 = cm.getClass("TestRecord2")
+        let rec2 = cls2.new().fillWithRandomValues()
+        let res = rec2.__class__.__super__.tryCall(rec2, 333, 'tryCallTestSync', 20,40)
+        res.should.be.equal(cm.getClass("TestRecord").new().tryCallTestSync(20,40))
+        res = rec2.__class__.__super__.tryCall(rec2, 333, 'inexistentMethod',20,40)
+        res.should.be.equal(333)
+        //ASYNC
+
+        res = await rec2.__class__.__super__.tryCall(rec2, 333, 'tryCallTestAsync',20,40)
+        res.should.be.equal(await cm.getClass("TestRecord").new().tryCallTestAsync(20,40))
+        res = await rec2.__class__.__super__.tryCall(rec2, 333, 'inexistentMethod',20,40)
+        res.should.be.equal(333)
+
+    })
 });

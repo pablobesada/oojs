@@ -346,6 +346,7 @@ class Embedded_Record extends oo.BaseEntity {
         return this;
     }
 
+    /*
     static tryCall(self, defaultResponse, methodname) {
         if (methodname == null) throw new Error("methodname can not be null")
         if (methodname in this.prototype) {
@@ -353,7 +354,7 @@ class Embedded_Record extends oo.BaseEntity {
         } else {
             return defaultResponse;
         }
-    }
+    }*/
 
     callSuperXXX(methodname, self) {
         if (methodname in this.__super__) {

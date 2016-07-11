@@ -4,6 +4,7 @@ var cm = oo.classmanager
 let _ = require("underscore")
 let chance = require("chance")()
 let moment = require("moment")
+let Promise = require("bluebird")
 
 var Description = {
     name: 'TestRecord',
@@ -154,6 +155,17 @@ class TestRecord extends Parent {
         }
     }
 
+    tryCallTestSync(a,b) {
+        return a+b
+    }
+
+    async tryCallTestAsync(a,b) {
+        let promise = Promise.pending()
+        setTimeout(() => {
+            promise.resolve(a+b)
+        }, 0)
+        return promise.promise
+    }
 
 }
 

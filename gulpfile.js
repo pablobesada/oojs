@@ -22,6 +22,10 @@ var print = require('gulp-print');
 var cache = require('gulp-cached');
 var plumber = require('gulp-plumber');
 var gutil = require('gulp-util');
+var cleanCSS = require('gulp-clean-css');
+var concat = require('gulp-concat');
+
+
 
 
 var sourcemaps = require("gulp-sourcemaps");
@@ -160,7 +164,7 @@ gulp.task('init-project', ['oo-babel', 'oo-js', 'ui-babel', 'ui-js', 'sd-babel',
     fs.symlinkSync('../openorange/', 'node_modules/openorange');
 });
 
-gulp.task('build', ['oo-babel', 'oo-js', 'sd-babel', 'sd-js'])
+gulp.task('build', ['oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'sd-babel', 'sd-js'])
 
 gulp.task('sync-tables', () => {
     global.__main__ = module
@@ -191,3 +195,12 @@ gulp.task('create-openorange-user', (done) => {
             done()
         })
 })
+
+
+//gulp.task('minify-css', function() {
+//    fs.unlinkSync('openorange/ui/css/app/styles.min.css');
+//    return gulp.src('openorange/ui/css/app/**/*.css')
+//        .pipe(cleanCSS())
+//        .pipe(concat('styles.min.css'))
+//        .pipe(gulp.dest((file) => {return file.base}));
+//});

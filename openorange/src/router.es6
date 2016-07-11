@@ -9,14 +9,15 @@ var orm = require('./orm')
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 var _ = require('underscore')
+let Promise = require("bluebird")
 //var babel = require("babel-core")
 
 
-for (let i=0;i<cm.reversed_scriptdirs.length;i++){
+for (let i = 0; i < cm.reversed_scriptdirs.length; i++) {
     //esto es xq el navegador pide los archivos .map.js para debugging por consola
     let sd = cm.reversed_scriptdirs[i];
     console.log(i, sd)
-    router.use('/sources/'+sd, express.static(path.join(__dirname, '../..', sd )));
+    router.use('/sources/' + sd, express.static(path.join(__dirname, '../../scriptdirs/lib/', sd)));
 }
 router.use('/', oo.contextmanager.expressMiddleware()); //aca manejan usuario actual, conexion actual, etc. para ser usadas con toda la app. Son variables definidas por request/cookie
 
@@ -26,7 +27,7 @@ router.use('/lib/both', express.static(path.join(__dirname, 'both')));
 function extractSDRelativePath(fn) {
     for (var i in cm.reversed_scriptdirs) {
         var sd = cm.reversed_scriptdirs[i];
-        var idx = fn.lastIndexOf("/"+sd+"/")
+        var idx = fn.lastIndexOf("/" + sd + "/")
         if (idx >= 0) {
             return fn.substring(idx);
         }
@@ -34,20 +35,30 @@ function extractSDRelativePath(fn) {
     return null;
 }
 
-function sendModule(req, res, fn) {
+function prepareModuleToSend(req, fn, addSourceReference) {
+    let promise = Promise.pending()
     fs.readFile(fn, 'utf8', function (err, data) {
         if (err) {
-            return console.log(err);
+            console.log(err);
+            promise.reject(err)
         }
         let relative_fn = extractSDRelativePath(fn);
-        var fulldata = "var moduleFunction = (function() {module = {};\n";
+        //var fulldata = "var moduleFunction = (function() {module = {};\n";
+        var fulldata = "(function() {module={};\n";
         fulldata = fulldata + "var __dirname = '" + path.dirname(relative_fn) + "';\n"
         fulldata = fulldata + "var __filename = '" + relative_fn + "';\n"
-        fulldata = fulldata + data + "\nreturn module.exports;})\n";
-        fulldata = fulldata + `//# sourceURL= ${req.baseUrl}/sources${relative_fn}`;
+        //fulldata = fulldata + data + "\nreturn module.exports;})\n";
+        fulldata = fulldata + data + "\nwindow.oo.classmanager.registerClass(module.exports);console.log(__filename)})()\n";
+        if (addSourceReference) fulldata = fulldata + `//# sourceURL= ${req.baseUrl}/sources${relative_fn}\n`;
         //fulldata = babel.transform(fulldata, {"presets": ["stage-3"]}).code
-        res.status(200).send(fulldata);
+        promise.resolve(fulldata)
     });
+    return promise.promise;
+
+}
+async function sendModule(req, res, fn) {
+    let content = await prepareModuleToSend(req, fn, true);
+    res.status(200).send(content);
 }
 
 router.post('/record/:method', function (req, res, next) {
@@ -113,7 +124,7 @@ router.get('/class', function (req, res, next) {
         if (cls) {
             var fn = cls.__description__.filename || cls.__filename__;
             sendModule(req, res, fn);
-        } else throw new Error("Class not found: "+  req.query.name + " for min_script_dir: " + req.query.min_script_dir_index)
+        } else throw new Error("Class not found: " + req.query.name + " for min_script_dir: " + req.query.min_script_dir_index)
     } catch (err) {
         console.log(err.stack);
         throw err;
@@ -176,6 +187,56 @@ router.get('/explorer/search', function (req, res, next) {
  });
  */
 
+router.get('/prefetchclasses', function (req, res, next) {
+    let fns = ['scriptdirs/lib/core/records/Embedded_Record',
+        'scriptdirs/lib/core/records/ClientRecord',
+        'scriptdirs/lib/core/records/Record',
+        'scriptdirs/lib/core/records/Row',
+        'scriptdirs/lib/core/records/LocalRecord',
+
+        'scriptdirs/lib/core/reports/Embedded_Report',
+        'scriptdirs/lib/core/reports/Report',
+
+        'scriptdirs/lib/base/records/Numerable',
+        'scriptdirs/lib/base/records/Transaction',
+        'scriptdirs/lib/base/records/FinancialTrans',
+        'scriptdirs/lib/base/records/SalesTransaction',
+        'scriptdirs/lib/base/records/Master',
+        'scriptdirs/lib/base/records/User',
+
+        'scriptdirs/lib/core/windows/Embedded_Window',
+        'scriptdirs/lib/core/windows/Embedded_ListWindow',
+        'scriptdirs/lib/core/windows/Embedded_PasteWindow',
+        'scriptdirs/lib/core/windows/Embedded_Card',
+        'scriptdirs/lib/core/windows/Window',
+        'scriptdirs/lib/core/windows/ListWindow',
+        'scriptdirs/lib/core/windows/PasteWindow',
+        'scriptdirs/lib/core/windows/Card',
+
+        'scriptdirs/lib/base/windows/MasterWindow',
+        'scriptdirs/lib/base/windows/NumerableWindow',
+        'scriptdirs/lib/base/windows/TransactionWindow',
+        'scriptdirs/lib/base/windows/FinancialTransWindow',
+        'scriptdirs/lib/base/windows/SalesTransactionWindow',
+
+    ]
+    try {
+        res.set('Content-Type', 'application/javascript');
+        let promises = []
+        res.write("let dummy;\n");
+        _(fns).each((fn) => {
+            let p = prepareModuleToSend(req, path.join("./", fn + ".js"), false).then((content)=> {
+                res.write("dummy = "+content);
+            })
+            promises.push(p);
+        })
+        Promise.all(promises).then(() => res.end());
+    } catch (err) {
+        console.log(err.stack)
+    }
+
+
+})
 router.get('/getcurrentuser', function (req, res, next) {
     res.send({ok: true, currentuser: req.session.user})
 });

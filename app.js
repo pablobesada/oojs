@@ -5,6 +5,7 @@ require('continuation-local-storage'); //hay que importarlo muy rapido para que 
 let args = require("minimist")(process.argv.slice(2))
 global.__main__ = module
 var express = require('express');
+var compression = require('compression')
 
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -19,6 +20,7 @@ var redisClient = redis.createClient()
 var Promise = require("bluebird")
 //var routes = require('./routesXX/index');
 var app = express();
+app.use(compression())
 var server = require('http').Server(app);
 let settings = require(path.resolve(args.settingsfile || './oo.json'))
 var oo = require('openorange')
@@ -42,7 +44,7 @@ app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-//app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));

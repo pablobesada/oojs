@@ -288,8 +288,8 @@
             }
             var component = editors;
             if (json.pastewindow) {
-                component = $('<div class="input-field"></div>');
-                var pasteWindowComponent = $('<i class="mdi prefix">search</i>');
+                component = $('<div class="input-field" style="margin-left: 20px"></div>');
+                var pasteWindowComponent = $('<i class="mdi prefix" style="margin-left: -20px">search</i>');
                 component.append(pasteWindowComponent);
                 var params = {
                     self: self,
@@ -940,6 +940,7 @@
         }
     };
     $(document).ready(function () {
+        console.log("DOC READY WINDOWMANAGER")
         cm.getClass("Embedded_Window").onAny(function (event) {
             if (event._meta.name == 'open') {
                 let wm = new WindowContainer(event.window)

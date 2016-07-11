@@ -54,9 +54,13 @@ class SalesOrderWindow extends Parent {
 
 
     async "changed Items.ArtCode"(rowNr) {
+        console.log(1, rowNr)
         var self = this;
-        await super["changed Items.ArtCode"](rowNr);
+        await Parent.tryCall(this, null, "changed Items.ArtCode", rowNr);
+        console.log(2)
+        console.log(rowNr)
         return self.getRecord().Items[rowNr].pasteArtCode(this);
+        console.log(3)
     }
 }
 
