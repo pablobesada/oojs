@@ -435,13 +435,14 @@
         //ready: ready,
     }
 
-    console.log(classmanager.getClassStructure());
+    //console.log(classmanager.getClassStructure());
     fetchCurrentUser();
 
 
 
     window.oo = oo
     window.require = require
+    classmanager.getClassStructure()
 
     $(document).ready(function () {
         console.log("DOC READY OPENORANGE")

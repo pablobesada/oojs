@@ -172,6 +172,9 @@
                 if (event.type =='listwindow' && event.action =='open') {
                     let wm = new ListWindowContainer(event.data)
                     wm.render()
+
+                    // esto deberia ser asyncronico, y ademas traer: Rows y Cards
+                    // wm.listwindow.getWindowClass() //para que ya vaya trayendo del servidor la clase Window y al hacer click no haya que esperar
                 }
             }
         });

@@ -35,7 +35,7 @@ function extractSDRelativePath(fn) {
     return null;
 }
 
-function prepareModuleToSend(req, fn, addSourceReference) {
+async function prepareModuleToSend(req, fn, addSourceReference) {
     let promise = Promise.pending()
     fs.readFile(fn, 'utf8', function (err, data) {
         if (err) {
@@ -187,7 +187,7 @@ router.get('/explorer/search', function (req, res, next) {
  });
  */
 
-router.get('/prefetchclasses', function (req, res, next) {
+router.get('/prefetchclasses', async function (req, res, next) {
     let fns = ['scriptdirs/lib/core/records/Embedded_Record',
         'scriptdirs/lib/core/records/ClientRecord',
         'scriptdirs/lib/core/records/Record',
@@ -222,15 +222,17 @@ router.get('/prefetchclasses', function (req, res, next) {
     ]
     try {
         res.set('Content-Type', 'application/javascript');
-        let promises = []
         res.write("let dummy;\n");
-        _(fns).each((fn) => {
-            let p = prepareModuleToSend(req, path.join("./", fn + ".js"), false).then((content)=> {
-                res.write("dummy = "+content);
-            })
-            promises.push(p);
-        })
-        Promise.all(promises).then(() => res.end());
+        let promises = [];
+        for (let i=0;i<fns.length;i++) {
+            let p = prepareModuleToSend(req, path.join("./", fns[i] + ".js"), false);
+            promises.push(p)
+        }
+        for (let i=0;i<promises.length;i++) {
+            let content = await promises[i];
+            res.write("dummy = "+content);
+        }
+        res.end();
     } catch (err) {
         console.log(err.stack)
     }
