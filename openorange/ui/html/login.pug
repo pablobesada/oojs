@@ -66,6 +66,12 @@ html(lang='en')
      script(type='text/javascript', src='js/plugins/login/login.js')
 
      script.
+       $(document).ready(function () {
+         Materialize.updateTextFields();
+         setTimeout(function () {$('#username').focus()}, 100);
+         //document.getElementById('username').focus(); //$('#username').event('focus');
+
+       })
        $('#loginForm').submit(function () {
          $('#password', this).prop('disabled', true);
          return true;

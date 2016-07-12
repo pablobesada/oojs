@@ -17,12 +17,12 @@
         }
 
         setFocus() {
-            $('ul.tabs').tabs('select_tab', this.tab_id);
+            $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
             return;
             for (var i = 0; i < ListWindowContainer.listwindows.length; i++) {
                 var w = ListWindowContainer.listwindows[i];
                 if (w.listwindow === window) {
-                    $('ul.tabs').tabs('select_tab', w.tab_id);
+                    $('ul.tabs.workspace').tabs('select_tab', w.tab_id);
                 }
             }
         }
@@ -51,7 +51,7 @@
         displayWindow(windowElement) {
 
             var self = this
-            var tab = $('<li class="tab col s3"><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
+            var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
 
 
             $('ul.tabs.workspace').append(tab);
@@ -60,7 +60,7 @@
 
             $('#workspace').append(windowElement);
 
-            $('ul.tabs').tabs();
+            $('ul.tabs.workspace').tabs();
 
             var recordClass = self.listwindow.getRecordClass();
             var columns = self.listwindow.__class__.__description__.columns;

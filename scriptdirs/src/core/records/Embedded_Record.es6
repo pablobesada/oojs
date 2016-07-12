@@ -89,7 +89,7 @@ class DateField extends Field {
             vv = null
         }
         if (this.value != vv) {
-            var oldvalue = this.value;
+            let oldvalue = this.value;
             this.value = vv;
             if (this.listener) this.listener.fieldModified(this, oldvalue);
         }
@@ -190,24 +190,34 @@ DetailField.insert = function insert(obj, pos) {
 DetailField.clear = function clear() {
     if (this.length != 0) {
         this.length = 0;
-        console.log("CLEARED")
         if (this.listener) this.listener.detailCleared(this);
     }
 }
 
 DetailField.splice = function splice() {
     var self = this;
+    if (arguments[1] != 1) throw new Error("removing more than 1 row at a time is not supported yet")
     var removed = Array.prototype.splice.apply(this, arguments)
     removed.forEach(function (element) {
         self.__removed_rows__.push(element)
     });
     if (removed.length > 0) {
+        if (this.listener) {
+            let start = arguments[0]
+            let count = arguments[1]
+            for (let i=start+count-1;i>=start; i--) {
+                this.listener.rowRemoved(this, i);
+            }
+        }
         for (var i = removed[0].rowNr; i < self.length; i++) {
             self[i].rowNr = i;
         }
-        if (this.listener) this.listener.fieldModified(this);
     }
     return removed;
+}
+
+DetailField.remove = function remove(idx) {
+    return this.splice(idx, 1);
 }
 
 /*DetailField.fieldModified = function fieldModified(record, field, oldvalue) {
@@ -235,6 +245,10 @@ FieldsListener.fieldModified = function () {
 
 FieldsListener.rowInserted = function (detail, row, position) {
     if (this.receiver != null) this.receiver.rowInserted(detail, row, position)
+}
+
+FieldsListener.rowRemoved = function (detail, position) {
+    if (this.receiver != null) this.receiver.rowRemoved(detail, position)
 }
 
 FieldsListener.detailCleared = function (detail, row, position) {
@@ -400,10 +414,11 @@ class Embedded_Record extends oo.BaseEntity {
         return this;
     }
 
-    fieldModified(p1, p2, p3, p4) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield, p4: oldvalue}
+    fieldModified(p1, p2, p3, p4) { //it could be: {p1: field, p2: oldvalue} or {p1: detail, p2: row, p3: rowfield, p4: oldvalue}
         this.setModifiedFlag(true);
         //[].unshift.call(arguments, this);
-        this.emit("field modified", {record:this, field: p1, row: p2, rowfield: p3, oldvalue: p4})
+        let event = {record:this, field: p1, row: p3==null?null:p2, rowfield: p3, oldvalue: p3==null? p2 : p4}
+        this.emit("field modified", event)
         //for (var i = 0; i < this.__listeners__.length; i++) {
         //    this.__listeners__[i].fieldModified.call(this.__listeners__[i], this, p1, p2, p3, p4);
         //}
@@ -412,6 +427,14 @@ class Embedded_Record extends oo.BaseEntity {
     rowInserted(detail, row, position) { //it could be: {p1: field} or {p1: detail, p2: row, p3: rowfield}
         this.setModifiedFlag(true);
         this.emit("row inserted", {record:this, detail: detail, row: row, position: position})
+        //for (var i = 0; i < this.__listeners__.length; i++) {
+        //    this.__listeners__[i].rowInserted(this, detail, row, position);
+        //}
+    }
+
+    rowRemoved(detail, position) {
+        this.setModifiedFlag(true);
+        this.emit("row removed", {record:this, detail: detail, position: position})
         //for (var i = 0; i < this.__listeners__.length; i++) {
         //    this.__listeners__[i].rowInserted(this, detail, row, position);
         //}
@@ -603,6 +626,7 @@ class Embedded_Record extends oo.BaseEntity {
     setModifiedFlag(b) {
         if (b != this.__ismodified__) {
             this.__ismodified__ = b;
+            this.emit('modified flag', {record: this, modified: b})
         }
     }
 
@@ -699,13 +723,11 @@ class Embedded_Record extends oo.BaseEntity {
             if (rec.fields(fn).type != this.fields(fn).type) return false;
             if (rec.fields(fn).type == 'date') {
                 if ((rec[fn] != this[fn]) && !rec[fn].isSame(this[fn])) {
-                    console.log(fn, rec[fn], this[fn])
                     return false;
                 }
             }
             else {
                 if (rec[fn] != this[fn]) {
-                    console.log(fn, rec[fn], this[fn])
                     return false;
                 }
             }

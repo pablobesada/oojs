@@ -83,7 +83,7 @@
         classmanager.classes[name].push({sd_idx: sd_idx, cls: cls});
         classmanager.classes[name].sort(function (a,b) {return a.sd_idx - b.sd_idx});
         classmanager.__last_received_class__ = cls;
-        console.log(name + " REGISTERED")
+        //console.log(name + " REGISTERED")
     }
     classmanager.getClasses = function getClasses() {
         return classmanager.classes;
@@ -98,7 +98,7 @@
             for (let c=0;c<classmanager.classes[name].length;c++) {
                 let clsinfo = classmanager.classes[name][c]
                 if (clsinfo.sd_idx >= min_sd && clsinfo.sd_idx <= max_sd) {
-                    console.log(`REQUESTING ${name} (${min_sd}-${max_sd}) FOUND`)
+                    //console.log(`REQUESTING ${name} (${min_sd}-${max_sd}) FOUND`)
                     return clsinfo.cls;
                 }
             }
@@ -109,7 +109,7 @@
             for (let j = 0; j < classmanager.lookupdirs.length; j++) {
                 let ld = classmanager.lookupdirs[j]
                 if (name in classStructure[i][ld]) {
-                    console.log(`REQUESTING ${name} (${min_sd}-${max_sd}) NOT FOUND`)
+                    //console.log(`REQUESTING ${name} (${min_sd}-${max_sd}) NOT FOUND`)
                     //console.log(`fetching from server`)
                     let url = __baseurl__ + '/class';
                     let res = null;
@@ -368,7 +368,7 @@
     }
 
     let alert = async function alert(txt) {
-        console.log("en alert")
+        //console.log("en alert")
         if (oo.ui && oo.ui.dialogs && oo.ui.dialogs.alert) {
             return oo.ui.dialogs.alert(txt);
         }
@@ -376,7 +376,7 @@
     }
 
     let postMessage = async function postMessage(txt) {
-        console.log("en alert")
+        //console.log("en alert")
         if (oo.ui && oo.ui.dialogs && oo.ui.dialogs.postMessage) {
             return oo.ui.dialogs.postMessage(txt);
         }
@@ -445,8 +445,8 @@
     classmanager.getClassStructure()
 
     $(document).ready(function () {
-        console.log("DOC READY OPENORANGE")
-        prefetchClasses();
+        //console.log("DOC READY OPENORANGE")
+        //prefetchClasses();
     })
 
     //$.extend(true, window, {require: require, oo: oo})

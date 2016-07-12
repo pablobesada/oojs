@@ -9,7 +9,7 @@
         //luego para cada ventana se crea un nuevo object de tipo WindowContainer que recibe las notificaciones de instancia de ventana: fieldModifed, title, etc, etc, etc.
 
         setFocus() {
-            $('ul.tabs').tabs('select_tab', this.tab_id);
+            $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
         }
 
         constructor(wnd) {
@@ -17,13 +17,34 @@
             this.windowjson = JSON.parse(JSON.stringify(this.window.__class__.getDescription().form));  //deep clone of the object because I need to add some metadata to it
             this.window.__container_data__ = {};
             this.last_tab_id = 0;
-            this.last_tab_id = 0;
             this.matrix_idx = 0;
             this.matrix_json_map = {};
             this.virtual_rows = {};
             this.pastewindow_id = null;
             return this;
         };
+
+        close() {
+            let selected_tab_id = $('ul.tabs.workspace a.active').attr('href').substring(1);
+            let is_selected = (selected_tab_id == this.tab_id);
+            let newfocus = null
+            if (is_selected) {
+                let tabs_count = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').length
+                let pos = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').index($(`a[href="#${this.tab_id}"]`).closest('li'))
+                (pos < tabs_count - 1)? pos++ : pos--;
+                if (pos >= 0) newfocus = $($(`a[href="#${this.tab_id}"]`).closest('ul').find('li a')[pos])
+            }
+            $(`a[href="#${this.tab_id}"]`).closest('li').remove();
+            $(`#${this.tab_id}`).remove();
+            $('ul.tabs.workspace').tabs();
+            for (let i=0;i<WindowContainer.windows.length;i++) {
+                if (WindowContainer.windows[i].window === this.window) {
+                    WindowContainer.windows.splice(i,1)
+                    break;
+                }
+            }
+            if (newfocus) $('ul.tabs.workspace').tabs('select_tab', newfocus.attr('href').substring(1));
+        }
 
         render() {
 
@@ -43,12 +64,16 @@
 
         displayWindow(windowElement) {
             let self = this;
-            var tab = $('<li class="tab col s3"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
+            var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
             $('ul.tabs.workspace').append(tab);
             windowElement.attr('id', this.tab_id);
             $('#workspace').append(windowElement);
-            $('ul.tabs').tabs();
+
+            $(windowElement).find('ul.tabs').tabs();
+            $('ul.tabs.workspace').tabs();
+
             //$('.modal-trigger').leanModal();
+
             windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
             //$('input.editor[timeeditor=true]').mask('00:00:00');
             if (this.window.getRecord() != null) {
@@ -157,11 +182,13 @@
                 var label = jpage.label;
                 self.last_tab_id += 1;
                 var tab_id = self.tab_id + "_" + self.last_tab_id;
-                var headerButton = $('<li class="tab col s3"><a href="#' + tab_id + '">' + label + '</a></li>');
+                //console.log("ACTIVE CLASS", activeClass)
+                var headerButton = $(`<li class="tab"><a href="#${tab_id}">${label}</a></li>`);
                 tabsHeader.append(headerButton);
                 var page = self.createComponent(jpage, {id: tab_id});
                 page.attr('id', tab_id);
-                component.append(page);
+                //component.append(page);
+                tabsHeaderContainer.append(page)
             });
             json.__element__ = component;
             return component;
@@ -295,7 +322,7 @@
                     self: self,
                     detailname: detailname,
                     field: rowfield,
-                    rownr: rownr,
+                    //rownr: rownr,
                     json: json,
                     editor: editors
                 };
@@ -453,12 +480,12 @@
             target.css('box-shadow', 'none');
             var readonly = null;
             var rownr = target.closest("tr").attr("rownr");
-            if (rownr == 'null') { //virtual_row
+            if (isNaN(rownr)) { //virtual_row
                 //si la fila anterior esta toda vacia, entonces no agrego otra nueva fila
                 var tr = target.closest("tr");
                 var tr_index = tr.index();
                 if (tr_index == 0 || !self.window.getRecord()[params.detailname][tr_index - 1].isEmpty()) {
-                    var newrow = self.window.getRecord()[params.detailname].newRow();
+                    //  var newrow = self.window.getRecord()[params.detailname].newRow();
 
                     var addedRow = self.virtual_rows[params.detailname];
                     var tbody = target.closest("tbody");
@@ -562,7 +589,12 @@
 
         update(event) {
             var self = this;
+            //console.log(event)
             switch (event._meta.name) {
+                case "close":
+                    self.close()
+                    break;
+
                 case "focus required":
                     //el action 'open' es en event de clase y no entra por aca. ver final de este archivo.
                     self.setFocus()
@@ -577,7 +609,7 @@
                         Materialize.updateTextFields();
                     } else {
                         var rowNr = event.row.rowNr;
-                        if (event.rowfield.name == 'rowNr') rowNr = event.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar el la fila a modificar
+                        if (event.rowfield.name == 'rowNr') rowNr = event.oldvalue; //si lo que cambio fue el rowNr del row entonces uso el valor anterior a la modificacion para identificar la fila a modificar
                         self.setRowEditorValue(event.field.name, rowNr, event.rowfield.name, event.rowfield.type, event.rowfield.getValue());
                         Materialize.updateTextFields();
                     }
@@ -589,7 +621,14 @@
                             var tbody = matrixjson.__element__.find("tbody[matrix_idx]");
                             self.insertMatrixRow(event.record, matrixjson, event.row, tbody);
                         })
-
+                    }
+                    break;
+                case "row removed":
+                    var detail = event.detail;
+                    if (detail.name in this.matrix_json_map) {
+                        _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
+                            matrixjson.__element__.find(`tbody[matrix_idx] tr[rownr=${event.position}]`).remove();
+                        })
                     }
                     break;
                 case "detail cleared":
@@ -599,6 +638,13 @@
                             var tbody = matrixjson.__element__.find("tbody");
                             tbody.find("tr").not('[rowNr=null]').remove();
                         })
+                    }
+                    break;
+                case "modified flag":
+                    if (event.modified) {
+                        $('a[href="#' + this.tab_id + '"]').css('color', 'red')
+                    } else {
+                        $('a[href="#' + this.tab_id + '"]').css('color', '')
                     }
                     break;
                 case "title changed":
@@ -708,8 +754,15 @@
                         e.val(value)
                     }
                 }
+            }
+            if (rowfieldname == 'rowNr') {
+                let trs = this.__element__.find('table[name=' + detailname + '] tr[rownr=' + rowNr + ']');
+                _(trs).each((tr)=> {
+                    $(tr).attr('rowNr', value);
+                })
 
             }
+
         };
 
         setEditorReadOnly(field, readonly) {
@@ -817,10 +870,17 @@
             var recordClass = cm.getClass(pw.__description__.recordClass);
             let columns = pw.__description__.columns;
             var readonly = null;
+            let rownr = null;
             if (params.detailname == null) {
                 readonly = !Boolean(self.window.beforeEdit(fieldjson.field));
             } else {
-                readonly = !Boolean(self.window.beforeEditRow(params.detailname, fieldjson.field, params.rownr));
+                //console.log(event)
+                rownr = $(event.target).closest("tr").attr("rownr");
+                if (isNaN(rownr)) { //virtual row
+                    readonly = true;
+                } else {
+                    readonly = !Boolean(self.window.beforeEditRow(params.detailname, fieldjson.field, rownr));
+                }
             }
             if (readonly) return;
 
@@ -854,7 +914,7 @@
                 var pasteparams = {
                     self: self,
                     detailname: params.detailname,
-                    rownr: params.rownr,
+                    rownr: rownr,
                     field: field,
                     fieldjson: fieldjson,
                     pastewindow: pw,
@@ -940,7 +1000,7 @@
         }
     };
     $(document).ready(function () {
-        console.log("DOC READY WINDOWMANAGER")
+        //console.log("DOC READY WINDOWMANAGER")
         cm.getClass("Embedded_Window").onAny(function (event) {
             if (event._meta.name == 'open') {
                 let wm = new WindowContainer(event.window)

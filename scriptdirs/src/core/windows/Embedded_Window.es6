@@ -27,6 +27,11 @@ class Embedded_Window extends oo.BaseEntity {
         if (this.getRecord() && this.getRecord().internalId) Embedded_Window.emit(`start editing record ${this.getRecord().__class__.getDescription().name}:${this.getRecord().internalId}`, {record: this.getRecord()})
     }
 
+    close() {
+        this.setRecord(null); //para que desconecten todos los eventos del record actual
+        this.emit("close", {window:this})
+    }
+
     setFocus() {
         this.emit('focus required', {data: this})
     }
@@ -60,6 +65,8 @@ class Embedded_Window extends oo.BaseEntity {
         this.fieldModified = this.fieldModified.bind(this)
         this.detailCleared = this.detailCleared.bind(this)
         this.rowInserted = this.rowInserted.bind(this)
+        this.rowRemoved = this.rowRemoved.bind(this)
+        this.recordModifiedFlagChanged = this.recordModifiedFlagChanged.bind(this)
     }
 
     getRecordClass() {
@@ -104,8 +111,10 @@ class Embedded_Window extends oo.BaseEntity {
         if (this.__record__ != rec) {
             if (this.__record__ != null) {
                 this.__record__.off('field modified', this.fieldModified);
-                this.__record__.off('detail cleared', this.rowInserted);
+                this.__record__.off('detail cleared', this.detailCleared);
                 this.__record__.off('row inserted', this.rowInserted)
+                this.__record__.off('row removed', this.rowRemoved)
+                this.__record__.off('modified flag', this.recordModifiedFlagChanged)
             }
             this.__record__ = rec;
             if (this.__record__) {
@@ -113,6 +122,8 @@ class Embedded_Window extends oo.BaseEntity {
                 this.__record__.on('field modified', this.fieldModified)
                 this.__record__.on('detail cleared', this.detailCleared)
                 this.__record__.on('row inserted', this.rowInserted)
+                this.__record__.on('row removed', this.rowRemoved)
+                this.__record__.on('modified flag', this.recordModifiedFlagChanged)
             }
             this.emit('record replaced', {record: rec})
             if (this.__record__ && this.__isopen__ && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
@@ -120,7 +131,6 @@ class Embedded_Window extends oo.BaseEntity {
     }
 
     fieldModified(event) {
-        console.log("en listener field modified de window")
         this.emit('field modified', {
             record: event.record,
             field: event.field,
@@ -139,11 +149,25 @@ class Embedded_Window extends oo.BaseEntity {
         })
     }
 
+    rowRemoved(event) {
+        this.emit('row removed', {
+            record: event.record,
+            detail: event.detail,
+            position: event.position
+        })
+    }
+
     detailCleared(event) {
-        console.log("receiving detail cleared")
         this.emit('detail cleared', {
             record: event.record,
             detail: event.detail,
+        })
+    }
+
+    recordModifiedFlagChanged(event) {
+        this.emit('modified flag', {
+            record: event.record,
+            modified: event.modified,
         })
     }
 
@@ -175,9 +199,7 @@ class Embedded_Window extends oo.BaseEntity {
 
     async call_afterEdit(fieldname, value) {
         var self = this;
-        //console.log(self.getRecord())
         self.getRecord()[fieldname] = value;
-        //console.log(self.getRecord()[fieldname])
         if ('changed ' + fieldname in self) {
             return await this['changed ' + fieldname]()
         }
@@ -193,7 +215,6 @@ class Embedded_Window extends oo.BaseEntity {
 
     async call_action(methodname) {
         if (this[methodname]) return this[methodname]();
-        console.log(`action ${methodname} not found in window`)
     }
 
     async save() {
@@ -234,7 +255,6 @@ class Embedded_Window extends oo.BaseEntity {
                     path.pop()
                 }
             }
-            console.log(json)
             if (json.name == name) {
                 return true;
             }

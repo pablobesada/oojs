@@ -25,7 +25,7 @@ BaseQuery.select = function select(recordClass) {
     res._type = "SELECT"
     res._recordClass = recordClass;
     res._fromtable = desc.name;
-    res._projection = _(desc.fieldnames).map(function (val) {return val});
+    res._projection = _(desc.persistentFieldNames).map(function (val) {return val});
     //console.log(res._projection)
     return res;
 }

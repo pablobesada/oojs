@@ -18,7 +18,7 @@
         }
 
         setFocus(report) {
-            $('ul.tabs').tabs('select_tab', this.tab_id);
+            $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
         }
 
         appendToWorkspace() {
@@ -32,13 +32,13 @@
             console.log("ADDING REPORT:", this.tab_id)
             ReportContainer.reports.push({report: this.report, element: w, tab_id: this.tab_id, container: self});
             this.__element__ = w;
-            var tab = $('<li class="tab col s3"><a href="#' + this.tab_id + '">' + this.report.getTitle() + '</a></li>');
+            var tab = $('<li class="tab col"><a href="#' + this.tab_id + '">' + this.report.getTitle() + '</a></li>');
             $('ul.tabs.workspace').append(tab);
 
             w.attr('id', this.tab_id);
 
             $('#workspace').append(w);
-            $('ul.tabs').tabs();
+            $('ul.tabs.workspace').tabs();
         };
 
         render() {

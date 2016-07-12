@@ -48,7 +48,7 @@ async function prepareModuleToSend(req, fn, addSourceReference) {
         fulldata = fulldata + "var __dirname = '" + path.dirname(relative_fn) + "';\n"
         fulldata = fulldata + "var __filename = '" + relative_fn + "';\n"
         //fulldata = fulldata + data + "\nreturn module.exports;})\n";
-        fulldata = fulldata + data + "\nwindow.oo.classmanager.registerClass(module.exports);console.log(__filename)})()\n";
+        fulldata = fulldata + data + "\nwindow.oo.classmanager.registerClass(module.exports);})()\n";
         if (addSourceReference) fulldata = fulldata + `//# sourceURL= ${req.baseUrl}/sources${relative_fn}\n`;
         //fulldata = babel.transform(fulldata, {"presets": ["stage-3"]}).code
         promise.resolve(fulldata)

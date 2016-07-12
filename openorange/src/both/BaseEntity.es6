@@ -44,6 +44,7 @@ EventEmitter.offAny = function offAny(cb) {
     if (idx >= 0) this.__anyev__.splice(idx, 1)
 }
 
+
 EventEmitter.newEvent = function newEvent(eventName, data) {
     if (!data) data = {};
     data._meta = {user: getOO().currentUser(), name: eventName}
@@ -108,7 +109,7 @@ if (typeof window == 'undefined') {
     window.oo.BaseEntity = BaseEntity.initClass(Descriptor)
     window.oo.eventmanager = BaseEntity.new();
     $(document).ready(function () {
-        console.log("EN DOCREDY DE BaseEntity")
+        //console.log("EN DOCREDY DE BaseEntity")
         window.oo.classmanager.getClass("Embedded_Window").onAny(function (event) {
             window.oo.pushreceiver.emitFromEntity(event._meta.name, event)
         })

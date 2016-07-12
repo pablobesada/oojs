@@ -14,15 +14,22 @@ var Description = {
         {field: 'LinkTo_Field', name: 'LTF'},
         {field: 'Integer_Field'},
         {
-            type: 'tabs', name:'tabs', pages: [
+            type: 'tabs', name: 'tabs', pages: [
             {
                 label: "TAB1", name: 'TAB1Page', content: [
-                {
-                    field: 'Rows', columns: [
+                {field: 'Rows', columns: [
                     {field: 'rowNr'},
                     {field: 'String_Field'},
                     {field: 'Integer_Field'}]
                 }]
+
+            },
+            {
+                label: "TAB2", name: 'TAB1Page', content: [
+                {field: 'Rows', columns: [
+                    {field: 'rowNr'}]
+                }]
+
             },
         ]
         }],

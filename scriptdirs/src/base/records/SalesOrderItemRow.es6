@@ -27,8 +27,8 @@ class SalesOrderItemRow extends Parent {
         var self = this;
         console.log("en pasteArtCode: " + self.ArtCode);
         var item = await cm.getClass("Item").bring(self.ArtCode);
-        console.log("bringed: " + item.Name)
-        self.Name = item.Name
+        if (item) self.Name = item.Name
+
     }
 }
 
