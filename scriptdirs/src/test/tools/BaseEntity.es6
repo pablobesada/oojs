@@ -68,7 +68,39 @@ describe('BaseEntity', function () {
         calls.should.be.equal(3)
 
     })
-
+    it("Class Events", async () => {
+        let Record = cm.getClass("Record")
+        let BaseEntity = oo.BaseEntity
+        let Embedded_Record = cm.getClass("Embedded_Record");
+        let Embedded_Report = cm.getClass("Embedded_Report");
+        let calls=0;
+        Embedded_Record.on('myevent', function (e) {
+            should(e.receivers.indexOf(this.__description__.name) >= 0).ok('No deberia haberse recibido este evento')
+            calls++;
+        })
+        Embedded_Report.on('myevent', function (e) {
+            should(e.receivers.indexOf(this.__description__.name) >= 0).ok('No deberia haberse recibido este evento')
+            calls++;
+        })
+        BaseEntity.on('myevent', function (e) {
+            should(e.receivers.indexOf(this.__description__.name) >= 0).ok('No deberia haberse recibido este evento')
+            calls++;
+        })
+        Record.on('myevent', function (e) {
+            should(e.receivers.indexOf(this.__description__.name) >= 0).ok('No deberia haberse recibido este evento')
+            calls++;
+        })
+        let expected_calls = 0
+        let emit = function emit(cls, receivers) {
+            expected_calls += receivers.length;
+            cls.emit('myevent', {receivers: receivers})
+        }
+        emit(BaseEntity, ['BaseEntity'])
+        emit(Embedded_Record, ['BaseEntity', 'Embedded_Record'])
+        emit(Record, ['BaseEntity', 'Embedded_Record', 'Record'])
+        emit(Embedded_Report, ['BaseEntity', 'Embedded_Report'])
+        calls.should.be.equal(expected_calls)
+    })
     it('Parent.TryCall',async ()=> {
         //SYNC
         let cls2 = cm.getClass("TestRecord2")

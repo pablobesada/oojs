@@ -5,6 +5,9 @@ var Description = {
     name: 'Window',
     inherits: 'Embedded_Window',
     filename: __filename,
+    actions: [
+        {label: 'Save', method: 'save', icon: 'done', group: 'basic'},
+    ],
 }
 
 //console.log("parentclass of core::item: " + ParentClass.new().__description__.name)

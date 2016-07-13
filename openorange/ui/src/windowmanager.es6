@@ -5,8 +5,17 @@
     var cm = require("openorange").classmanager;
 
     class WindowContainer {
-        //este objeto es el que va a recibir la notificaciones de clase: open y setFocus.
-        //luego para cada ventana se crea un nuevo object de tipo WindowContainer que recibe las notificaciones de instancia de ventana: fieldModifed, title, etc, etc, etc.
+
+        static getWindowReportView(window, viewname) {
+            for (let i=0;i<WindowContainer.windows.length;i++) {
+                if (WindowContainer.windows[i].window === window) {
+                    let res =  WindowContainer.windows[i].element.find(`[reportview=${viewname}]`);
+                    if (res.length > 0) return $(res[0])
+                    break;
+                }
+            }
+            return null
+        }
 
         setFocus() {
             $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
@@ -25,25 +34,32 @@
         };
 
         close() {
-            let selected_tab_id = $('ul.tabs.workspace a.active').attr('href').substring(1);
-            let is_selected = (selected_tab_id == this.tab_id);
-            let newfocus = null
-            if (is_selected) {
-                let tabs_count = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').length
-                let pos = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').index($(`a[href="#${this.tab_id}"]`).closest('li'))
-                (pos < tabs_count - 1)? pos++ : pos--;
-                if (pos >= 0) newfocus = $($(`a[href="#${this.tab_id}"]`).closest('ul').find('li a')[pos])
-            }
-            $(`a[href="#${this.tab_id}"]`).closest('li').remove();
-            $(`#${this.tab_id}`).remove();
-            $('ul.tabs.workspace').tabs();
-            for (let i=0;i<WindowContainer.windows.length;i++) {
-                if (WindowContainer.windows[i].window === this.window) {
-                    WindowContainer.windows.splice(i,1)
-                    break;
+            if (this.window.__ui_container_view_id__) {
+                $('#' + this.window.__ui_container_view_id__).html("")
+            } else {
+                let selected_tab_id = $('ul.tabs.workspace a.active').attr('href').substring(1);
+                let is_selected = (selected_tab_id == this.tab_id);
+                let newfocus = null
+                if (is_selected) {
+                    console.log("is selected")
+                    let tabs_count = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').length
+                    let pos = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').index($(`a[href="#${this.tab_id}"]`).closest('li'))
+                    //let pos = 1
+                    //console.log("POS", pos)
+                    pos < tabs_count - 1? pos++ : pos--;
+                    if (pos >= 0) newfocus = $($(`a[href="#${this.tab_id}"]`).closest('ul').find('li a')[pos])
                 }
+                $(`a[href="#${this.tab_id}"]`).closest('li').remove();
+                $(`#${this.tab_id}`).remove();
+                $('ul.tabs.workspace').tabs();
+                for (let i = 0; i < WindowContainer.windows.length; i++) {
+                    if (WindowContainer.windows[i].window === this.window) {
+                        WindowContainer.windows.splice(i, 1)
+                        break;
+                    }
+                }
+                if (newfocus) $('ul.tabs.workspace').tabs('select_tab', newfocus.attr('href').substring(1));
             }
-            if (newfocus) $('ul.tabs.workspace').tabs('select_tab', newfocus.attr('href').substring(1));
         }
 
         render() {
@@ -64,16 +80,19 @@
 
         displayWindow(windowElement) {
             let self = this;
-            var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
-            $('ul.tabs.workspace').append(tab);
-            windowElement.attr('id', this.tab_id);
-            $('#workspace').append(windowElement);
-
+            if (self.window.__ui_container_view_id__) {
+                console.log("ID,", self.window.__ui_container_view_id__)
+                console.log(windowElement)
+                console.log($('#' + self.window.__ui_container_view_id__))
+                $('#' + self.window.__ui_container_view_id__).append(windowElement)
+            } else {
+                var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
+                $('ul.tabs.workspace').append(tab);
+                windowElement.attr('id', this.tab_id);
+                $('#workspace').append(windowElement);
+                $('ul.tabs.workspace').tabs();
+            }
             $(windowElement).find('ul.tabs').tabs();
-            $('ul.tabs.workspace').tabs();
-
-            //$('.modal-trigger').leanModal();
-
             windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
             //$('input.editor[timeeditor=true]').mask('00:00:00');
             if (this.window.getRecord() != null) {
@@ -86,22 +105,20 @@
         createToolBar() {
             var self = this;
             var html = '<div class="row">';
-            html += '<a class="btn waves-effect waves-light" action="save"><i class="mdi">done</i></a>';
-            html += '<a class="btn waves-effect waves-light" action="print"><i class="mdi">print</i></a>';
+            //html += '<a class="btn waves-effect waves-light" action="save"><i class="mdi">done</i></a>';
+            //html += '<a class="btn waves-effect waves-light" action="print"><i class="mdi">print</i></a>';
             for (let i = 0; i < self.window.__class__.getDescription().actions.length; i++) {
-                let action = self.window.__class__.getDescription().actions[i]
-                html += `<a class="btn waves-effect waves-light" action="${action.methodname}">${action.label}</a>`;
+                let actiondef = self.window.__class__.getDescription().actions[i]
+                let label = 'icon' in actiondef? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
+                html += `<a class="btn waves-effect waves-light" action="${actiondef.method}">${label}</a>`;
             }
 
             html += '</div>';
             var res = $(html);
-            //res.find("a").click(function (event) {self.save(event)});
-            res.find("a[action=save]").click(this.save.bind(this));
-            res.find("a[action=print]").click(this.print.bind(this));
             for (let i = 0; i < self.window.__class__.getDescription().actions.length; i++) {
-                let action = self.window.__class__.getDescription().actions[i];
-                let params = {self: self, methodname: action.methodname}
-                res.find(`a[action=${action.methodname}]`).click(self.actionClicked.bind(params));
+                let actiondef = self.window.__class__.getDescription().actions[i];
+                let params = {self: self, actiondef: actiondef}
+                res.find(`a[action=${actiondef.method}]`).click(self.actionClicked.bind(params));
             }
             return res;
         };
@@ -118,6 +135,7 @@
             if ('type' in json && json.type == 'column') return self.createColumnComponent(json);
             if ('type' in json && json.type == 'line') return self.createLineComponent(json);
             if ('type' in json && json.type == 'card') return self.createCardComponent(json);
+            if ('type' in json && json.type == 'reportview') return self.createReportViewComponent(json);
             if ('content' in json) return self.createComponent(json.content);
             if (json instanceof Array) {
                 var container = $('<div class="container"></div>');
@@ -141,6 +159,13 @@
                 })
                 card.play()
             }
+            json.__element__ = component;
+            return component;
+        };
+
+        createReportViewComponent(json) {
+            let self = this;
+            let component = $(`<div class="col s12 m6" reportview="${json.name}"></div>`)
             json.__element__ = component;
             return component;
         };
@@ -595,7 +620,7 @@
                     self.close()
                     break;
 
-                case "focus required":
+                case "focus":
                     //el action 'open' es en event de clase y no entra por aca. ver final de este archivo.
                     self.setFocus()
                     break;
@@ -980,8 +1005,8 @@
         async actionClicked(event) {
             let params = this;
             let self = params.self;
-            let methodname = params.methodname;
-            await self.window.call_action(methodname);
+            let actiondef = params.actiondef;
+            await self.window.callAction(actiondef);
         }
     }
 
@@ -1003,7 +1028,7 @@
         //console.log("DOC READY WINDOWMANAGER")
         cm.getClass("Embedded_Window").onAny(function (event) {
             if (event._meta.name == 'open') {
-                let wm = new WindowContainer(event.window)
+                let wm = new WindowContainer(event.window, event.viewcontainer)
                 wm.render()
             }
         });

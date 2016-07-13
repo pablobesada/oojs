@@ -6,8 +6,9 @@ var _ = require("underscore")
 
 var WindowDescription = {
     name: 'Embedded_Window',
-    inherits: null,
+    inherits: "BaseEntity",
     actions: [],
+    form: {},
     filename: __filename,
 }
 
@@ -25,15 +26,17 @@ class Embedded_Window extends oo.BaseEntity {
         Embedded_Window.emit("open", {window: this})
         this.__isopen__ = true;
         if (this.getRecord() && this.getRecord().internalId) Embedded_Window.emit(`start editing record ${this.getRecord().__class__.getDescription().name}:${this.getRecord().internalId}`, {record: this.getRecord()})
+        this.afterShowRecord();
     }
 
     close() {
         this.setRecord(null); //para que desconecten todos los eventos del record actual
         this.emit("close", {window:this})
+        this.__isopen__ = false;
     }
 
     setFocus() {
-        this.emit('focus required', {data: this})
+        this.emit('focus', {data: this})
     }
 
     static initClass(descriptor) {
@@ -47,7 +50,7 @@ class Embedded_Window extends oo.BaseEntity {
         if (descriptor.override) {
             newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override)
         }
-        newdesc.actions = parentdesc.actions
+        newdesc.actions = parentdesc.actions? parentdesc.actions.slice() : []
         if (descriptor.actions) {
             for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
         }
@@ -55,6 +58,12 @@ class Embedded_Window extends oo.BaseEntity {
         this.__description__ = newdesc;
         this.__recordClass__ = null;
         return this;
+    }
+
+    static createFromDescription(description) {
+        let res = super.createFromDescription(description);
+        res.__class__.__recordClass__ = description.__recordClass__
+        return res;
     }
 
     constructor() {
@@ -175,6 +184,14 @@ class Embedded_Window extends oo.BaseEntity {
         return this.__record__
     }
 
+    async afterShowRecord() {
+
+    }
+
+    getReportView(viewname) {
+        return {viewname: viewname, window: this}
+    }
+
     beforeEdit(fieldname) {
         var self = this;
         var res = true;
@@ -213,8 +230,8 @@ class Embedded_Window extends oo.BaseEntity {
         }
     }
 
-    async call_action(methodname) {
-        if (this[methodname]) return this[methodname]();
+    async callAction(actiondef) {
+        if (this[actiondef.method]) return this[actiondef.method]();
     }
 
     async save() {
@@ -304,5 +321,5 @@ class Embedded_Window extends oo.BaseEntity {
     }
 }
 
-Embedded_Window.__description__ = WindowDescription
-module.exports = Embedded_Window
+//Embedded_Window.__description__ = WindowDescription
+module.exports = Embedded_Window.initClass(WindowDescription)

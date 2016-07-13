@@ -10,10 +10,15 @@
             return require('openorange').classmanager.getClass('Embedded_Report').findReport(id);
         }
 
-        constructor(report) {
+        static genUniqueId() {
+            return "oo_report_" + this.id_generator++;
+        }
+
+        constructor(report, view) {
             this.report = report;
+            this.view = view;
             //this.windowjson = JSON.parse(JSON.stringify(this.report.getDescription().window));   //deep clone of the object because I need to add some metadata to it
-            this.report.addListener(this);
+            this.report.onAny(this.update.bind(this));
             return this
         }
 
@@ -21,55 +26,72 @@
             $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
         }
 
-        appendToWorkspace() {
+        appendToWorkspace(showSpecWindow) {
             var self = this;
-            //console.log(containerElement)
             var html = '<div class="container"></div>';
-
+            let paramsWindowId = ReportContainer.genUniqueId();
+            let paramsWindow = $(`<div id="${paramsWindowId}"></div>`)
+            let contentElement = $('<div name="content"></div>')
             var w = $(html)
-
-            this.tab_id = "tab_reportwindow_" + (ReportContainer.reports.length + 1);
-            console.log("ADDING REPORT:", this.tab_id)
+            w.append(paramsWindow)
+            w.append(contentElement)
+            this.tab_id = "tab_report_" + (ReportContainer.reports.length + 1);
             ReportContainer.reports.push({report: this.report, element: w, tab_id: this.tab_id, container: self});
             this.__element__ = w;
+            this.__params_window_element__ = paramsWindow;
+            this.__content_element__ = contentElement;
             var tab = $('<li class="tab col"><a href="#' + this.tab_id + '">' + this.report.getTitle() + '</a></li>');
             $('ul.tabs.workspace').append(tab);
-
             w.attr('id', this.tab_id);
-
             $('#workspace').append(w);
             $('ul.tabs.workspace').tabs();
+            if (showSpecWindow) {
+                self.report.getParamsWindow().__ui_container_view_id__ = paramsWindowId;
+                self.report.getParamsWindow().open()
+            }
+        };
+
+        attachToWindowReportView() {
+            var self = this;
+            var html = '<div class="container"></div>';
+            let contentElement = $('<div name="content"></div>')
+            var w = $(html)
+            w.append(contentElement)
+            this.__element__ = w;
+            this.__content_element__ = contentElement;
+            let container = window.oo.ui.windowmanager.getWindowReportView(this.view.window, this.view.viewname)
+            container.append(w)
         };
 
         render() {
             var self = this
-            self.__element__.html(this.report.getHTML())
+            self.__content_element__.html(this.report.getHTML())
         };
 
         update(event) {
             var self = this;
-            switch (event.type) {
-                case "report":
-                    switch (event.action) {
-                        case 'setFocus':
-                            self.setFocus()
-                            break;
-                        case 'render':
-                            self.render()
-                            break;
-                    }
-                    break
+            switch (event._meta.name) {
+                case 'focus':
+                    self.setFocus()
+                    break;
+                case 'render':
+                    self.render()
+                    break;
             }
         };
     }
+    ReportContainer.id_generator = 1;
     ReportContainer.reports = [];
 
     $(document).ready(function () {
-        cm.getClass("Embedded_Report").addClassListener({
-            update: function (event) {
-                if (event.type == 'report' && event.action == 'open') {
-                    let wm = new ReportContainer(event.data)
-                    wm.appendToWorkspace()
+        cm.getClass("Embedded_Report").onAny(function (event) {
+            console.log(event)
+            if (event._meta.name == 'open') {
+                let wm = new ReportContainer(event.report, event.view)
+                if (event.view) {
+                    wm.attachToWindowReportView(event.view)
+                } else {
+                    wm.appendToWorkspace(event.showSpecWindow)
                 }
             }
         });

@@ -193,13 +193,13 @@ describe("Embedded_Record", function () {
     })
 
     it("check sets behaviour (adding, changing, deleting)", async () => {
-        async function checkSetField(rec, fn) {
+        async function checkSetField(rec, fn, msg) {
             let setvalues = _(rec[fn].split(",")).map(function (v) {return v.trim()})
             let response = await (await oo.getDBConnection()).query(`SELECT Value FROM ${rec.fields(fn).setrecordname} WHERE masterId=?`, [rec.internalId])
             let rset = response[0]
-            should(rset.length).be.equal(setvalues.length)
+            should(rset.length).be.equal(setvalues.length ,msg)
             for (let i=0;i<setvalues.length;i++) {
-                should(rset[i].Value).be.equal(setvalues[i])
+                should(rset[i].Value).be.equal(setvalues[i], msg)
             }
         }
         async function checkSetFieldDeleted(rec, fn) {
@@ -212,11 +212,11 @@ describe("Embedded_Record", function () {
         rec = cls.new().fillWithRandomValues()
         let res = await rec.store();
         res.should.be.true();
-        await checkSetField(rec, 'Set_Field');
+        await checkSetField(rec, 'Set_Field', "A");
         rec.Set_Field = chance.sentence({words: 2}).replace(/ /g, ",").replace(/\./g, "")
         for (let i=0;i<rec.Rows.length;i++) {
             let row = rec.Rows[i];
-            await checkSetField(row, 'Set_Field')
+            await checkSetField(row, 'Set_Field', "B")
             row.Set_Field = chance.sentence({words: 3}).replace(/ /g, ",").replace(/\./g, "")
         }
         let removed_row = rec.Rows[0];
@@ -227,10 +227,10 @@ describe("Embedded_Record", function () {
         res = await rec.store();
         res.should.be.true();
 
-        await checkSetField(rec, 'Set_Field');
+        await checkSetField(rec, 'Set_Field', "C");
         for (let i=0;i<rec.Rows.length;i++) {
             let row = rec.Rows[i];
-            await checkSetField(row, 'Set_Field')
+            await checkSetField(row, 'Set_Field', "D")
         }
         await checkSetFieldDeleted(removed_row, 'Set_Field')
         //Ahora guardo en una lista todos los registros grabados en DB: encabezado y rows. Luego borro el registro

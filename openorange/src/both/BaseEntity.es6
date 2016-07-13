@@ -23,6 +23,23 @@ EventEmitter.emit = function emit(eventName, event) {
         this.__anyev__[i].call(this, event);
     }
 }
+
+EventEmitter.classEmit = function classEmit(eventName, event) {
+    event = this.newEvent(eventName, event);
+    let cls = this;
+    while (cls != null) {
+        if (eventName in cls.__ev__) {
+            for (let i = 0; i < cls.__ev__[eventName].length; i++) {
+                cls.__ev__[eventName][i].call(this, event);
+            }
+        }
+        for (let i = 0; i < cls.__anyev__.length; i++) {
+            cls.__anyev__[i].call(this, event);
+        }
+        cls = cls.__super__
+    }
+}
+
 EventEmitter.on = function on(eventName, cb) {
     if (!(eventName in this.__ev__)) this.__ev__[eventName] = []
     this.__ev__[eventName].push(cb);
@@ -57,8 +74,25 @@ class BaseEntity {
         return new this();
     }
 
+    static createFromDescription(description) {
+        class AnonymousClass extends getOO().classmanager.getClass(description.inherits) {
+
+        }
+        AnonymousClass.initClass(description)
+        return new AnonymousClass();
+    }
+
     static initClass(Descriptor) {
+        //console.log("en initClass de BaseEntity. Called for ", new this(), Descriptor.name)
         this.__super__ = Reflect.getPrototypeOf(this);
+        this.__ev__ = {}
+        this.__anyev__ = []
+        this.emit = EventEmitter.classEmit.bind(this);
+        this.on = EventEmitter.on.bind(this);
+        this.onAny = EventEmitter.onAny.bind(this);
+        this.off = EventEmitter.off.bind(this);
+        this.offAny = EventEmitter.offAny.bind(this);
+        this.newEvent = EventEmitter.newEvent.bind(this)
         return this;
     }
 
@@ -92,25 +126,29 @@ class BaseEntity {
     }
 }
 
-BaseEntity.__description__ = Descriptor
-BaseEntity.__ev__ = {}
-BaseEntity.__anyev__ = []
-BaseEntity.emit = EventEmitter.emit.bind(BaseEntity);
-BaseEntity.on = EventEmitter.on.bind(BaseEntity);
-BaseEntity.onAny = EventEmitter.onAny.bind(BaseEntity);
-BaseEntity.off = EventEmitter.off.bind(BaseEntity);
-BaseEntity.offAny = EventEmitter.offAny.bind(BaseEntity);
-BaseEntity.newEvent = EventEmitter.newEvent.bind(BaseEntity);
+//BaseEntity.__super__ = null;
 
+//BaseEntity.__ev__ = {}
+//BaseEntity.__anyev__ = []
+//BaseEntity.emit = EventEmitter.emit.bind(BaseEntity);
+//BaseEntity.on = EventEmitter.on.bind(BaseEntity);
+//BaseEntity.onAny = EventEmitter.onAny.bind(BaseEntity);
+//BaseEntity.off = EventEmitter.off.bind(BaseEntity);
+//BaseEntity.offAny = EventEmitter.offAny.bind(BaseEntity);
+//BaseEntity.newEvent = EventEmitter.newEvent.bind(BaseEntity);
+
+let BaseEntityClass = BaseEntity.initClass(Descriptor)
+BaseEntity.__description__ = Descriptor
+BaseEntityClass.__super__ = null;
 
 if (typeof window == 'undefined') {
-    module.exports = BaseEntity.initClass(Descriptor)
+    module.exports = BaseEntityClass
 } else {
-    window.oo.BaseEntity = BaseEntity.initClass(Descriptor)
+    window.oo.BaseEntity = BaseEntityClass
     window.oo.eventmanager = BaseEntity.new();
     $(document).ready(function () {
         //console.log("EN DOCREDY DE BaseEntity")
-        window.oo.classmanager.getClass("Embedded_Window").onAny(function (event) {
+        window.oo.classmanager.getClass("Window").onAny(function (event) {
             window.oo.pushreceiver.emitFromEntity(event._meta.name, event)
         })
     });

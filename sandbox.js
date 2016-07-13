@@ -5,18 +5,15 @@ require('continuation-local-storage'); //hay que importarlo muy rapido para que 
 //var app = require("./app")
 global.__main__ = module
 var oo = require("openorange")
-
+var cm = oo.classmanager
 oo.init()
 
+let log = console.log.bind(console)
 
 
-class A {}
 
-class B extends A {}
-
-class C extends B {}
-
-class NO {}
-
-//console.log(B.prototype)
-console.log(new NO() instanceof A)
+log(cm.getClass("Embedded_Window").__description__.actions)
+log("--")
+log(cm.getClass("ReportWindow").__description__.actions)
+log("--")
+log(cm.getClass("Window").__description__.actions)

@@ -30,6 +30,7 @@ describe('ORM with Selenium', function () {
         let q = await oo.getDBConnection()
         //await oo.orm.syncTable(cm.getClass("TestRecord"))
         await q.query("delete from TestRecord")
+        await q.query("delete from TestRecordSet_Field")
         await q.query("delete from TestRecordRow")
         await q.query("delete from TestRecord2")
         oo.commit();

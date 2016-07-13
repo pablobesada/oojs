@@ -29,6 +29,6 @@ class Embedded_PasteWindow {
 
 }
 
-Embedded_PasteWindow.__description__ = PasteWindowDescription
+//Embedded_PasteWindow.__description__ = PasteWindowDescription
 
-module.exports = Embedded_PasteWindow
+module.exports = Embedded_PasteWindow.initClass(PasteWindowDescription)

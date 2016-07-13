@@ -259,9 +259,7 @@ var RecordDescription = {
     name: 'Embedded_Record',
     inherits: null,
     persistent: false,
-    fields: {
-        internalId: {type: "integer", persistent: true, getMaxLength: () => {return null}, getLinkToRecordClass: () => {return null}},
-    },
+    fields: {},
     fieldnames: ['internalId'],
     detailnames: [],
     filename: __filename
@@ -298,10 +296,11 @@ function propDetailGetter(fn) {
 class Embedded_Record extends oo.BaseEntity {
 
     static initClass(descriptor) {
+        //console.log("en initClass de Embedded_Record. Called for ", new this(), descriptor.name)
         super.initClass(descriptor);
         //var childclass = Object.create(this)
         //console.log("en initClass: this.__description__: " + this.__description__)
-        let parentdesc = this.__description__;
+        let parentdesc = this.__description__ || {};
         let newdesc = {fields: {}, filename: descriptor.filename};
         for (var fn in parentdesc.fields) {
             newdesc.fields[fn] = parentdesc.fields[fn];
@@ -754,5 +753,5 @@ class Embedded_Record extends oo.BaseEntity {
     }
 
 }
-Embedded_Record.__description__ = RecordDescription
-module.exports = Embedded_Record
+//Embedded_Record.__description__ = RecordDescription
+module.exports = Embedded_Record.initClass(RecordDescription)

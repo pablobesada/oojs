@@ -99,6 +99,6 @@ class Embedded_ListWindow {
 
 }
 
-Embedded_ListWindow.__description__ = ListWindowDescription;
+//Embedded_ListWindow.__description__ = ListWindowDescription;
 Embedded_ListWindow.__class_listeners__ = []
-module.exports = Embedded_ListWindow
+module.exports = Embedded_ListWindow.initClass(ListWindowDescription)

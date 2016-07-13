@@ -14,37 +14,22 @@ var Description = {
  '__filename__': __filename,
  })*/
 
-class Embedded_Report {
-
-    static addClassListener(listener) {
-        Embedded_Report.__class_listeners__.push(listener);
-    }
-
-    static notifyClassListeners(event) {
-        _(Embedded_Report.__class_listeners__).forEach(function (listener) {
-            listener.update(event);
-        })
-    }
-
+class Embedded_Report extends oo.BaseEntity {
 
     static initClass(descriptor) {
+        super.initClass(descriptor)
         //var childclass = Object.create(this)
         this.__description__ = {}
         this.__description__.name = descriptor.name;
         this.__description__.title = descriptor.title;
         this.__description__.window = descriptor.window ? descriptor.window : null;
         this.__description__.filename = descriptor.filename;
+        this.__description__.params = descriptor.params;
         //childclass.__super__ = this;
         //this.__recordClass__ = null;
         return this;
     }
 
-
-    static new() {
-        let res = new this();
-        res.__class__ = this;
-        return res;
-    }
 
     static findReport(id) {
         if (id in Embedded_Report.__reports__) return Embedded_Report.__reports__[id]
@@ -52,10 +37,30 @@ class Embedded_Report {
     }
 
     constructor() {
+        super()
+        this.view = null;
         this.__html__ = [];
         this.__id__ = Embedded_Report.ids++;
         this.__listeners__ = []
-        this.__class__ = this.constructor
+        let desc = {}
+        desc.inherits = 'Embedded_Record';
+        desc.name = '<dynamic record>'
+        desc.filename = '<null>'
+        //console.log(this.__class__.getDescription())
+        desc.fields = this.__class__.getDescription().params;
+        this.__record__ = cm.getClass("Record").createFromDescription(desc)
+        desc = {}
+        desc.inherits = 'ReportWindow';
+        desc.name = '<dynamic window>'
+        desc.filename = '<null>'
+        desc.__recordClass__ = this.__record__.__class__
+        desc.form = []
+        for (let i=0;i<this.getRecord().fieldNames().length;i++) {
+            desc.form.push({field: this.getRecord().fieldNames()[i]})
+        }
+        this.__paramswindow__ = cm.getClass("Window").createFromDescription(desc)
+        this.__paramswindow__.setRecord(this.__record__)
+        this.__paramswindow__.setReport(this)
         Embedded_Report.__reports__[this.__id__] = this;
         //console.log(Embedded_Report.__reports__);
         return this;
@@ -65,15 +70,34 @@ class Embedded_Report {
         return this.__id__;
     }
 
-    async open() {
+    async open(showSpecWindow) {
+        if (showSpecWindow == undefined) showSpecWindow = true;
         let self = this
-        Embedded_Report.notifyClassListeners({type: "report", action: "open", data: this})
-        await self.run()
-        self.render();
+        Embedded_Report.emit('open', {report: self, view: self.view, showSpecWindow: showSpecWindow})
+        //Embedded_Report.notifyClassListeners({type: "report", action: "open", data: this})
+        if (!showSpecWindow) {
+            await self.run()
+            self.render();
+        }
     }
+
+    getRecord() {
+        return this.__record__
+    }
+
+    getParamsWindow() {
+        return this.__paramswindow__
+    }
+
+
+
 
     async run() {
         console.log("running run de Embedded_report")
+    }
+
+    setView(reportview) {
+        this.view = reportview
     }
 
     clear() {
@@ -81,12 +105,14 @@ class Embedded_Report {
     }
 
     render() {
-        this.notifyListeners({type: "report", action: "render", data: this})
+        this.emit('render', {report: this})
+        //this.notifyListeners({type: "report", action: "render", data: this})
         //this.container.render();
     }
 
     setFocus() {
-        this.notifyListeners({type: "report", action: "setFocus", data: this})
+        this.emit('focus', {report: this})
+        //this.notifyListeners({type: "report", action: "setFocus", data: this})
         //oo.ui.reportmanager.setFocus(this)
     }
 
@@ -197,11 +223,9 @@ class Embedded_Report {
     }
 }
 
-Embedded_Report.__super__ = null
-Embedded_Report.__description__ = Description
+//Embedded_Report.__description__ = Description
 Embedded_Report.ids = 1;
 Embedded_Report.__reports__ = [];
-Embedded_Report.__class_listeners__ = []
 
 
-module.exports = Embedded_Report
+module.exports = Embedded_Report.initClass(Description)

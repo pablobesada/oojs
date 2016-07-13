@@ -150,5 +150,5 @@ class Embedded_Card extends oo.BaseEntity {
     }
 }
 
-Embedded_Card.__description__ = CardDescription;
-module.exports = Embedded_Card
+//Embedded_Card.__description__ = CardDescription;
+module.exports = Embedded_Card.initClass(CardDescription)

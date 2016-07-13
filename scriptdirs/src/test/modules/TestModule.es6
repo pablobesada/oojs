@@ -8,6 +8,9 @@ var Description = {
     records: [
         {name: 'TestRecord', label: 'Test Record', access: 'TestRecordListWindow'},
     ],
+    reports: [
+        {name: 'TestReport', label: 'Test Report', access: 'TestReport'}
+    ],
     filename: __filename,
 }
 

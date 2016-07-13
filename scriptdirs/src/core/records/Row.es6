@@ -6,6 +6,7 @@ var Description = {
     inherits: 'Embedded_Record',
     persistent: false,
     fields: {
+        internalId: {type: "integer", persistent: true, getMaxLength: () => {return null}, getLinkToRecordClass: () => {return null}}, //si se modifica esto hay que modificarlo tambien en Record
         rowNr: {type: "integer"},
         masterId: {type: "integer"},
     },

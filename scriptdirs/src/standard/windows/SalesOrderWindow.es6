@@ -48,6 +48,11 @@ var Description = {
                 }
             ]
             },
+            {
+                label: "TAB3", content: [
+                {type: 'reportview', name: 'Contacts'}
+            ]}
+
         ]
         }
     ],
@@ -59,6 +64,20 @@ var Parent = cm.SuperClass(Description)
 class SalesOrderWindow extends Parent {
     constructor() {
         super()
+    }
+
+    async afterShowRecord() {
+        console.log("en afterShowReocrd")
+        let report = cm.getClass("CustomerListReport").new()
+        //report.defaults()
+        //report.ShowReportTitle = False
+        report.setView(this.getReportView("Contacts"))
+        //report.getRecord().CustCode = record.Code
+        //report.getRecord().ContactType = 0
+        //report.getRecord().HideCode = True
+        //report.getRecord().JoinNames = True
+        //report.open(False)
+        report.open(false)
     }
 
     async "changed PrintFormat"() {
