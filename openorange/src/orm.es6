@@ -54,7 +54,7 @@ async function deleteDetailFunction(connection, record, detailname) {
     var detail = record.details(detailname);
     var del = orm.generate_delete_detail_sql(record, detailname);
     let info = await connection.query(del.sql, del.values)
-    for (let i=0;i<detail.length;i++) {
+    for (let i = 0; i < detail.length; i++) {
         let row = detail[i]
         await store_sets(connection, row, row.isNew(), true)
     }
@@ -85,9 +85,10 @@ async function saveDetailFunction(connection, record, detailname) {
         resolve();
     }).then(function () {
         return Promise.all(funcs)
-    })/*.catch(function (err) {
-        console.log(err)
-    })*/
+    })
+    /*.catch(function (err) {
+     console.log(err)
+     })*/
 }
 
 orm.generate_insert_sql = function generate_insert_sql(record) {
@@ -281,10 +282,10 @@ async function store_sets(conn, record, isNewRecord, isDeleting) {
     let promises = [];
     if (!isNewRecord) {
         let fieldnames = record.fieldNames()
-        for (let i=0;i<fieldnames.length;i++) {
+        for (let i = 0; i < fieldnames.length; i++) {
             let field = record.fields(fieldnames[i])
             let oldvalue = record.oldFields(fieldnames[i]).getValue();
-            if (field.type == 'set' && field.setrecordname &&oldvalue != null && oldvalue != '' && (field.getValue() != oldvalue || isDeleting)) {
+            if (field.type == 'set' && field.setrecordname && oldvalue != null && oldvalue != '' && (field.getValue() != oldvalue || isDeleting)) {
                 let sql = `DELETE FROM ${field.setrecordname} WHERE masterId=?`
                 let values = [record.oldFields("internalId").getValue()]
                 promises.push(conn.query(sql, values));
@@ -300,8 +301,8 @@ async function store_sets(conn, record, isNewRecord, isDeleting) {
                     return v.trim()
                 })
                 for (let j = 0; j < setvalues.length; j++) {
-                    let sql = `INSERT INTO ${field.setrecordname} (masterId, Value, syncVersion) values (?,?,?)`
-                    let values = [record.internalId, setvalues[j], 1]
+                    let sql = `INSERT INTO ${field.setrecordname} (masterId, Value) values (?,?)`
+                    let values = [record.internalId, setvalues[j]]
                     promises.push(conn.query(sql, values));
                 }
             }
@@ -446,16 +447,16 @@ orm.generate_select_sql = function generate_select_sql(record) {
     return {sql: sql, values: values};
 }
 
-orm.syncTable = async function syncTable(recordClass) {
-    if (!recordClass.getDescription().persistent) return;
-    console.log("sync: ", recordClass.getDescription().name)
+orm.syncRecord = async function syncRecord(description) {
+    if (!description.persistent) return;
+    console.log("sync: ", description.name)
     let conn = await ctx.getDBConnection();
-    let qres = await conn.query('SHOW TABLES LIKE ?', recordClass.getDescription().name);
+    let qres = await conn.query('SHOW TABLES LIKE ?', description.name);
     let rows = qres[0], fields = qres[1];
     if (rows.length == 0) {
-        await orm.createTable(recordClass)
+        await orm.createTable(description)
     } else {
-        await orm.alterTable(recordClass)
+        await orm.alterTable(description)
     }
 }
 
@@ -476,15 +477,16 @@ orm.get_db_type_name = function get_db_type_name(ftype, length) {
     return d[ftype]
 }
 
-orm.column_def_sql = function column_def_sql(name,fielddef) {
+orm.column_def_sql = function column_def_sql(name, fielddef) {
     let type = orm.get_db_type_name(fielddef.type, fielddef.getMaxLength());
-    let opts = (name == 'internalId')? 'NOT NULL AUTO_INCREMENT' : 'DEFAULT NULL'
+    let opts = (name == 'internalId') ? 'NOT NULL AUTO_INCREMENT' : 'DEFAULT NULL'
     return `${name} ${type} ${opts}`
 }
-orm.createTable = async function createTable(recordClass) {
-    let def = recordClass.getDescription();
-    let tablename = def.name;
-    let columns = _(def.persistentFieldNames).map((fn) => {return orm.column_def_sql(fn, def.fields[fn])});
+orm.createTable = async function createTable(description) {
+    let tablename = description.name;
+    let columns = _(description.persistentFieldNames).map((fn) => {
+        return orm.column_def_sql(fn, description.fields[fn])
+    });
     let indexes = []
     indexes.push('PRIMARY KEY (`internalId`)');
     let sql = `CREATE TABLE ${tablename} (${columns.join(",\n")}, ${indexes.join(",\n")} ) ENGINE=InnoDB DEFAULT CHARSET=utf8`
@@ -492,25 +494,24 @@ orm.createTable = async function createTable(recordClass) {
     return conn.query(sql);
 }
 
-orm.alterTable = async function alterTable(recordClass) {
-    let def = recordClass.getDescription();
+orm.alterTable = async function alterTable(description) {
     let conn = await ctx.getDBConnection();
-    let qres = await conn.query('SHOW COLUMNS FROM ' + def.name );
+    let qres = await conn.query('SHOW COLUMNS FROM ' + description.name);
     let rows = qres[0], queryfields = qres[1];
     let adds = [], dels = [], upds = []
     let table_current_fields = {}
-    for (let i=0;i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
         let row = rows[i];
         table_current_fields[row.Field] = row;
-        if (def.persistentFieldNames.indexOf(row.Field) < 0) {
+        if (description.persistentFieldNames.indexOf(row.Field) < 0) {
             dels.push(row.Field)
         } else {
-            let field = def.fields[row.Field]
+            let field = description.fields[row.Field]
             if (row.Type != orm.get_db_type_name(field.type, field.getMaxLength())) upds.push(row.Field);
         }
     }
-    for (let i=0; i<def.persistentFieldNames.length; i++) {
-        let fn = def.persistentFieldNames[i];
+    for (let i = 0; i < description.persistentFieldNames.length; i++) {
+        let fn = description.persistentFieldNames[i];
         if (!(fn in table_current_fields)) adds.push(fn);
     }
 
@@ -518,15 +519,39 @@ orm.alterTable = async function alterTable(recordClass) {
     //console.log("DELS: ", dels)
     //console.log("UPDS: ", upds)
 
-    let tablename = def.name;
-    let columns = _(adds).map((fn) => {return "ADD " + orm.column_def_sql(fn, def.fields[fn])})
-    columns =  columns.concat(_(upds).map((fn) => {return "MODIFY " + orm.column_def_sql(fn, def.fields[fn])}))
+    let tablename = description.name;
+    let columns = _(adds).map((fn) => {
+        return "ADD " + orm.column_def_sql(fn, description.fields[fn])
+    })
+    columns = columns.concat(_(upds).map((fn) => {
+        return "MODIFY " + orm.column_def_sql(fn, description.fields[fn])
+    }))
     //columns =  columns.concat(_(dels).map((fn) => {return "DROP " + fn})) // por el momento no vamos a eliminar columnas, xq puede haber problemas al borrar campos creador por OpenOrange Legacy y que sigan en uso
     if (columns.length) {
         let sql = `ALTER TABLE ${tablename} ${columns.join(",\n")}`
         return await conn.query(sql);
     }
     return true;
+}
+
+orm.syncSetRecord = async function syncSetRecord(setrecordname) {
+    let oo = require("openorange")
+    let cm = oo.classmanager
+    let internalIdDesc = cm.getClass("Row").getDescription().fields.internalId
+    let masterIdDesc = cm.getClass("Row").getDescription().fields.masterId
+    let desc = {
+        name: setrecordname,
+        persistent: true,
+        inherits: "Embedded_Record",
+        fields: {
+            internalId: internalIdDesc,
+            masterId: masterIdDesc,
+            Value: {type: "string", length: 30},
+        }
+    }
+    let record= oo.BaseEntity.createFromDescription(desc);
+
+    return orm.syncRecord(record.__class__.getDescription())
 }
 
 orm.syncAllTables = async function syncAllTables() {
@@ -536,13 +561,22 @@ orm.syncAllTables = async function syncAllTables() {
 
     let scriptdirs = cm.getClassStructure();
     _(scriptdirs).each((sd) => {
-        _(sd.records).each((value, key) => {classes[key] = 1})
-        _(sd.documents).each((value, key) => {classes[key] = 1}) //necesario esto?
+        _(sd.records).each((value, key) => {
+            classes[key] = 1
+        })
+        _(sd.documents).each((value, key) => {
+            classes[key] = 1
+        }) //necesario esto?
     })
 
     for (let classname in classes) {
         let cls = cm.getClass(classname);
-        if (cls.getDescription().persistent) await orm.syncTable(cls)
+        if (cls.getDescription().persistent) await orm.syncRecord(cls.getDescription())
+        _(cls.getDescription().persistentFieldNames).each(async (f) => {
+            if (f.setrecordname) {
+                await orm.synSetRecord(f.recordname);
+            }
+        })
     }
     return true;
 }

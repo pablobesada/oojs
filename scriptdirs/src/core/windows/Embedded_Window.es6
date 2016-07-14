@@ -23,10 +23,15 @@ class Embedded_Window extends oo.BaseEntity {
     }
 
     open() {
+        if (this.isOpen()) return;
         Embedded_Window.emit("open", {window: this})
         this.__isopen__ = true;
         if (this.getRecord() && this.getRecord().internalId) Embedded_Window.emit(`start editing record ${this.getRecord().__class__.getDescription().name}:${this.getRecord().internalId}`, {record: this.getRecord()})
-        this.afterShowRecord();
+        if (this.getRecord()) this.afterShowRecord();
+    }
+
+    isOpen() {
+        return this.__isopen__;
     }
 
     close() {
@@ -135,7 +140,8 @@ class Embedded_Window extends oo.BaseEntity {
                 this.__record__.on('modified flag', this.recordModifiedFlagChanged)
             }
             this.emit('record replaced', {record: rec})
-            if (this.__record__ && this.__isopen__ && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
+            if (this.__record__ && this.isOpen()) this.afterShowRecord();
+            if (this.__record__ && this.isOpen() && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
         }
     }
 

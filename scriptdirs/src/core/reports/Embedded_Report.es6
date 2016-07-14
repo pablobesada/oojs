@@ -6,6 +6,10 @@ var Description = {
     name: 'Embedded_Report',
     inherits: null,
     filename: __filename,
+    actions: [
+        {label: 'Run', method: 'runAndRender', icon: 'play_arrow', group: 'basic'},
+        {label: 'Toggle Window', method: 'toggleParamsWindow', icon: 'settings', group: 'basic'},
+    ],
 }
 
 /*var Embedded_Report =  Object.create({
@@ -19,12 +23,18 @@ class Embedded_Report extends oo.BaseEntity {
     static initClass(descriptor) {
         super.initClass(descriptor)
         //var childclass = Object.create(this)
-        this.__description__ = {}
-        this.__description__.name = descriptor.name;
-        this.__description__.title = descriptor.title;
-        this.__description__.window = descriptor.window ? descriptor.window : null;
-        this.__description__.filename = descriptor.filename;
-        this.__description__.params = descriptor.params;
+        let parentdesc = this.__description__;
+        let newdesc = {}
+        newdesc.name = descriptor.name;
+        newdesc.title = descriptor.title;
+        newdesc.window = descriptor.window ? descriptor.window : null;
+        newdesc.filename = descriptor.filename;
+        newdesc.params = descriptor.params;
+        newdesc.actions = parentdesc.actions ? parentdesc.actions.slice() : []
+        if (descriptor.actions) {
+            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
+        }
+        this.__description__ = newdesc;
         //childclass.__super__ = this;
         //this.__recordClass__ = null;
         return this;
@@ -55,7 +65,7 @@ class Embedded_Report extends oo.BaseEntity {
         desc.filename = '<null>'
         desc.__recordClass__ = this.__record__.__class__
         desc.form = []
-        for (let i=0;i<this.getRecord().fieldNames().length;i++) {
+        for (let i = 0; i < this.getRecord().fieldNames().length; i++) {
             desc.form.push({field: this.getRecord().fieldNames()[i]})
         }
         this.__paramswindow__ = cm.getClass("Window").createFromDescription(desc)
@@ -81,6 +91,7 @@ class Embedded_Report extends oo.BaseEntity {
         }
     }
 
+
     getRecord() {
         return this.__record__
     }
@@ -89,8 +100,29 @@ class Embedded_Report extends oo.BaseEntity {
         return this.__paramswindow__
     }
 
+    async callAction(actiondef) {
+        if (this[actiondef.method]) return this[actiondef.method]();
+    }
 
 
+    toggleParamsWindow() {
+        if (this.getParamsWindow()) {
+            if (!this.getParamsWindow().isOpen()) {
+                this.getParamsWindow().setRecord(this.getRecord())
+                this.getParamsWindow().open();
+            } else {
+                this.getParamsWindow().close();
+            }
+        }
+    }
+
+    async runAndRender() {
+        console.log("en run and render")
+        if (this.getParamsWindow()) this.getParamsWindow().close();
+        this.clear()
+        await this.run();
+        this.render();
+    }
 
     async run() {
         console.log("running run de Embedded_report")
@@ -210,8 +242,7 @@ class Embedded_Report extends oo.BaseEntity {
         var rec = cm.getClass(wnd.__class__.getDescription().recordClass).new()
         rec[fn] = v
         if (await rec.load()
-    )
-        {
+        ) {
             wnd.setRecord(rec)
             wnd.open();
             wnd.setFocus();
@@ -224,8 +255,11 @@ class Embedded_Report extends oo.BaseEntity {
 }
 
 //Embedded_Report.__description__ = Description
-Embedded_Report.ids = 1;
-Embedded_Report.__reports__ = [];
+Embedded_Report
+    .ids = 1;
+Embedded_Report
+    .__reports__ = [];
 
 
-module.exports = Embedded_Report.initClass(Description)
+module
+    .exports = Embedded_Report.initClass(Description)

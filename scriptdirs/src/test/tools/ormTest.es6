@@ -27,13 +27,19 @@ let Record = cm.getClass("Record");
 describe('ORM with Selenium', function () {
     before(async ()=> {
         app.serve();
-        let q = await oo.getDBConnection()
-        //await oo.orm.syncTable(cm.getClass("TestRecord"))
-        await q.query("delete from TestRecord")
-        await q.query("delete from TestRecordSet_Field")
-        await q.query("delete from TestRecordRow")
-        await q.query("delete from TestRecord2")
-        oo.commit();
+        try {
+            let q = await oo.getDBConnection()
+            await oo.orm.syncRecord(cm.getClass("TestRecord").getDescription())
+            await oo.orm.syncSetRecord("TestRecordSet_Field")
+            await q.query("delete from TestRecord")
+            await q.query("delete from TestRecordSet_Field")
+            await q.query("delete from TestRecordRow")
+            await q.query("delete from TestRecord2")
+            oo.commit();
+        } catch (err) {
+            console.log(err.stack)
+            throw err
+        }
     });
 
     this.timeout(40000)
@@ -86,13 +92,14 @@ describe('ORM with Selenium', function () {
     });
 
 
-    it ("Sync Table", async () => {
+    it("Sync Table", async () => {
         let conn = await oo.getDBConnection()
         let cls = cm.getClass("TestRecord")
+        await oo.orm.syncRecord(cls.getDescription()) //esto es para asegurarme que exista al momento del DROP, sino tira error
         await conn.query("DROP TABLE " + cls.getDescription().name)
-        await oo.orm.syncTable(cls)
+        await oo.orm.syncRecord(cls.getDescription())
         await conn.query(`ALTER TABLE ${cls.getDescription().name} \nADD added_col int DEFAULT NULL,\n DROP String_Field, \nMODIFY Integer_Field varchar(10) DEFAULT NULL`)
-        await oo.orm.syncTable(cls)
+        await oo.orm.syncRecord(cls.getDescription())
         console.log("-----------")
         await oo.orm.syncAllTables()
     })

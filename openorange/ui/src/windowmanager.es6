@@ -105,8 +105,6 @@
         createToolBar() {
             var self = this;
             var html = '<div class="row">';
-            //html += '<a class="btn waves-effect waves-light" action="save"><i class="mdi">done</i></a>';
-            //html += '<a class="btn waves-effect waves-light" action="print"><i class="mdi">print</i></a>';
             for (let i = 0; i < self.window.__class__.getDescription().actions.length; i++) {
                 let actiondef = self.window.__class__.getDescription().actions[i]
                 let label = 'icon' in actiondef? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
@@ -1006,7 +1004,7 @@
             let params = this;
             let self = params.self;
             let actiondef = params.actiondef;
-            await self.window.callAction(actiondef);
+            self.window.callAction(actiondef);
         }
     }
 

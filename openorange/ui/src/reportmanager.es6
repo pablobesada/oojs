@@ -33,6 +33,7 @@
             let paramsWindow = $(`<div id="${paramsWindowId}"></div>`)
             let contentElement = $('<div name="content"></div>')
             var w = $(html)
+            w.append(self.createToolBar());
             w.append(paramsWindow)
             w.append(contentElement)
             this.tab_id = "tab_report_" + (ReportContainer.reports.length + 1);
@@ -63,6 +64,25 @@
             container.append(w)
         };
 
+        createToolBar() {
+            var self = this;
+            var html = '<div class="row">';
+            for (let i = 0; i < self.report.__class__.getDescription().actions.length; i++) {
+                let actiondef = self.report.__class__.getDescription().actions[i]
+                let label = 'icon' in actiondef? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
+                html += `<a class="btn waves-effect waves-light" action="${actiondef.method}">${label}</a>`;
+            }
+
+            html += '</div>';
+            var res = $(html);
+            for (let i = 0; i < self.report.__class__.getDescription().actions.length; i++) {
+                let actiondef = self.report.__class__.getDescription().actions[i];
+                let params = {self: self, actiondef: actiondef}
+                res.find(`a[action=${actiondef.method}]`).click(self.actionClicked.bind(params));
+            }
+            return res;
+        };
+
         render() {
             var self = this
             self.__content_element__.html(this.report.getHTML())
@@ -79,6 +99,13 @@
                     break;
             }
         };
+
+        async actionClicked(event) {
+            let params = this;
+            let self = params.self;
+            let actiondef = params.actiondef;
+            self.report.callAction(actiondef);
+        }
     }
     ReportContainer.id_generator = 1;
     ReportContainer.reports = [];

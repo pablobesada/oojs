@@ -6,7 +6,7 @@ var Description = {
     inherits: 'Embedded_Window',
     filename: __filename,
     actions: [
-        {label: 'Run', method: 'runAndRender', icon: 'play_arrow', group: 'basic'},
+        //{label: 'Run', method: 'runAndRender', icon: 'play_arrow', group: 'basic'},
     ],
 }
 
@@ -23,12 +23,5 @@ class ReportWindow extends Parent {
         this.report = report
     }
 
-    async runAndRender() {
-        console.log("en run and render")
-        this.report.clear()
-        await this.report.run();
-        this.report.render();
-        this.close();
-    }
 }
 module.exports = ReportWindow.initClass(Description)
