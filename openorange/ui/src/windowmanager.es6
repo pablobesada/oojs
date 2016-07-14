@@ -6,6 +6,15 @@
 
     class WindowContainer {
 
+        static findWindowContainerForTabId(tab_id) {
+            for (let i=0;i<WindowContainer.windows.length;i++) {
+                if (WindowContainer.windows[i].tab_id == tab_id) {
+                    return WindowContainer.windows[i].container;
+                }
+            }
+            return null
+        }
+
         static getWindowReportView(window, viewname) {
             for (let i=0;i<WindowContainer.windows.length;i++) {
                 if (WindowContainer.windows[i].window === window) {
@@ -70,7 +79,7 @@
             var w = $(html);
             w.append(self.createToolBar());
             this.tab_id = "tab_window_" + (WindowContainer.windows.length + 1);
-            WindowContainer.windows.push({window: this.window, element: w, tab_id: this.tab_id});
+            WindowContainer.windows.push({container: this, window: this.window, element: w, tab_id: this.tab_id});
             w.append(self.createComponent(this.windowjson));
             w.append(self.createPasteWindow());
             //console.log(this.windowjson)
@@ -288,6 +297,11 @@
                 pasteWindowComponent = $('<i class="mdi prefix">search</i>')
                 var params = {self: self, field: field, detailname: null, rownr: null, json: json, editor: editors};
                 pasteWindowComponent.click(self.openPasteWindow.bind(params));
+                editors.keypress((event) => {
+                    if (event.ctrlKey && event.keyCode == 13) {
+                        self.openPasteWindow.bind(params)(event);
+                    }
+                })
             }
             if (pasteWindowComponent) component.append(pasteWindowComponent);
             component.append(editorElement);
@@ -350,6 +364,14 @@
                     editor: editors
                 };
                 pasteWindowComponent.click(self.openPasteWindow.bind(params));
+                editors.keypress((event) => {
+                    console.log(event)
+                    if (event.ctrlKey && event.keyCode == 13) {
+                        console.log("opening paste window")
+                        self.openPasteWindow.bind(params)(event);
+                    }
+                })
+
                 component.append(editors)
             }
             json.__element__ = editors;
@@ -1006,6 +1028,41 @@
             let actiondef = params.actiondef;
             self.window.callAction(actiondef);
         }
+
+        async processKeyPress(event) {
+            let actions = this.window.__class__.getDescription().actions;
+            for (let i=0;i<actions.length;i++) {
+                let actiondef = actions[i]
+                if (actiondef.shortcut) {
+                    let keys = actiondef.shortcut.toLowerCase().split("+");
+                    let shift = false, enter = false, ctrl = false, alt = false, letter = null;
+                    for (let j=0;j<keys.length;j++) {
+                        let key = keys[j]
+                        switch(key) {
+                            case "shift":
+                                shift = true;
+                                break;
+                            case "ctrl":
+                                ctrl = true;
+                                break;
+                            case "alt":
+                                alt = true;
+                                break;
+                            case "enter":
+                                letter = 'enter';
+                                break;
+                            default:
+                                letter = key;
+                                break;
+                        }
+                    }
+                    if (shift != event.shiftKey || ctrl != event.ctrlKey || alt != event.altKey) return;
+                    if (letter != event.key.toLowerCase()) return;
+                    this.window.callAction(actiondef)
+                }
+            }
+            return false;
+        }
     }
 
     WindowContainer.windows = [];
@@ -1032,6 +1089,17 @@
         });
     })
     window.oo.ui.windowmanager = WindowContainer;
+
+
+    window.addEventListener('keypress', function (event) { //esto es global para windowmanager, listiwindowmanager y reportmanager lo pongo aca por ahora
+        let curtab = $('ul.tabs.workspace li a.active');
+        if (curtab) {
+            let wc = WindowContainer.findWindowContainerForTabId(curtab.attr("href").substring(1)) // <-- esto es poco eficiente. se corre por cada tecla que se presiona y buscan en todos los tabs cual es el tab actual, y dps busca por ese tabId en windowmanagers, liswindowmanager y reportmanagers... muy pesado... encima una vez que encuentra la ventana recorre todos los actions para ver si alguno tiene esa combinacion de teclas.
+            if (wc) {
+                wc.processKeyPress(event);
+            }
+        }
+    })
 
     //$.extend(true, window.oo.ui, {windowmanager: WindowContainer})
     //window.WindowManager = WindowContainer; //para hacer global la variable WindowManager

@@ -6,7 +6,7 @@ var Description = {
     inherits: 'Embedded_Window',
     filename: __filename,
     actions: [
-        {label: 'Save', method: 'save', icon: 'done', group: 'basic'},
+        {label: 'Save', method: 'save', icon: 'done', group: 'basic', shortcut: 'shift+enter'},
     ],
 }
 
