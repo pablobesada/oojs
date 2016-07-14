@@ -6,6 +6,16 @@
 
     class ReportContainer {
 
+        static findReportContainerForTabId(tab_id) {
+            console.log("TRCFTI", tab_id)
+            for (let i=0;i<ReportContainer.reports.length;i++) {
+                if (ReportContainer.reports[i].tab_id == tab_id) {
+                    return ReportContainer.reports[i].container;
+                }
+            }
+            return null
+        }
+
         static findReport(id) {
             return require('openorange').classmanager.getClass('Embedded_Report').findReport(id);
         }
@@ -106,6 +116,42 @@
             let actiondef = params.actiondef;
             self.report.callAction(actiondef);
         }
+
+        async processKeyPress(event) {
+            let actions = this.report.__class__.getDescription().actions;
+            for (let i=0;i<actions.length;i++) {
+                let actiondef = actions[i]
+                if (actiondef.shortcut) {
+                    let keys = actiondef.shortcut.toLowerCase().split("+");
+                    let shift = false, enter = false, ctrl = false, alt = false, letter = null;
+                    for (let j=0;j<keys.length;j++) {
+                        let key = keys[j]
+                        switch(key) {
+                            case "shift":
+                                shift = true;
+                                break;
+                            case "ctrl":
+                                ctrl = true;
+                                break;
+                            case "alt":
+                                alt = true;
+                                break;
+                            case "enter":
+                                letter = 'enter';
+                                break;
+                            default:
+                                letter = key;
+                                break;
+                        }
+                    }
+                    if (shift != event.shiftKey || ctrl != event.ctrlKey || alt != event.altKey) return;
+                    if (letter != event.key.toLowerCase()) return;
+                    this.report.callAction(actiondef)
+                }
+            }
+            return false;
+        }
+
     }
     ReportContainer.id_generator = 1;
     ReportContainer.reports = [];

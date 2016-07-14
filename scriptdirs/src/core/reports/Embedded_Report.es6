@@ -7,7 +7,7 @@ var Description = {
     inherits: null,
     filename: __filename,
     actions: [
-        {label: 'Run', method: 'runAndRender', icon: 'play_arrow', group: 'basic'},
+        {label: 'Run', method: 'runAndRender', icon: 'play_arrow', group: 'basic', shortcut: 'shift+enter'},
         {label: 'Toggle Window', method: 'toggleParamsWindow', icon: 'settings', group: 'basic'},
     ],
 }

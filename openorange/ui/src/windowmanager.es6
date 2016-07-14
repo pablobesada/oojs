@@ -1090,11 +1090,14 @@
     })
     window.oo.ui.windowmanager = WindowContainer;
 
-
-    window.addEventListener('keypress', function (event) { //esto es global para windowmanager, listiwindowmanager y reportmanager lo pongo aca por ahora
+    window.addEventListener('keyup', function (event) { //esto es global para windowmanager, listiwindowmanager y reportmanager lo pongo aca por ahora
+        //si escucho KEYPRESS, al hacer click sobre otro tab, luego SHiFT+ENTER no se recibe el evento
+        let key = event.key.toLowerCase();
+        if (key == 'alt' || key == 'shift' || key == 'ctrl' || key == 'ctrl' || key == 'meta') return;
         let curtab = $('ul.tabs.workspace li a.active');
         if (curtab) {
             let wc = WindowContainer.findWindowContainerForTabId(curtab.attr("href").substring(1)) // <-- esto es poco eficiente. se corre por cada tecla que se presiona y buscan en todos los tabs cual es el tab actual, y dps busca por ese tabId en windowmanagers, liswindowmanager y reportmanagers... muy pesado... encima una vez que encuentra la ventana recorre todos los actions para ver si alguno tiene esa combinacion de teclas.
+            if (!wc)  wc = oo.ui.reportmanager.findReportContainerForTabId(curtab.attr("href").substring(1)) // <-- esto es poco eficiente. se corre por cada tecla que se presiona y buscan en todos los tabs cual es el tab actual, y dps busca por ese tabId en windowmanagers, liswindowmanager y reportmanagers... muy pesado... encima una vez que encuentra la ventana recorre todos los actions para ver si alguno tiene esa combinacion de teclas.
             if (wc) {
                 wc.processKeyPress(event);
             }
