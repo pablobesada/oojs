@@ -34,9 +34,9 @@ var Description = {
         ]
         }],
     actions: [
-        {label: 'askYesNo Action', methodname: 'askYesNoAction'},
-        {label: 'Test Action', methodname: 'testAction'},
-        {label: 'Test Action2', methodname: 'testAction2'}
+        {label: 'askYesNo Action', method: 'askYesNoAction'},
+        {label: 'Test Action', method: 'testAction'},
+        {label: 'Test Action2', method: 'testAction2'}
     ],
     filename: __filename,
 }
@@ -44,8 +44,10 @@ var Description = {
 var Parent = cm.SuperClass(Description)
 
 class TestRecordWindow extends Parent {
+
     constructor() {
         super()
+        this.show_action = true;
     }
 
     async 'changed LinkTo_Field'() {
@@ -54,14 +56,23 @@ class TestRecordWindow extends Parent {
     }
 
     testAction() {
-        console.log("en testAction")
+        this.show_action = false;
+        this.emit("action status modified", {method: 'testAction'})
     }
 
     testAction2() {
+        this.show_action = true;
+        this.emit("action status modified", {method: 'testAction'})
         console.log("en testAction2")
     }
 
+    isActionRelevant(actiondef) {
+        if (actiondef.method == 'testAction') return this.show_action;
+        return super.isActionRelevant(actiondef)
+    }
+
     async askYesNoAction() {
+        console.log("ACAAAAA")
         let res = await oo.inputString("Probando Ask yes no, ok?")
         alert(res);
     }

@@ -9,12 +9,12 @@ var Description = {
     form: [
         {field: 'User', label: 'Usuario'},
         {field: 'SerNr', label: 'Numero'},
+        {field: 'TransDate'},
         {field: 'CustName'},
         {field: 'TransTime'},
         {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         {type: 'card', name: 'CustomerSalesOrdersCard'},
         {type: 'card', name: 'TimerCard'},
-        {field: 'TransDate'},
         {field: 'PrintFormat', editor: 'combobox', options: [
             {label: 'Normal', value: 0},
             {label: 'Sum per Item', value: 1},
@@ -22,7 +22,7 @@ var Description = {
         ]},
         {field: "Status", editor: "checkbox"},
         {
-            type: 'tabs', pages: [
+           type: 'tabs', pages: [
             {
                 label: "TAB1", content: [
                 {
@@ -81,7 +81,7 @@ class SalesOrderWindow extends Parent {
     }
 
     async "changed PrintFormat"() {
-        await super["changed PrintFormat"]();
+        await Parent.tryCall(this, null, "changed PrintFormat");
         console.log("SO: changed PrintFormat: " + this.getRecord().PrintFormat)
     }
 

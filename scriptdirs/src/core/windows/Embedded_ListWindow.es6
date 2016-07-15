@@ -7,30 +7,27 @@ var ListWindowDescription = {
     filename: __filename
 }
 
-class Embedded_ListWindow {
+class Embedded_ListWindow extends oo.BaseEntity {
 
-    static addClassListener(listener) {
-        Embedded_ListWindow.__class_listeners__.push(listener);
-    }
-
-    static notifyClassListeners(event) {
-        _(Embedded_ListWindow.__class_listeners__).forEach(function (listener) {
-            listener.update(event);
-        })
-    }
 
     static initClass(descriptor) {
+        super.initClass(descriptor)
         let newdesc = {}
+        let parentdesc = this.__description__;
         newdesc.name = descriptor.name;
         newdesc.title = descriptor.title;
         newdesc.recordClass = descriptor.record
         newdesc.windowClass = descriptor.window
         newdesc.columns = descriptor.columns;
         newdesc.filename = descriptor.filename;
+        newdesc.actions = parentdesc.actions? parentdesc.actions.slice() : []
+        if (descriptor.actions) {
+            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
+        }
         this.__description__ = newdesc;
-        this.__super__ = Reflect.getPrototypeOf(this)
         this.__recordClass__ = null;
         this.__windowClass__ = null;
+        this.__description__ = newdesc;
         return this;
     }
 
@@ -40,27 +37,17 @@ class Embedded_ListWindow {
     }
 
     constructor() {
+        super()
         this.__class__ = this.constructor
         this.__listeners__ = []
     }
 
-    addListener(listener) {
-        this.__listeners__.push(listener)
-    }
-
-    notifyListeners(event) {
-        let self = this
-        _(this.__listeners__).forEach(function (listener) {
-            listener.update(event, this);
-        })
-    }
-
     open() {
-        Embedded_ListWindow.notifyClassListeners({type: "listwindow", action: "open", data: this})
+        Embedded_ListWindow.emit('open', {listwindow: this})
     }
 
     setFocus() {
-        this.notifyListeners({type: "listwindow", action: "setFocus", data: this})
+        this.emit("focus", {listwindow: this})
     }
 
     static tryCall(self, methodname) {

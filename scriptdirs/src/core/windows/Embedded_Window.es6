@@ -41,7 +41,7 @@ class Embedded_Window extends oo.BaseEntity {
     }
 
     setFocus() {
-        this.emit('focus', {data: this})
+        this.emit('focus', {window: this})
     }
 
     static initClass(descriptor) {

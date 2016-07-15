@@ -2,23 +2,15 @@
 
 (function ($) {
     var _ = require("underscore");
-    var cm = require("openorange").classmanager;
+    let oo = require("openorange");
+    var cm = oo.classmanager
 
-    class WindowContainer {
-
-        static findWindowContainerForTabId(tab_id) {
-            for (let i=0;i<WindowContainer.windows.length;i++) {
-                if (WindowContainer.windows[i].tab_id == tab_id) {
-                    return WindowContainer.windows[i].container;
-                }
-            }
-            return null
-        }
+    class WindowContainer extends oo.ui.BaseContainer {
 
         static getWindowReportView(window, viewname) {
-            for (let i=0;i<WindowContainer.windows.length;i++) {
-                if (WindowContainer.windows[i].window === window) {
-                    let res =  WindowContainer.windows[i].element.find(`[reportview=${viewname}]`);
+            for (let i=0;i<oo.ui.containers.length;i++) {
+                if (oo.ui.containers[i].entity === window) {
+                    let res = oo.ui.containers[i].element.find(`[reportview=${viewname}]`);
                     if (res.length > 0) return $(res[0])
                     break;
                 }
@@ -26,12 +18,9 @@
             return null
         }
 
-        setFocus() {
-            $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
-        }
-
         constructor(wnd) {
-            this.window = wnd;
+            super(wnd)
+            this.window = this.entity;
             this.windowjson = JSON.parse(JSON.stringify(this.window.__class__.getDescription().form));  //deep clone of the object because I need to add some metadata to it
             this.window.__container_data__ = {};
             this.last_tab_id = 0;
@@ -42,57 +31,21 @@
             return this;
         };
 
-        close() {
-            if (this.window.__ui_container_view_id__) {
-                $('#' + this.window.__ui_container_view_id__).html("")
-            } else {
-                let selected_tab_id = $('ul.tabs.workspace a.active').attr('href').substring(1);
-                let is_selected = (selected_tab_id == this.tab_id);
-                let newfocus = null
-                if (is_selected) {
-                    console.log("is selected")
-                    let tabs_count = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').length
-                    let pos = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').index($(`a[href="#${this.tab_id}"]`).closest('li'))
-                    //let pos = 1
-                    //console.log("POS", pos)
-                    pos < tabs_count - 1? pos++ : pos--;
-                    if (pos >= 0) newfocus = $($(`a[href="#${this.tab_id}"]`).closest('ul').find('li a')[pos])
-                }
-                $(`a[href="#${this.tab_id}"]`).closest('li').remove();
-                $(`#${this.tab_id}`).remove();
-                $('ul.tabs.workspace').tabs();
-                for (let i = 0; i < WindowContainer.windows.length; i++) {
-                    if (WindowContainer.windows[i].window === this.window) {
-                        WindowContainer.windows.splice(i, 1)
-                        break;
-                    }
-                }
-                if (newfocus) $('ul.tabs.workspace').tabs('select_tab', newfocus.attr('href').substring(1));
-            }
-        }
-
         render() {
 
             var self = this;
             //console.log(containerElement)
-            var html = '<div class="container"></div>';
-            var w = $(html);
-            w.append(self.createToolBar());
-            this.tab_id = "tab_window_" + (WindowContainer.windows.length + 1);
-            WindowContainer.windows.push({container: this, window: this.window, element: w, tab_id: this.tab_id});
-            w.append(self.createComponent(this.windowjson));
-            w.append(self.createPasteWindow());
+            oo.ui.containers.push({container: this, entity: this.window, element: this.__element__, tab_id: this.tab_id});
+            this.__element__.append(self.createComponent(this.windowjson));
+            this.__element__.append(self.createPasteWindow());
             //console.log(this.windowjson)
-            this.__element__ = w;
-            this.displayWindow(w)
+            this.displayWindow(this.__element__)
+            self.renderActionBar();
         };
 
         displayWindow(windowElement) {
             let self = this;
             if (self.window.__ui_container_view_id__) {
-                console.log("ID,", self.window.__ui_container_view_id__)
-                console.log(windowElement)
-                console.log($('#' + self.window.__ui_container_view_id__))
                 $('#' + self.window.__ui_container_view_id__).append(windowElement)
             } else {
                 var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
@@ -110,29 +63,6 @@
             //this.window.addListener(this);
             this.window.onAny(this.update.bind(this));
         }
-
-        createToolBar() {
-            var self = this;
-            var html = '<div class="row">';
-            for (let i = 0; i < self.window.__class__.getDescription().actions.length; i++) {
-                let actiondef = self.window.__class__.getDescription().actions[i]
-                let label = 'icon' in actiondef? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
-                html += `<a class="btn waves-effect waves-light" action="${actiondef.method}">${label}</a>`;
-            }
-
-            html += '</div>';
-            var res = $(html);
-            for (let i = 0; i < self.window.__class__.getDescription().actions.length; i++) {
-                let actiondef = self.window.__class__.getDescription().actions[i];
-                let params = {self: self, actiondef: actiondef}
-                res.find(`a[action=${actiondef.method}]`).click(self.actionClicked.bind(params));
-            }
-            return res;
-        };
-
-        setWindowTitle(title) {
-            $("a[href='#" + this.tab_id + "']").html(title)
-        };
 
         createComponent(json) {
             var self = this;
@@ -429,7 +359,7 @@
             var value = field != null ? field.getValue() : '';
             if (value == null) value = '';
             var checked = value == '' ? '' : 'checked ="checked"';
-            var element_id = "CHECKBOX_" + WindowContainer.element_ids++;
+            var element_id = oo.ui.genId("CHECKBOX");
             var html = '<p><input ' + checked + ' type="checkbox" name="' + json.field + '" class="editor ' + cls + ' validate" id="' + element_id + '">';
             var label = '';
             if (field == null) { //esto significa que me llamaron desde el header y no desde un matrix
@@ -464,7 +394,7 @@
             var html = '';
             for (var i = 0; i < json.options.length; i++) {
                 var option = json.options[i];
-                var element_id = "RADIO_" + WindowContainer.element_ids++;
+                var element_id = oo.ui.genId("RADIO")
                 html += '<p><input value="' + option.value + '" type="radio" name="' + json.field + '" class="editor ' + cls + ' validate" id="' + element_id + '">';
                 html += '<label for="' + element_id + '">' + option.label + '</label></p>';
             }
@@ -636,13 +566,15 @@
             var self = this;
             //console.log(event)
             switch (event._meta.name) {
+                case "action status modified":
+                    self.renderActionBar()
+                    break
                 case "close":
                     self.close()
                     break;
-
                 case "focus":
                     //el action 'open' es en event de clase y no entra por aca. ver final de este archivo.
-                    self.setFocus()
+                    self.focus()
                     break;
                 case "record replaced":
                     self.bindRecordToWindow(event.record);
@@ -889,7 +821,7 @@
 
         createPasteWindow() {
             var self = this;
-            self.pastewindow_id = "PASTEWINDOW_" + WindowContainer.element_ids++;
+            self.pastewindow_id = oo.ui.genId("PASTEWINDOW");
             var html = '';
             html += '<div id="' + self.pastewindow_id + '" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
             html += '  <div class="modal-content">';
@@ -1022,51 +954,8 @@
             }
         };
 
-        async actionClicked(event) {
-            let params = this;
-            let self = params.self;
-            let actiondef = params.actiondef;
-            self.window.callAction(actiondef);
-        }
-
-        async processKeyPress(event) {
-            let actions = this.window.__class__.getDescription().actions;
-            for (let i=0;i<actions.length;i++) {
-                let actiondef = actions[i]
-                if (actiondef.shortcut) {
-                    let keys = actiondef.shortcut.toLowerCase().split("+");
-                    let shift = false, enter = false, ctrl = false, alt = false, letter = null;
-                    for (let j=0;j<keys.length;j++) {
-                        let key = keys[j]
-                        switch(key) {
-                            case "shift":
-                                shift = true;
-                                break;
-                            case "ctrl":
-                                ctrl = true;
-                                break;
-                            case "alt":
-                                alt = true;
-                                break;
-                            case "enter":
-                                letter = 'enter';
-                                break;
-                            default:
-                                letter = key;
-                                break;
-                        }
-                    }
-                    if (shift != event.shiftKey || ctrl != event.ctrlKey || alt != event.altKey) return;
-                    if (letter != event.key.toLowerCase()) return;
-                    this.window.callAction(actiondef)
-                }
-            }
-            return false;
-        }
     }
 
-    WindowContainer.windows = [];
-    WindowContainer.element_ids = 1;
     WindowContainer.datePickerOptions = {
         closeOnSelect: true,
         selectMonths: true, // Creates a dropdown to control month
@@ -1089,20 +978,6 @@
         });
     })
     window.oo.ui.windowmanager = WindowContainer;
-
-    window.addEventListener('keyup', function (event) { //esto es global para windowmanager, listiwindowmanager y reportmanager lo pongo aca por ahora
-        //si escucho KEYPRESS, al hacer click sobre otro tab, luego SHiFT+ENTER no se recibe el evento
-        let key = event.key.toLowerCase();
-        if (key == 'alt' || key == 'shift' || key == 'ctrl' || key == 'ctrl' || key == 'meta') return;
-        let curtab = $('ul.tabs.workspace li a.active');
-        if (curtab) {
-            let wc = WindowContainer.findWindowContainerForTabId(curtab.attr("href").substring(1)) // <-- esto es poco eficiente. se corre por cada tecla que se presiona y buscan en todos los tabs cual es el tab actual, y dps busca por ese tabId en windowmanagers, liswindowmanager y reportmanagers... muy pesado... encima una vez que encuentra la ventana recorre todos los actions para ver si alguno tiene esa combinacion de teclas.
-            if (!wc)  wc = oo.ui.reportmanager.findReportContainerForTabId(curtab.attr("href").substring(1)) // <-- esto es poco eficiente. se corre por cada tecla que se presiona y buscan en todos los tabs cual es el tab actual, y dps busca por ese tabId en windowmanagers, liswindowmanager y reportmanagers... muy pesado... encima una vez que encuentra la ventana recorre todos los actions para ver si alguno tiene esa combinacion de teclas.
-            if (wc) {
-                wc.processKeyPress(event);
-            }
-        }
-    })
 
     //$.extend(true, window.oo.ui, {windowmanager: WindowContainer})
     //window.WindowManager = WindowContainer; //para hacer global la variable WindowManager

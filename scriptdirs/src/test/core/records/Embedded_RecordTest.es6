@@ -10,6 +10,21 @@ var async = require('async')
 var moment = require('moment')
 
 describe("Embedded_Record", function () {
+    before(async ()=> {
+        try {
+            let q = await oo.getDBConnection()
+            await q.query("delete from TestRecord")
+            await q.query("delete from TestRecordSet_Field")
+            await q.query("delete from TestRecordRowSet_Field")
+            await q.query("delete from TestRecordRow")
+            await q.query("delete from TestRecord2")
+            oo.commit();
+        } catch (err) {
+            console.log(err.stack)
+            throw err
+        }
+    });
+
     let cls = cm.getClass("TestRecord");
     let cls2 = cm.getClass("TestRecord2");
     let rec = null;
@@ -177,13 +192,9 @@ describe("Embedded_Record", function () {
         let res = await rec.save();
     });
 
-    it.skip("delete record", async () => {
-        should(true).be.false()
-    })
+    it("delete record")
 
-    it.skip("delete record check details and sets are gone", async () => {
-        should(true).be.false()
-    })
+    it("delete record check details and sets are gone")
 
 
     it("check serialization", async () => {

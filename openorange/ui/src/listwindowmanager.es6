@@ -7,12 +7,20 @@
 
     class ListWindowContainer {
 
+        static findListWindowContainerForTabId(tab_id) {
+            for (let i = 0; i < ListWindowContainer.listwindows.length; i++) {
+                if (ListWindowContainer.listwindows[i].tab_id == tab_id) {
+                    return ListWindowContainer.listwindows[i].container;
+                }
+            }
+            return null
+        }
 
         constructor(wnd) {
             this.listwindow = wnd;
             this.grid_columns = null;
             this.windowjson = JSON.parse(JSON.stringify(this.listwindow.__class__.__description__.columns));   //deep clone of the object because I need to add some metadata to it
-            this.listwindow.addListener(this);
+            this.listwindow.onAny(this.update.bind(this));
             return this
         }
 
@@ -111,23 +119,31 @@
         createToolBar() {
             var self = this;
             var html = '<div class="row">';
-            html += '<a class="btn waves-effect waves-light"><i class="mdi">+</i></a>';
+            for (let i = 0; i < self.listwindow.__class__.getDescription().actions.length; i++) {
+                let actiondef = self.listwindow.__class__.getDescription().actions[i]
+                let label = 'icon' in actiondef ? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
+                html += `<a class="btn waves-effect waves-light" action="${actiondef.method}">${label}</a>`;
+            }
+
             html += '</div>';
             var res = $(html);
-            //res.find("a").click(function (event) {self.save(event)});
-            res.find("a").click(self.action_new.bind(self));
+            for (let i = 0; i < self.listwindow.__class__.getDescription().actions.length; i++) {
+                let actiondef = self.listwindow.__class__.getDescription().actions[i];
+                let params = {self: self, actiondef: actiondef}
+                res.find(`a[action=${actiondef.method}]`).click(self.actionClicked.bind(params));
+            }
             return res;
         };
 
-        async action_new() {
-            var self = this;
-            var record = self.listwindow.getRecordClass().new()
-            var window = self.listwindow.getWindowClass().new();
-            await record.defaults();
-            window.setRecord(record);
-            window.open();
-            window.setFocus();
-        }
+        /*async action_new() {
+         var self = this;
+         var record = self.listwindow.getRecordClass().new()
+         var window = self.listwindow.getWindowClass().new();
+         await record.defaults();
+         window.setRecord(record);
+         window.open();
+         window.setFocus();
+         }*/
 
 
         generateColumns() {
@@ -154,31 +170,64 @@
 
         update(event) {
             var self = this;
-            switch (event.type) {
-                case "listwindow":
-                    switch (event.action) {
-                        case 'setFocus':
-                            self.setFocus()
-                            break;
-                    }
-                    break
+            switch (event._meta.name) {
+                case 'focus':
+                    self.setFocus()
+                    break;
             }
         };
+
+        async actionClicked(event) {
+            let params = this;
+            let self = params.self;
+            let actiondef = params.actiondef;
+            self.listwindow.callAction(actiondef);
+        }
+
+        async processKeyPress(event) {
+            let actions = this.listwindow.__class__.getDescription().actions;
+            for (let i = 0; i < actions.length; i++) {
+                let actiondef = actions[i]
+                if (actiondef.shortcut) {
+                    let keys = actiondef.shortcut.toLowerCase().split("+");
+                    let shift = false, enter = false, ctrl = false, alt = false, letter = null;
+                    for (let j = 0; j < keys.length; j++) {
+                        let key = keys[j]
+                        switch (key) {
+                            case "shift":
+                                shift = true;
+                                break;
+                            case "ctrl":
+                                ctrl = true;
+                                break;
+                            case "alt":
+                                alt = true;
+                                break;
+                            case "enter":
+                                letter = 'enter';
+                                break;
+                            default:
+                                letter = key;
+                                break;
+                        }
+                    }
+                    if (shift != event.shiftKey || ctrl != event.ctrlKey || alt != event.altKey) return;
+                    if (letter != event.key.toLowerCase()) return;
+                    this.listwindow.callAction(actiondef)
+                }
+            }
+            return false;
+        }
     }
 
     $(document).ready(function () {
-        cm.getClass("Embedded_ListWindow").addClassListener({
-            update: function (event) {
-                if (event.type =='listwindow' && event.action =='open') {
-                    let wm = new ListWindowContainer(event.data)
-                    wm.render()
-
-                    // esto deberia ser asyncronico, y ademas traer: Rows y Cards
-                    // wm.listwindow.getWindowClass() //para que ya vaya trayendo del servidor la clase Window y al hacer click no haya que esperar
-                }
-            }
-        });
-    })
+        cm.getClass("Embedded_ListWindow").on('open', function (event) {
+            let wm = new ListWindowContainer(event.listwindow)
+            wm.render()
+            // esto deberia ser asyncronico, y ademas traer: Rows y Cards
+            // wm.listwindow.getWindowClass() //para que ya vaya trayendo del servidor la clase Window y al hacer click no haya que esperar
+        })
+    });
 
     ListWindowContainer.listwindows = [];
 

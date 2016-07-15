@@ -31,6 +31,7 @@ describe('ORM with Selenium', function () {
             let q = await oo.getDBConnection()
             await oo.orm.syncRecord(cm.getClass("TestRecord").getDescription())
             await oo.orm.syncSetRecord("TestRecordSet_Field")
+            await oo.orm.syncSetRecord("TestRecordRowSet_Field")
             await q.query("delete from TestRecord")
             await q.query("delete from TestRecordSet_Field")
             await q.query("delete from TestRecordRow")

@@ -2,7 +2,8 @@
 
 let Descriptor = {
     name: "BaseEntity",
-    filename: "entity.js"
+    filename: "entity.js",
+    actions: []
 }
 
 let EventEmitter = {}
@@ -123,6 +124,14 @@ class BaseEntity {
 
     inspect() {
         return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
+    }
+
+    async callAction(actiondef) {
+        if (this[actiondef.method]) return this[actiondef.method]();
+    }
+
+    isActionRelevant(actiondef) {
+        return true;
     }
 }
 
