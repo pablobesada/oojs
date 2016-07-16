@@ -45,32 +45,18 @@ var Parent = cm.SuperClass(Description)
 
 class TestRecordWindow extends Parent {
 
-    constructor() {
-        super()
-        this.show_action = true;
-    }
-
     async 'changed LinkTo_Field'() {
         await Parent.tryCall(this, null, "changed LinkTo_Field")
         return this.getRecord().pasteLinkTo_Field();
     }
 
     testAction() {
-        this.show_action = false;
-        this.emit("action status modified", {method: 'testAction'})
+        this.setActionVisibility('testAction', false);
     }
 
     testAction2() {
-        this.show_action = true;
-        this.emit("action status modified", {method: 'testAction'})
-        console.log("en testAction2")
+        this.setActionVisibility('testAction', true);
     }
-
-    isActionRelevant(actiondef) {
-        if (actiondef.method == 'testAction') return this.show_action;
-        return super.isActionRelevant(actiondef)
-    }
-
     async askYesNoAction() {
         console.log("ACAAAAA")
         let res = await oo.inputString("Probando Ask yes no, ok?")

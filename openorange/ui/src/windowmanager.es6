@@ -191,6 +191,7 @@
                         break;
                 }
             }
+
             var component = $('<div class="input-field col s' + grid_cols + '"></div>');
             var labelComponent = null;
             var editorElement = self[editor](json, "oomaster");
@@ -566,9 +567,6 @@
             var self = this;
             //console.log(event)
             switch (event._meta.name) {
-                case "action status modified":
-                    self.renderActionBar()
-                    break
                 case "close":
                     self.close()
                     break;

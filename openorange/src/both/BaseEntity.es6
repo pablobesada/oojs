@@ -120,6 +120,7 @@ class BaseEntity {
         this.off = EventEmitter.off.bind(this);
         this.offAny = EventEmitter.offAny.bind(this);
         this.newEvent = EventEmitter.newEvent.bind(this)
+        this.actionsVisibility = {}
     }
 
     inspect() {
@@ -131,8 +132,23 @@ class BaseEntity {
     }
 
     isActionRelevant(actiondef) {
-        return true;
+        console.log(actiondef, this.actionsVisibility)
+        let res = null;
+        if (actiondef.method in this.actionsVisibility) {
+            res = this.actionsVisibility[actiondef.method]
+        } else {
+            res = true;
+        }
+        console.log("res ", res)
+        return res;
     }
+
+    setActionVisibility(method, visible) {
+        console.log(method, visible)
+        this.actionsVisibility[method] = visible;
+        this.emit("action visibility", {method: 'testAction', visibility: false})
+    }
+
 }
 
 //BaseEntity.__super__ = null;

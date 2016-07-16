@@ -7,10 +7,16 @@
 
     class BaseContainer {
         constructor(entity) {
+            let self = this;
             this.entity = entity;
             this.__element__ = $('<div class="container"></div>');
-            this.__element__.append('<div class="oo_actionbar"></div>')
             this.tab_id = oo.ui.genId();
+            this.actionbar_id = oo.ui.genId("actionbar")
+            this.__element__.append(`<div id="${this.actionbar_id}"></div>`)
+            this.entity.on('action visibility', function (event) {
+                console.log("en action visibility listener", event)
+                self.renderActionBar()
+            });
         }
 
         setWindowTitle(title) {
@@ -105,7 +111,7 @@
                     toolbar.append(htmlAction);
                 }
             }
-            self.__element__.find('.oo_actionbar').html(toolbar);
+            self.__element__.find('#' + this.actionbar_id).html(toolbar);
         };
     }
 

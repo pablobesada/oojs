@@ -9,14 +9,18 @@ var Description = {
     params: {
         S1: {type: 'string'},
         I1: {type: 'integer'},
-    }
-
+    },
+    actions: [
+        {label: 'Test Action', method: 'testAction'},
+        {label: 'Test Action2', method: 'testAction2'}
+    ]
 }
 
 //let CustomerListReport = cm.createClass(Description, __filename)
 let Parent = cm.SuperClass(Description)
 
 class TestReport extends Parent {
+
     getData() {
         let data = []
         for (let i=0;i<10;i++){
@@ -48,6 +52,19 @@ class TestReport extends Parent {
         }
         self.endTable()
     }
+
+    testAction() {
+        console.log("en test action")
+        this.setActionVisibility('testAction', false)
+    }
+
+    testAction2() {
+        console.log("en test action2")
+        this.setActionVisibility('testAction', true)
+    }
+
+
+
 }
 
 
