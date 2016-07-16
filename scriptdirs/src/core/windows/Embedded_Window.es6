@@ -12,7 +12,7 @@ var WindowDescription = {
     filename: __filename,
 }
 
-class Embedded_Window extends oo.BaseEntity {
+class Embedded_Window extends oo.UIEntity {
 
     async print() {
         let record = this.getRecord();

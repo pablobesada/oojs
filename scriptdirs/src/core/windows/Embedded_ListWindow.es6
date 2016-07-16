@@ -7,7 +7,7 @@ var ListWindowDescription = {
     filename: __filename
 }
 
-class Embedded_ListWindow extends oo.BaseEntity {
+class Embedded_ListWindow extends oo.UIEntity {
 
 
     static initClass(descriptor) {

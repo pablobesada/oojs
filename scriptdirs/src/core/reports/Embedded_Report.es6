@@ -18,7 +18,7 @@ var Description = {
  '__filename__': __filename,
  })*/
 
-class Embedded_Report extends oo.BaseEntity {
+class Embedded_Report extends oo.UIEntity {
 
     static initClass(descriptor) {
         super.initClass(descriptor)

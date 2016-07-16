@@ -3,7 +3,6 @@
 let Descriptor = {
     name: "BaseEntity",
     filename: "entity.js",
-    actions: []
 }
 
 let EventEmitter = {}
@@ -120,47 +119,13 @@ class BaseEntity {
         this.off = EventEmitter.off.bind(this);
         this.offAny = EventEmitter.offAny.bind(this);
         this.newEvent = EventEmitter.newEvent.bind(this)
-        this.actionsVisibility = {}
     }
 
     inspect() {
         return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
     }
 
-    async callAction(actiondef) {
-        if (this[actiondef.method]) return this[actiondef.method]();
-    }
-
-    isActionRelevant(actiondef) {
-        console.log(actiondef, this.actionsVisibility)
-        let res = null;
-        if (actiondef.method in this.actionsVisibility) {
-            res = this.actionsVisibility[actiondef.method]
-        } else {
-            res = true;
-        }
-        console.log("res ", res)
-        return res;
-    }
-
-    setActionVisibility(method, visible) {
-        console.log(method, visible)
-        this.actionsVisibility[method] = visible;
-        this.emit("action visibility", {method: 'testAction', visibility: false})
-    }
-
 }
-
-//BaseEntity.__super__ = null;
-
-//BaseEntity.__ev__ = {}
-//BaseEntity.__anyev__ = []
-//BaseEntity.emit = EventEmitter.emit.bind(BaseEntity);
-//BaseEntity.on = EventEmitter.on.bind(BaseEntity);
-//BaseEntity.onAny = EventEmitter.onAny.bind(BaseEntity);
-//BaseEntity.off = EventEmitter.off.bind(BaseEntity);
-//BaseEntity.offAny = EventEmitter.offAny.bind(BaseEntity);
-//BaseEntity.newEvent = EventEmitter.newEvent.bind(BaseEntity);
 
 let BaseEntityClass = BaseEntity.initClass(Descriptor)
 BaseEntity.__description__ = Descriptor
@@ -172,7 +137,6 @@ if (typeof window == 'undefined') {
     window.oo.BaseEntity = BaseEntityClass
     window.oo.eventmanager = BaseEntity.new();
     $(document).ready(function () {
-        //console.log("EN DOCREDY DE BaseEntity")
         window.oo.classmanager.getClass("Window").onAny(function (event) {
             window.oo.pushreceiver.emitFromEntity(event._meta.name, event)
         })

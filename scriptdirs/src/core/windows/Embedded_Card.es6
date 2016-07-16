@@ -16,7 +16,7 @@ var CardDescription = {
           </div>`
 }
 
-class Embedded_Card extends oo.BaseEntity {
+class Embedded_Card extends oo.UIEntity {
 
 
     static initClass(descriptor) {

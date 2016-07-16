@@ -14,6 +14,7 @@ async function login(usercode, md5pass) {
 
 var oo = {}
 oo.BaseEntity = require("./both/BaseEntity")
+oo.UIEntity = require("./both/UIEntity")
 oo.isServer = true;
 oo.isClient = !oo.isServer;
 oo.classmanager = cm;
