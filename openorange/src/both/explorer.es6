@@ -64,7 +64,7 @@ Explorer.findAllModules = function findAllModules() {
     var Promise = require("bluebird");
     var fs = require("fs");
     var path = require("path")
-    var res = {ALL: {records: {}, windows: {}, documents: {}, reports: {}, routines: {}, tools: {}}};
+    var res = {ALL: {records: {}, windows: {}, cards: {}, documents: {}, reports: {}, routines: {}, tools: {}}};
     function searchFolder(sd, lookupdir) {
         var folder = "scriptdirs/lib/" + sd + "/" + lookupdir;
         let promise = Promise.pending();

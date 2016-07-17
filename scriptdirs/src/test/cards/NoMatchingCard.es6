@@ -5,9 +5,9 @@ var cm = require('openorange').classmanager
 
 let Description = {
     filename: __filename,
-    name: "CustomerSalesOrdersCard",
+    name: "NoMatchingCard",
     inherits: 'Card',
-    params: {salesorder: cm.getClass("SalesOrder")},
+    params: {noop: "NonExistentClass"},
     template: `
           <div class="card blue-grey darken-1">
             <div class="card-content white-text">
@@ -23,12 +23,9 @@ let Description = {
 }
 
 let Parent = cm.SuperClass(Description)
-class CustomerSalesOrdersCard extends Parent {
+class NoMatchingCard extends Parent {
 
-    async getTemplateVariables() {
-        return {SerNr: this.params.salesorder.SerNr}
-    }
 }
 
 
-module.exports = CustomerSalesOrdersCard.initClass(Description)
+module.exports = NoMatchingCard.initClass(Description)

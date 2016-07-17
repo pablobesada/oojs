@@ -86,15 +86,18 @@
 
 
         createCardComponent(json) {
+
             let self = this;
             let component = $('<div class="col s12 m6"></div>')
             if (json.name) {
                 let card = self.window.getCard(json.name)
+
                 card.on('content updated', function (event) {
                     component.html('')
                     component.append(event.DOMComponent)
                 })
                 card.play()
+
             }
             json.__element__ = component;
             return component;
@@ -162,7 +165,7 @@
             var editor;
             var grid_cols = 4;
             var headerInput = true;
-            var rclass = this.window.getRecordClass();
+            var rclass = this.window.__class__.getRecordClass();
             var field = rclass.__description__.fields[json.field];
             if (!field) throw new Error("Field " + json.field + " not found in record");
             if ('editor' in json) {
@@ -616,11 +619,8 @@
                     }
                     break;
                 case "modified flag":
-                    if (event.modified) {
-                        $('a[href="#' + this.tab_id + '"]').css('color', 'red')
-                    } else {
-                        $('a[href="#' + this.tab_id + '"]').css('color', '')
-                    }
+                    console.log("modddd,", event)
+                    self.setModified(event.modified)
                     break;
                 case "title changed":
                     self.setWindowTitle(event.title)
@@ -792,7 +792,7 @@
         };
 
         bindRecordToWindow(record) {
-            if (this.current_record_id) oo.eventmanager.off(`start editing record ${this.window.getRecordClass().getDescription().name}:${this.current_record_id}`)
+            if (this.current_record_id) oo.eventmanager.off(`start editing record ${this.window.__class__.getRecordClass().getDescription().name}:${this.current_record_id}`)
             this.current_record_id = null;
             var self = this;
             self.virtual_rows = {}
@@ -803,6 +803,7 @@
                     self.virtual_rows[dn] = vt;
                 });
                 self.bindRecordToComponent(record, self.windowjson);
+                self.setModified(this.window.getRecord().isModified())
             }
 
             self.setWindowTitle(this.window.getTitle());
@@ -810,7 +811,7 @@
             self.__element__.find("select").material_select()
             if (record && record.internalId) {
                 this.current_record_id = record.internalId
-                if (this.current_record_id) oo.eventmanager.on(`start editing record ${this.window.getRecordClass().getDescription().name}:${this.current_record_id}`, (event) => {
+                if (this.current_record_id) oo.eventmanager.on(`start editing record ${this.window.__class__.getRecordClass().getDescription().name}:${this.current_record_id}`, (event) => {
                     oo.postMessage(`Warning! User ${event._meta.user} just started editing this record.`)
                 })
             }
@@ -952,7 +953,17 @@
             }
         };
 
-    }
+        setModified(modified) {
+            console.log("mod:, ", modified)
+            if (modified) {
+                $('a[href="#' + this.tab_id + '"]').css('color', 'red')
+            } else {
+                $('a[href="#' + this.tab_id + '"]').css('color', '')
+            }
+        }
+
+
+}
 
     WindowContainer.datePickerOptions = {
         closeOnSelect: true,

@@ -3,6 +3,7 @@
 let Descriptor = {
     name: "BaseEntity",
     filename: "entity.js",
+    provides: []
 }
 
 let EventEmitter = {}
@@ -125,9 +126,71 @@ class BaseEntity {
         return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
     }
 
+    static getProvidedDataTypes() {
+        return this.__description__.provides
+    }
+
+    getProvidedData() {
+        return {}
+    }
+
+}
+
+class ProvidedData {
+    constructor() {
+        this.__ev__ = {}
+        this.__anyev__ = []
+        this.emit = EventEmitter.emit.bind(this);
+        this.on = EventEmitter.on.bind(this);
+        this.onAny = EventEmitter.onAny.bind(this);
+        this.off = EventEmitter.off.bind(this);
+        this.offAny = EventEmitter.offAny.bind(this);
+        this.newEvent = EventEmitter.newEvent.bind(this)
+        this.data = {}
+        this.source = null
+        this.sourceChanged = this.sourceChanged.bind(this)
+    }
+
+    setSource(source) {
+        let self = this;
+        if (source != this.source) {
+            if (this.source) {
+                this.source.off('changed', this.sourceChanged);
+            }
+            this.source = source;
+            if (this.source) {
+                this.source.on('changed', this.sourceChanged);
+            }
+            this.emit('changed', {name: null})
+        }
+    }
+
+    sourceChanged(event) {
+        this.emit('changed', event)
+    }
+
+    setData(name, value) {
+        this.data[name] = value;
+        this.emit('changed', {name: name})
+    }
+
+    async getData(name) {
+        if (name in this.data) return this.data[name]
+        if (this.source) return this.source.getData(name)
+        return null
+    }
+
+    keys() {
+        let res = [];
+        Array.prototype.push.apply(res, Object.keys(this.data));
+        if (this.source) Array.prototype.push.apply(res, this.source.keys())
+        return res;
+    }
+
 }
 
 let BaseEntityClass = BaseEntity.initClass(Descriptor)
+BaseEntity.ProvidedData = ProvidedData
 BaseEntity.__description__ = Descriptor
 BaseEntityClass.__super__ = null;
 

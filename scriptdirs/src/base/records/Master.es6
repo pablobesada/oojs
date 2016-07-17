@@ -25,6 +25,8 @@ class Master extends Parent {
     }
 
     static async bring(Code) {
+        console.log("bringing: ", Code)
+        if (!Code) return null;
         return this.findOne({Code: Code})
     }
 

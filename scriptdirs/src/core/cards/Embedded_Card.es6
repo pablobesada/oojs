@@ -6,7 +6,9 @@ var CardDescription = {
     name: 'Embedded_Card',
     inherits: null,
     filename: __filename,
+    abstract: true,
     title: '',
+    params: {},
     no_data_template: `
           <div class="card blue-grey darken-1">
             <div class="card-content white-text">
@@ -28,7 +30,8 @@ class Embedded_Card extends oo.UIEntity {
         newdesc.filename = descriptor.filename;
         newdesc.template = descriptor.template || parentdesc.template;
         newdesc.no_data_template = descriptor.no_data_template || parentdesc.no_data_template;
-        newdesc.params = descriptor.params;
+        newdesc.abstract = 'abstract' in descriptor ? descriptor.abstract : false;
+        newdesc.params = descriptor.params || {};
         this.__description__ = newdesc;
         return this;
     }
@@ -38,7 +41,9 @@ class Embedded_Card extends oo.UIEntity {
         this.__status__ = 'stopped';
         this.params = {}
         this.container = container
-        this.paramListener = this.paramListener.bind(this);
+        this.dataProviderChange = this.dataProviderChange.bind(this)
+        this.dataprovider = new oo.BaseEntity.ProvidedData();
+        this.dataprovider.on('changed', this.dataProviderChange)
     }
 
     play() {
@@ -79,20 +84,38 @@ class Embedded_Card extends oo.UIEntity {
     checkParams() {
         let desc_params = this.__class__.getDescription().params;
         for (let p in desc_params) {
-            if (!this.params[p]) return false;
+            if (!this.params[p]) {
+                console.log("FALTA PARAMETRO, ", p)
+                return false;
+            }
         }
         return true;
     }
 
-    setParam(name, param) {
-        if (this.params[name] && this.params[name] instanceof oo.BaseEntity) {
-            this.params[name].off('field modified', this.paramListener);
+    async setDataProvider(dataprovider) {
+        this.dataprovider.setSource(dataprovider);
+    }
+
+    dataProviderChange(event) {
+        this.refreshParamsFromProvider()
+    }
+
+    async refreshParamsFromProvider() {
+        this.params = {}
+        let requiredParams = this.__class__.getDescription().params
+        for (let p in requiredParams) {
+            let keys = this.dataprovider.keys()
+            for (let i in keys) {
+                let key = keys[i];
+                let data = await this.dataprovider.getData(key)
+                console.log("PARAM", p, key, data)
+                if (data instanceof oo.classmanager.getClass(requiredParams[p])) {
+                    console.log("SETTING PARAM", p, data)
+                    this.params[p] = data;
+                }
+            }
         }
-        this.params[name] = param;
-        if (this.params[name] && this.params[name] instanceof oo.BaseEntity) {
-            this.params[name].on('field modified', this.paramListener);
-        }
-        this.refresh()
+        this.refresh();
     }
 
     getTemplate() {
@@ -110,14 +133,12 @@ class Embedded_Card extends oo.UIEntity {
     }
 
 
-    paramListener(event) {
-        this.refresh()
-    }
-
     async getDOMComponent() {
         if (this.isReady() && !this.isStopped()) {
             let args = await this.getTemplateVariables();
-            for (let p in this.params) { args[p] = this.params[p]; }
+            for (let p in this.params) {
+                args[p] = this.params[p];
+            }
             let DOMComponent = $(this.__class__.formatString(this.getTemplate(), args))
             this.wireActions(DOMComponent)
             return DOMComponent;
@@ -131,7 +152,7 @@ class Embedded_Card extends oo.UIEntity {
         return {}
     }
 
-    static formatString(format,args) {
+    static formatString(format, args) {
         return format.replace(/\{\{(\w+)\}\}/g, function (match, name) {
             return typeof args[name] != 'undefined' ? args[name] : match;
         });
@@ -147,6 +168,42 @@ class Embedded_Card extends oo.UIEntity {
             let method = self[e.getAttribute('changemethod')]
             if (method) $(e).change(method.bind(self))
         })
+    }
+
+    static findMatchingCards(providedDataTypes) {
+        let allcards = {};
+        let res = []
+        let classStructure = oo.classmanager.getClassStructure();
+        for (let i = 0; i < classStructure.length; i++) {
+            let sd = classStructure[i];
+            for (let cardClassName in sd.cards) {
+                if (!(cardClassName in allcards)) allcards[cardClassName] = sd.cards[cardClassName];
+            }
+        }
+        for (let cardClassName in allcards) {
+            let cardClass = oo.classmanager.getClass(cardClassName);
+            if (cardClass.getDescription().abstract) continue;
+            if (cardClass.matchesRequirements(providedDataTypes)) res.push(cardClass);
+        }
+
+        return res;
+    }
+
+    static matchesRequirements(providedDataTypes) {
+        //console.log("PDT, ", providedDataTypes)
+        let requiredParams = this.getDescription().params
+        let providedClassNames = {}
+        for (let k in providedDataTypes) {
+            //console.log("AA",providedDataTypes[k])
+            providedClassNames[providedDataTypes[k]] = 1;
+        }
+        for (let p in requiredParams) {
+            let requiredClassName = requiredParams[p];
+            if (!(requiredClassName in providedClassNames)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

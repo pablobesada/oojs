@@ -11,7 +11,7 @@ if (typeof window == 'undefined') {
 let Descriptor = {
     name: "UIEntity",
     filename: "uientity.js",
-    actions: []
+    actions: [],
 }
 
 
@@ -39,10 +39,20 @@ class UIEntity extends BaseEntity {
         return res;
     }
 
-    setActionVisibility(method, visible) {
-        console.log(method, visible)
+    setActionVisibility(method, visible, emitEvent) {
         this.actionsVisibility[method] = visible;
-        this.emit("action visibility", {method: 'testAction', visibility: false})
+        if (emitEvent == undefined) emitEvent = true;
+        if (emitEvent) this.emit("action visibility", {method: 'testAction', visibility: false})
+    }
+
+    getVisibleActions() {
+        let res = [];
+        let allactions = this.__class__.getDescription().actions
+        for (let i=0;i<allactions.length; i++) {
+            let actiondef = allactions[i]
+            if (this.isActionRelevant(actiondef)) res.push(actiondef)
+        }
+        return res;
     }
 
 }

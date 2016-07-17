@@ -49,7 +49,7 @@ classmanager.addScriptDir = function addScriptDir(sd) {
     classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
 }
 
-classmanager.lookupdirs = ["records", "windows", "reports", "modules", "tools", "documents"];
+classmanager.lookupdirs = ["records", "windows", "cards", "reports", "modules", "tools", "documents"];
 
 classmanager.getClassFilename = function getClassFilename(name, min_script_dir_index) {
     var ms = min_script_dir_index;

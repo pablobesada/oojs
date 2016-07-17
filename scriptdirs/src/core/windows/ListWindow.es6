@@ -6,7 +6,7 @@ var Description = {
     inherits: "Embedded_ListWindow",
     filename: __filename,
     actions: [
-        {label: 'New', method: 'newRecord', icon: 'done', group: 'basic', shortcut: 'ctrl+n'},
+        {label: 'New', method: 'newRecord', icon: 'add', group: 'basic', shortcut: 'ctrl+n'},
     ]
 }
 var Parent = cm.SuperClass(Description)

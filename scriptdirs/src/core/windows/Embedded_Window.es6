@@ -10,6 +10,7 @@ var WindowDescription = {
     actions: [],
     form: {},
     filename: __filename,
+
 }
 
 class Embedded_Window extends oo.UIEntity {
@@ -23,11 +24,13 @@ class Embedded_Window extends oo.UIEntity {
     }
 
     open() {
+
         if (this.isOpen()) return;
         Embedded_Window.emit("open", {window: this})
         this.__isopen__ = true;
         if (this.getRecord() && this.getRecord().internalId) Embedded_Window.emit(`start editing record ${this.getRecord().__class__.getDescription().name}:${this.getRecord().internalId}`, {record: this.getRecord()})
         if (this.getRecord()) this.afterShowRecord();
+
     }
 
     isOpen() {
@@ -59,6 +62,11 @@ class Embedded_Window extends oo.UIEntity {
         if (descriptor.actions) {
             for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
         }
+
+        newdesc.provides = parentdesc.provides? parentdesc.provides.slice(): []
+        if (descriptor.provides) {
+            for (let i = 0; i < descriptor.provides.length; i++) newdesc.provides.push(descriptor.provides[i])
+        }
         newdesc.filename = descriptor.filename;
         this.__description__ = newdesc;
         this.__recordClass__ = null;
@@ -76,18 +84,21 @@ class Embedded_Window extends oo.UIEntity {
         this.__record__ = null;
         this.__title__ = this.__class__.__description__.title;
         this.__isopen__ = false;
+        this.__cards__ = {}
         this.fieldModified = this.fieldModified.bind(this)
         this.detailCleared = this.detailCleared.bind(this)
         this.rowInserted = this.rowInserted.bind(this)
         this.rowRemoved = this.rowRemoved.bind(this)
         this.recordModifiedFlagChanged = this.recordModifiedFlagChanged.bind(this)
+        this.setActionVisibility('save',false, false)
+        this.setActionVisibility('delete',false, false)
     }
 
-    getRecordClass() {
-        if (this.__class__.__recordClass__ == null && this.__class__.__description__.recordClass) {
-            this.__class__.__recordClass__ = oo.classmanager.getClass(this.__class__.__description__.recordClass)
+    static getRecordClass() {
+        if (this.__recordClass__ == null && this.__description__.recordClass) {
+            this.__recordClass__ = oo.classmanager.getClass(this.__description__.recordClass)
         }
-        return this.__class__.__recordClass__
+        return this.__recordClass__
     }
 
     /*
@@ -123,12 +134,15 @@ class Embedded_Window extends oo.UIEntity {
 
     setRecord(rec) {
         if (this.__record__ != rec) {
+            this.setActionVisibility('save',false, false)
+            this.setActionVisibility('delete',false, false)
             if (this.__record__ != null) {
                 this.__record__.off('field modified', this.fieldModified);
                 this.__record__.off('detail cleared', this.detailCleared);
                 this.__record__.off('row inserted', this.rowInserted)
                 this.__record__.off('row removed', this.rowRemoved)
                 this.__record__.off('modified flag', this.recordModifiedFlagChanged)
+                //this.__record__.off('saved', this.recordSaved)
             }
             this.__record__ = rec;
             if (this.__record__) {
@@ -138,8 +152,13 @@ class Embedded_Window extends oo.UIEntity {
                 this.__record__.on('row inserted', this.rowInserted)
                 this.__record__.on('row removed', this.rowRemoved)
                 this.__record__.on('modified flag', this.recordModifiedFlagChanged)
+                //this.__record__.on('saved', this.recordSaved)
             }
             this.emit('record replaced', {record: rec})
+            if (this.__record__) {
+                this.setActionVisibility('save', this.__record__.isModified(), false)
+                this.setActionVisibility('delete', !this.__record__.isNew(), true)
+            }
             if (this.__record__ && this.isOpen()) this.afterShowRecord();
             if (this.__record__ && this.isOpen() && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
         }
@@ -184,6 +203,13 @@ class Embedded_Window extends oo.UIEntity {
             record: event.record,
             modified: event.modified,
         })
+        if (!event.modified) {
+            this.setActionVisibility('delete', !event.record.isNew(), false)
+            this.setActionVisibility('save', false, true)
+        } else {
+           this.setActionVisibility('save', true, true)
+        }
+
     }
 
     getRecord(rec) {
@@ -253,19 +279,20 @@ class Embedded_Window extends oo.UIEntity {
         return false;
     }
 
+    async delete() {
+        let rec= this.getRecord();
+        console.log("DELETING")
+    }
+
     getCard(cardname) {
-        let card = cm.getClass(cardname).new(this)
-        let card_description = card.__class__.getDescription();
-        let params = {}
-        for (p in card_description.params) {
-            if (this.getRecord() instanceof card_description.params[p]) {
-                card.setParam(p,this.getRecord())
-                this.on('record replaced', function (event) {
-                    card.setParam(p,event.record);
-                })
-            }
+        if (!(cardname in this.__cards__)) {
+            let card = cm.getClass(cardname).new(this)
+            let card_description = card.__class__.getDescription();
+            let params = {}
+            card.setDataProvider(this.getProvidedData());
+            this.__cards__[cardname] = card
         }
-        return card
+        return this.__cards__[cardname]
     }
 
     static applyFormOverride(form, patcheslist, path) {
@@ -324,6 +351,30 @@ class Embedded_Window extends oo.UIEntity {
             }
         }
         return newform
+    }
+
+    static getProvidedDataTypes() {
+        let rc = this.getRecordClass()
+        if (rc) return rc.getProvidedDataTypes();
+        return {}
+    }
+
+    getProvidedData() {
+        if (!('__provided_data_object__' in this)) {
+            let self = this;
+            this.__provided_data_object__ = new oo.BaseEntity.ProvidedData()
+            let r = this.getRecord();
+            if (r) this.__provided_data_object__.setSource(r.getProvidedData());
+            this.on('record replaced', (event) => {
+                let r = this.getRecord();
+                if (r) {
+                    this.__provided_data_object__.setSource(r.getProvidedData());
+                } else {
+                    self.__provided_data_object__.setSource(null)
+                }
+            })
+        }
+        return this.__provided_data_object__
     }
 }
 

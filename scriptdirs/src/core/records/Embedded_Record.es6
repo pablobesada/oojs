@@ -305,10 +305,12 @@ class Embedded_Record extends oo.BaseEntity {
         for (var fn in parentdesc.fields) {
             newdesc.fields[fn] = parentdesc.fields[fn];
         }
+        newdesc.linktoFieldNames = 'linktoFieldNames' in parentdesc? parentdesc.linktoFieldNames.slice(): []
         for (var fn in descriptor.fields) {
             let fdef = descriptor.fields[fn]
             let newfdef = fdef;
             newfdef.persistent = 'persistent' in fdef? fdef.persistent : true;
+            if (fdef.linkto) newdesc.linktoFieldNames.push(fn)
             if (fdef.type == 'string' && fdef.linkto) newfdef.length = null;
             if (fdef.type != 'detail') {
                 newfdef.getMaxLength = () => {
@@ -354,6 +356,12 @@ class Embedded_Record extends oo.BaseEntity {
         newdesc.persistentDetailNames = _(newdesc.detailnames).filter(function (fn) {
             return 'persistent' in newdesc.fields[fn] ? newdesc.fields[fn].persistent : true;
         })
+
+        newdesc.provides = parentdesc.provides? parentdesc.provides.slice(): []
+        if (descriptor.provides) {
+            for (let i = 0; i < descriptor.provides.length; i++) newdesc.provides.push(descriptor.provides[i])
+        }
+
 
         this.__description__ = newdesc
         return this;
@@ -528,6 +536,7 @@ class Embedded_Record extends oo.BaseEntity {
         } else {
             await oo.rollback();
         }
+        if (res) self.emit('saved', {record: self, method: 'save'})
         return res;
 
     }
@@ -579,6 +588,7 @@ class Embedded_Record extends oo.BaseEntity {
     async store() {
         var res = await oo.orm.store(this);
         if (res) this.syncOldFields();
+        if (res) this.emit('saved', {record: this, method: 'store'})
         return res
     }
 
@@ -750,6 +760,43 @@ class Embedded_Record extends oo.BaseEntity {
     fieldIsEditable(fieldname, rowfieldname, rownr) {
         if (rowfieldname == 'rowNr') return false;
         return true;
+    }
+
+    static getProvidedDataTypes() {
+        let res = {'__record__': this.__description__.name} //provides itself
+
+        //provides all object connected through linkto to the header record
+        let linktoFieldNames = this.__description__.linktoFieldNames;
+        for (let i=0;i<linktoFieldNames.length;i++) {
+            let fn = linktoFieldNames[i];
+            let fdef = this.__description__.fields[fn]
+            res[fn] = fdef.linkto;
+        }
+        return res
+    }
+
+
+    getProvidedData() {
+        let self = this;
+        let dt = this.__class__.getProvidedDataTypes();
+        if (!('__provided_data_object__' in this)) {
+            this.__provided_data_object__ = new oo.BaseEntity.ProvidedData()
+            let linktofields = {}
+            for (let k in dt) {
+                if (k == '__record__') {
+                    this.__provided_data_object__.setData(k,this);
+                } else {
+                    linktofields[k] = 1
+                    this.__provided_data_object__.setData(k, oo.classmanager.getClass(dt[k]).bring(this[k]))
+                }
+            }
+            this.on('field modified', async (event) => {
+                if (event.field.name in linktofields) {
+                    self.__provided_data_object__.setData(event.field.name, oo.classmanager.getClass(event.field.linkto).bring(event.field.getValue()))
+                }
+            })
+        }
+        return this.__provided_data_object__
     }
 
 }

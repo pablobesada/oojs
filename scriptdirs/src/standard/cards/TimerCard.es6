@@ -7,7 +7,6 @@ let Description = {
     filename: __filename,
     name: "TimerCard",
     inherits: 'Card',
-    params: {salesorder: cm.getClass("SalesOrder")},
     template: `
           <div class="card blue-grey darken-1">
             <div class="card-content white-text">
@@ -27,11 +26,11 @@ class TimerCard extends Parent {
 
     constructor() {
         super()
-        this.setParam('elapsed', 0)
+        this.dataprovider.setData('elapsed', 0)
     }
 
     async getTemplateVariables() {
-        return {}
+        return {elapsed: await this.dataprovider.getData('elapsed')}
     }
 
     play() {
@@ -41,20 +40,20 @@ class TimerCard extends Parent {
         }
     }
 
-    again() {
+    async again() {
         if (this.isPlaying()) {
-            this.setParam('elapsed', this.params.elapsed + 1)
+            this.dataprovider.setData('elapsed', await this.dataprovider.getData('elapsed') + 1)
             setTimeout(this.again.bind(this), 3000)
         }
     }
 
     reset(event) {
-        this.setParam('elapsed', 0)
+        this.dataprovider.setData('elapsed', 0)
         if (!this.isPlaying()) this.play()
     }
 
     newValue(event) {
-        this.setParam('elapsed', parseInt(event.target.value))
+        this.dataprovider.setData('elapsed', parseInt(event.target.value))
     }
 
 }

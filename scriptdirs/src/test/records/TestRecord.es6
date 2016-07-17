@@ -13,7 +13,7 @@ var Description = {
         TestName: {type: "string", length: 60},
         SubTestName: {type: "string", length: 60},
         String_Field: {type: "string", length: 60},
-        Set_Field: {type: "set", length: 60, linkto: "Customer", setrecordname: "TestRecordSet_Field"},
+        Set_Field: {type: "set", length: 60, setrecordname: "TestRecordSet_Field"},
         LinkTo_Field: {type: "string", linkto: "Customer"},
         Integer_Field: {type: "integer"},
         Added_Field: {type: "integer"},

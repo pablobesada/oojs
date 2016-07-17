@@ -49,7 +49,7 @@
             w.append(contentElement)
             this.__content_element__ = contentElement;
             let container = window.oo.ui.windowmanager.getWindowReportView(this.view.window, this.view.viewname)
-            container.append(w)
+            if (container) container.append(w)
         };
 
         render() {

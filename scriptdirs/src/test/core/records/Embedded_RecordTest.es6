@@ -33,8 +33,16 @@ describe("Embedded_Record", function () {
     beforeEach(async () => {
         await oo.beginTransaction();
     })
+
     after(async () => {
         await oo.commit();
+    })
+
+    it("bring", async () => {
+        let c = await cm.getClass("Customer").bring("C00002");
+        should(c).ok()
+        should(c.Name).be.equal('Cliente 2')
+
     })
 
     it("isModified", async () => {

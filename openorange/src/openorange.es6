@@ -64,4 +64,5 @@ oo.initClassManager = function (scriptdirs) {
 
 oo.initEventManager = function () {
 }
+
 module.exports = oo;

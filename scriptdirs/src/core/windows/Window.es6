@@ -7,6 +7,7 @@ var Description = {
     filename: __filename,
     actions: [
         {label: 'Save', method: 'save', icon: 'done', group: 'basic', shortcut: 'shift+enter'},
+        {label: 'Delete', method: 'delete', icon: 'delete', group: 'basic'},
     ],
 }
 

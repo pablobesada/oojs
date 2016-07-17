@@ -18,7 +18,8 @@ var async = require('async')
 //cm.addScriptDir("test")
 
 
-require("../tools/BaseEntity")
+require("../tools/BaseEntityTest")
+require("../tools/CardTest")
 require("../local/ExplorerTest")
 require("../local/LoginTest")
 require("../core/records/Embedded_RecordTest")

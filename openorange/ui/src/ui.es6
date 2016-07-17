@@ -40,7 +40,7 @@
                     let pos = $(`a[href="#${this.tab_id}"]`).closest('ul').find('li').index($(`a[href="#${this.tab_id}"]`).closest('li'))
                     //let pos = 1
                     //console.log("POS", pos)
-                    pos < tabs_count - 1? pos++ : pos--;
+                    pos < tabs_count - 1 ? pos++ : pos--;
                     if (pos >= 0) newfocus = $($(`a[href="#${this.tab_id}"]`).closest('ul').find('li a')[pos])
                 }
                 $(`a[href="#${this.tab_id}"]`).closest('li').remove();
@@ -64,15 +64,15 @@
         }
 
         async processKeyPress(event) {
-            let actions = this.entity.__class__.getDescription().actions;
-            for (let i=0;i<actions.length;i++) {
+            let actions = this.entity.getVisibleActions();
+            for (let i = 0; i < actions.length; i++) {
                 let actiondef = actions[i]
                 if (actiondef.shortcut) {
                     let keys = actiondef.shortcut.toLowerCase().split("+");
                     let shift = false, enter = false, ctrl = false, alt = false, letter = null;
-                    for (let j=0;j<keys.length;j++) {
+                    for (let j = 0; j < keys.length; j++) {
                         let key = keys[j]
-                        switch(key) {
+                        switch (key) {
                             case "shift":
                                 shift = true;
                                 break;
@@ -104,7 +104,7 @@
             for (let i = 0; i < self.entity.__class__.getDescription().actions.length; i++) {
                 let actiondef = self.entity.__class__.getDescription().actions[i]
                 if (self.entity.isActionRelevant(actiondef)) {
-                    let label = 'icon' in actiondef? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
+                    let label = 'icon' in actiondef ? `<i class="mdi">${actiondef.icon}</i>` : actiondef.label;
                     let htmlAction = $(`<a class="btn waves-effect waves-light" action="${actiondef.method}">${label}</a>`);
                     let params = {self: self, actiondef: actiondef}
                     htmlAction.click(self.actionClicked.bind(params));
@@ -113,6 +113,33 @@
             }
             self.__element__.find('#' + this.actionbar_id).html(toolbar);
         };
+
+        renderActionBar() {
+            let self = this;
+            let actions = self.entity.getVisibleActions()
+            console.log(actions)
+            if (actions.length == 0) return;
+            let toolbar = $(`<div class="fixed-action-btn"></div>`)
+            let actiondef = actions[0]
+            let icon = actiondef.icon || 'trending_flat'
+            let btn = $(`<a data-tooltip="${actiondef.label}" data-position="left" class="btn-floating btn-large green"><i class="large mdi">${icon}</i></a>`)
+            let params = {self: self, actiondef: actiondef}
+            btn.click(self.actionClicked.bind(params));
+            toolbar.append(btn)
+            let ul = $("<ul></ul>");
+            for (let i = 1; i < actions.length; i++) {
+                let actiondef = actions[i]
+                let icon = actiondef.icon || 'trending_flat'
+                let btn = $(`<li><a  data-tooltip="${actiondef.label}" data-position="left"  class="btn-floating blue"><i class="mdi">${icon}</i></a></li>`)
+                let params = {self: self, actiondef: actiondef}
+                btn.click(self.actionClicked.bind(params));
+                ul.append(btn);
+            }
+            toolbar.append(ul);
+            this.__element__.find('#' + this.actionbar_id).html(toolbar);
+            toolbar.find('[data-tooltip]').tooltip({delay: 50});
+        };
+
     }
 
     class UI {

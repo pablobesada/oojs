@@ -18,7 +18,7 @@ describe("Embedded_Window", function () {
         wnd = cls.new()
     })
     it("setRecord", async () => {
-        let rec = wnd.getRecordClass().new()
+        let rec = wnd.__class__.getRecordClass().new()
         wnd.setRecord(rec)
         wnd.getRecord().should.be.equal(rec)
     })
@@ -29,9 +29,9 @@ describe("Embedded_Window", function () {
     })
     it("Window receiving record events", async () => {
         wnd = cls.new()
-        let rec1 = wnd.getRecordClass().new().fillWithRandomValues()
+        let rec1 = wnd.__class__.getRecordClass().new().fillWithRandomValues()
         wnd.setRecord(rec1)
-        let rec2 = wnd.getRecordClass().new().fillWithRandomValues()
+        let rec2 = wnd.__class__.getRecordClass().new().fillWithRandomValues()
         let c1 = 0, c2 = false,c3=false,c4 =0;
         wnd.on('field modified', (event) => {
             c1++;
