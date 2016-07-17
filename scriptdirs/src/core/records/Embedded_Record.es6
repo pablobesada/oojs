@@ -781,6 +781,7 @@ class Embedded_Record extends oo.BaseEntity {
         let dt = this.__class__.getProvidedDataTypes();
         if (!('__provided_data_object__' in this)) {
             this.__provided_data_object__ = new oo.BaseEntity.ProvidedData()
+            //this.__provided_data_object__.disableEvents();
             let linktofields = {}
             for (let k in dt) {
                 if (k == '__record__') {
@@ -790,7 +791,10 @@ class Embedded_Record extends oo.BaseEntity {
                     this.__provided_data_object__.setData(k, oo.classmanager.getClass(dt[k]).bring(this[k]))
                 }
             }
+            //this.__provided_data_object__.enableEvents();
+            //this.__provided_data_object__.emitChangedEvent();
             this.on('field modified', async (event) => {
+                this.__provided_data_object__.setData('__record__',this);
                 if (event.field.name in linktofields) {
                     self.__provided_data_object__.setData(event.field.name, oo.classmanager.getClass(event.field.linkto).bring(event.field.getValue()))
                 }
@@ -798,7 +802,6 @@ class Embedded_Record extends oo.BaseEntity {
         }
         return this.__provided_data_object__
     }
-
 }
 //Embedded_Record.__description__ = RecordDescription
 module.exports = Embedded_Record.initClass(RecordDescription)

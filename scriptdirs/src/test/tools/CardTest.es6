@@ -9,7 +9,7 @@ var should = require('should');
 var async = require('async')
 
 
-describe.only('Cards', function () {
+describe('Cards', function () {
     it('Provider', async () => {
         let C = cm.getClass("Embedded_Card")
         let cls = cm.getClass("TestRecordWindow");

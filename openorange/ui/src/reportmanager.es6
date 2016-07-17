@@ -75,7 +75,6 @@
 
     $(document).ready(function () {
         cm.getClass("Embedded_Report").onAny(function (event) {
-            console.log(event)
             if (event._meta.name == 'open') {
                 let wm = new ReportContainer(event.report, event.view)
                 if (event.view) {

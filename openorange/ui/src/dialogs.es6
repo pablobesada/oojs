@@ -24,29 +24,28 @@
             return promise.promise;
         }
 
-        static async inputString(txt) {
-            let promise = Promise.pending()
+        static async customDialog(title, content, opts) {
+            let options = opts || {}
+            //let promise = Promise.pending()
             let id = 'DIALOG_' + Dialogs.element_ids++;
             let html = `
-                    <div id="${id}" class="modal bottom-sheet">
+                    <div id="${id}" class="modal">
                         <div class="modal-content">
                             <h4></h4>
-                            <p>${txt}</p>
-                            <form onsubmit="oo.ui.dialogs.resolve('${id}', $('#${id}_INPUT').val());return false;">
-                                <div class="form-field">
-                                    <input type="text" id="${id}_INPUT">
-                                </div>
-                            </form>
                         </div>
                     </div>`
             let dialogElement = $(html)
+            if (title) {
+                let t = $('<h4></h4>')
+                t.append(title);
+                dialogElement.find('.modal-content').append(t)
+            }
+            if (content) dialogElement.find('.modal-content').append(content)
             $(document.body).append(dialogElement);
-            Dialogs.promises[id] = promise;
-            dialogElement.openModal({dismissible:false,
-                ready: function (){dialogElement.find('#' + id + "_INPUT").focus()}
-            });
-
-            return promise.promise;
+            //Dialogs.promises[id] = promise;
+            dialogElement.openModal(options);
+            return dialogElement;
+            //return promise.promise;
         }
 
         static async alert(txt) {

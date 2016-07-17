@@ -148,6 +148,7 @@ class ProvidedData {
         this.newEvent = EventEmitter.newEvent.bind(this)
         this.data = {}
         this.source = null
+        this.emitevents = true;
         this.sourceChanged = this.sourceChanged.bind(this)
     }
 
@@ -161,20 +162,33 @@ class ProvidedData {
             if (this.source) {
                 this.source.on('changed', this.sourceChanged);
             }
-            this.emit('changed', {name: null})
+            this.emitChangedEvent();
         }
     }
 
+    enableEvents(){
+        this.emitevents = true;
+    }
+    disableEvents(){
+        this.emitevents = false;
+    }
+
+
+    emitChangedEvent()
+    {
+        if (this.emitevents) this.emit('changed', {name: null})
+    }
+
     sourceChanged(event) {
-        this.emit('changed', event)
+        this.emitChangedEvent();
     }
 
     setData(name, value) {
         this.data[name] = value;
-        this.emit('changed', {name: name})
+        if (this.emitevents) this.emit('changed', {name: name})
     }
 
-    async getData(name) {
+    getData(name) {
         if (name in this.data) return this.data[name]
         if (this.source) return this.source.getData(name)
         return null

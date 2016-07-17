@@ -117,7 +117,6 @@
         renderActionBar() {
             let self = this;
             let actions = self.entity.getVisibleActions()
-            console.log(actions)
             if (actions.length == 0) return;
             let toolbar = $(`<div class="fixed-action-btn"></div>`)
             let actiondef = actions[0]

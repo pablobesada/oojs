@@ -24,7 +24,6 @@ class Embedded_Window extends oo.UIEntity {
     }
 
     open() {
-
         if (this.isOpen()) return;
         Embedded_Window.emit("open", {window: this})
         this.__isopen__ = true;
@@ -39,7 +38,7 @@ class Embedded_Window extends oo.UIEntity {
 
     close() {
         this.setRecord(null); //para que desconecten todos los eventos del record actual
-        this.emit("close", {window:this})
+        this.emit("close", {window: this})
         this.__isopen__ = false;
     }
 
@@ -58,12 +57,12 @@ class Embedded_Window extends oo.UIEntity {
         if (descriptor.override) {
             newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override)
         }
-        newdesc.actions = parentdesc.actions? parentdesc.actions.slice() : []
+        newdesc.actions = parentdesc.actions ? parentdesc.actions.slice() : []
         if (descriptor.actions) {
             for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
         }
 
-        newdesc.provides = parentdesc.provides? parentdesc.provides.slice(): []
+        newdesc.provides = parentdesc.provides ? parentdesc.provides.slice() : []
         if (descriptor.provides) {
             for (let i = 0; i < descriptor.provides.length; i++) newdesc.provides.push(descriptor.provides[i])
         }
@@ -84,14 +83,15 @@ class Embedded_Window extends oo.UIEntity {
         this.__record__ = null;
         this.__title__ = this.__class__.__description__.title;
         this.__isopen__ = false;
-        this.__cards__ = {}
+        this.__ownedCards__ = []
+        this.__cardContainers__ = {}
         this.fieldModified = this.fieldModified.bind(this)
         this.detailCleared = this.detailCleared.bind(this)
         this.rowInserted = this.rowInserted.bind(this)
         this.rowRemoved = this.rowRemoved.bind(this)
         this.recordModifiedFlagChanged = this.recordModifiedFlagChanged.bind(this)
-        this.setActionVisibility('save',false, false)
-        this.setActionVisibility('delete',false, false)
+        this.setActionVisibility('save', false, false)
+        this.setActionVisibility('delete', false, false)
     }
 
     static getRecordClass() {
@@ -102,14 +102,14 @@ class Embedded_Window extends oo.UIEntity {
     }
 
     /*
-    static tryCall(self, defaultResponse, methodname) {
-        if (methodname == null) throw new Error("methodname can not be null")
-        if (methodname in this.prototype) {
-            return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
-        } else {
-            return defaultResponse;
-        }
-    }*/
+     static tryCall(self, defaultResponse, methodname) {
+     if (methodname == null) throw new Error("methodname can not be null")
+     if (methodname in this.prototype) {
+     return this.prototype[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));
+     } else {
+     return defaultResponse;
+     }
+     }*/
 
     inspect() {
         return "<" + this.__class__.__description__.name + ", from " + this.__class__.__description__.filename + ">"
@@ -134,8 +134,8 @@ class Embedded_Window extends oo.UIEntity {
 
     setRecord(rec) {
         if (this.__record__ != rec) {
-            this.setActionVisibility('save',false, false)
-            this.setActionVisibility('delete',false, false)
+            this.setActionVisibility('save', false, false)
+            this.setActionVisibility('delete', false, false)
             if (this.__record__ != null) {
                 this.__record__.off('field modified', this.fieldModified);
                 this.__record__.off('detail cleared', this.detailCleared);
@@ -176,10 +176,10 @@ class Embedded_Window extends oo.UIEntity {
 
     rowInserted(event) {
         this.emit('row inserted', {
-                record: event.record,
-                detail: event.detail,
-                row: event.row,
-                position: event.position
+            record: event.record,
+            detail: event.detail,
+            row: event.row,
+            position: event.position
         })
     }
 
@@ -207,7 +207,7 @@ class Embedded_Window extends oo.UIEntity {
             this.setActionVisibility('delete', !event.record.isNew(), false)
             this.setActionVisibility('save', false, true)
         } else {
-           this.setActionVisibility('save', true, true)
+            this.setActionVisibility('save', true, true)
         }
 
     }
@@ -280,19 +280,33 @@ class Embedded_Window extends oo.UIEntity {
     }
 
     async delete() {
-        let rec= this.getRecord();
+        let rec = this.getRecord();
         console.log("DELETING")
     }
 
-    getCard(cardname) {
-        if (!(cardname in this.__cards__)) {
-            let card = cm.getClass(cardname).new(this)
-            let card_description = card.__class__.getDescription();
-            let params = {}
-            card.setDataProvider(this.getProvidedData());
-            this.__cards__[cardname] = card
-        }
-        return this.__cards__[cardname]
+    newCard(cardname) {
+        let card = cm.getClass(cardname).new()
+        card.setDataProvider(this.getProvidedData());
+        this.__ownedCards__.push(card);
+        return card;
+    }
+
+    getCardContainer(containerName) {
+        return ['TimerCard', 'CustomerSalesOrdersCard']
+        if (!(this.__cardContainers__[containerName])) this.__cardContainers__[containerName] = [];
+        return this.__cardContainers__[containerName]
+    }
+
+    insertCardInContainer(containerName, cardname) {
+        this.getCardContainer(containerName).push(cardname);
+        this.emit('add card', {container: containerName, name: cardname})
+    }
+
+    removeCardFromContainer(containerName, cardname) {
+        let container = this.getCardContainer(containerName);
+        let idx = container.indexOf(cardname);
+        if (idx >= 0) container.splice(idx, 1);
+        this.emit('remove card', {container: containerName, name: cardname})
     }
 
     static applyFormOverride(form, patcheslist, path) {
@@ -353,6 +367,10 @@ class Embedded_Window extends oo.UIEntity {
         return newform
     }
 
+    static findMatchingCardClasses() {
+        return oo.classmanager.getClass("Embedded_Card").findMatchingCards(this.getProvidedDataTypes())
+    }
+
     static getProvidedDataTypes() {
         let rc = this.getRecordClass()
         if (rc) return rc.getProvidedDataTypes();
@@ -374,6 +392,7 @@ class Embedded_Window extends oo.UIEntity {
                 }
             })
         }
+        //console.log("W: returning provided data")
         return this.__provided_data_object__
     }
 }

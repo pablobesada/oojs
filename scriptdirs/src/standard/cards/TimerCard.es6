@@ -41,6 +41,7 @@ class TimerCard extends Parent {
     }
 
     async again() {
+        console.log("TIMER")
         if (this.isPlaying()) {
             this.dataprovider.setData('elapsed', await this.dataprovider.getData('elapsed') + 1)
             setTimeout(this.again.bind(this), 3000)

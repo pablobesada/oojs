@@ -28,8 +28,15 @@
             this.matrix_json_map = {};
             this.virtual_rows = {};
             this.pastewindow_id = null;
+            this.created_cards = []
             return this;
         };
+
+        close() {
+            super.close()
+            _(this.created_cards).each(card => {card.stop()})
+            this.created_cards = []
+        }
 
         render() {
 
@@ -72,6 +79,7 @@
             if ('type' in json && json.type == 'column') return self.createColumnComponent(json);
             if ('type' in json && json.type == 'line') return self.createLineComponent(json);
             if ('type' in json && json.type == 'card') return self.createCardComponent(json);
+            if ('type' in json && json.type == 'cardcontainer') return self.createCardContainerComponent(json);
             if ('type' in json && json.type == 'reportview') return self.createReportViewComponent(json);
             if ('content' in json) return self.createComponent(json.content);
             if (json instanceof Array) {
@@ -86,18 +94,62 @@
 
 
         createCardComponent(json) {
-
             let self = this;
             let component = $('<div class="col s12 m6"></div>')
             if (json.name) {
-                let card = self.window.getCard(json.name)
-
+                let card = self.window.newCard(json.name)
                 card.on('content updated', function (event) {
                     component.html('')
                     component.append(event.DOMComponent)
                 })
                 card.play()
+            }
+            json.__element__ = component;
+            return component;
+        };
 
+
+        createCard(cardname, cardcontainer, htmlcontainer) {
+            let self = this;
+            let card = cm.getClass(cardname).new()
+            self.created_cards.push(card)
+            card.setDataProvider(this.window.getProvidedData())
+            let cardContainer = $(`<div class="singlecard-container" cardname="${cardname}" style="position: relative"></div>`)
+            let deleteButton = $('<a class="btn-floating waves-effect waves-light red card-remove-btn hide" style="position:absolute; right: 15px; top:15px;"><i class="mdi">delete</i></a>')
+            deleteButton.click(function (event) {
+                self.window.removeCardFromContainer(cardcontainer,cardname)
+                card.stop();
+                self.created_cards.splice(self.created_cards.indexOf(card), 1);
+            })
+            let content = $('<div></div>')
+            cardContainer.append(deleteButton)
+            cardContainer.append(content)
+            htmlcontainer.append(cardContainer)
+            card.on('content updated', function (event) {
+                content.html('')
+                content.append(event.DOMComponent)
+            });
+            card.play()
+        }
+
+        createCardContainerComponent(json) {
+            let self = this;
+            let id = oo.ui.genId('card_container')
+            let component = $(`<div id="${id}" class="col s12 m6 card-panel hoverable" cardcontainer="${json.name}"></div>`)
+            let buttonbar = $("<div class='cardcontainer-buttonbar'></div>")
+            component.append(buttonbar)
+            if (json.name) {
+                let addButton = $('<a class="btn-floating waves-effect waves-light red"><i class="mdi">add</i></a>')
+                let editButton = $('<a class="btn-floating waves-effect waves-light red"><i class="mdi">edit</i></a>')
+                let params = {self: this, containerName: json.name}
+                addButton.click(this.selectCards.bind(params))
+                editButton.click(() => {component.find('.card-remove-btn').removeClass('hide')})
+                buttonbar.append(addButton)
+                buttonbar.append(editButton)
+                let cardClasses = self.window.getCardContainer(json.name)
+                for (let i=0;i<cardClasses.length;i++) {
+                    self.createCard(cardClasses[i], json.name, component)
+                }
             }
             json.__element__ = component;
             return component;
@@ -619,12 +671,18 @@
                     }
                     break;
                 case "modified flag":
-                    console.log("modddd,", event)
                     self.setModified(event.modified)
                     break;
                 case "title changed":
                     self.setWindowTitle(event.title)
                     break
+                case "add card":
+                    self.createCard(event.name, event.container, self.__element__.find(`[cardcontainer=${event.container}]`))
+                    break;
+                case "remove card":
+                    self.__element__.find(`div[cardcontainer=${event.container}] .singlecard-container[cardname=${event.name}]`).remove()
+                    break;
+
             }
         }
 
@@ -954,15 +1012,67 @@
         };
 
         setModified(modified) {
-            console.log("mod:, ", modified)
             if (modified) {
-                $('a[href="#' + this.tab_id + '"]').css('color', 'red')
+                $('a[href="#' + this.tab_id + '"]').css('color', 'blue')
             } else {
                 $('a[href="#' + this.tab_id + '"]').css('color', '')
             }
         }
 
+        selectCards(event) {
+            let params = this;
+            let self = params.self;
+            let containerName = params.containerName;
+            //let carousel = $(`<div class="carousel"></div>`)
+            let selectorContainer = $(`<div></div>`)
+            let cardClasses = self.window.__class__.findMatchingCardClasses();
+            let cardListener = function (event) {
+                let cardContainer = this;
+                cardContainer.html('')
+                cardContainer.append(event.DOMComponent)
+            }
+            let addListener = function (event) {
+                let params = this;
+                let self = params.self
+                let cardname = params.cardname
+                self.window.insertCardInContainer(containerName, cardname)
+                let dialog = $(event.target).closest('.modal')
+                selectorContainer.find('#' + params.id).remove()
+                let length = selectorContainer.find('.singlecard-container').length;
+                if (length == 0) {
+                    dialog.closeModal();
+                    _(cards).each((card) => {card.stop()})
+                    cards = []
+                }
 
+            }
+            let cards = [];
+            for (let i=0;i<cardClasses.length;i++) {
+                let cc = cardClasses[i];
+                let card = cm.getClass(cc.getDescription().name).new()
+                card.setDataProvider(self.window.getProvidedData());
+                let itemid = oo.ui.genId();
+                let container = $(`<div id="${itemid}" class="carousel-item" href="#one!" style="position:relative"></div>`)
+                let addButton = $('<a class="btn-floating btn-large waves-effect waves-light red" style="position:absolute; right: 15px; top: 15px;"><i class="mdi">add</i></a>')
+                addButton.click(addListener.bind({self: self, cardname: cc.getDescription().name, id: itemid}))
+                container.append(addButton)
+                let cardContainer = $(`<div class='singlecard-container'></div>`)
+                container.append(cardContainer)
+                selectorContainer.append(container)
+                card.on('content updated', cardListener.bind(cardContainer));
+                card.play()
+                cards.push(card);
+            }
+            window.oo.ui.dialogs.customDialog("select card", selectorContainer, {
+                dismisible: true,
+                complete: function() {
+                    _(cards).each((card) => {card.stop()})
+                    cards = []
+                }
+            })
+            //carousel.carousel();
+            //$('#' + containerid).append(m);
+        }
 }
 
     WindowContainer.datePickerOptions = {

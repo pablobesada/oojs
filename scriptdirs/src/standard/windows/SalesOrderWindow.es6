@@ -13,8 +13,9 @@ var Description = {
         {field: 'CustName'},
         {field: 'TransTime'},
         {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
-        {type: 'card', name: 'CustomerSalesOrdersCard'},
-        {type: 'card', name: 'TimerCard'},
+        //{type: 'card', name: 'CustomerSalesOrdersCard'},
+        {type: 'cardcontainer', name: 'CardContainer1'},
+        //{type: 'card', name: 'TimerCard'},
         {field: 'PrintFormat', editor: 'combobox', options: [
             {label: 'Normal', value: 0},
             {label: 'Sum per Item', value: 1},
@@ -67,7 +68,6 @@ class SalesOrderWindow extends Parent {
     }
 
     async afterShowRecord() {
-        console.log("en afterShowReocrd")
         let report = cm.getClass("CustomerListReport").new()
         //report.defaults()
         //report.ShowReportTitle = False

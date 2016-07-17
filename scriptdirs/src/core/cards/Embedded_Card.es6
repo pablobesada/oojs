@@ -36,11 +36,10 @@ class Embedded_Card extends oo.UIEntity {
         return this;
     }
 
-    constructor(container) {
+    constructor() {
         super()
         this.__status__ = 'stopped';
         this.params = {}
-        this.container = container
         this.dataProviderChange = this.dataProviderChange.bind(this)
         this.dataprovider = new oo.BaseEntity.ProvidedData();
         this.dataprovider.on('changed', this.dataProviderChange)
@@ -73,10 +72,6 @@ class Embedded_Card extends oo.UIEntity {
         return (this.__status__ == "paused")
     }
 
-    getContainer() {
-        return this.container
-    }
-
     isReady() {
         return this.checkParams();
     }
@@ -85,10 +80,11 @@ class Embedded_Card extends oo.UIEntity {
         let desc_params = this.__class__.getDescription().params;
         for (let p in desc_params) {
             if (!this.params[p]) {
-                console.log("FALTA PARAMETRO, ", p)
+                //console.log("FALTA PARAMETRO, ", p, this.__class__.getDescription().name)
                 return false;
             }
         }
+        //console.log("PARAMS OK, ", this.__class__.getDescription().name)
         return true;
     }
 
@@ -101,6 +97,9 @@ class Embedded_Card extends oo.UIEntity {
     }
 
     async refreshParamsFromProvider() {
+        //console.log("REFRESH PARAMS FROM PROVIDER", this.__class__.getDescription().name)
+        //console.log("BBB", this.dataprovider.keys())
+        //console.log("AAA", await this.dataprovider.getData('__record__'))
         this.params = {}
         let requiredParams = this.__class__.getDescription().params
         for (let p in requiredParams) {
@@ -108,14 +107,17 @@ class Embedded_Card extends oo.UIEntity {
             for (let i in keys) {
                 let key = keys[i];
                 let data = await this.dataprovider.getData(key)
-                console.log("PARAM", p, key, data)
+                //if ('function' == typeof data.then) data = await data;
+                //console.log("PARAM", p, key, data, this.__class__.getDescription().name)
                 if (data instanceof oo.classmanager.getClass(requiredParams[p])) {
-                    console.log("SETTING PARAM", p, data)
+                    //console.log("SETTING PARAM", p, data, this.__class__.getDescription().name)
                     this.params[p] = data;
                 }
             }
         }
+        //console.log("BEFORE CALL REFRESH", this.__class__.getDescription().name)
         this.refresh();
+        //console.log("AFTER CALL REFRESH", this.__class__.getDescription().name)
     }
 
     getTemplate() {

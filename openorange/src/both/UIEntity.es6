@@ -28,14 +28,12 @@ class UIEntity extends BaseEntity {
     }
 
     isActionRelevant(actiondef) {
-        console.log(actiondef, this.actionsVisibility)
         let res = null;
         if (actiondef.method in this.actionsVisibility) {
             res = this.actionsVisibility[actiondef.method]
         } else {
             res = true;
         }
-        console.log("res ", res)
         return res;
     }
 

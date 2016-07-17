@@ -14,7 +14,6 @@ let Parent = cm.SuperClass(Description)
 class CustomerListReport extends Parent {
     async run() {
         super.run()
-        console.log("en CustomerListReport::run")
         var self = this;
         var order = null
         if ('order' in self) order = self.order;

@@ -117,7 +117,6 @@ class Embedded_Report extends oo.UIEntity {
     }
 
     async runAndRender() {
-        console.log("en run and render")
         if (this.getParamsWindow()) this.getParamsWindow().close();
         this.clear()
         await this.run();
@@ -125,7 +124,6 @@ class Embedded_Report extends oo.UIEntity {
     }
 
     async run() {
-        console.log("running run de Embedded_report")
     }
 
     setView(reportview) {
