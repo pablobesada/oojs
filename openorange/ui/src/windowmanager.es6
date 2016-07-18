@@ -1079,8 +1079,8 @@
             let params = this;
             let self = params.self;
             let containerName = params.containerName;
-            //let carousel = $(`<div class="carousel"></div>`)
-            let selectorContainer = $(`<div></div>`)
+            let selectorContainer = $(`<div class="carousel"></div>`)
+            //let selectorContainer = $(`<div></div>`)
             let cardClasses = self.window.__class__.findMatchingCardClasses();
             let cardListener = function (event) {
                 let cardContainer = this;
@@ -1108,7 +1108,8 @@
                 let card = cm.getClass(cc.getDescription().name).new()
                 card.setDataProvider(await self.window.getProvidedData());
                 let itemid = oo.ui.genId();
-                let container = $(`<div id="${itemid}" class="carousel-item" href="#one!" style="position:relative"></div>`)
+                //let container = $(`<div id="${itemid}" href="#one!" style="position:relative"></div>`)
+                let container = $(`<div id="${itemid}" class="carousel-item" href="#one!"></div>`)
                 let addButton = $('<a class="btn-floating btn-large waves-effect waves-light red" style="position:absolute; right: 15px; top: 15px;"><i class="mdi">add</i></a>')
                 addButton.click(addListener.bind({self: self, cardname: cc.getDescription().name, id: itemid}))
                 container.append(addButton)
@@ -1126,7 +1127,7 @@
                     cards = []
                 }
             })
-            //carousel.carousel();
+            selectorContainer.carousel();
             //$('#' + containerid).append(m);
         }
 }
