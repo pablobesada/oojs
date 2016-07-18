@@ -83,8 +83,6 @@ class Embedded_Window extends oo.UIEntity {
         this.__record__ = null;
         this.__title__ = this.__class__.__description__.title;
         this.__isopen__ = false;
-        this.__ownedCards__ = []
-        this.__cardContainers__ = {}
         this.fieldModified = this.fieldModified.bind(this)
         this.detailCleared = this.detailCleared.bind(this)
         this.rowInserted = this.rowInserted.bind(this)
@@ -282,31 +280,6 @@ class Embedded_Window extends oo.UIEntity {
     async delete() {
         let rec = this.getRecord();
         console.log("DELETING")
-    }
-
-    newCard(cardname) {
-        let card = cm.getClass(cardname).new()
-        card.setDataProvider(this.getProvidedData());
-        this.__ownedCards__.push(card);
-        return card;
-    }
-
-    getCardContainer(containerName) {
-        return ['TimerCard', 'CustomerSalesOrdersCard']
-        if (!(this.__cardContainers__[containerName])) this.__cardContainers__[containerName] = [];
-        return this.__cardContainers__[containerName]
-    }
-
-    insertCardInContainer(containerName, cardname) {
-        this.getCardContainer(containerName).push(cardname);
-        this.emit('add card', {container: containerName, name: cardname})
-    }
-
-    removeCardFromContainer(containerName, cardname) {
-        let container = this.getCardContainer(containerName);
-        let idx = container.indexOf(cardname);
-        if (idx >= 0) container.splice(idx, 1);
-        this.emit('remove card', {container: containerName, name: cardname})
     }
 
     static applyFormOverride(form, patcheslist, path) {

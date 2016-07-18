@@ -14,7 +14,6 @@ var Description = {
         {field: 'TransTime'},
         {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         //{type: 'card', name: 'CustomerSalesOrdersCard'},
-        {type: 'cardcontainer', name: 'CardContainer1'},
         //{type: 'card', name: 'TimerCard'},
         {field: 'PrintFormat', editor: 'combobox', options: [
             {label: 'Normal', value: 0},
@@ -25,7 +24,11 @@ var Description = {
         {
            type: 'tabs', pages: [
             {
-                label: "TAB1", content: [
+                label:"Related", content: [
+                {type: 'cardcontainer', name: 'CardContainer1', default: ['TimerCard']},
+            ]},
+
+            {label: "TAB1", content: [
                 {
                     field: 'Items', columns: [
                     {field: 'rowNr'},

@@ -7,12 +7,12 @@ let Description = {
     filename: __filename,
     name: "TestCard",
     inherits: 'Card',
-    params: {testrecord: "TestRecord"},
+    params: {testrecord: "SalesOrder"},
     template: `
-          <div class="card blue-grey darken-1">
+          <div class="card green darken-1">
             <div class="card-content white-text">
-              <span class="card-title">Card Title: {{SerNr}}</span>
-              <p>Facturas: 18, Entregas 15</p>
+              <span class="card-title">Test Card: {{id}}</span>
+              <p>Card de prueba</p>
             </div>
             <div class="card-action">
             <input name="test_input"/>
@@ -24,6 +24,9 @@ let Description = {
 
 let Parent = cm.SuperClass(Description)
 class TestCard extends Parent {
+    async getTemplateVariables() {
+        return {id: (await this.dataprovider.getData('__record__')).internalId}
+    }
 
 }
 

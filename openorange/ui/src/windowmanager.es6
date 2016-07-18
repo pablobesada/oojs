@@ -29,6 +29,7 @@
             this.virtual_rows = {};
             this.pastewindow_id = null;
             this.created_cards = []
+            this.cardcontainers = {}
             return this;
         };
 
@@ -97,34 +98,29 @@
             let self = this;
             let component = $('<div class="col s12 m6"></div>')
             if (json.name) {
-                let card = self.window.newCard(json.name)
-                card.on('content updated', function (event) {
-                    component.html('')
-                    component.append(event.DOMComponent)
-                })
-                card.play()
+                this.createCard(json.name, null, component)
             }
             json.__element__ = component;
             return component;
         };
 
 
-        createCard(cardname, cardcontainer, htmlcontainer) {
+        createCard(cardname, cardcontainername, htmlcontainer) {
             let self = this;
             let card = cm.getClass(cardname).new()
             self.created_cards.push(card)
             card.setDataProvider(this.window.getProvidedData())
-            let cardContainer = $(`<div class="singlecard-container" cardname="${cardname}" style="position: relative"></div>`)
+            let cardContainerElement = $(`<div class="singlecard-container" cardname="${cardname}" style="position: relative"></div>`)
             let deleteButton = $('<a class="btn-floating waves-effect waves-light red card-remove-btn hide" style="position:absolute; right: 15px; top:15px;"><i class="mdi">delete</i></a>')
             deleteButton.click(function (event) {
-                self.window.removeCardFromContainer(cardcontainer,cardname)
+                if (cardcontainername) self.removeCardFromContainer(cardcontainername,cardname)
                 card.stop();
                 self.created_cards.splice(self.created_cards.indexOf(card), 1);
             })
             let content = $('<div></div>')
-            cardContainer.append(deleteButton)
-            cardContainer.append(content)
-            htmlcontainer.append(cardContainer)
+            cardContainerElement.append(deleteButton)
+            cardContainerElement.append(content)
+            htmlcontainer.append(cardContainerElement)
             card.on('content updated', function (event) {
                 content.html('')
                 content.append(event.DOMComponent)
@@ -139,15 +135,25 @@
             let buttonbar = $("<div class='cardcontainer-buttonbar'></div>")
             component.append(buttonbar)
             if (json.name) {
+                self.cardcontainers[json.name] = []
                 let addButton = $('<a class="btn-floating waves-effect waves-light red"><i class="mdi">add</i></a>')
                 let editButton = $('<a class="btn-floating waves-effect waves-light red"><i class="mdi">edit</i></a>')
                 let params = {self: this, containerName: json.name}
                 addButton.click(this.selectCards.bind(params))
-                editButton.click(() => {component.find('.card-remove-btn').removeClass('hide')})
+                editButton.click(() => {
+                    if (!editButton.hasClass('active')) {
+                        component.find('.card-remove-btn').removeClass('hide')
+                        editButton.addClass('active')
+                    } else {
+                        component.find('.card-remove-btn').addClass('hide')
+                        editButton.removeClass('active')
+                    }
+                })
                 buttonbar.append(addButton)
                 buttonbar.append(editButton)
-                let cardClasses = self.window.getCardContainer(json.name)
-                for (let i=0;i<cardClasses.length;i++) {
+                let cardClasses = json.default;
+                for (let i = 0; i < cardClasses.length; i++) {
+                    this.cardcontainers[json.name].push(cardClasses[i])
                     self.createCard(cardClasses[i], json.name, component)
                 }
             }
@@ -1019,6 +1025,25 @@
             }
         }
 
+
+        getCardContainer(containerName) {
+            return this.cardcontainers[containerName]
+        }
+
+        insertCardInContainer(containerName, cardname) {
+            this.cardcontainers[containerName].push(cardname);
+            this.update(this.window.newEvent('add card', {container: containerName, name: cardname}))
+        }
+
+        removeCardFromContainer(containerName, cardname) {
+            let classnames= this.getCardContainer(containerName);
+            let idx = classnames.indexOf(cardname);
+            if (idx >= 0) {
+                classnames.splice(idx, 1);
+                this.update(this.window.newEvent('remove card', {container: containerName, name: cardname}))
+            }
+        }
+
         selectCards(event) {
             let params = this;
             let self = params.self;
@@ -1035,7 +1060,7 @@
                 let params = this;
                 let self = params.self
                 let cardname = params.cardname
-                self.window.insertCardInContainer(containerName, cardname)
+                self.insertCardInContainer(containerName, cardname)
                 let dialog = $(event.target).closest('.modal')
                 selectorContainer.find('#' + params.id).remove()
                 let length = selectorContainer.find('.singlecard-container').length;
@@ -1044,11 +1069,11 @@
                     _(cards).each((card) => {card.stop()})
                     cards = []
                 }
-
             }
             let cards = [];
             for (let i=0;i<cardClasses.length;i++) {
                 let cc = cardClasses[i];
+                if (self.getCardContainer(containerName).indexOf(cc.getDescription().name) >= 0) continue
                 let card = cm.getClass(cc.getDescription().name).new()
                 card.setDataProvider(self.window.getProvidedData());
                 let itemid = oo.ui.genId();

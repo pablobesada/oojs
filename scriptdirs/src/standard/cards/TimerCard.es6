@@ -8,7 +8,7 @@ let Description = {
     name: "TimerCard",
     inherits: 'Card',
     template: `
-          <div class="card blue-grey darken-1">
+          <div class="card light-blue darken-1">
             <div class="card-content white-text">
               <span class="card-title">{{elapsed}}</span>
               <p>Time since last refersh</p>
