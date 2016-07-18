@@ -22,6 +22,8 @@ var plumber = require('gulp-plumber');
 var gutil = require('gulp-util');
 var cleanCSS = require('gulp-clean-css');
 var concat = require('gulp-concat');
+var del = require('del');
+
 
 
 
@@ -166,7 +168,20 @@ gulp.task('init-project', ['build', 'create-openorange-symlink', 'sync-tables'],
 
 });
 
-gulp.task('build', ['oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'sd-babel', 'sd-js'])
+gulp.task('clean-oo', () => {
+    return del(['openorange/lib/**/*']);
+})
+gulp.task('clean-sd', () => {
+    return del(['scriptdirs/lib/**/*']);
+})
+gulp.task('clean-ui', () => {
+    return del(['openorange/ui/js/oo/**/*']);
+})
+
+gulp.task('clean-all', ['clean-oo', 'clean-sd','clean-ui'])
+
+
+gulp.task('build', ['clean-all', 'oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'sd-babel', 'sd-js'])
 
 gulp.task('prepare openorange', () => {
     require('source-map-support').install(); //solo debe usarse para debugging
