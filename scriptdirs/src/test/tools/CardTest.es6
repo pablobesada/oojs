@@ -31,7 +31,7 @@ describe('Cards', function () {
         r.LinkTo_Field = 'C00002'
         console.log("RLF", r['Linkto_Field'])
 
-        let dp = w.getProvidedData();
+        let dp = await w.getProvidedData();
         //console.log(dp)
         console.log(await dp.getData('__record__'))
         console.log(await dp.getData('LinkTo_Field'))

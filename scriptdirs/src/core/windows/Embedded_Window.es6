@@ -350,16 +350,16 @@ class Embedded_Window extends oo.UIEntity {
         return {}
     }
 
-    getProvidedData() {
+    async getProvidedData() {
         if (!('__provided_data_object__' in this)) {
             let self = this;
             this.__provided_data_object__ = new oo.BaseEntity.ProvidedData()
             let r = this.getRecord();
-            if (r) this.__provided_data_object__.setSource(r.getProvidedData());
-            this.on('record replaced', (event) => {
+            if (r) this.__provided_data_object__.setSource(await r.getProvidedData());
+            this.on('record replaced', async (event) => {
                 let r = this.getRecord();
                 if (r) {
-                    this.__provided_data_object__.setSource(r.getProvidedData());
+                    this.__provided_data_object__.setSource(await r.getProvidedData());
                 } else {
                     self.__provided_data_object__.setSource(null)
                 }

@@ -155,9 +155,15 @@ class Embedded_Card extends oo.UIEntity {
     }
 
     static formatString(format, args) {
-        return format.replace(/\{\{(\w+)\}\}/g, function (match, name) {
+        //console.log(args)
+        return _.template(format, {
+            evaluate:    /\{\{(.+?)\}\}/g,
+            interpolate: /\{\{=(.+?)\}\}/g,
+            escape:      /\{\{-(.+?)\}\}/g
+        })(args)
+        /*return format.replace(/\{\{(\w+)\}\}/g, function (match, name) {
             return typeof args[name] != 'undefined' ? args[name] : match;
-        });
+        });*/
     };
 
     wireActions(DOMComponent) {

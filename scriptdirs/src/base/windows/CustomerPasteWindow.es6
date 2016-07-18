@@ -5,6 +5,7 @@ var Description = {
     name: 'CustomerPasteWindow',
     inherits: 'PasteWindow',
     record: 'Customer',
+    window: 'CustomerWindow',
     title: "Customer Paste Window",
     pastefieldname: "Code",
     columns: [

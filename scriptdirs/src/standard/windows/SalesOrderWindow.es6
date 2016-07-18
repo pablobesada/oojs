@@ -25,7 +25,7 @@ var Description = {
            type: 'tabs', pages: [
             {
                 label:"Related", content: [
-                {type: 'cardcontainer', name: 'CardContainer1', default: ['TimerCard']},
+                {type: 'cardcontainer', name: 'CardContainer1', default: ['TestCard']},
             ]},
 
             {label: "TAB1", content: [

@@ -19,6 +19,7 @@ class Embedded_PasteWindow {
         newdesc.name = descriptor.name;
         newdesc.title = descriptor.title;
         newdesc.recordClass = descriptor.record
+        newdesc.windowClass = descriptor.window
         newdesc.pastefieldname = descriptor.pastefieldname
         newdesc.columns = descriptor.columns;
         newdesc.filename = descriptor.filename;

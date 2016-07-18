@@ -105,11 +105,11 @@
         };
 
 
-        createCard(cardname, cardcontainername, htmlcontainer) {
+        async createCard(cardname, cardcontainername, htmlcontainer) {
             let self = this;
             let card = cm.getClass(cardname).new()
             self.created_cards.push(card)
-            card.setDataProvider(this.window.getProvidedData())
+            card.setDataProvider(await this.window.getProvidedData())
             let cardContainerElement = $(`<div class="singlecard-container" cardname="${cardname}" style="position: relative"></div>`)
             let deleteButton = $('<a class="btn-floating waves-effect waves-light red card-remove-btn hide" style="position:absolute; right: 15px; top:15px;"><i class="mdi">delete</i></a>')
             deleteButton.click(function (event) {
@@ -290,8 +290,13 @@
                 var params = {self: self, field: field, detailname: null, rownr: null, json: json, editor: editors};
                 pasteWindowComponent.click(self.openPasteWindow.bind(params));
                 editors.keypress((event) => {
-                    if (event.ctrlKey && event.keyCode == 13) {
+                    //console.log(event.ctrlKey, event.keyCode, event.key)
+                    //console.log(event)
+                    if (event.ctrlKey && (event.key.toLowerCase() == 'enter')) {
                         self.openPasteWindow.bind(params)(event);
+                    } else if (event.ctrlKey && (event.key.toLowerCase() == 'm')) {
+                        console.log("CTRL+M")
+                        self.openRelatedRecord.bind(params)(event);
                     }
                 })
             }
@@ -357,10 +362,12 @@
                 };
                 pasteWindowComponent.click(self.openPasteWindow.bind(params));
                 editors.keypress((event) => {
-                    console.log(event)
-                    if (event.ctrlKey && event.keyCode == 13) {
+                    if (event.ctrlKey && event.key.toLowerCase() == 'enter') {
                         console.log("opening paste window")
                         self.openPasteWindow.bind(params)(event);
+                    } else if (event.ctrlKey && (event.key.toLowerCase() == 'm')) {
+                        console.log("CTRL+M")
+                        self.openRelatedRecord.bind(params)(event);
                     }
                 })
 
@@ -990,6 +997,30 @@
             pwelement.openModal();
         };
 
+        async openRelatedRecord(event) {
+            var params = this;
+            var self = params.self;
+            var field = params.field;
+            var fieldjson = params.json;
+            var pw = cm.getClass(fieldjson.pastewindow);
+            var recordClass = cm.getClass(pw.__description__.recordClass);
+            var windowClass = cm.getClass(pw.__description__.windowClass);
+            let columns = pw.__description__.columns;
+            var readonly = null;
+            let rownr = null;
+            let record = recordClass.new();
+            console.log(record)
+            console.log(pw.__description__.pastefieldname)
+            record.fields(pw.__description__.pastefieldname).setValue($(event.currentTarget).val())
+            if (await record.load()) {
+                console.log("record loaded", record)
+                let window = windowClass.new()
+                window.setRecord(record);
+                window.open();
+                window.setFocus();
+            }
+        };
+
         recordSelectedInPasteWindow(params) {
             //var params = this;
             var self = this;
@@ -1044,7 +1075,7 @@
             }
         }
 
-        selectCards(event) {
+        async selectCards(event) {
             let params = this;
             let self = params.self;
             let containerName = params.containerName;
@@ -1075,7 +1106,7 @@
                 let cc = cardClasses[i];
                 if (self.getCardContainer(containerName).indexOf(cc.getDescription().name) >= 0) continue
                 let card = cm.getClass(cc.getDescription().name).new()
-                card.setDataProvider(self.window.getProvidedData());
+                card.setDataProvider(await self.window.getProvidedData());
                 let itemid = oo.ui.genId();
                 let container = $(`<div id="${itemid}" class="carousel-item" href="#one!" style="position:relative"></div>`)
                 let addButton = $('<a class="btn-floating btn-large waves-effect waves-light red" style="position:absolute; right: 15px; top: 15px;"><i class="mdi">add</i></a>')

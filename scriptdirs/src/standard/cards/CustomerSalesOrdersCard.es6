@@ -11,10 +11,10 @@ let Description = {
     template: `
           <div class="card blue-grey darken-1">
             <div class="card-content white-text">
-              <span class="card-title">Card Title: {{SerNr}}</span>
+              <span class="card-title">Card Title: {{=SerNr}}</span>
               <p>Facturas: 18, Entregas 15</p>
-              <p>Cliente: {{CustName}}</p>
-              <p>USER: {{u}}</p>
+              <p>Cliente: {{=CustName}}</p>
+              <p>USER: {{=u}}</p>
             </div>
             <div class="card-action">
             <input name="test_input"/>

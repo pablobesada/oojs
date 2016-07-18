@@ -7,6 +7,7 @@ var Description = {
     record: 'Item',
     title: "Item Window",
     form: [
+        {field: 'syncVersion'},
         {type: 'input', field: 'Code', label: 'Codigo'},
         {type: 'input', field: 'Name'},
         {type: 'input', field: 'ItemGroup'},

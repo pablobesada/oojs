@@ -10,7 +10,7 @@ let Description = {
     template: `
           <div class="card light-blue darken-1">
             <div class="card-content white-text">
-              <span class="card-title">{{elapsed}}</span>
+              <span class="card-title">{{=elapsed}}</span>
               <p>Time since last refersh</p>
             </div>
             <div class="card-action">
