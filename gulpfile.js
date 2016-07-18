@@ -169,13 +169,13 @@ gulp.task('init-project', ['build', 'create-openorange-symlink', 'sync-tables'],
 });
 
 gulp.task('clean-oo', () => {
-    return del(['openorange/lib/**/*']);
+    return del.sync(['openorange/lib/**/*']);
 })
 gulp.task('clean-sd', () => {
-    return del(['scriptdirs/lib/**/*']);
+    return del.sync(['scriptdirs/lib/**/*']);
 })
 gulp.task('clean-ui', () => {
-    return del(['openorange/ui/js/oo/**/*']);
+    return del.sync(['openorange/ui/js/oo/**/*']);
 })
 
 gulp.task('clean-all', ['clean-oo', 'clean-sd','clean-ui'])
