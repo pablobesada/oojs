@@ -135,6 +135,8 @@
                 ul.append(btn);
             }
             toolbar.append(ul);
+            console.log(this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]'))
+            this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]').tooltip('remove')
             this.__element__.find('#' + this.actionbar_id).html(toolbar);
             toolbar.find('[data-tooltip]').tooltip({delay: 50});
         };

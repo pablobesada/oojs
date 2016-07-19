@@ -31,7 +31,6 @@
             let html = `
                     <div id="${id}" class="modal">
                         <div class="modal-content">
-                            <h4></h4>
                         </div>
                     </div>`
             let dialogElement = $(html)

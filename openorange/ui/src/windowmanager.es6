@@ -1109,8 +1109,8 @@
                 card.setDataProvider(await self.window.getProvidedData());
                 let itemid = oo.ui.genId();
                 //let container = $(`<div id="${itemid}" href="#one!" style="position:relative"></div>`)
-                let container = $(`<div id="${itemid}" class="carousel-item" href="#one!"></div>`)
-                let addButton = $('<a class="btn-floating btn-large waves-effect waves-light red" style="position:absolute; right: 15px; top: 15px;"><i class="mdi">add</i></a>')
+                let container = $(`<div id="${itemid}" class="carousel-item"></div>`)
+                let addButton = $('<a class="btn-floating waves-effect waves-light red" style="position:absolute; right: 10px; top: 10px;"><i class="mdi">add</i></a>')
                 addButton.click(addListener.bind({self: self, cardname: cc.getDescription().name, id: itemid}))
                 container.append(addButton)
                 let cardContainer = $(`<div class='singlecard-container'></div>`)
@@ -1122,12 +1122,14 @@
             }
             window.oo.ui.dialogs.customDialog("select card", selectorContainer, {
                 dismisible: true,
-                complete: function() {
-                    _(cards).each((card) => {card.stop()})
+                complete: function () {
+                    _(cards).each((card) => {
+                        card.stop()
+                    })
                     cards = []
                 }
             })
-            selectorContainer.carousel();
+            if (cards.length > 0) selectorContainer.carousel();  //si el carouse no tiene items tira error la libreria materialize
             //$('#' + containerid).append(m);
         }
 }

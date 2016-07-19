@@ -1,0 +1,347 @@
+<html>
+<head>
+    <link href='css/materialize-0.97.6.min.css' type='text/css' rel='stylesheet' media='screen,projection'/>
+    <link rel='stylesheet' href='css/material-icons.css'/>
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+                margin: 0;
+                padding: 0;
+            }
+
+            #print-section * {
+                visibility: visible;
+            }
+
+            #print-section {
+                position: absolute;
+                visibility: visible;
+                top: 0;
+                left: 0;
+                opacity: 1;
+            }
+
+            .rectangle {
+                position: absolute;
+                border: 1px solid black;
+                height: 3cm;
+                width: 3cm;
+            }
+
+            @page {
+                margin: 0;
+                /*size: A4;*/
+            }
+
+            .scale25, .scale50, .scale75, .scale100, .scale125, .scale150, .scale175, .scale200 {
+
+            }
+
+        }
+
+        @media screen {
+            #print-section {
+                position: relative;
+                margin: 30px;
+                left: 240px;
+                width: 210mm;
+                height: 297mm;
+                border: 5px solid grey;
+                /*transform: scale(0.5, 0.5);*/
+            }
+
+            .elements-toolbar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 240px;
+                height: 100%;
+                background: lightgrey;
+            }
+
+            #properties-toolbox {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 240px;
+                height: 100%;
+                background: rgba(0,128,0,.2);
+            }
+
+            #label-properties {
+                display: none;
+            }
+
+            .field, .label {
+                position: absolute;
+            }
+
+            .rectangle {
+                position: absolute;
+                border: 1px solid black;
+                height: 3cm;
+                width: 3cm;
+                resize: both;
+                overflow: auto;
+            }
+
+            .scale25 {
+                transform: scale(0.25, 0.25);
+            }
+
+            .scale50 {
+                transform: scale(0.5, 0.5);
+            }
+
+            .scale75 {
+                transform: scale(0.75, 0.75);
+            }
+
+            .scale100 {
+                transform: scale(1, 1);
+            }
+
+            .scale125 {
+                transform: scale(1.25, 1.25);
+            }
+
+            .scale150 {
+                transform: scale(1.5, 1.5);
+            }
+
+            .scale175 {
+                transform: scale(1.75, 1.75);
+            }
+
+            .scale200 {
+                transform: scale(2, 2);
+            }
+
+            .mouseover {
+                //background: green;
+                background-color: rgba(0, 128, 0, 0.2);
+                //opacity: 0.2;
+                border: 1px solid grey;
+            }
+
+            .selected {
+                border: 2px solid black;
+            }
+
+        }
+
+        .draggable {
+            /*position: absolute;*/
+        }
+
+        .red {
+            background: red;
+        }
+    </style>
+</head>
+<body>
+<div class="elements-toolbar">
+    <ul id="slide-out" class="side-nav fixed">
+        <li><a class="btn" onclick="zoomIn()">ZOOM IN</a></li>
+        <li><a class="btn" onclick="zoomOut()">ZOOM OUT</a></li>
+        <li><a class="btn" onclick="newLabel()">NEW LABEL</a></li>
+        <li><a class="btn" onclick="newField()">NEW FIELD</a></li>
+        <li><a class="btn" onclick="newRectangle()">NEW RECTANGLE</a></li>
+    </ul>
+</div>
+<div>
+    <div id="print-section">
+    </div>
+    <div id="properties-toolbox">
+        <div id="label-properties" class="property-group">
+            <div class="input-field">
+                <input id='obj-label' name="label" type="text"/>
+                <label for="obj-label">Label</label>
+            </div>
+        </div>
+        <div class="input-field">
+            <input id='posX' name="X" type="number"/>
+            <label for="posX">X</label>
+        </div>
+        <div class="input-field">
+            <input id='posY' name="Y" type="number"/>
+            <label for="posX">Y</label>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type='text/javascript' src="js/plugins/jquery/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/plugins/materialize/materialize-0.97.6.min.js"></script>
+<script type="text/javascript">
+    (function ($) {
+        $.fn.drags = function (opt) {
+
+            opt = $.extend({handle: "", cursor: "move"}, opt);
+
+            if (opt.handle === "") {
+                var $el = this;
+            } else {
+                var $el = this.find(opt.handle);
+            }
+
+            return $el.css('cursor', opt.cursor).on("mousedown", function (e) {
+                //console.log(e.offsetX, $(this).width())
+                if (e.offsetX < 10 || e.offsetX > $(this).width() - 10) return true;
+                if (opt.handle === "") {
+                    var $drag = $(this).addClass('oo_draggable');
+                } else {
+                    var $drag = $(this).addClass('active-handle').parent().addClass('oo_draggable');
+                }
+                var z_idx = $drag.css('z-index'),
+                        drg_h = $drag.outerHeight(),
+                        drg_w = $drag.outerWidth(),
+                        pos_y = $drag.offset().top + drg_h - e.pageY,
+                        pos_x = $drag.offset().left + drg_w - e.pageX;
+                $drag.css('z-index', 1000).parents().on("mousemove", function (e) {
+                    $('.oo_draggable').offset({
+                        top: e.pageY + pos_y - drg_h,
+                        left: e.pageX + pos_x - drg_w
+                    }).on("mouseup", function () {
+                        $(this).removeClass('oo_draggable').css('z-index', z_idx);
+                    });
+                });
+                e.preventDefault(); // disable selection
+            }).on("mouseup", function () {
+                if (opt.handle === "") {
+                    $(this).removeClass('oo_draggable');
+                } else {
+                    $(this).removeClass('active-handle').parent().removeClass('oo_draggable');
+                }
+            });
+
+        }
+    })(jQuery);
+</script>
+<script type='text/javascript'>
+    let scales = ['scale25', 'scale50', 'scale75', 'scale100', 'scale125', 'scale150', 'scale175', 'scale200']
+    let curScale = 3;
+    let objects = {}
+    let selectedObj = null;
+    let ID = 1
+    $(document).ready(function () {
+        Materialize.updateTextFields();
+        $('#obj-label').change(changeLabelText)
+    })
+
+    function genId() {
+        return "ID_" + ID++;
+    }
+    function setViewScale() {
+        for (let i = 0; i < scales.length; i++) $('#print-section').removeClass(scales[i])
+        $('#print-section').addClass(scales[curScale])
+    }
+    function zoomIn() {
+        curScale = Math.min(scales.length - 1, curScale + 1)
+        setViewScale();
+    }
+
+    function zoomOut() {
+        curScale = Math.max(0, curScale - 1)
+        setViewScale()
+    }
+
+    function newComponent(type) {
+        let id = genId();
+        let $comp = $('<span id="'+id+'" class="'+type+'"></span>')
+        processElement($comp)
+        $comp.drags()
+        $('#print-section').append($comp)
+        obj = Object.create(null);
+        obj.id = id;
+        obj.type = type;
+        obj.element = $comp;
+        objects[id] = obj
+        return obj
+    }
+
+    function newLabel() {
+        let obj = newComponent('label');
+        obj.setLabel = function setLabel(label) {
+            this.label = label;
+            this.element.html(label)
+        }
+        obj.getLabel = function getLabel() {return this.label}
+        obj.setLabel('new label')
+        selectObject(obj.id)
+
+    }
+
+    function newField() {
+        let obj = newComponent('field');
+        obj.element.html('new field')
+    }
+
+    function newRectangle() {
+        let obj = newComponent('rectangle');
+    }
+
+    function processElement($el) {
+        $el.click(function (event) {selectObject($(event.target).attr('id'))})
+        $el.mouseover(function (event) {$(event.target).addClass("mouseover")})
+        $el.mouseout(function (event) {$(event.target).removeClass("mouseover")})
+    }
+
+    function selectObject(id) {
+        let $e = $('#'+id);
+        if ($e.hasClass("selected")) {
+            $e.removeClass("selected")
+            selectedObj = null;
+        } else {
+            $e.removeClass("selected")
+            $e.addClass("selected")
+            selectedObj = objects[$e.attr('id')];
+        }
+        if (!selectedObj) {
+            clearPropertiesToolbox();
+            return;
+        }
+
+        switch (selectedObj.type) {
+            case 'label':
+                displayLabelProperties(selectedObj)
+                break;
+            case 'field':
+                displayFieldProperties(selectedObj)
+                break;
+            case 'rectangle':
+                displayRectangleProperties(selectedObj)
+                break;
+
+        }
+    }
+
+    function clearPropertiesToolbox() {
+        $('.property-group').hide();
+    }
+
+    function displayLabelProperties(obj) {
+        $('.property-group').hide();
+        $('#label-properties').show();
+        $('#obj-label').val(obj.getLabel())
+        $('#obj-label').focus()
+        $('#obj-label').select()
+        Materialize.updateTextFields();
+    }
+
+    function displayFieldProperties(obj) {
+        $('.property-group').hide();
+        $('#field-properties').show();
+    }
+
+    function displayRectangleProperties(obj) {
+        $('.property-group').hide();
+        $('#rectangle-properties').show();
+    }
+
+    function changeLabelText(event) {
+        if (selectedObj) selectedObj.setLabel(event.target.value)
+    }
+</script>
+</html>
