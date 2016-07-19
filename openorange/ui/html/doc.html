@@ -29,6 +29,10 @@
                 width: 3cm;
             }
 
+
+            .field, .label {
+                position: absolute;
+            }
             @page {
                 margin: 0;
                 /*size: A4;*/
@@ -52,7 +56,7 @@
             }
 
             .elements-toolbar {
-                position: absolute;
+                position: fixed;
                 top: 0;
                 left: 0;
                 width: 240px;
@@ -61,11 +65,12 @@
             }
 
             #properties-toolbox {
-                position: absolute;
+                position: fixed;
                 top: 0;
                 right: 0;
                 width: 240px;
                 height: 100%;
+                padding: 5px;
                 background: rgba(0,128,0,.2);
             }
 
@@ -142,7 +147,7 @@
 </head>
 <body>
 <div class="elements-toolbar">
-    <ul id="slide-out" class="side-nav fixed">
+    <ul  class="side-nav fixed">
         <li><a class="btn" onclick="zoomIn()">ZOOM IN</a></li>
         <li><a class="btn" onclick="zoomOut()">ZOOM OUT</a></li>
         <li><a class="btn" onclick="newLabel()">NEW LABEL</a></li>
@@ -150,26 +155,24 @@
         <li><a class="btn" onclick="newRectangle()">NEW RECTANGLE</a></li>
     </ul>
 </div>
-<div>
-    <div id="print-section">
+<div id="properties-toolbox">
+    <div id="label-properties" class="property-group">
+        <div class="input-field">
+            <input id='obj-label' name="label" type="text"/>
+            <label for="obj-label">Label</label>
+        </div>
     </div>
-    <div id="properties-toolbox">
-        <div id="label-properties" class="property-group">
-            <div class="input-field">
-                <input id='obj-label' name="label" type="text"/>
-                <label for="obj-label">Label</label>
-            </div>
-        </div>
-        <div class="input-field">
-            <input id='posX' name="X" type="number"/>
-            <label for="posX">X</label>
-        </div>
-        <div class="input-field">
-            <input id='posY' name="Y" type="number"/>
-            <label for="posX">Y</label>
-        </div>
+    <div class="input-field">
+        <input id='posX' name="X" type="number"/>
+        <label for="posX">X</label>
+    </div>
+    <div class="input-field">
+        <input id='posY' name="Y" type="number"/>
+        <label for="posX">Y</label>
+    </div>
 
-    </div>
+</div>
+<div id="print-section">
 </div>
 </body>
 <script type='text/javascript' src="js/plugins/jquery/jquery-2.1.4.min.js"></script>
@@ -296,6 +299,7 @@
         } else {
             $e.removeClass("selected")
             $e.addClass("selected")
+            $e.mousemove(changeComponentPosition);
             selectedObj = objects[$e.attr('id')];
         }
         if (!selectedObj) {
@@ -342,6 +346,15 @@
 
     function changeLabelText(event) {
         if (selectedObj) selectedObj.setLabel(event.target.value)
+    }
+
+    function changeComponentPosition(event) {
+        if (selectedObj) {
+            console.log(event)
+            $('#posX').val(event.currentTarget.offsetLeft) //esto hay que pasarlo a mm
+            $('#posY').val(event.currentTarget.offsetTop) // esto hay que pasarlo amm
+            Materialize.updateTextFields();
+        }
     }
 </script>
 </html>
