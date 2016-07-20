@@ -24,7 +24,6 @@ class Embedded_ListWindow extends oo.UIEntity {
         if (descriptor.actions) {
             for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
         }
-        this.__description__ = newdesc;
         this.__recordClass__ = null;
         this.__windowClass__ = null;
         this.__description__ = newdesc;

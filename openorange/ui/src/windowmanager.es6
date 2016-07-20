@@ -30,7 +30,6 @@
             this.pastewindow_id = null;
             this.created_cards = []
             this.cardcontainers = {}
-            return this;
         };
 
         close() {
@@ -40,7 +39,6 @@
         }
 
         render() {
-
             var self = this;
             //console.log(containerElement)
             oo.ui.containers.push({container: this, entity: this.window, element: this.__element__, tab_id: this.tab_id});

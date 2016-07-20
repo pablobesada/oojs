@@ -8,6 +8,7 @@ var Description = {
     actions: [
         {label: 'Save', method: 'save', icon: 'done', group: 'basic', shortcut: 'shift+enter'},
         {label: 'Delete', method: 'delete', icon: 'delete', group: 'basic'},
+        {label: 'Print', method: 'print', icon: 'print', group: 'basic', shortcut: 'ctrl+p'},
     ],
 }
 

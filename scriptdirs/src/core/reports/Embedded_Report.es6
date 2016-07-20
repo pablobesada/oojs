@@ -52,6 +52,7 @@ class Embedded_Report extends oo.UIEntity {
         this.__html__ = [];
         this.__id__ = Embedded_Report.ids++;
         this.__listeners__ = []
+        this.__isrunning__ = false;
         let desc = {}
         desc.inherits = 'Embedded_Record';
         desc.name = '<dynamic record>'
@@ -117,10 +118,14 @@ class Embedded_Report extends oo.UIEntity {
     }
 
     async runAndRender() {
-        if (this.getParamsWindow()) this.getParamsWindow().close();
-        this.clear()
-        await this.run();
-        this.render();
+        if (!this.__isrunning__) {
+            this.__isrunning__ = true;
+            if (this.getParamsWindow()) this.getParamsWindow().close();
+            this.clear()
+            await this.run();
+            this.render();
+            this.__isrunning__ = false;
+        }
     }
 
     async run() {

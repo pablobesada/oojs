@@ -20,10 +20,5 @@ class DocumentSpec extends Parent {
         super()
     }
 
-
-    open() {
-        var wm = Object.create(oo.ui.documentmanager).init(this)
-        wm.render()
-    }
 }
 module.exports = DocumentSpec.initClass(Description)

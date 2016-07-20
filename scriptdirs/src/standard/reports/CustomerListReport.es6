@@ -11,9 +11,18 @@ var Description = {
 //let CustomerListReport = cm.createClass(Description, __filename)
 let Parent = cm.SuperClass(Description)
 
+function wait(t) {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve()
+        }, t)
+    });
+}
+
 class CustomerListReport extends Parent {
     async run() {
         super.run()
+        await (wait(2000))
         var self = this;
         var order = null
         if ('order' in self) order = self.order;
@@ -34,6 +43,7 @@ class CustomerListReport extends Parent {
             self.endRow()
         }
         self.endTable()
+        //await (wait(2000))
     }
 
     async ZoomInTest(param, value) {

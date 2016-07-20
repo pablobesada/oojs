@@ -208,6 +208,7 @@ router.get('/prefetchclasses', async function (req, res, next) {
         'scriptdirs/lib/core/windows/Embedded_Window',
         'scriptdirs/lib/core/windows/Embedded_ListWindow',
         'scriptdirs/lib/core/windows/Embedded_PasteWindow',
+        'scriptdirs/lib/core/windows/Embedded_DocumentView',
         'scriptdirs/lib/core/cards/Embedded_Card',
         'scriptdirs/lib/core/windows/Window',
         'scriptdirs/lib/core/windows/ReportWindow',
