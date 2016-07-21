@@ -395,7 +395,7 @@
             this.renderActionBar();
             this.loadDocumentSpec()
             this.bindRecordToDocument(this.document.getRecord())
-            this.modeEdit();
+            this.modeView();
         }
 
         update(event) {
