@@ -17,7 +17,11 @@ class Embedded_Window extends oo.UIEntity {
 
     async print() {
         let record = this.getRecord();
+        if (!record) return;
+        let docSpec = await record.getDocumentSpec()
+        if (!docSpec) return;
         let docView = cm.getClass("Embedded_DocumentView").new()
+        docView.setDocumentSpec(docSpec)
         docView.setRecord(record)
         docView.open();
         docView.setFocus()

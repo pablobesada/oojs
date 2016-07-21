@@ -8,6 +8,7 @@ var Description = {
     inherits: 'Master',
     fields: {
         RecordName: {type: "string", length: 20},
+        JSONSpec: {type: "string", length: 4096},
         Fields: {type: "detail", class:"DocumentSpecFieldsRow"},
     },
     filename: __filename,

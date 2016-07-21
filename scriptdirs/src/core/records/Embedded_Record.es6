@@ -30,6 +30,10 @@ class Field {
         return this.value;
     }
 
+    getFormattedValue(format) { //always returns a string
+        return this.value == null ? "" : ""+this.value;
+    }
+
     getMaxLength() {
         if (this.__length__ != null && this.__length__ != undefined) return this.__length__;
         if (this.linkto) {
@@ -75,6 +79,10 @@ class DateField extends Field {
         super(name, type, length, persistent, linkto)
     }
 
+    getFormattedValue(format) {
+        return this.value == null ? "" : this.value.format("DD/MM/YYYY");
+    }
+
     setValue(v) {
         var vv;
         if (v == null) {
@@ -98,7 +106,6 @@ class DateField extends Field {
     cloneValue() {
         return this.value == null ? null : this.value.clone();
     }
-
 
     getSQLValue() {
         return this.value == null ? null : this.value.format("YYYY-MM-DD");
@@ -556,9 +563,14 @@ class Embedded_Record extends oo.BaseEntity {
         self.setModifiedFlag(false)
     }
 
-    async getDocument() {
+    async getDocumentSpec() {
         //esto va al documentlink y vuelve un objeto de tipo Document (que es la especificacion del documento)
-        return await oo.classmanager.getClass("DocumentSpec").findOne({RecordName: this.__class__.getDescription().name})
+        let ds = await oo.classmanager.getClass("DocumentSpec").findOne({RecordName: this.__class__.getDescription().name})
+        if (!ds) {
+            ds = oo.classmanager.getClass("DocumentSpec").new()
+            ds.RecordName = this.__class__.getDescription().name
+        }
+        return ds;
     }
 
     async defaults() {

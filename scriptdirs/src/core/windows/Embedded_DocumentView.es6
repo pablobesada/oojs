@@ -9,6 +9,7 @@ var Description = {
         {label: 'Print', method: 'print', icon: 'print', group: 'basic', shortcut: 'ctrl+p'},
         {label: 'Edit', method: 'edit', icon: 'edit', group: 'basic', shortcut: 'ctrl+e'},
         {label: 'View', method: 'view', icon: 'visibility', group: 'basic'},
+        {label: 'Save', method: 'save', icon: 'save', group: 'basic'},
     ]
 }
 
@@ -32,6 +33,7 @@ class Embedded_DocumentView extends oo.UIEntity {
     constructor() {
         super()
         this.__record__ = null
+        this.__docspec__ = null;
     }
 
     open() {
@@ -40,6 +42,14 @@ class Embedded_DocumentView extends oo.UIEntity {
 
     setFocus() {
         this.emit("focus", {documentView: this})
+    }
+
+    setDocumentSpec(docspec) {
+        this.__docspec__ = docspec;
+    }
+
+    getDocumentSpec() {
+        return this.__docspec__
     }
 
     setRecord(record) {
@@ -60,6 +70,9 @@ class Embedded_DocumentView extends oo.UIEntity {
         this.emit('view', {documentView: this})
     }
 
+    save() {
+        this.emit('save', {documentView: this})
+    }
 
 }
 

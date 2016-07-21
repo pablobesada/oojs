@@ -8,12 +8,14 @@
         let wso = cm.getClass("SalesOrderListWindow").new();
         wso.open()
 
-        /*let w = cm.getClass("SalesOrderWindow").new()
+        let w = cm.getClass("SalesOrderWindow").new()
         w.open()
         w.setFocus();
         let r = w.__class__.getRecordClass().bring(4445634).then(function (rec) {
             w.setRecord(rec);
-        })*/
+            w.print()
+        })
+
 
     });
 
