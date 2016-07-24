@@ -100,24 +100,30 @@ class Embedded_Card extends oo.UIEntity {
         //console.log("REFRESH PARAMS FROM PROVIDER", this.__class__.getDescription().name)
         //console.log("BBB", this.dataprovider.keys())
         //console.log("AAA", await this.dataprovider.getData('__record__'))
-        this.params = {}
-        let requiredParams = this.__class__.getDescription().params
-        for (let p in requiredParams) {
-            let keys = this.dataprovider.keys()
-            for (let i in keys) {
-                let key = keys[i];
-                let data = await this.dataprovider.getData(key)
-                //if ('function' == typeof data.then) data = await data;
-                //console.log("PARAM", p, key, data, this.__class__.getDescription().name)
-                if (data instanceof oo.classmanager.getClass(requiredParams[p])) {
-                    //console.log("SETTING PARAM", p, data, this.__class__.getDescription().name)
-                    this.params[p] = data;
+        try {
+            this.params = {}
+            let requiredParams = this.__class__.getDescription().params
+            for (let p in requiredParams) {
+                let keys = this.dataprovider.keys()
+                for (let i in keys) {
+                    let key = keys[i];
+                    let data = await this.dataprovider.getData(key)
+                    //if ('function' == typeof data.then) data = await data;
+                    //console.log("PARAM", p, key, data, this.__class__.getDescription().name)
+                    if (data instanceof oo.classmanager.getClass(requiredParams[p]) ||
+                        (data && data.constructor && data.constructor.name && data.constructor.name == requiredParams[p])) {
+                        //console.log("SETTING PARAM", p, data, this.__class__.getDescription().name)
+                        this.params[p] = data;
+                    }
                 }
             }
+            //console.log("BEFORE CALL REFRESH", this.__class__.getDescription().name)
+            this.refresh();
+            //console.log("AFTER CALL REFRESH", this.__class__.getDescription().name)
+        } catch (err) {
+            console.log(err.stack);
+            throw err;
         }
-        //console.log("BEFORE CALL REFRESH", this.__class__.getDescription().name)
-        this.refresh();
-        //console.log("AFTER CALL REFRESH", this.__class__.getDescription().name)
     }
 
     getTemplate() {
@@ -188,7 +194,9 @@ class Embedded_Card extends oo.UIEntity {
                 if (!(cardClassName in allcards)) allcards[cardClassName] = sd.cards[cardClassName];
             }
         }
+        console.log(allcards)
         for (let cardClassName in allcards) {
+
             let cardClass = oo.classmanager.getClass(cardClassName);
             if (cardClass.getDescription().abstract) continue;
             if (cardClass.matchesRequirements(providedDataTypes)) res.push(cardClass);
@@ -208,6 +216,7 @@ class Embedded_Card extends oo.UIEntity {
         for (let p in requiredParams) {
             let requiredClassName = requiredParams[p];
             if (!(requiredClassName in providedClassNames)) {
+                console.log("NO MATCH:", requiredClassName, providedClassNames)
                 return false;
             }
         }

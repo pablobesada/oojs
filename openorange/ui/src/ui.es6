@@ -9,13 +9,14 @@
         constructor(entity) {
             let self = this;
             this.entity = entity;
-            this.__element__ = $('<div class="container"></div>');
             this.tab_id = oo.ui.genId();
+            this.__element__ = $(`<div id="${this.tab_id}" class="container"></div>`);
             this.actionbar_id = oo.ui.genId("actionbar")
             this.__element__.append(`<div id="${this.actionbar_id}"></div>`)
             this.entity.on('action visibility', function (event) {
                 console.log("en action visibility listener", event)
                 self.renderActionBar()
+                console.log("after render")
             });
         }
 

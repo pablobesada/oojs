@@ -14,6 +14,8 @@ var Description = {
     reports: [
         {name: 'CustomerListReport', label: 'Listado de Clientes'},
     ],
+    routines: [
+    ],
     filename: __filename,
 }
 

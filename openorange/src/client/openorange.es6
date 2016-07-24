@@ -8,7 +8,7 @@
     let classmanager = Object.create(null);
     let orm = {};
     let __currentUser__ = null;
-    classmanager.lookupdirs = ["records", "windows", "cards", "reports", "modules", "tools", "documents"];
+    classmanager.lookupdirs = ["records", "windows", "cards", "reports", "routines", "modules", "tools", "documents"];
     //classmanager.scriptdirs = ["core", "base", "standard"];
     //classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
     classmanager.extractScriptDir = function extractScriptDir(dirname) {

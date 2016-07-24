@@ -194,25 +194,35 @@
 
         createTabsComponent(json) {
             var self = this;
-            var component = $('<div class="row"></div>');
-            var tabsHeaderContainer = $('<div class="col s12"></div>');
-            var tabsHeader = $('<ul class="tabs"></ul>');
-            tabsHeaderContainer.append(tabsHeader);
-            component.append(tabsHeaderContainer);
+            let template = oo.ui.templates.get("window tabs")
+            let tabs = []
+            let pages = []
             _(json.pages).forEach(function (jpage) {
-                var label = jpage.label;
-                self.last_tab_id += 1;
-                var tab_id = self.tab_id + "_" + self.last_tab_id;
-                //console.log("ACTIVE CLASS", activeClass)
-                var headerButton = $(`<li class="tab"><a href="#${tab_id}">${label}</a></li>`);
-                tabsHeader.append(headerButton);
-                var page = self.createComponent(jpage, {id: tab_id});
-                page.attr('id', tab_id);
-                //component.append(page);
-                tabsHeaderContainer.append(page)
-            });
-            json.__element__ = component;
-            return component;
+                let tab = {}
+                tab.id = oo.ui.genId("TAB")
+                tab.label = jpage.label;
+                tabs.push(tab);
+                let page = self.createComponent(jpage, {id: tab.id})
+                page.attr('id', tab.id);
+                pages.push({id: tab.id, page: page})
+            })
+            let args = {tabs: tabs}
+            let res = $(template.getHTML(args))
+            let page_container_selector = template.meta.attr('page-container-selector')
+            let page_container = null;
+            if (page_container_selector) {
+                page_container = res.find(page_container_selector);
+                if (page_container.length == 0) page_container = page_container.addBack(page_container_selector);
+            }
+            console.log("PC, ", page_container)
+            if (page_container) {
+                for (let i in pages) {
+                    let page = pages[i];
+                    page_container.append(page.page)
+                }
+            }
+            json.__element__ = res;
+            return res
         };
 
 
@@ -251,57 +261,52 @@
                 }
             }
 
-            var component = $('<div class="input-field col s' + grid_cols + '"></div>');
+            //var component = $('<div class="input-field col s' + grid_cols + '"></div>');
             var labelComponent = null;
-            var editorElement = self[editor](json, "oomaster");
-            var editors = editorElement;
+            var ed = self[editor](json, "oomaster");
+            let component = ed.component;
+            let editorElement = ed.editor;
             var pasteWindowComponent = null;
             if (headerInput) {
                 switch (editor) {
                     case 'checkbox':
-                        editors = editorElement.find("input");
-                        editors.click(self.beforeEdit.bind(self));  //en el checkbox, el beforeEdit llama al afterEdit (esto es porque no siempre recibe eventos de focus -a veces se llama una sola vez y luego nunca mas-
+                        editorElement.click(self.beforeEdit.bind(self));  //en el checkbox, el beforeEdit llama al afterEdit (esto es porque no siempre recibe eventos de focus -a veces se llama una sola vez y luego nunca mas-
                         break;
                     case 'radiobutton':
-                        editors = editorElement.find("input");
-                        editors.click(self.beforeEdit.bind(self));
-                        editors.change(self.afterEdit.bind(self));
+                        editorElement.click(self.beforeEdit.bind(self));
+                        editorElement.change(self.afterEdit.bind(self));
                         break;
                     case 'combobox':
-                        labelComponent = $('<label>' + (json.label ? json.label : json.field) + '</label>');
-                        editors.change(self.beforeEdit.bind(self)); //en el combobox, el beforeEdit llama al afterEdit (esto es porque no recibe eventos ni de click ni de focus
+                        editorElement.change(self.beforeEdit.bind(self)); //en el combobox, el beforeEdit llama al afterEdit (esto es porque no recibe eventos ni de click ni de focus
                         break;
                     case 'date':
-                        labelComponent = $('<label>' + (json.label ? json.label : json.field) + '</label>');
-                        //editors.focus(self.beforeEdit.bind(self));
-                        editors.change(self.beforeEdit.bind(self));
+                        editorElement.change(self.beforeEdit.bind(self));
                         break;
                     default:
-                        labelComponent = $('<label>' + (json.label ? json.label : json.field) + '</label>');
-                        editors.focus(self.beforeEdit.bind(self));
-                        editors.change(self.afterEdit.bind(self));
+                        editorElement.focus(self.beforeEdit.bind(self));
+                        editorElement.change(self.afterEdit.bind(self));
                         break;
                 }
             }
-            if (json.pastewindow) {
-                pasteWindowComponent = $('<i class="mdi prefix">search</i>')
-                var params = {self: self, field: field, detailname: null, rownr: null, json: json, editor: editors};
-                pasteWindowComponent.click(self.openPasteWindow.bind(params));
-                editors.keypress((event) => {
+            if (json.pastewindow && ed.pastewindowopener) {
+                let pwopener = ed.pastewindowopener;
+                var params = {self: self, field: field, detailname: null, rownr: null, json: json, editor: editorElement};
+                pwopener.click(self.openPasteWindow.bind(params));
+                editorElement.keypress((event) => {
                     //console.log(event.ctrlKey, event.keyCode, event.key)
                     //console.log(event)
                     if (event.ctrlKey && (event.key.toLowerCase() == 'enter')) {
                         self.openPasteWindow.bind(params)(event);
                     } else if (event.ctrlKey && (event.key.toLowerCase() == 'm')) {
-                        console.log("CTRL+M")
                         self.openRelatedRecord.bind(params)(event);
                     }
                 })
             }
             if (pasteWindowComponent) component.append(pasteWindowComponent);
-            component.append(editorElement);
-            if (labelComponent) component.append(labelComponent);
-            json.__element__ = editors;
+            //component.append(editorElement);
+            //if (labelComponent) component.append(labelComponent);
+            json.__element__ = editorElement;
+            //return editorElement;
             return component;
         };
 
@@ -326,52 +331,50 @@
                         break;
                 }
             }
-            var editorElement = self[editor](json, cls, rowfield);
-            var editors = editorElement;
+            var ed = self[editor](json, cls, rowfield);
+            var component = ed.component;
+            var editorElement = ed.editor;
+
             var bind_params = {self: self, json: json, detailname: detailname, rowfield: rowfield};
             switch (editor) {
                 case 'checkbox':
-                    editors = editorElement.find("input");
-                    editors.click(self.beforeEditRow.bind(bind_params));
+                    editorElement.click(self.beforeEditRow.bind(bind_params));
                     break;
                 case 'combobox':
-                    editors.change(self.beforeEditRow.bind(bind_params));
+                    editorElement.change(self.beforeEditRow.bind(bind_params));
                     break;
                 case 'date':
-                    editors.change(self.beforeEditRow.bind(bind_params));
+                    editorElement.change(self.beforeEditRow.bind(bind_params));
                     break;
                 default:
-                    editors.focus(self.beforeEditRow.bind(bind_params));
-                    editors.change(self.afterEditRow.bind(bind_params));
+                    editorElement.focus(self.beforeEditRow.bind(bind_params));
+                    editorElement.change(self.afterEditRow.bind(bind_params));
                     break;
             }
-            var component = editors;
-            if (json.pastewindow) {
-                component = $('<div class="input-field" style="margin-left: 20px"></div>');
-                var pasteWindowComponent = $('<i class="mdi prefix" style="margin-left: -20px">search</i>');
-                component.append(pasteWindowComponent);
+            if (json.pastewindow && ed.pastewindowopener) {
+                //component = $('<div class="input-field" style="margin-left: 20px"></div>');
+                //var pasteWindowComponent = $('<i class="mdi prefix" style="margin-left: -20px">search</i>');
+                //component.append(pasteWindowComponent);
                 var params = {
                     self: self,
                     detailname: detailname,
                     field: rowfield,
                     //rownr: rownr,
                     json: json,
-                    editor: editors
-                };
-                pasteWindowComponent.click(self.openPasteWindow.bind(params));
-                editors.keypress((event) => {
+                    editor: editorElement
+                }
+                ed.pastewindowopener.click(self.openPasteWindow.bind(params));
+                editorElement.keypress((event) => {
                     if (event.ctrlKey && event.key.toLowerCase() == 'enter') {
-                        console.log("opening paste window")
                         self.openPasteWindow.bind(params)(event);
                     } else if (event.ctrlKey && (event.key.toLowerCase() == 'm')) {
-                        console.log("CTRL+M")
                         self.openRelatedRecord.bind(params)(event);
                     }
                 })
 
-                component.append(editors)
+                //component.append(editors)
             }
-            json.__element__ = editors;
+            json.__element__ = editorElement;
             return component;
         };
 
@@ -385,43 +388,67 @@
             this.window.print()
         };
 
-        string(json, cls, field) {
+        processEditor(json, cls, field, editor, aditional_template_args) {
             var self = this;
             var value = field != null ? field.getValue() : '';
             if (field != null && field.type == 'date' && value != null) value = value.format("YYYY-MM-DD");
             if (value == null) value = '';
-            var html = '<input value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
-            var res = $(html);
-            return res;
+            //var html = '<input value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
+            let args = {id: oo.ui.genId(), value: value, field: json.field, cls: cls, label: json.label ? json.label : json.field, pastewindow: json.pastewindow}
+            if (aditional_template_args) {
+                _.extendOwn(args, aditional_template_args)
+            }
+            var template = oo.ui.templates.get('window ' + cls + ' editors ' + editor)
+            let res = $(template.getHTML(args));
+            let $editor = null;
+            let editor_selector = template.meta.attr('editor-selector');
+            if (editor_selector) {
+                $editor = res.find(editor_selector)
+                if ($editor.length == 0) $editor = $editor.addBack(editor_selector);
+            } else {
+                $editor = res;
+            }
+            if (template.meta.attr('editor-init')) {
+                eval(template.meta.attr('editor-init'))
+                //console.log($editor)
+                //$editor.mask('09:00:00')
+            };
+            let $pwopener = null;
+            let pastewindow_opener_selector = template.meta.attr('pastewindow-opener-selector');
+            if (pastewindow_opener_selector) {
+                $pwopener = res.find(pastewindow_opener_selector)
+                if ($pwopener.length == 0) $pwopener = $editor.addBack(pastewindow_opener_selector);
+            }
+            return {component: res, editor: $editor, pastewindowopener: $pwopener};
+
+        }
+
+        string(json, cls, field) {
+            return this.processEditor(json, cls, field, 'string')
+        };
+
+        memo(json, cls, field) {
+            return this.processEditor(json, cls, field, 'memo')
         };
 
         time(json, cls, field) {
-            var res = this.string(json, cls, field);
-            res.attr('timeeditor', true);
-            //res.attr('data-mask', '00:00:00')
-            res.mask('09:00:00');
-            return res;
+            return this.processEditor(json, cls, field, 'time')
+            //return {component: res, editor: res.find(template.meta.attr('editor-selector'))};
         };
 
         integer(json, cls, field) {
-            var self = this;
-            var value = field != null ? field.getValue() : '';
-            if (value == null) value = '';
-            var html = '<input value="' + value + '" type="number" name="' + json.field + '" class="editor ' + cls + ' validate">';
-            var res = $(html);
-            return res;
+            return this.processEditor(json, cls, field, 'integer')
         };
 
         date(json, cls, field) {
-            var self = this;
-            var value = field != null ? field.getSQLValue() : '';
-            if (value == null) value = '';
-            var html = '<input data-value="' + value + '" type="date" name="' + json.field + '" class="editor datepicker ' + cls + ' validate" datepicker="true">';
-            var res = $(html);
-            return res;
+            return this.processEditor(json, cls, field, 'date')
         };
 
         checkbox(json, cls, field) {
+            var value = field != null ? field.getValue() : '';
+            var checked = !!value;
+            var options = {checked: checked}
+            return this.processEditor(json, cls, field, 'checkbox', options)
             var self = this;
             var value = field != null ? field.getValue() : '';
             if (value == null) value = '';
@@ -434,27 +461,38 @@
             }
             html += '<label for="' + element_id + '">' + label + '</label></p>';
             var res = $(html);
-            return res;
+            return {component: res, editor: res.find('input')};
         };
 
         combobox(json, cls, field) {
-            var self = this;
+            let options = []
             var value = field != null ? field.getValue() : '';
-            if (value == null) value = '';
-            var html = '<select value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
-            var selected = (value == '' || value == null) ? 'SELECTED' : '';
-            html += '<option value="" ' + selected + '></option>';
+            options.push({value: '', label: '', selected: (value == '' || value == null)})
             for (var i = 0; i < json.options.length; i++) {
                 var option = json.options[i];
-                var selected = (value == ('' + option.value)) ? 'SELECTED' : '';  // (''+option.value) es porque sino '' == 0 -> TRUE
-                html += '<option value="' + option.value + '" ' + selected + '>' + option.label + '</option>'
+                let opt = {}
+                opt.value = option.value;
+                opt.label = option.label;
+                opt.selected = (value == ('' + option.value)); //(''+option.value) es porque sino '' == 0 -> TRUE
+                options.push(opt);
             }
-            html += '</select>';
-            var res = $(html);
-            return res;
+            return this.processEditor(json, cls, field, 'combobox', {options: options})
         };
 
         radiobutton(json, cls, field) {
+            let options = []
+            for (var i = 0; i < json.options.length; i++) {
+                var option = json.options[i];
+                var element_id = oo.ui.genId("RADIO")
+                let opt = {}
+                opt.value = option.value;
+                opt.cls = cls
+                opt.field = json.field
+                opt.id = element_id;
+                opt.label = option.label;
+                options.push(opt);
+            }
+            return this.processEditor(json, cls, field, 'radiobutton', {options: options})
             var self = this;
             var value = field != null ? field.getValue() : '';
             if (value == null) value = '';
@@ -466,9 +504,8 @@
                 html += '<label for="' + element_id + '">' + option.label + '</label></p>';
             }
             var res = $(html)//.find("input");
-            return res;
+            return {component: res, editor: res.find('input')};
         };
-        ;
 
         beforeEdit(event) {
             var self = this;
@@ -704,10 +741,15 @@
             }
             var self = this;
             var tbody = tbodyElement;
-            var tr = $('<tr rownr="' + row.rowNr + '"></tr>');
+            let args = {rowNr: row.rowNr}
+            let template = oo.ui.templates.get('window oomaster editors matrixrow')
+            var tr =  $(template.getHTML(args))
+                //$('<tr rownr="' + row.rowNr + '"></tr>');
 
             _(json.columns).forEach(function (jcol) {
-                var td = $('<td></td>');
+                let args = {}
+                let template = oo.ui.templates.get('window oomaster editors matrixcell')
+                var td =  $(template.getHTML(args))
                 var component = self.createMatrixComponent(jcol, 'oodetail', json.field, row.rowNr, row.fields(jcol.field));
                 var readonly = !record.fieldIsEditable(json.field, jcol.field, row.rowNr);
                 if (readonly) component.attr('readonly', readonly);
@@ -717,7 +759,8 @@
                 tr.append(td)
             });
 
-            var trs = tbody.children("tr");
+            let rowTagName = tr.prop("tagName");
+            var trs = tbody.children(rowTagName);
             var hasVirtualRow = (trs.length > 0 && trs.last().attr('rownr') == 'null');
             var rows_count = trs.length;
             if (hasVirtualRow) rows_count -= 1;
@@ -730,7 +773,7 @@
             } else {
                 var next_tr = null;
                 for (var i = rows_count - 1; i >= row.rowNr; i--) {
-                    next_tr = tbody.children('tr[rownr=' + i + ']');
+                    next_tr = tbody.children(rowTagName+'[rownr=' + i + ']');
                     next_tr.attr('rownr', i + 1)
                 }
                 next_tr.before(tr)
@@ -760,6 +803,9 @@
                     element.__block_event__ = true;
                     e.pickadate('picker').set('select', d);
                     element.__block_event__ = false;
+                } else if (element.nodeName == 'TEXTAREA') {
+                    e.val(value)
+                    e.trigger('autoresize')
                 } else {
                     if (ftype == 'date' && value != null) {
                         e.val(value.format("YYYY-MM-DD"))
@@ -815,24 +861,23 @@
 
         createEmptyMatrix(json) {
             var self = this;
-            var table = $('<table name="' + json.field + '" class="bordered oodetail striped"></table>');
-            var thead = $("<thead></thead>");
-            var colHeaderRow = $("<tr></tr>");
-            thead.append(colHeaderRow);
+            let template = oo.ui.templates.get('window oomaster editors matrix')
+            console.log(template)
+            let columns = []
             _(json.columns).forEach(function (col) {
-                var label = col.label ? col.label : col.field;
-                var colHeader = $("<th>" + col.field + "</ht>");
-                colHeaderRow.append(colHeader)
+                let column = {}
+                column.label = col.label ? col.label : col.field;
+                columns.push(column);
             });
-            table.append(thead);
-            var tbody = $('<tbody></tbody>');
+            let args = {field: json.field, columns: columns}
+            console.log("columns:", args.columns)
+            let res = $(template.getHTML(args))
             self.matrix_idx += 1;
-            tbody.attr('matrix_idx', self.matrix_idx);
-            table.append(tbody);
-            json.__element__ = table;
+            res.find(template.meta.attr('row-container-selector')).attr('matrix_idx', self.matrix_idx);
+            json.__element__ = res;
             if (!(json.field in this.matrix_json_map)) this.matrix_json_map[json.field] = [];
             this.matrix_json_map[json.field].push(json);
-            return table;
+            return res;
         };
 
         bindRecordToComponent(record, jcomponent) {
@@ -1007,11 +1052,9 @@
             var readonly = null;
             let rownr = null;
             let record = recordClass.new();
-            console.log(record)
-            console.log(pw.__description__.pastefieldname)
             record.fields(pw.__description__.pastefieldname).setValue($(event.currentTarget).val())
             if (await record.load()) {
-                console.log("record loaded", record)
+
                 let window = windowClass.new()
                 window.setRecord(record);
                 window.open();

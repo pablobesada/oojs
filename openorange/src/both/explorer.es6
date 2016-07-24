@@ -14,6 +14,7 @@ Explorer.search__server = async function search(txt) {
     var res = []
     var regexp = new RegExp(txt, "i");
     let modules = await self.findAllModules();
+    console.log(modules)
     for (let modname in modules) {
         if (modname == 'ALL') continue //por ahora
         var module = modules[modname];
@@ -24,6 +25,10 @@ Explorer.search__server = async function search(txt) {
         for (let j=0;j<module.reports.length; j++) {
             var entry = module.reports[j];
             if (entry.label.search(regexp) >= 0) res.push({type: 'Report', name:entry.name, label: entry.label, access: entry.access})
+        }
+        for (let j=0;j<module.routines.length; j++) {
+            var entry = module.routines[j];
+            if (entry.label.search(regexp) >= 0) res.push({type: 'Routine', name:entry.name, label: entry.label, access: entry.access})
         }
     }
     return res;
@@ -109,6 +114,7 @@ Explorer.findAllModules = function findAllModules() {
         res.ALL.records = Object.keys(res.ALL.records)
         res.ALL.windows = Object.keys(res.ALL.windows)
         res.ALL.reports = Object.keys(res.ALL.reports)
+        res.ALL.routines = Object.keys(res.ALL.routines)
         res.ALL.documents = Object.keys(res.ALL.documents)
         res.ALL.routines = Object.keys(res.ALL.routines)
         res.ALL.tools = Object.keys(res.ALL.tools)

@@ -11,23 +11,30 @@ var Description = {
         {field: 'SerNr', label: 'Numero'},
         {field: 'TransDate'},
         {field: 'CustName'},
+        {field: 'CustName', editor: 'memo'},
         {field: 'TransTime'},
         {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         //{type: 'card', name: 'CustomerSalesOrdersCard'},
         //{type: 'card', name: 'TimerCard'},
+        {field: 'PrintFormat', editor: 'radiobutton', options: [
+            {label: 'Normal', value: 0},
+            {label: 'Sum per Item', value: 1},
+            {label: 'Sum per Origin', value: 3},
+        ]},
         {field: 'PrintFormat', editor: 'combobox', options: [
             {label: 'Normal', value: 0},
             {label: 'Sum per Item', value: 1},
             {label: 'Sum per Origin', value: 3},
         ]},
         {field: "Status", editor: "checkbox"},
+        {field: "Status", editor: "string"},
+        {field: "PrintFormat", editor: "string"},
         {
            type: 'tabs', pages: [
             {
                 label:"Related", content: [
                 {type: 'cardcontainer', name: 'CardContainer1', default: ['TestCard']},
             ]},
-
             {label: "TAB1", content: [
                 {
                     field: 'Items', columns: [
@@ -65,6 +72,16 @@ var Description = {
 
 var Parent = cm.SuperClass(Description)
 
+
+class ItemsContainer {
+    constructor(container) {
+        this.container = container
+    }
+    addItem(item) {
+        this.container.addItem(item);
+    }
+}
+
 class SalesOrderWindow extends Parent {
     constructor() {
         super()
@@ -95,14 +112,34 @@ class SalesOrderWindow extends Parent {
 
 
     async "changed Items.ArtCode"(rowNr) {
-        console.log(4, rowNr)
         var self = this;
-        console.log(5)
         await Parent.tryCall(this, null, "changed Items.ArtCode", rowNr);
-        console.log(6)
         //await super["changed Items.ArtCode"](rowNr)
         self.getRecord().Items[rowNr].pasteArtCode(self)
-        console.log(7)
+    }
+
+
+    static getProvidedDataTypes() {
+        let rc = Parent.getRecordClass()
+        if (rc) {
+            let res = rc.getProvidedDataTypes();
+            res.itemsContainer = 'ItemsContainer'
+            console.log("RESSS", res)
+            return res
+        }
+        return {}
+    }
+
+    async getProvidedData() {
+        let pd = await super.getProvidedData()
+
+        pd.setData('itemsContainer', new ItemsContainer(this));
+        console.log("PD", pd.keys())
+        return pd
+    }
+
+    addItem(item) {
+        alert("adding: " + item)
     }
 }
 module.exports = SalesOrderWindow.initClass(Description)

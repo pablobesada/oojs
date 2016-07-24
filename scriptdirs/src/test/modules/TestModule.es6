@@ -11,6 +11,9 @@ var Description = {
     reports: [
         {name: 'TestReport', label: 'Test Report', access: 'TestReport'}
     ],
+    routines: [
+        {name: 'TestRoutine', label: 'Test Routine', access: 'TestRoutine'}
+    ],
     filename: __filename,
 }
 

@@ -803,7 +803,6 @@ class Embedded_Record extends oo.BaseEntity {
                     let linkedRecord = await oo.classmanager.getClass(dt[k]).bring(this[k])
                     if (linkedRecord) {
                         linkedRecord.on('field modified', async (event2) => {
-                            console.log("EV2", event2)
                             self.__provided_data_object__.setData(k, linkedRecord)
                         })
                     }
@@ -818,7 +817,6 @@ class Embedded_Record extends oo.BaseEntity {
                     let linkedRecord = await oo.classmanager.getClass(event.field.linkto).bring(event.field.getValue())
                     if (linkedRecord) {
                         linkedRecord.on('field modified', async (event2) => {
-                            console.log("EV2", event2)
                             self.__provided_data_object__.setData(event.field.name, linkedRecord)
                         })
                     }

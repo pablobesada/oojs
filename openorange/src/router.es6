@@ -198,6 +198,9 @@ router.get('/prefetchclasses', async function (req, res, next) {
         'scriptdirs/lib/core/reports/Embedded_Report',
         'scriptdirs/lib/core/reports/Report',
 
+        'scriptdirs/lib/core/routines/Embedded_Routine',
+        'scriptdirs/lib/core/routines/Routine',
+
         'scriptdirs/lib/base/records/Numerable',
         'scriptdirs/lib/base/records/Transaction',
         'scriptdirs/lib/base/records/FinancialTrans',

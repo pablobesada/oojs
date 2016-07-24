@@ -11,6 +11,7 @@ var Description = {
         {field: 'syncVersion'},
         {field: 'SubTestName'},
         {field: 'String_Field'},
+        {field: 'String_Field', editor: 'memo'},
         {field: 'LinkTo_Field', name: 'LTF'},
         {field: 'Integer_Field'},
         {

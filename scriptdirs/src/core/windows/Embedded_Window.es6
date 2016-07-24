@@ -262,7 +262,8 @@ class Embedded_Window extends oo.UIEntity {
         var self = this;
         self.getRecord()[fieldname] = value;
         if ('changed ' + fieldname in self) {
-            return await this['changed ' + fieldname]()
+            let res =  await this['changed ' + fieldname]()
+            return res;
         }
     }
 
@@ -360,7 +361,10 @@ class Embedded_Window extends oo.UIEntity {
 
     static getProvidedDataTypes() {
         let rc = this.getRecordClass()
-        if (rc) return rc.getProvidedDataTypes();
+        if (rc) {
+            let res = rc.getProvidedDataTypes();
+            return res
+        }
         return {}
     }
 

@@ -77,6 +77,9 @@
             $el.mousedown(function (event) {
                 self.select()
             })
+            $el.mouseup(function (event) { //este evento esta definido para que en los Rectangles, al estar haciendo resize, al soltar el boton se actualicen el width y el height del property toolbox
+                self.select()
+            })
             $el.mouseover(function (event) {
                 self.element.addClass("mouseover")
             })
@@ -301,8 +304,8 @@
         open() {
             var tab = $(`<li class="tab"><a href="#${this.tab_id}">DOCUMENT</a></li>`);
             $('ul.tabs.workspace').append(tab);
-            $('ul.tabs.workspace').tabs();
             this.render()
+            $('ul.tabs.workspace').tabs();
         }
 
         render() {

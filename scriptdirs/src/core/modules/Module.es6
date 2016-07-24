@@ -23,6 +23,7 @@ class Module {
         this.__description__.name = descriptor.name;
         this.__description__.records = 'records' in descriptor ? descriptor.records : [];
         this.__description__.reports = 'reports' in descriptor ? descriptor.reports : [];
+        this.__description__.routines = 'routines' in descriptor ? descriptor.routines : [];
         this.__description__.filename = descriptor.filename;
         this.__super__ = Reflect.getPrototypeOf(this);
         return this;
