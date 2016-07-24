@@ -110,8 +110,9 @@ class Embedded_Card extends oo.UIEntity {
                     let data = await this.dataprovider.getData(key)
                     //if ('function' == typeof data.then) data = await data;
                     //console.log("PARAM", p, key, data, this.__class__.getDescription().name)
-                    console.log("PPP", p, requiredParams[p], oo.classmanager.getClass(requiredParams[p]));
-                    if (data instanceof oo.classmanager.getClass(requiredParams[p]) ||
+                    //console.log("PPP", p, requiredParams[p], oo.classmanager.getClass(requiredParams[p]));
+                    let cls = oo.classmanager.getClass(requiredParams[p]);
+                    if ((cls && (data instanceof cls)) ||
                         (data && data.constructor && data.constructor.name && data.constructor.name == requiredParams[p])) {
                         //console.log("SETTING PARAM", p, data, this.__class__.getDescription().name)
                         this.params[p] = data;
