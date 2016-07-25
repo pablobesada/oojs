@@ -10,9 +10,10 @@
             let self = this;
             this.entity = entity;
             this.tab_id = oo.ui.genId();
-            this.__element__ = $(`<div id="${this.tab_id}" class="container"></div>`);
+
+            this.__element__ = $(oo.ui.templates.get("workspace container").getHTML({id: this.tab_id}));
             this.actionbar_id = oo.ui.genId("actionbar")
-            this.__element__.append(`<div id="${this.actionbar_id}"></div>`)
+            this.__element__.append($(oo.ui.templates.get("actionbar container").getHTML({id: this.actionbar_id})))
             this.entity.on('action visibility', function (event) {
                 console.log("en action visibility listener", event)
                 self.renderActionBar()
@@ -119,27 +120,42 @@
             let self = this;
             let actions = self.entity.getVisibleActions()
             if (actions.length == 0) return;
-            let toolbar = $(`<div class="fixed-action-btn"></div>`)
+            //let toolbar = $(`<div class="fixed-action-btn"></div>`)
             let actiondef = actions[0]
             let icon = actiondef.icon || 'trending_flat'
-            let btn = $(`<a data-tooltip="${actiondef.label}" data-position="left" class="btn-floating btn-large green"><i class="large mdi">${icon}</i></a>`)
-            let params = {self: self, actiondef: actiondef}
-            btn.click(self.actionClicked.bind(params));
-            toolbar.append(btn)
-            let ul = $("<ul></ul>");
+            let buttons = []
+            //let params = {self: self, actiondef: actiondef}
+            let btn = {id: oo.ui.genId("ACTION"), label: actiondef.label, icon: icon, actiondef: actiondef}
+            buttons.push(btn);
+
+
+            //let btn = $(`<a data-tooltip="${actiondef.label}" data-position="left" class="btn-floating btn-large green"><i class="large mdi">${icon}</i></a>`)
+            //let params = {self: self, actiondef: actiondef}
+            //btn.click(self.actionClicked.bind(params));
+            //toolbar.append(btn)
+            //let ul = $("<ul></ul>");
             for (let i = 1; i < actions.length; i++) {
                 let actiondef = actions[i]
                 let icon = actiondef.icon || 'trending_flat'
-                let btn = $(`<li><a  data-tooltip="${actiondef.label}" data-position="left"  class="btn-floating blue"><i class="mdi">${icon}</i></a></li>`)
-                let params = {self: self, actiondef: actiondef}
-                btn.click(self.actionClicked.bind(params));
-                ul.append(btn);
+                let btn = {id: oo.ui.genId("ACTION"), label: actiondef.label, icon: icon, actiondef: actiondef}
+                buttons.push(btn)
+                //let btn = $(`<li><a  data-tooltip="${actiondef.label}" data-position="left"  class="btn-floating blue"><i class="mdi">${icon}</i></a></li>`)
+                //let params = {self: self, actiondef: actiondef}
+                //btn.click(self.actionClicked.bind(params));
+                //ul.append(btn);
             }
-            toolbar.append(ul);
-            console.log(this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]'))
+            //toolbar.append(ul);
+            //console.log(this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]'))
             this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]').tooltip('remove')
+            let args = {actions: buttons}
+            let template = oo.ui.templates.get("actionbar content");
+            let toolbar = template.createElement(args)
+            _.each(buttons, (btn) => {
+                let params = {self: self, actiondef: btn.actiondef}
+                toolbar.find('#' + btn.id).click(self.actionClicked.bind(params))
+            })
             this.__element__.find('#' + this.actionbar_id).html(toolbar);
-            toolbar.find('[data-tooltip]').tooltip({delay: 50});
+            //toolbar.find('[data-tooltip]').tooltip({delay: 50});
         };
 
     }

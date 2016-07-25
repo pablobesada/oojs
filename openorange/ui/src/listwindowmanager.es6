@@ -20,8 +20,8 @@
         render() {
             var self = this;
             //console.log(containerElement)
-            this.__element__.append('<div class="grid-header" style="width:100%"> <label>lalala</label> <span style="float:right;display:inline-block;">Search: <input type="text" id="txtSearch" value="buscar"> </span> </div>');
-            this.__element__.append('<div class="listwindow_grid" style="width:600px;height:200px;"></div>')
+            //this.__element__.append('<div class="grid-header" style="width:100%"></div>');
+            this.__element__.append(oo.ui.templates.get('listwindow content').createElement())
 
             oo.ui.containers.push({
                 entity: this.listwindow,
