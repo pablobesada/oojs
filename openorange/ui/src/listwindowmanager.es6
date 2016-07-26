@@ -19,8 +19,6 @@
 
         render() {
             var self = this;
-            //console.log(containerElement)
-            //this.__element__.append('<div class="grid-header" style="width:100%"></div>');
             this.__element__.append(oo.ui.templates.get('listwindow content').createElement())
 
             oo.ui.containers.push({
@@ -48,6 +46,8 @@
             var options = {
                 enableCellNavigation: true,
                 enableColumnReorder: false,
+                forceFitColumns: true,
+                //autoExpandColumns: true,
                 //showHeaderRow: true,
 
             };
@@ -130,7 +130,5 @@
     });
 
     window.oo.ui.listwindowmanager = ListWindowContainer;
-    //$.extend(true, window.oo.ui, {listwindowmanager: ListWindowContainer})
-    //window.ListWindowManager = ListWindowContainer; //para hacer global la variable WindowManager
 
 })();

@@ -50,6 +50,9 @@ class Embedded_Report extends oo.UIEntity {
         super()
         this.view = null;
         this.__html__ = [];
+        this.json = [];
+        this.curjson = this.json;
+        this.jsonstack = []
         this.__id__ = Embedded_Report.ids++;
         this.__listeners__ = []
         this.__isrunning__ = false;
@@ -119,13 +122,18 @@ class Embedded_Report extends oo.UIEntity {
 
     async runAndRender() {
         if (!this.__isrunning__) {
-            this.__isrunning__ = true;
             if (this.getParamsWindow()) this.getParamsWindow().close();
             this.clear()
-            await this.run();
+            await this.execute();
             this.render();
-            this.__isrunning__ = false;
+
         }
+    }
+
+    async execute() {
+        this.__isrunning__ = true;
+        await this.run()
+        this.__isrunning__ = false;
     }
 
     async run() {
@@ -137,6 +145,9 @@ class Embedded_Report extends oo.UIEntity {
 
     clear() {
         this.__html__ = [];
+        this.json = []
+        this.curjson = this.json
+        this.jsonstack = []
     }
 
     render() {
@@ -184,31 +195,81 @@ class Embedded_Report extends oo.UIEntity {
     }
 
     getHTML() {
-        return this.__html__.join("\n")
+        let self = this;
+        //return this.__html__.join("\n")
+        let html = [];
+
+        function processNode(o) {
+            if (o.length) {
+                _.each(o, processNode)
+            } else {
+                switch (o.type) {
+                    case 'table':
+                        html.push('<table>');
+                        processNode(o.content);
+                        html.push('</table>');
+                        break;
+                    case 'row':
+                        html.push(`<tr ${o.class? 'class="'+o.class+'"': ''}>`);
+                        processNode(o.content);
+                        html.push('</tr>');
+                        break;
+                    case 'cell':
+                        let onclick = '';
+                        if ('Window' in o.options && 'FieldName' in o.options) {
+                            onclick = 'onclick="oo.ui.reportmanager.findReport(' + self.getId() + ').__std_zoomin__(\'' + o.options['Window'] + '\',\'' + o.options['FieldName'] + '\',\'' + o.content + '\')"';
+                        } else if ('CallMethod' in o.options) {
+                            var param = 'Parameter' in o.options ? "'" + o.options['Parameter'] + "'" : '';
+                            onclick = 'onclick="oo.ui.reportmanager.findReport(' + self.getId() + ').__call_method_zoomin__(\'' + o.options['CallMethod'] + '\',' + param + ',\'' + o.content + '\')"';
+                        }
+                        html.push(`<td ${onclick}>`);
+                        html.push(o.content)
+                        html.push('</td>');
+                        break
+                }
+            }
+        }
+        processNode(this.json);
+        return html.join('\n')
     }
 
     startTable() {
         this.__html__.push("<table>")
+        let table = {type: 'table', content: []}
+        this.jsonstack.push(this.curjson)
+        this.curjson.push(table)
+        this.curjson = table.content
     }
 
     endTable() {
         this.__html__.push("</table>")
+        this.curjson = this.jsonstack.pop()
     }
 
     startRow() {
         this.__html__.push("<tr>")
+        let row = {type: 'row', content: []}
+        this.jsonstack.push(this.curjson)
+        this.curjson.push(row)
+        this.curjson = row.content
     }
 
     endRow() {
         this.__html__.push("</tr>")
+        this.curjson = this.jsonstack.pop()
     }
 
     startHeaderRow() {
         this.__html__.push("<tr style='font-weight: bold'>")
+        let row = {type: 'row', content: [], class: 'oo-report-header-row'}
+        this.jsonstack.push(this.curjson)
+        this.curjson.push(row)
+        this.curjson = row.content
     }
 
     endHeaderRow() {
         this.__html__.push("</tr>")
+        this.curjson = this.jsonstack.pop()
     }
 
     header(cols) {
@@ -238,10 +299,11 @@ class Embedded_Report extends oo.UIEntity {
             onclick = 'onclick="oo.ui.reportmanager.findReport(' + this.getId() + ').__call_method_zoomin__(\'' + options['CallMethod'] + '\',' + param + ',\'' + value + '\')"';
         }
         this.__html__.push("<td " + onclick + ">" + value + "</td>")
+        this.curjson.push({type: 'cell', content: v, options: options})
     }
 
     async __std_zoomin__(w, fn, v) {
-        var wnd = cm.getClass(w).new()
+        let wnd = cm.getClass(w).new();
         var rec = cm.getClass(wnd.__class__.getDescription().recordClass).new()
         rec[fn] = v
         if (await rec.load()
@@ -253,15 +315,13 @@ class Embedded_Report extends oo.UIEntity {
     }
 
     async __call_method_zoomin__(method, params, value) {
-        this[method](params, value);
+        if (!this.__isrunning__) this[method](params, value);
     }
 }
 
 //Embedded_Report.__description__ = Description
-Embedded_Report
-    .ids = 1;
-Embedded_Report
-    .__reports__ = [];
+Embedded_Report.ids = 1;
+Embedded_Report.__reports__ = [];
 
 
 module

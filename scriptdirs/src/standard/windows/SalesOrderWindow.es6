@@ -13,6 +13,7 @@ var Description = {
         {field: 'CustName'},
         {field: 'CustName', editor: 'memo'},
         {field: 'TransTime'},
+        {field: 'TransTime'},
         {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
         //{type: 'card', name: 'CustomerSalesOrdersCard'},
         //{type: 'card', name: 'TimerCard'},

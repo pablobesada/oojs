@@ -9,6 +9,7 @@ var orm = require('./orm')
 var Record = cm.getClass("Embedded_Record")
 var path = require("path")
 var _ = require('underscore')
+var request = require('request')
 let Promise = require("bluebird")
 //var babel = require("babel-core")
 
@@ -306,5 +307,9 @@ router.post('/oo/begintransaction', function (req, res, next) {
             console.log(err)
             res.send({ok: false, error: err})
         });
+});
+
+router.get('/crossdomainfetch', function (req, res, next) {
+    request(req.query.url).pipe(res);
 });
 module.exports = router;

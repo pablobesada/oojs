@@ -21,7 +21,7 @@ function wait(t) {
 
 class CustomerListReport extends Parent {
     async run() {
-        super.run()
+        await super.run()
         await (wait(2000))
         var self = this;
         var order = null
@@ -53,9 +53,8 @@ class CustomerListReport extends Parent {
         if (value == 'Codigo') self.order = 'Code';
         if (value == 'Nombre') self.order = 'Name'
         self.clear();
-        self.run().then(function () {
-            self.render();
-        })
+        await self.execute();
+        self.render();
     }
 }
 

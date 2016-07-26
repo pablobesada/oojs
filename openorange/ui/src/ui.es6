@@ -187,7 +187,7 @@
         let key = event.key.toLowerCase();
         if (key == 'alt' || key == 'shift' || key == 'ctrl' || key == 'ctrl' || key == 'meta') return;
         let curtab = $('ul.tabs.workspace li a.active');
-        if (curtab) {
+        if (curtab.length > 0) {
             let wc = UI.findContainerForTabId(curtab.attr("href").substring(1))
             //console.log("WC", wc)
             //if (!wc)  wc = oo.ui.listwindowmanager.findListWindowContainerForTabId(curtab.attr("href").substring(1)) // <-- esto es poco eficiente. se corre por cada tecla que se presiona y buscan en todos los tabs cual es el tab actual, y dps busca por ese tabId en windowmanagers, liswindowmanager y reportmanagers... muy pesado... encima una vez que encuentra la ventana recorre todos los actions para ver si alguno tiene esa combinacion de teclas.

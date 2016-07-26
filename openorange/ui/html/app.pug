@@ -18,136 +18,60 @@ html(lang='en')
         link(href='css/app.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(rel="stylesheet",href="css/slick.grid.css",type="text/css")
         link(rel="stylesheet",href="css/examples.css",type="text/css")
+        link(rel="stylesheet",href=templatesCSS,type="text/css")
 
         //link(rel="stylesheet",href="css/app/styles.min.css",type="text/css")
 
 
 body
-        // Start Page Loading
-        #loader-wrapper
-            #loader
-            .loader-section.section-left
-            .loader-section.section-right
-        // End Page Loading
-        // ////////////////////////////////////////////////////////////////////////////
-        // START HEADER
-        header#header.page-topbar
-            // start header nav
-            .navbar-fixed
-                nav.navbar-color
-                    .nav-wrapper
-                        ul.left
-                            li
-                                h1.logo-wrapper
-                                    a.brand-logo.darken-1(href='index.html')
-                                        img(src='images/materialize-logo.png', alt='materialize logo')
-                                    span.logo-text Materialize
-                        .header-search-wrapper.hide-on-med-and-down
-                            i.mdi-action-search
-                            //input.header-search-input.z-depth-2(type='text', name='Search', id="OOSearch", placeholder='explore openorange')
-                            input#OOSearch.header-search-input.z-depth-2.typeahead(type="text",placeholder="explore openorange")
 
-            // end header nav
-        // END HEADER
-        // ////////////////////////////////////////////////////////////////////////////
-        // START MAIN
-        #main
-            // START WRAPPER
-            .wrapper
-                // START LEFT SIDEBAR NAV
-                aside#left-sidebar-nav
-                    ul#slide-out.side-nav.fixed.leftside-navigation
-                        li.user-details.cyan.darken-2
-                            .row
-                                .col.col.s4.m4.l4
-                                    img.circle.responsive-img.valign.profile-image(src='images/avatar.jpg', alt='')
-                        li.bold.active
-                            a.waves-effect.waves-cyan(href='index.html')
-                                i.mdi-action-dashboard
-                                |  Dashboard
-                    a.sidebar-collapse.btn-floating.btn-medium.waves-effect.waves-light.hide-on-large-only.cyan(href='#', data-activates='slide-out')
-                        i.mdi-navigation-menu
-                // END LEFT SIDEBAR NAV
-                // ////////////////////////////////////////////////////////////////////////////
-                // START CONTENT
-                section#content_section
-                    // start container
-                    .container
-                        // chart dashboard start
-                        #chart-dashboard
-                            .row
-                                .col.s12.m12.l12
-                                    .card
-                                        .move-up
-                                            div.row#workspace
-                                                div.col.s12
-                                                    ul.tabs.workspace
-                                            div#content
+script(type='text/javascript', src='js/plugins/jquery/jquery-2.1.4.min.js')
+script(type='text/javascript', src='js/plugins/babel/polyfill.min.js')
+script(src='/bower_components/moment/moment.js')
+script(src='/bower_components/chance/dist/chance.min.js')
+script(src='/bower_components/jquery-mask-plugin/dist/jquery.mask.min.js')
+script(src='/bower_components/underscore/underscore-min.js')
+script(src="/bower_components/bluebird/js/browser/bluebird.min.js")
+script(src='js/plugins/typeahead/typeahead.bundle.min.js')
 
-        footer.page-footer
-            .footer-copyright
-                .container
-                    | Copyright © 2016 OpenOrange
-                    |  All rights reserved.
-                    span.right
-                        | Design and Developed by OpenOrange
-        // END FOOTER
-        //
-          ================================================
-          Scripts
-          ================================================
-        // jQuery Library
-        //script(type='text/javascript', src='js/plugins/jquery-1.11.2.min.js')
-
-script(type='text/javascript', src='js/plugins/jquery/jquery-2.1.4.min.js') <!-- con versiones mayores a esta datepicker deja de funcionar! -->
-script(type='text/javascript', src='js/plugins/babel/polyfill.min.js', dddd=1)
-script(src='/bower_components/moment/moment.js', dddd=1)
-script(src='/bower_components/chance/dist/chance.min.js', dddd=1)
-script(src='/bower_components/jquery-mask-plugin/dist/jquery.mask.min.js', dddd=1)
-script(src='/bower_components/underscore/underscore-min.js', dddd=1)
-script(src="/bower_components/bluebird/js/browser/bluebird.min.js", dddd=1)
 //OPENORANGE
 
-script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js', dddd=1)
-script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js', dddd=1)
-script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js', dddd=1)
-script(src=OpenOrangeBaseURL+'/lib/both/BaseEntity.js', dddd=1)
-script(src=OpenOrangeBaseURL+'/lib/both/UIEntity.js', dddd=1)
-script(src=OpenOrangeBaseURL+'/lib/both/explorer.js', dddd=1)
-script(src=OpenOrangeBaseURL+'/lib/both/basequery.js', dddd=1)
-script(src=OpenOrangeBaseURL+'/lib/client/clientquery.js', dddd=1)
-script(src='js/oo/ui.js', dddd=1)
-script(src='js/oo/templates.js', dddd=1)
-script(src='js/oo/windowmanager.js', dddd=1)
-script(src='js/oo/listwindowmanager.js', dddd=1)
-script(src='js/oo/reportmanager.js', dddd=1)
-script(src='js/oo/routinemanager.js', dddd=1)
-script(src='js/oo/documentmanager.js', dddd=1)
-script(src='js/oo/dialogs.js', dddd=1)
-script(src='js/window_test.js', dddd=1)
+script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js')
+script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
+script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js')
+script(src=OpenOrangeBaseURL+'/lib/both/BaseEntity.js')
+script(src=OpenOrangeBaseURL+'/lib/both/UIEntity.js')
+script(src=OpenOrangeBaseURL+'/lib/both/explorer.js')
+script(src=OpenOrangeBaseURL+'/lib/both/basequery.js')
+script(src=OpenOrangeBaseURL+'/lib/client/clientquery.js')
+script(src='js/oo/ui.js')
+script(src='js/oo/templates.js')
+script(src='js/oo/windowmanager.js')
+script(src='js/oo/listwindowmanager.js')
+script(src='js/oo/reportmanager.js')
+script(src='js/oo/routinemanager.js')
+script(src='js/oo/documentmanager.js')
+script(src='js/oo/dialogs.js')
+script(src='js/oo/workspace.js')
 
-script(src='js/plugins/typeahead/typeahead.bundle.min.js',dddd=1)
-//script(type='text/javascript', src='js/plugins/materialize/materialize.min.js',dddd=1)
+script(type='text/javascript', src='js/plugins/materialize/materialize-0.97.6.min.js')
+script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js')
+script(type='text/javascript', src='js/plugins/app/app.js')
+script(type='text/javascript', src="js/plugins/slickgrid/jquery.event.drag-2.2.js")
+script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js")
+script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js")
+script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js")
 
-script(type='text/javascript', src='js/plugins/materialize/materialize-0.97.6.min.js',dddd=1)
-script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js',dddd=1)
-
-script(type='text/javascript', src='js/plugins/app/app.js',dddd=1)
-
-script(type='text/javascript', src="js/plugins/slickgrid/jquery.event.drag-2.2.js",dddd=1)
-
-script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js",dddd=1)
-script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js",dddd=1)
-script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js",dddd=1)
+script(src='js/window_test.js')
 
 script.
     $(document).ready(function () {
+        let oo = require('openorange')
+        //$('body').html(oo.ui.templates.get("workspace body").createElement({}))
         window.addEventListener('keyup', function (event) {
-            //console.log(event)
-          if (event.ctrlKey && event.key == 'f') $('#OOSearch.typeahead').focus();
+            if (event.ctrlKey && event.key == 'f') $('#OOSearch.typeahead').focus();
         })
 
-        let oo = require("openorange")
         $('#OOSearch.typeahead').focus(function () {
             $(this).select();
         })
@@ -184,4 +108,3 @@ script.
         });
         $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
     });
-

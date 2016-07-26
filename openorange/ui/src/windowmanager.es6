@@ -30,6 +30,7 @@
             this.pastewindow_id = null;
             this.created_cards = []
             this.cardcontainers = {}
+            this.templateElements = [];
         };
 
         close() {
@@ -47,6 +48,10 @@
             //console.log(this.windowjson)
             this.displayWindow(this.__element__)
             self.renderActionBar();
+            _.each(this.templateElements, (templateElement) => {
+                templateElement.addedToPage();
+            })
+            this.templateElements = [];
         };
 
         displayWindow(windowElement) {
@@ -60,8 +65,8 @@
                 $('#workspace').append(windowElement);
                 $('ul.tabs.workspace').tabs();
             }
-            $(windowElement).find('ul.tabs').tabs();
-            windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
+            //$(windowElement).find('ul.tabs').tabs();
+            //windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
             //$('input.editor[timeeditor=true]').mask('00:00:00');
             if (this.window.getRecord() != null) {
                 this.bindRecordToWindow(this.window.getRecord());
@@ -94,6 +99,7 @@
 
         createCardComponent(json) {
             let self = this;
+            //let component = $('<div class="col s12 m6"></div>')
             let component = $('<div class="col s12 m6"></div>')
             if (json.name) {
                 this.createCard(json.name, null, component)
@@ -163,29 +169,33 @@
 
         createReportViewComponent(json) {
             let self = this;
-            let component = $(`<div class="col s12 m6" reportview="${json.name}"></div>`)
+            let args = {name: json.name}
+            let component = oo.ui.templates.get('window reportview').createElement(args)
             json.__element__ = component;
             return component;
         };
 
         createColumnComponent(json) {
             var self = this;
-            var component = $('<div class="row"></div>');
+
+            let children = []
             _(json.content).forEach(function (child_component_json) {
-                var component_row = $('<div class="row"></div>');
-                var component_col = $('<div class="col s12"></div>');
-                var child_component = self.createComponent(child_component_json);
-                component_col.append(child_component)
-                component_row.append(component_col)
-                component.append(component_row);
+                let child_component = self.createComponent(child_component_json);
+                let child = {container_id: oo.ui.genId(), component: child_component}
+                children.push(child);
             });
+            let args = {components: children}
+            var component = oo.ui.templates.get('window components column').createElement(args)
+            _(children).each((child) => {
+                component.find('#' + child.container_id).append(child.component)
+            })
             json.__element__ = component;
             return component;
         };
 
         createLineComponent(json) {
             var self = this;
-            var component = $('<div class="row"></div>');
+            var component = oo.ui.templates.get('window components line').createElement()
             _(json.content).forEach(function (child_component_json) {
                 var child_component = self.createComponent(child_component_json);
                 component.append(child_component);
@@ -196,7 +206,6 @@
 
         createTabsComponent(json) {
             var self = this;
-            let template = oo.ui.templates.get("window tabs")
             let tabs = []
             let pages = []
             _(json.pages).forEach(function (jpage) {
@@ -208,21 +217,13 @@
                 page.attr('id', tab.id);
                 pages.push({id: tab.id, page: page})
             })
-            let args = {tabs: tabs}
-            let res = $(template.getHTML(args))
-            let page_container_selector = template.meta.attr('page-container-selector')
-            let page_container = null;
-            if (page_container_selector) {
-                page_container = res.find(page_container_selector);
-                if (page_container.length == 0) page_container = page_container.addBack(page_container_selector);
-            }
-            console.log("PC, ", page_container)
-            if (page_container) {
-                for (let i in pages) {
-                    let page = pages[i];
-                    page_container.append(page.page)
-                }
-            }
+            let args = {page_container_id: oo.ui.genId(), tabs: tabs}
+            let res = oo.ui.templates.get("window tabs").createElement(args);
+            let page_container = res.find("#"+args.page_container_id);
+            _(pages).forEach(function (page) {
+                page_container.append(page.page)
+            })
+            this.templateElements.push(res);
             json.__element__ = res;
             return res
         };
@@ -400,7 +401,7 @@
             if (aditional_template_args) {
                 _.extendOwn(args, aditional_template_args)
             }
-            var template = oo.ui.templates.get('window ' + cls + ' editors ' + editor)
+            var template = oo.ui.templates.get('window ' + cls + ' components ' + editor)
             let res = template.createElement(args);
             let $editor = null;
             let editor_selector = template.meta.attr('editor-selector');
@@ -416,6 +417,7 @@
                 $pwopener = res.find(pastewindow_opener_selector)
                 if ($pwopener.length == 0) $pwopener = $editor.addBack(pastewindow_opener_selector);
             }
+            this.templateElements.push(res)
             return {component: res, editor: $editor, pastewindowopener: $pwopener};
 
         }
@@ -438,7 +440,8 @@
         };
 
         date(json, cls, field) {
-            return this.processEditor(json, cls, field, 'date')
+            let args = {datePickerOptions: WindowContainer.datePickerOptions}
+            return this.processEditor(json, cls, field, 'date', args)
         };
 
         checkbox(json, cls, field) {
@@ -446,19 +449,7 @@
             var checked = !!value;
             var options = {checked: checked}
             return this.processEditor(json, cls, field, 'checkbox', options)
-            var self = this;
-            var value = field != null ? field.getValue() : '';
-            if (value == null) value = '';
-            var checked = value == '' ? '' : 'checked ="checked"';
-            var element_id = oo.ui.genId("CHECKBOX");
-            var html = '<p><input ' + checked + ' type="checkbox" name="' + json.field + '" class="editor ' + cls + ' validate" id="' + element_id + '">';
-            var label = '';
-            if (field == null) { //esto significa que me llamaron desde el header y no desde un matrix
-                label = (json.label ? json.label : json.field)
-            }
-            html += '<label for="' + element_id + '">' + label + '</label></p>';
-            var res = $(html);
-            return {component: res, editor: res.find('input')};
+
         };
 
         combobox(json, cls, field) {
@@ -739,13 +730,13 @@
             var self = this;
             var tbody = tbodyElement;
             let args = {rowNr: row.rowNr}
-            let template = oo.ui.templates.get('window oomaster editors matrixrow')
+            let template = oo.ui.templates.get('window oomaster components matrixrow')
             var tr =  $(template.getHTML(args))
                 //$('<tr rownr="' + row.rowNr + '"></tr>');
 
             _(json.columns).forEach(function (jcol) {
                 let args = {}
-                let template = oo.ui.templates.get('window oomaster editors matrixcell')
+                let template = oo.ui.templates.get('window oomaster components matrixcell')
                 var td =  $(template.getHTML(args))
                 var component = self.createMatrixComponent(jcol, 'oodetail', json.field, row.rowNr, row.fields(jcol.field));
                 var readonly = !record.fieldIsEditable(json.field, jcol.field, row.rowNr);
@@ -776,7 +767,7 @@
                 next_tr.before(tr)
             }
             tr.find("select").material_select();
-            tr.find("input[datepicker=true]").pickadate(WindowContainer.datePickerOptions);
+            //tr.find("input[datepicker=true]").pickadate(WindowContainer.datePickerOptions);
             return tr;
         };
 
@@ -858,7 +849,7 @@
 
         createEmptyMatrix(json) {
             var self = this;
-            let template = oo.ui.templates.get('window oomaster editors matrix')
+            let template = oo.ui.templates.get('window oomaster components matrix')
             console.log(template)
             let columns = []
             _(json.columns).forEach(function (col) {

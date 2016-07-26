@@ -19,7 +19,11 @@ router.get('/', function(req, res, next) {
 
 router.get('/home', function(req, res, next) {
     if (req.session.user) {
-        res.render(__dirname + '/html/app', {OpenOrangeBaseURL: OpenOrangeBaseURL});
+        let templatesCSS = 'css/templates.css';
+        if (req.query.templatesCSS) {
+            templatesCSS = req.query.templatesCSS
+        }
+        res.render(__dirname + '/html/app', {OpenOrangeBaseURL: OpenOrangeBaseURL, templatesCSS: templatesCSS});
     } else {
         res.redirect(req.baseUrl + '/login')
     }

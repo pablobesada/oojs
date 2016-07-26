@@ -51,11 +51,24 @@
     }
 
 
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+    }
+
+    let templatesURL = "html/templates.xml";
+    let data = {}
+    let t = getURLParameter('templatesURL');
+    if (t) {
+        templatesURL = '/oo/api/crossdomainfetch';
+        data = {url: t}
+    }
+
     $.ajax({
         type: "GET",
-        url: "html/templates.xml",
+        url: templatesURL,
         cache: false,
-        dataType: "xml",
+        //dataType: "jsonp",
+        data: data,
         async: false,
         success: function (xml) {
             TemplateManager.xml = $(xml)
