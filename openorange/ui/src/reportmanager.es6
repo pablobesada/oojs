@@ -66,6 +66,9 @@
                 case 'render':
                     self.render()
                     break;
+                case 'close':
+                    self.close()
+                    break;
             }
         };
 

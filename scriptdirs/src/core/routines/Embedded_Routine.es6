@@ -30,10 +30,7 @@ class Embedded_Routine extends oo.UIEntity {
         newdesc.window = descriptor.window ? descriptor.window : null;
         newdesc.filename = descriptor.filename;
         newdesc.params = descriptor.params;
-        newdesc.actions = parentdesc.actions ? parentdesc.actions.slice() : []
-        if (descriptor.actions) {
-            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
-        }
+        newdesc.actions = parentdesc.actions
         this.__description__ = newdesc;
         //childclass.__super__ = this;
         //this.__recordClass__ = null;

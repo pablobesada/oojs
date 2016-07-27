@@ -62,11 +62,12 @@ class TestRecord extends Parent {
     async check() {
         let res = await Parent.tryCall(this, true, "check");
         if (!res) return res;
-        if (this.waitBeforeReturningFromCheck > 0) await TestRecord.wait(this.waitBeforeReturningCheck);
+        if (this.waitBeforeReturningFromCheck > 0) await TestRecord.wait(this.waitBeforeReturningFromCheck);
         return this.checkReturnValue;
     }
 
     static wait(t) {
+        console.log("en wait", t)
         return new Promise(function (resolve, reject) {
             setTimeout(function () {
                 resolve()

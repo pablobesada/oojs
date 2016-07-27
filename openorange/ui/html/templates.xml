@@ -6,6 +6,11 @@
     <div class="loader-section section-left"></div>
     <div class="loader-section section-right"></div>
 </div>
+<div id="{{=blockscreen_id}}" class="oo-block-screen"}">
+</div>
+<div id="{{=processingscreen_id}}" class="oo-processing-screen"}">
+    <img id="loading" src="http://bit.ly/pMtW1K">
+</div>
 <header class="page-topbar" id="header"><!-- start header nav-->
     <div class="navbar-fixed">
         <nav class="navbar-color">
@@ -191,7 +196,7 @@
                 <radiobutton class="radiobutton" editor-selector="input"><![CDATA[
                         {{ _.each(options, function(option) { }}
                             <p>
-                                <input value="{{=option.value}}" type="radio" name="{{=option.field}}" class="editor {{=option.cls}} validate" id="{{=option.id}}">
+                                <input group_id="{{=group_id}}" value="{{=option.value}}" type="radio" name="{{=option.field}}" class="editor {{=option.cls}} validate" id="{{=option.id}}">
                                 <label for="{{=option.id}}">{{=option.label}}</label>
                             </p>
                         {{ }); }}

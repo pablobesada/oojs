@@ -8,7 +8,7 @@
     class WindowContainer extends oo.ui.BaseContainer {
 
         static getWindowReportView(window, viewname) {
-            for (let i=0;i<oo.ui.containers.length;i++) {
+            for (let i = 0; i < oo.ui.containers.length; i++) {
                 if (oo.ui.containers[i].entity === window) {
                     let res = oo.ui.containers[i].element.find(`[reportview=${viewname}]`);
                     if (res.length > 0) return $(res[0])
@@ -35,14 +35,21 @@
 
         close() {
             super.close()
-            _(this.created_cards).each(card => {card.stop()})
+            _(this.created_cards).each(card => {
+                card.stop()
+            })
             this.created_cards = []
         }
 
         render() {
             var self = this;
             //console.log(containerElement)
-            oo.ui.containers.push({container: this, entity: this.window, element: this.__element__, tab_id: this.tab_id});
+            oo.ui.containers.push({
+                container: this,
+                entity: this.window,
+                element: this.__element__,
+                tab_id: this.tab_id
+            });
             this.__element__.append(self.createComponent(this.windowjson));
             this.__element__.append(self.createPasteWindow());
             //console.log(this.windowjson)
@@ -114,11 +121,15 @@
             let card = cm.getClass(cardname).new()
             self.created_cards.push(card)
             card.setDataProvider(await this.window.getProvidedData())
-            let args = {cardname: cardname, content_id: oo.ui.genId("CARDCONTENT"), delete_action_id: oo.ui.genId("CARDDELETE")}
+            let args = {
+                cardname: cardname,
+                content_id: oo.ui.genId("CARDCONTENT"),
+                delete_action_id: oo.ui.genId("CARDDELETE")
+            }
             let cardContainerElement = oo.ui.templates.get('window cardcontainer').createElement(args)
             let deleteButton = cardContainerElement.find('#' + args.delete_action_id)
             deleteButton.click(function (event) {
-                if (cardcontainername) self.removeCardFromContainer(cardcontainername,cardname)
+                if (cardcontainername) self.removeCardFromContainer(cardcontainername, cardname)
                 card.stop();
                 self.created_cards.splice(self.created_cards.indexOf(card), 1);
             })
@@ -219,7 +230,7 @@
             })
             let args = {page_container_id: oo.ui.genId(), tabs: tabs}
             let res = oo.ui.templates.get("window tabs").createElement(args);
-            let page_container = res.find("#"+args.page_container_id);
+            let page_container = res.find("#" + args.page_container_id);
             _(pages).forEach(function (page) {
                 page_container.append(page.page)
             })
@@ -293,7 +304,14 @@
             }
             if (json.pastewindow && ed.pastewindowopener) {
                 let pwopener = ed.pastewindowopener;
-                var params = {self: self, field: field, detailname: null, rownr: null, json: json, editor: editorElement};
+                var params = {
+                    self: self,
+                    field: field,
+                    detailname: null,
+                    rownr: null,
+                    json: json,
+                    editor: editorElement
+                };
                 pwopener.click(self.openPasteWindow.bind(params));
                 editorElement.keypress((event) => {
                     //console.log(event.ctrlKey, event.keyCode, event.key)
@@ -397,7 +415,14 @@
             if (field != null && field.type == 'date' && value != null) value = value.format("YYYY-MM-DD");
             if (value == null) value = '';
             //var html = '<input value="' + value + '" type="text" name="' + json.field + '" class="editor ' + cls + ' validate">';
-            let args = {id: oo.ui.genId(), value: value, field: json.field, cls: cls, label: json.label ? json.label : json.field, pastewindow: json.pastewindow}
+            let args = {
+                id: oo.ui.genId(),
+                value: value,
+                field: json.field,
+                cls: cls,
+                label: json.label ? json.label : json.field,
+                pastewindow: json.pastewindow
+            }
             if (aditional_template_args) {
                 _.extendOwn(args, aditional_template_args)
             }
@@ -480,7 +505,7 @@
                 opt.label = option.label;
                 options.push(opt);
             }
-            return this.processEditor(json, cls, field, 'radiobutton', {options: options})
+            return this.processEditor(json, cls, field, 'radiobutton', {options: options, group_id: oo.ui.genId()})
             var self = this;
             var value = field != null ? field.getValue() : '';
             if (value == null) value = '';
@@ -495,20 +520,76 @@
             return {component: res, editor: res.find('input')};
         };
 
-        beforeEdit(event) {
+        setReadOnly(element) {
+            let newval = null;
+            let self = this;
+            let $e = $(element);
+            switch (element.nodeName) {
+                case 'INPUT':
+                    switch ($e.attr('type')) {
+                        case 'radio':
+                            self.__element__.find(`input[group_id=${$e.attr('group_id')}][value!=${self.window.getRecord()[element.name]}]`).prop('checked', false);
+                            self.__element__.find(`input[group_id=${$e.attr('group_id')}][value=${self.window.getRecord()[element.name]}]`).prop('checked', true);
+                            break;
+                        case 'checkbox':
+                            newval = $e.val();
+                            $e.prop('checked', Boolean(self.window.getRecord()[element.name]));
+                            break;
+                        default:
+                            if ($e.attr('datepicker') == 'true') {
+                                $e.pickadate('picker').close();
+                                var d = null;
+                                var value = self.window.getRecord()[element.name];
+                                if (value != null && value != '') {
+                                    d = moment(value, "YYYY-MM-DD").toDate()
+                                }
+                                element.__block_event__ = true;
+                                newval = $e.pickadate('picker').get('select')
+                                $e.pickadate('picker').set('select', d);
+                                element.__block_event__ = false;
+                            } else {
+                                console.log("setting readony to", $e, true)
+                                $e.attr('readonly', true)
+                            }
+                            break;
+                    }
+                    break;
+                case 'SELECT':
+                    newval = $e.val();
+                    $e.val(self.window.getRecord()[element.name]);
+                    $e.material_select();
+                    break;
+
+            }
+            return newval; //se usa para select por ejemplo
+        };
+
+        async beforeEdit(event) {
+            console.log("en beforeEdit")
             var self = this;
             if (self.window.getRecord() == null) return;
             var target = $(event.currentTarget);
             if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
-            var readonly = !Boolean(self.window.beforeEdit(event.currentTarget.name));
+            let newval = self.setReadOnly(event.currentTarget, self.window.getRecord()[event.currentTarget.name])
+            console.log("WFUS")
+            await oo.ui.workspace.waitForUnblockedScreen()
+            console.log("WFUS DONE")
+            oo.ui.workspace.blockScreen()
+            var readonly = !Boolean(await self.window.beforeEdit(event.currentTarget.name));
+            oo.ui.workspace.unblockScreen()
             if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'radio') {
                 if (readonly) {
-                    target.parent().parent().find("input[value=" + self.window.getRecord()[event.currentTarget.name] + "]")[0].checked = true;
+                    self.__element__.find(`input[group_id=${target.attr('group_id')}][value!=${self.window.getRecord()[event.currentTarget.name]}]`).prop('checked', false);
+                    self.__element__.find(`input[group_id=${target.attr('group_id')}][value=${self.window.getRecord()[event.currentTarget.name]}]`).prop('checked', true);
+                } else  {
+                    target.prop('checked', true);
+                    self.afterEdit(event);
                 }
             } else if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
                 if (readonly) {
-                    target[0].checked = Boolean(self.window.getRecord()[event.currentTarget.name]);
+                    target.prop('checked', Boolean(self.window.getRecord()[event.currentTarget.name]));
                 } else {
+                    target.prop('checked', newval);
                     self.afterEdit(event);
                 }
             }
@@ -517,6 +598,7 @@
                     target.val(self.window.getRecord()[event.currentTarget.name]);
                     target.material_select();
                 } else {
+                    target.val(newval)
                     self.afterEdit(event)
                 }
             } else if (event.currentTarget.nodeName == 'INPUT' && target.attr('datepicker') == 'true') {
@@ -531,9 +613,13 @@
                     target.pickadate('picker').set('select', d);
                     event.currentTarget.__block_event__ = false;
                 } else {
+                    event.currentTarget.__block_event__ = true;
+                    target.pickadate('picker').set('select', newval);
+                    event.currentTarget.__block_event__ = false;
                     self.afterEdit(event)
                 }
             } else {
+                console.log("setting 2 readony to", target, readonly)
                 target.attr("readonly", readonly);
             }
         };
@@ -564,12 +650,12 @@
                         var value = addedRow[fn];
                         if (value != null) {
                             self.update(self.window.newEvent('field modified', {
-                                    record: self.window.getRecord(),
-                                    field: self.window.getRecord().details(params.detailname),
-                                    row: addedRow,
-                                    rowfield: addedRow.fields(fn),
-                                    oldvalue: value
-                                }));
+                                record: self.window.getRecord(),
+                                field: self.window.getRecord().details(params.detailname),
+                                row: addedRow,
+                                rowfield: addedRow.fields(fn),
+                                oldvalue: value
+                            }));
                         }
                     });
                     self.virtual_rows[params.detailname] = self.window.getRecord()[params.detailname].newRow();
@@ -615,8 +701,10 @@
             }
         };
 
-        afterEdit(event) {
+        async afterEdit(event) {
+            console.log("en afterEdit")
             var self = this;
+            if ('__block_event__' in event.currentTarget && event.currentTarget.__block_event__) return;
             var value = event.currentTarget.value;
             if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('type') == 'checkbox') {
                 var ftype = self.window.getRecord().fields(event.currentTarget.name).type;
@@ -629,7 +717,12 @@
                 value = $(event.currentTarget).pickadate('picker').get('select', 'yyyy-mm-dd');
             }
             //console.log("afteredit", self, value)
-            self.window.call_afterEdit(event.currentTarget.name, value)
+
+            oo.ui.workspace.blockScreen();
+            console.log("BF")
+            await self.window.call_afterEdit(event.currentTarget.name, value)
+            console.log("AF")
+            oo.ui.workspace.unblockScreen();
         };
 
         afterEditRow(event) {
@@ -650,6 +743,7 @@
             } else if (event.currentTarget.nodeName == 'INPUT' && target.attr('datepicker') == 'true') {
                 value = target.pickadate('picker').get('select', 'yyyy-mm-dd');
             }
+            console.log("Before call afterEditRow: ", params.detailname, params.rowfield.name, rownr, value, self.window.getRecord().Rows.length)
             self.window.afterEditRow(params.detailname, params.rowfield.name, rownr, value);
         };
 
@@ -657,6 +751,7 @@
         update(event) {
             var self = this;
             //console.log(event)
+            let x = null;
             switch (event._meta.name) {
                 case "close":
                     self.close()
@@ -718,6 +813,12 @@
                 case "remove card":
                     self.__element__.find(`div[cardcontainer=${event.container}] .singlecard-container[cardname=${event.name}]`).remove()
                     break;
+                case "processing start":
+                    oo.ui.workspace.blockScreen()
+                    break;
+                case "processing end":
+                    oo.ui.workspace.unblockScreen()
+                    break;
 
             }
         }
@@ -729,15 +830,15 @@
             }
             var self = this;
             var tbody = tbodyElement;
-            let args = {rowNr: row.rowNr}
+            let args = {rowNr: "" + row.rowNr} //para que null vaya como string, y sea 'null'
             let template = oo.ui.templates.get('window oomaster components matrixrow')
-            var tr =  $(template.getHTML(args))
-                //$('<tr rownr="' + row.rowNr + '"></tr>');
+            var tr = $(template.getHTML(args))
+            //$('<tr rownr="' + row.rowNr + '"></tr>');
 
             _(json.columns).forEach(function (jcol) {
                 let args = {}
                 let template = oo.ui.templates.get('window oomaster components matrixcell')
-                var td =  $(template.getHTML(args))
+                var td = $(template.getHTML(args))
                 var component = self.createMatrixComponent(jcol, 'oodetail', json.field, row.rowNr, row.fields(jcol.field));
                 var readonly = !record.fieldIsEditable(json.field, jcol.field, row.rowNr);
                 if (readonly) component.attr('readonly', readonly);
@@ -761,7 +862,7 @@
             } else {
                 var next_tr = null;
                 for (var i = rows_count - 1; i >= row.rowNr; i--) {
-                    next_tr = tbody.children(rowTagName+'[rownr=' + i + ']');
+                    next_tr = tbody.children(rowTagName + '[rownr=' + i + ']');
                     next_tr.attr('rownr', i + 1)
                 }
                 next_tr.before(tr)
@@ -858,7 +959,6 @@
                 columns.push(column);
             });
             let args = {field: json.field, columns: columns}
-            console.log("columns:", args.columns)
             let res = $(template.getHTML(args))
             self.matrix_idx += 1;
             res.find(template.meta.attr('row-container-selector')).attr('matrix_idx', self.matrix_idx);
@@ -878,7 +978,7 @@
                         _(record[json.field]).forEach(function (row) {
                             self.insertMatrixRow(record, json, row, tbody)
                         });
-                        self.insertMatrixRow(record, json, self.virtual_rows[json.field], tbody)
+                        self.insertMatrixRow(record, json, self.virtual_rows[json.field], tbody) //inserting virtual row
                     } else if ('field' in json) {
                         var field = record.fields(json.field);
                         self.setEditorValue(field.name, field.type, field.getValue());
@@ -1097,7 +1197,7 @@
         }
 
         removeCardFromContainer(containerName, cardname) {
-            let classnames= this.getCardContainer(containerName);
+            let classnames = this.getCardContainer(containerName);
             let idx = classnames.indexOf(cardname);
             if (idx >= 0) {
                 classnames.splice(idx, 1);
@@ -1126,21 +1226,28 @@
                 let length = selectorContainer.find('.singlecard-container').length;
                 if (length == 0) {
                     dialog.closeModal();
-                    _(cards).each((card) => {card.stop()})
+                    _(cards).each((card) => {
+                        card.stop()
+                    })
                     cards = []
                 }
             }
             let cards = [];
             let items = [];
-            for (let i=0;i<cardClasses.length;i++) {
+            for (let i = 0; i < cardClasses.length; i++) {
                 let cc = cardClasses[i];
                 if (self.getCardContainer(containerName).indexOf(cc.getDescription().name) >= 0) continue
-                let item = {id: oo.ui.genId(), add_action_id: oo.ui.genId(),cardcontainer_id: oo.ui.genId(), cardclassname: cc.getDescription().name}
+                let item = {
+                    id: oo.ui.genId(),
+                    add_action_id: oo.ui.genId(),
+                    cardcontainer_id: oo.ui.genId(),
+                    cardclassname: cc.getDescription().name
+                }
                 items.push(item);
             }
             let args = {items: items}
             let selectorContainer = oo.ui.templates.get('cardselector').createElement(args);
-            for (let i=0;i<items.length;i++) {
+            for (let i = 0; i < items.length; i++) {
                 let item = items[i]
                 let card = cm.getClass(item.cardclassname).new()
                 card.setDataProvider(await self.window.getProvidedData());
@@ -1168,7 +1275,7 @@
             //if (cards.length > 0) selectorContainer.carousel();  //si el carouse no tiene items tira error la libreria materialize
             //$('#' + containerid).append(m);
         }
-}
+    }
 
     WindowContainer.datePickerOptions = {
         closeOnSelect: true,

@@ -115,6 +115,9 @@
                 case 'focus':
                     self.focus()
                     break;
+                case "close":
+                    self.close()
+                    break;
             }
         };
 

@@ -8,6 +8,16 @@
         let wso = cm.getClass("SalesOrderListWindow").new();
         wso.open()
 
+        /*
+        wso = cm.getClass("TestRecordWindow").new()
+        cm.getClass("TestRecord").findOne({SubTestName: 'AAA'})
+            .then(function (rec) {
+                wso.setRecord(rec);
+                wso.open();
+                wso.setFocus();
+            })
+        */
+
         /*let w = cm.getClass("SalesOrderWindow").new()
         w.open()
         w.setFocus();

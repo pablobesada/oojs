@@ -67,15 +67,12 @@ class Embedded_Window extends oo.UIEntity {
         newdesc.name = descriptor.name;
         newdesc.title = descriptor.title;
         newdesc.recordClass = descriptor.record
-        newdesc.form = descriptor.form || parentdesc.form;
+        console.log(descriptor.name, this.__super__.__description__.form)
+        newdesc.form = descriptor.form || this.__super__.__description__.form;
         if (descriptor.override) {
             newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override)
         }
-        newdesc.actions = parentdesc.actions ? parentdesc.actions.slice() : []
-        if (descriptor.actions) {
-            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
-        }
-
+        newdesc.actions = parentdesc.actions
         newdesc.provides = parentdesc.provides ? parentdesc.provides.slice() : []
         if (descriptor.provides) {
             for (let i = 0; i < descriptor.provides.length; i++) newdesc.provides.push(descriptor.provides[i])
@@ -102,8 +99,8 @@ class Embedded_Window extends oo.UIEntity {
         this.rowInserted = this.rowInserted.bind(this)
         this.rowRemoved = this.rowRemoved.bind(this)
         this.recordModifiedFlagChanged = this.recordModifiedFlagChanged.bind(this)
-        this.setActionVisibility('save', false, false)
-        this.setActionVisibility('delete', false, false)
+        this.setActionEnabled('save', false, false)
+        this.setActionEnabled('delete', false, false)
     }
 
     static getRecordClass() {
@@ -146,8 +143,8 @@ class Embedded_Window extends oo.UIEntity {
 
     setRecord(rec) {
         if (this.__record__ != rec) {
-            this.setActionVisibility('save', false, false)
-            this.setActionVisibility('delete', false, false)
+            this.setActionEnabled('save', false, false)
+            this.setActionEnabled('delete', false, false)
             if (this.__record__ != null) {
                 this.__record__.off('field modified', this.fieldModified);
                 this.__record__.off('detail cleared', this.detailCleared);
@@ -168,8 +165,8 @@ class Embedded_Window extends oo.UIEntity {
             }
             this.emit('record replaced', {record: rec})
             if (this.__record__) {
-                this.setActionVisibility('save', this.__record__.isModified(), false)
-                this.setActionVisibility('delete', !this.__record__.isNew(), true)
+                this.setActionEnabled('save', this.__record__.isModified(), false)
+                this.setActionEnabled('delete', !this.__record__.isNew(), true)
             }
             if (this.__record__ && this.isOpen()) this.afterShowRecord();
             if (this.__record__ && this.isOpen() && rec && rec.internalId) Embedded_Window.emit(`start editing record ${rec.__class__.getDescription().name}:${rec.internalId}`, {record: rec})
@@ -216,10 +213,10 @@ class Embedded_Window extends oo.UIEntity {
             modified: event.modified,
         })
         if (!event.modified) {
-            this.setActionVisibility('delete', !event.record.isNew(), false)
-            this.setActionVisibility('save', false, true)
+            this.setActionEnabled('delete', !event.record.isNew(), false)
+            this.setActionEnabled('save', false, true)
         } else {
-            this.setActionVisibility('save', true, true)
+            this.setActionEnabled('save', true, true)
         }
 
     }
@@ -282,12 +279,17 @@ class Embedded_Window extends oo.UIEntity {
     async save() {
         var rec = this.getRecord();
         if (rec != null) {
-            let res = await oo.beginTransaction()
-            if (!res) return res;
-            res = await rec.save();
-            if (!res) return res;
-            res = oo.commit()
-            return res;
+            this.emit('processing start', {window: this})
+            try {
+                let res = await oo.beginTransaction()
+                if (!res) return res;
+                res = await rec.save();
+                if (!res) return res;
+                res = oo.commit()
+                return res;
+            } finally {
+                this.emit('processing end', {window: this})
+            }
         }
         return false;
     }

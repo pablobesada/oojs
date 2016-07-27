@@ -11,23 +11,34 @@ if (typeof window == 'undefined') {
 let Descriptor = {
     name: "UIEntity",
     filename: "uientity.js",
-    actions: [],
+    actions: [{label: 'Close', method: 'close', icon: 'close', group: 'invisible', shortcut: 'ctrl+w'},],
 }
 
-
-
-
 class UIEntity extends BaseEntity {
+    static initClass(descriptor) {
+        super.initClass(descriptor)
+        let parentdesc = this.__description__;
+        let newdesc = {};
+        newdesc.actions = parentdesc.actions ? parentdesc.actions.slice() : []
+        if (descriptor.actions) {
+            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
+        }
+        this.__description__ = newdesc
+        return this;
+    }
+
     constructor() {
         super()
         this.actionsVisibility = {}
+        this.actionsStatus = {}
+        this.setActionVisible('close', false, false)
     }
 
     async callAction(actiondef) {
         if (this[actiondef.method]) return this[actiondef.method]();
     }
 
-    isActionRelevant(actiondef) {
+    isActionVisible(actiondef) {
         let res = null;
         if (actiondef.method in this.actionsVisibility) {
             res = this.actionsVisibility[actiondef.method]
@@ -37,10 +48,26 @@ class UIEntity extends BaseEntity {
         return res;
     }
 
-    setActionVisibility(method, visible, emitEvent) {
+    isActionEnabled(actiondef) {
+        let res = null;
+        if (actiondef.method in this.actionsStatus) {
+            res = this.actionsStatus[actiondef.method]
+        } else {
+            res = true;
+        }
+        return res;
+    }
+
+    setActionVisible(method, visible, emitEvent) {
         this.actionsVisibility[method] = visible;
         if (emitEvent == undefined) emitEvent = true;
-        if (emitEvent) this.emit("action visibility", {method: 'testAction', visibility: false})
+        if (emitEvent) this.emit("action status", {method: method, visibility: false})
+    }
+
+    setActionEnabled(method, enabled, emitEvent) {
+        this.actionsStatus[method] = enabled;
+        if (emitEvent == undefined) emitEvent = true;
+        if (emitEvent) this.emit("action status", {method: method, enabled: enabled})
     }
 
     getVisibleActions() {
@@ -48,7 +75,17 @@ class UIEntity extends BaseEntity {
         let allactions = this.__class__.getDescription().actions
         for (let i=0;i<allactions.length; i++) {
             let actiondef = allactions[i]
-            if (this.isActionRelevant(actiondef)) res.push(actiondef)
+            if (this.isActionEnabled(actiondef) && this.isActionVisible(actiondef)) res.push(actiondef)
+        }
+        return res;
+    }
+
+    getEnabledActions() {
+        let res = [];
+        let allactions = this.__class__.getDescription().actions
+        for (let i=0;i<allactions.length; i++) {
+            let actiondef = allactions[i]
+            if (this.isActionEnabled(actiondef)) res.push(actiondef)
         }
         return res;
     }

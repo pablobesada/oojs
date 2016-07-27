@@ -20,10 +20,7 @@ class Embedded_ListWindow extends oo.UIEntity {
         newdesc.windowClass = descriptor.window
         newdesc.columns = descriptor.columns;
         newdesc.filename = descriptor.filename;
-        newdesc.actions = parentdesc.actions? parentdesc.actions.slice() : []
-        if (descriptor.actions) {
-            for (let i = 0; i < descriptor.actions.length; i++) newdesc.actions.push(descriptor.actions[i])
-        }
+        newdesc.actions = parentdesc.actions
         this.__recordClass__ = null;
         this.__windowClass__ = null;
         this.__description__ = newdesc;
@@ -43,6 +40,10 @@ class Embedded_ListWindow extends oo.UIEntity {
 
     open() {
         Embedded_ListWindow.emit('open', {listwindow: this})
+    }
+
+    close() {
+        this.emit("close", {listwindow: this})
     }
 
     setFocus() {

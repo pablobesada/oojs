@@ -14,8 +14,8 @@
             this.__element__ = $(oo.ui.templates.get("workspace container").getHTML({id: this.tab_id}));
             this.actionbar_id = oo.ui.genId("actionbar")
             this.__element__.append($(oo.ui.templates.get("actionbar container").getHTML({id: this.actionbar_id})))
-            this.entity.on('action visibility', function (event) {
-                console.log("en action visibility listener", event)
+            this.entity.on('action status', function (event) {
+                console.log("en action status listener", event)
                 self.renderActionBar()
                 console.log("after render")
             });
@@ -66,7 +66,7 @@
         }
 
         async processKeyPress(event) {
-            let actions = this.entity.getVisibleActions();
+            let actions = this.entity.getEnabledActions();
             for (let i = 0; i < actions.length; i++) {
                 let actiondef = actions[i]
                 if (actiondef.shortcut) {
@@ -92,8 +92,8 @@
                                 break;
                         }
                     }
-                    if (shift != event.shiftKey || ctrl != event.ctrlKey || alt != event.altKey) return;
-                    if (letter != event.key.toLowerCase()) return;
+                    if (shift != event.shiftKey || ctrl != event.ctrlKey || alt != event.altKey) continue;
+                    if (letter != event.key.toLowerCase()) continue;
                     this.entity.callAction(actiondef)
                 }
             }
@@ -174,11 +174,14 @@
             if (str) return "oo_" + str + "_" + UI.unique_id_seed++;
             return "oo_ui_" + UI.unique_id_seed++;
         }
+
     }
 
     UI.unique_id_seed = 1;
     UI.containers = [];
     UI.BaseContainer = BaseContainer;
+    UI.processingScreenElement = null;
+    UI.processingScreenElementShown = false;
     window.oo.ui = UI;
 
 
