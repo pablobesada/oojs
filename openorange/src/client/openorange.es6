@@ -446,7 +446,7 @@
 
     $(document).ready(function () {
         //console.log("DOC READY OPENORANGE")
-        //prefetchClasses();
+        prefetchClasses();
     })
 
     //$.extend(true, window, {require: require, oo: oo})
