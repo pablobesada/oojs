@@ -118,7 +118,7 @@
                 </div>
             ]]></tabs>
         <reportview><![CDATA[
-            <<div class="col s12 m6" reportview="{{=name}}"></div>
+            <div class="col s12 m6" reportview="{{=name}}"></div>
         ]]></reportview>
         <cardcontainer><![CDATA[
                 <div class="card singlecard-container" cardname="{{=cardname}}" style="position: relative">
@@ -187,7 +187,7 @@
                         <div class="input-field col s4">
                             <select id="{{=id}}" value="{{=value}}" type="text" name="{{=field}}" class="editor {{=cls}} validate">
                             {{ _.each(options, function(option) { }}
-                                <option value="{{=option.value}}"  {{print(option.selected?'selected':'')}}="">  {{=option.label}}</option>
+                                <option value="{{=option.value}}"  {{print(option.selected?'selected':'')}}>  {{=option.label}}</option>
                             {{ }); }}
                             </select>
                             <label for="{{=id}}">{{=label}}</label>
@@ -201,6 +201,13 @@
                             </p>
                         {{ }); }}
                     ]]></radiobutton>
+                <pipeline class="pipeline " editor-selector="span"><![CDATA[
+                        <div id="{{id}}" class="col s12 pipeline">
+                        {{ _.each(options, function(option) { }}
+                            <span group_id={{=group_id}} value="{{=option.value}}" name="{{=field}}" class="{{=cls}} editor" {{print(option.selected?'active="true"':'active="false"')}}>{{=option.label}}</span>
+                        {{ }); }}
+                        </div>
+                    ]]></pipeline>
                 <memo class="memo" editor-selector="textarea"><![CDATA[
                         <div class="input-field col s4">
                             <textarea id="{{=id}}" value="{{=value}}" type="text" name="{{=field}}" class="materialize-textarea editor {{=cls}} validate">
@@ -208,7 +215,7 @@
                             <label for="{{=id}}">{{=label}}</label>
                         </div>
                     ]]></memo>
-                <matrix row-container-selector="tbody"><![CDATA[
+                <matrix class="matrix" row-container-selector="tbody"><![CDATA[
                         <table name="{{=field}}" class="bordered oodetail striped">
                             <thead>
                                 <tr>

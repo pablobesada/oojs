@@ -4,6 +4,31 @@
 
     let _ = require('underscore')
 
+    Handlebars.registerHelper('slice', function(context, block) {
+
+        var ret = "",
+            offset = parseInt(block.hash.offset) || 0,
+            limit = parseInt(block.hash.limit) || 5,
+            i,j;
+
+        if(offset < 0){
+            i = (offset < context.length) ? context.length-offset : 0;
+        }else{
+            i = (offset < context.length) ? offset : 0;
+        }
+
+
+        j = ((limit + offset) < context.length) ? (limit + offset) : context.length;
+
+
+
+        for(i,j; i<j; i++) {
+            ret += block.fn(context[i]);
+        }
+        console.log(ret)
+        return ret;
+    });
+
     class TemplateManager {
 
         constructor() {
@@ -18,10 +43,10 @@
         get(selector) {
             let res = this.selectors[selector];
             if (!res) {
-                let meta = TemplateManager.xml.find(selector)
+                let meta = TemplateManager.html.find(selector)
                 if (meta.length == 0) throw new Error(`Template for "${selector}" not found`)
                 try {
-                    let template = _.template(meta.text(), this.underscoreTemplateArgs);
+                    let template = Handlebars.compile(meta.text()) //, this.underscoreTemplateArgs);
                     this.selectors[selector] = {
                         meta: meta, getHTML: template, createElement: (args) => {
                             let $e = $(template(args))
@@ -55,7 +80,7 @@
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
     }
 
-    let templatesURL = "html/templates.xml";
+    let templatesURL = "html/templates.html";
     let data = {}
     let t = getURLParameter('templatesURL');
     if (t) {
@@ -70,8 +95,8 @@
         //dataType: "jsonp",
         data: data,
         async: false,
-        success: function (xml) {
-            TemplateManager.xml = $(xml)
+        success: function (html) {
+            TemplateManager.html = $(html);
         }
     });
 

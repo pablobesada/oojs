@@ -11,9 +11,9 @@
             this.entity = entity;
             this.tab_id = oo.ui.genId();
 
-            this.__element__ = $(oo.ui.templates.get("workspace container").getHTML({id: this.tab_id}));
+            this.__element__ = $(oo.ui.templates.get(".workspace .container").getHTML({id: this.tab_id}));
             this.actionbar_id = oo.ui.genId("actionbar")
-            this.__element__.append($(oo.ui.templates.get("actionbar container").getHTML({id: this.actionbar_id})))
+            this.__element__.append($(oo.ui.templates.get(".actionbar .container").getHTML({id: this.actionbar_id})))
             this.entity.on('action status', function (event) {
                 console.log("en action status listener", event)
                 self.renderActionBar()
@@ -148,7 +148,7 @@
             //console.log(this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]'))
             this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]').tooltip('remove')
             let args = {actions: buttons}
-            let template = oo.ui.templates.get("actionbar content");
+            let template = oo.ui.templates.get(".actionbar .content");
             let toolbar = template.createElement(args)
             _.each(buttons, (btn) => {
                 let params = {self: self, actiondef: btn.actiondef}

@@ -18,7 +18,7 @@
 
         render() {
             let args= {processingscreen_id: this.processingScreenId, blockscreen_id: this.blockScreenId}
-            $('body').html(oo.ui.templates.get("workspace body").createElement(args))
+            $('body').html(oo.ui.templates.get(".workspace .body").createElement(args))
         }
 
         async waitForUnblockedScreen() {

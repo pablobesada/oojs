@@ -39,4 +39,15 @@
     bottom: 0;
     right: 0; }
 
+.pipeline span {
+  cursor: pointer; }
+  .pipeline span[active=true] {
+    color: red;
+    background: lightgrey; }
+  .pipeline span:before {
+    margin: 0 10px 0 8px;
+    content: ' > '; }
+  .pipeline span:first-child:before {
+    content: ''; }
+
 /*# sourceMappingURL=templates.css.map */

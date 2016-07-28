@@ -11,7 +11,7 @@ if (typeof window == 'undefined') {
 let Descriptor = {
     name: "UIEntity",
     filename: "uientity.js",
-    actions: [{label: 'Close', method: 'close', icon: 'close', group: 'invisible', shortcut: 'ctrl+w'},],
+    actions: [{label: 'Close', method: 'close', icon: 'close', group: 'invisible', shortcut: 'alt+w'},],
 }
 
 class UIEntity extends BaseEntity {

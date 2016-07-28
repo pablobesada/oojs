@@ -126,7 +126,7 @@
                 content_id: oo.ui.genId("CARDCONTENT"),
                 delete_action_id: oo.ui.genId("CARDDELETE")
             }
-            let cardContainerElement = oo.ui.templates.get('window cardcontainer').createElement(args)
+            let cardContainerElement = oo.ui.templates.get('.window .cardcontainer').createElement(args)
             let deleteButton = cardContainerElement.find('#' + args.delete_action_id)
             deleteButton.click(function (event) {
                 if (cardcontainername) self.removeCardFromContainer(cardcontainername, cardname)
@@ -151,7 +151,7 @@
             actions.push(addAction)
             actions.push(editAction)
             let args = {id: id, cardcontainername: json.name, actions: actions}
-            let component = oo.ui.templates.get('window cardlistcontainer').createElement(args)
+            let component = oo.ui.templates.get('.window .cardlistcontainer').createElement(args)
             let buttonbar = component.find('#' + args.actionbar_id)
             if (json.name) {
                 self.cardcontainers[json.name] = []
@@ -181,7 +181,7 @@
         createReportViewComponent(json) {
             let self = this;
             let args = {name: json.name}
-            let component = oo.ui.templates.get('window reportview').createElement(args)
+            let component = oo.ui.templates.get('.window .reportview').createElement(args)
             json.__element__ = component;
             return component;
         };
@@ -196,7 +196,7 @@
                 children.push(child);
             });
             let args = {components: children}
-            var component = oo.ui.templates.get('window components column').createElement(args)
+            var component = oo.ui.templates.get('.window .components .column').createElement(args)
             _(children).each((child) => {
                 component.find('#' + child.container_id).append(child.component)
             })
@@ -206,7 +206,7 @@
 
         createLineComponent(json) {
             var self = this;
-            var component = oo.ui.templates.get('window components line').createElement()
+            var component = oo.ui.templates.get('.window .components .line').createElement()
             _(json.content).forEach(function (child_component_json) {
                 var child_component = self.createComponent(child_component_json);
                 component.append(child_component);
@@ -229,7 +229,7 @@
                 pages.push({id: tab.id, page: page})
             })
             let args = {page_container_id: oo.ui.genId(), tabs: tabs}
-            let res = oo.ui.templates.get("window tabs").createElement(args);
+            let res = oo.ui.templates.get(".window .tabs").createElement(args);
             let page_container = res.find("#" + args.page_container_id);
             _(pages).forEach(function (page) {
                 page_container.append(page.page)
@@ -289,6 +289,11 @@
                     case 'radiobutton':
                         editorElement.click(self.beforeEdit.bind(self));
                         editorElement.change(self.afterEdit.bind(self));
+                        break;
+                    case 'pipeline':
+                        console.log('pipeline', editorElement)
+
+                        editorElement.click(self.beforeEdit.bind(self));
                         break;
                     case 'combobox':
                         editorElement.change(self.beforeEdit.bind(self)); //en el combobox, el beforeEdit llama al afterEdit (esto es porque no recibe eventos ni de click ni de focus
@@ -426,7 +431,7 @@
             if (aditional_template_args) {
                 _.extendOwn(args, aditional_template_args)
             }
-            var template = oo.ui.templates.get('window ' + cls + ' components ' + editor)
+            var template = oo.ui.templates.get('.window .' + cls + ' .components .' + editor)
             let res = template.createElement(args);
             let $editor = null;
             let editor_selector = template.meta.attr('editor-selector');
@@ -506,18 +511,24 @@
                 options.push(opt);
             }
             return this.processEditor(json, cls, field, 'radiobutton', {options: options, group_id: oo.ui.genId()})
-            var self = this;
+        };
+
+        pipeline(json, cls, field) {
+            let options = []
             var value = field != null ? field.getValue() : '';
-            if (value == null) value = '';
-            var html = '';
             for (var i = 0; i < json.options.length; i++) {
                 var option = json.options[i];
-                var element_id = oo.ui.genId("RADIO")
-                html += '<p><input value="' + option.value + '" type="radio" name="' + json.field + '" class="editor ' + cls + ' validate" id="' + element_id + '">';
-                html += '<label for="' + element_id + '">' + option.label + '</label></p>';
+                var element_id = oo.ui.genId("BREADCRUMB")
+                let opt = {}
+                opt.value = option.value;
+                opt.cls = cls
+                opt.field = json.field
+                opt.id = element_id;
+                opt.label = option.label;
+                opt.selected = (value == ('' + option.value)); //(''+option.value) es porque sino '' == 0 -> TRUE
+                options.push(opt);
             }
-            var res = $(html)//.find("input");
-            return {component: res, editor: res.find('input')};
+            return this.processEditor(json, cls, field, 'pipeline', {options: options, group_id: oo.ui.genId()})
         };
 
         setReadOnly(element) {
@@ -532,7 +543,7 @@
                             self.__element__.find(`input[group_id=${$e.attr('group_id')}][value=${self.window.getRecord()[element.name]}]`).prop('checked', true);
                             break;
                         case 'checkbox':
-                            newval = $e.val();
+                            newval = element.checked;
                             $e.prop('checked', Boolean(self.window.getRecord()[element.name]));
                             break;
                         default:
@@ -581,7 +592,7 @@
                 if (readonly) {
                     self.__element__.find(`input[group_id=${target.attr('group_id')}][value!=${self.window.getRecord()[event.currentTarget.name]}]`).prop('checked', false);
                     self.__element__.find(`input[group_id=${target.attr('group_id')}][value=${self.window.getRecord()[event.currentTarget.name]}]`).prop('checked', true);
-                } else  {
+                } else {
                     target.prop('checked', true);
                     self.afterEdit(event);
                 }
@@ -589,6 +600,7 @@
                 if (readonly) {
                     target.prop('checked', Boolean(self.window.getRecord()[event.currentTarget.name]));
                 } else {
+                    console.log("CCCC", newval)
                     target.prop('checked', newval);
                     self.afterEdit(event);
                 }
@@ -618,7 +630,18 @@
                     event.currentTarget.__block_event__ = false;
                     self.afterEdit(event)
                 }
-            } else {
+            } else if (target.parent().hasClass('pipeline')) {
+                console.log("ACAAAA")
+                if (readonly) {
+                    self.__element__.find(`[group_id=${target.attr('group_id')}][value!=${self.window.getRecord()[event.currentTarget.name]}]`).attr('active', false);
+                    self.__element__.find(`[group_id=${target.attr('group_id')}][value=${self.window.getRecord()[event.currentTarget.name]}]`).attr('active', true);
+                } else {
+                    self.__element__.find(`[group_id=${target.attr('group_id')}]`).attr('active', false);
+                    target.attr('active', true);
+                    self.afterEdit(event);
+                }
+            }
+            else {
                 console.log("setting 2 readony to", target, readonly)
                 target.attr("readonly", readonly);
             }
@@ -696,9 +719,16 @@
                 } else {
                     self.afterEditRow.call(params, event)
                 }
+            } else if (target.hasClass('pipeline')) {
+                if (readonly) {
+
+                } else {
+
+                }
             } else {
                 target.attr("readonly", readonly);
             }
+
         };
 
         async afterEdit(event) {
@@ -713,14 +743,18 @@
                 } else {
                     value = event.currentTarget.checked ? 1 : 0;
                 }
+                console.log("VAAAL:", value, "name:", event.currentTarget.name)
             } else if (event.currentTarget.nodeName == 'INPUT' && $(event.currentTarget).attr('datepicker') == 'true') {
                 value = $(event.currentTarget).pickadate('picker').get('select', 'yyyy-mm-dd');
+            } else if ($(event.currentTarget).parent().hasClass('pipeline')) {
+                value = $(event.currentTarget).attr('value')
+                console.log("VAAAL:", value, "name:", event.currentTarget.name)
             }
             //console.log("afteredit", self, value)
 
             oo.ui.workspace.blockScreen();
             console.log("BF")
-            await self.window.call_afterEdit(event.currentTarget.name, value)
+            await self.window.call_afterEdit($(event.currentTarget).attr('name'), value)
             console.log("AF")
             oo.ui.workspace.unblockScreen();
         };
@@ -831,13 +865,13 @@
             var self = this;
             var tbody = tbodyElement;
             let args = {rowNr: "" + row.rowNr} //para que null vaya como string, y sea 'null'
-            let template = oo.ui.templates.get('window oomaster components matrixrow')
+            let template = oo.ui.templates.get('.window .oomaster .components .matrixrow')
             var tr = $(template.getHTML(args))
             //$('<tr rownr="' + row.rowNr + '"></tr>');
 
             _(json.columns).forEach(function (jcol) {
                 let args = {}
-                let template = oo.ui.templates.get('window oomaster components matrixcell')
+                let template = oo.ui.templates.get('.window .oomaster .components .matrixcell')
                 var td = $(template.getHTML(args))
                 var component = self.createMatrixComponent(jcol, 'oodetail', json.field, row.rowNr, row.fields(jcol.field));
                 var readonly = !record.fieldIsEditable(json.field, jcol.field, row.rowNr);
@@ -877,6 +911,7 @@
             for (var i = 0; i < elements.length; i++) {
                 var element = elements[i];
                 var e = $(element);
+                console.log(element)
                 if (element.nodeName == 'SELECT') {
                     e.val(value);
                     e.material_select();
@@ -895,6 +930,8 @@
                 } else if (element.nodeName == 'TEXTAREA') {
                     e.val(value)
                     e.trigger('autoresize')
+                } else if (e.parent().hasClass('pipeline')) {
+                    e.attr('active', (value == e.attr('value')));
                 } else {
                     if (ftype == 'date' && value != null) {
                         e.val(value.format("YYYY-MM-DD"))
@@ -950,7 +987,7 @@
 
         createEmptyMatrix(json) {
             var self = this;
-            let template = oo.ui.templates.get('window oomaster components matrix')
+            let template = oo.ui.templates.get('.window .oomaster .components .matrix')
             console.log(template)
             let columns = []
             _(json.columns).forEach(function (col) {
@@ -1246,7 +1283,7 @@
                 items.push(item);
             }
             let args = {items: items}
-            let selectorContainer = oo.ui.templates.get('cardselector').createElement(args);
+            let selectorContainer = oo.ui.templates.get('.cardselector').createElement(args);
             for (let i = 0; i < items.length; i++) {
                 let item = items[i]
                 let card = cm.getClass(item.cardclassname).new()

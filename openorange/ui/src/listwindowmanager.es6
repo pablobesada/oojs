@@ -19,7 +19,7 @@
 
         render() {
             var self = this;
-            this.__element__.append(oo.ui.templates.get('listwindow content').createElement())
+            this.__element__.append(oo.ui.templates.get('.listwindow .content').createElement())
 
             oo.ui.containers.push({
                 entity: this.listwindow,

@@ -48,3 +48,23 @@
     right: 0;
   }
 }
+
+ .pipeline {
+   //text-color: black;
+   span {
+     cursor: pointer;
+
+     &[active=true] {
+       color:red;
+       background: lightgrey;
+     }
+     &:before {
+       margin: 0 10px 0 8px;
+       content: ' > ';
+     }
+
+     &:first-child:before {
+       content: '';
+     }
+   }
+ }

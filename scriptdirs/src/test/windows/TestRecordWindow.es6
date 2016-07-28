@@ -9,7 +9,7 @@ var Description = {
     title: "Test Record Window",
     form: [
         {field: 'syncVersion'},
-        {field: 'SubTestName'},
+        {field: 'SubTestName',},
         {field: 'String_Field'},
         {field: 'String_Field', editor: 'memo'},
         {field: 'LinkTo_Field', name: 'LTF'},
@@ -21,6 +21,11 @@ var Description = {
     {label: 'CERO', value: 0},
     {label: 'UNO', value: 1},
     {label: 'DOS', value: 2}]},
+        {field: 'Integer_Field', editor: 'pipeline', options: [
+            {label: 'CERO', value: 0},
+            {label: 'UNO', value: 1},
+            {label: 'DOS', value: 2}]},
+
         {field: 'Integer_Field', editor: 'combobox', options: [
             {label: 'CERO', value: 0},
             {label: 'UNO', value: 1},
