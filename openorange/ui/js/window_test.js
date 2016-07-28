@@ -9,11 +9,11 @@
         wso.open()
 
 
-        wso = cm.getClass("TestRecordWindow").new()
+        /*wso = cm.getClass("TestRecordWindow").new()
         let rec = cm.getClass("TestRecord").new();
         wso.setRecord(rec);
         wso.open();
-        wso.setFocus();
+        wso.setFocus();*/
 
 
         /*let w = cm.getClass("SalesOrderWindow").new()
