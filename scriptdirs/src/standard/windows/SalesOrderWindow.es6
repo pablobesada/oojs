@@ -7,6 +7,12 @@ var Description = {
     record: 'SalesOrder',
     title: "Sales Order",
     form: [
+        {field: 'PrintFormat', editor: 'pipeline', options: [
+            {label: 'Normal', value: 0},
+            {label: 'Sum per Item', value: 1},
+            {label: 'Sum per Origin', value: 3},
+        ]},
+
         {field: 'User', label: 'Usuario'},
         {field: 'SerNr', label: 'Numero'},
         {field: 'TransDate'},
@@ -23,6 +29,11 @@ var Description = {
             {label: 'Sum per Origin', value: 3},
         ]},
         {field: 'PrintFormat', editor: 'combobox', options: [
+            {label: 'Normal', value: 0},
+            {label: 'Sum per Item', value: 1},
+            {label: 'Sum per Origin', value: 3},
+        ]},
+        {field: 'PrintFormat', editor: 'pipeline', options: [
             {label: 'Normal', value: 0},
             {label: 'Sum per Item', value: 1},
             {label: 'Sum per Origin', value: 3},

@@ -53,10 +53,9 @@
    //text-color: black;
    span {
      cursor: pointer;
-
+     padding: 5px;
      &[active=true] {
-       color:red;
-       background: lightgrey;
+       color:blue;
      }
      &:before {
        margin: 0 10px 0 8px;

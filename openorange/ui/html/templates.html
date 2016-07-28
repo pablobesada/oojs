@@ -207,7 +207,7 @@
                 <script type="x-tmpl-mustache" class="pipeline " editor-selector="span">
                     <div id="{{id}}" class="col s12 pipeline">
                         {{#each options as |option|}}
-                            <span group_id={{group_id}} value="{{option.value}}" name="{{field}}" class="{{cls}} editor" active="{{option.selected}}">{{option.label}}</span>
+                            <span group_id="{{../group_id}}" value="{{option.value}}" name="{{field}}" class="{{cls}} editor" active="{{option.selected}}">{{option.label}}</span>
                         {{/each}}
                     </div>
 

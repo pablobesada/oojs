@@ -40,10 +40,10 @@
     right: 0; }
 
 .pipeline span {
-  cursor: pointer; }
+  cursor: pointer;
+  padding: 5px; }
   .pipeline span[active=true] {
-    color: red;
-    background: lightgrey; }
+    color: blue; }
   .pipeline span:before {
     margin: 0 10px 0 8px;
     content: ' > '; }
