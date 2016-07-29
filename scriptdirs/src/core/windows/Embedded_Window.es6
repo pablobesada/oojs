@@ -247,8 +247,10 @@ class Embedded_Window extends oo.UIEntity {
     beforeEditRow(fieldname, rowfieldname, rownr) {
         var self = this;
         var res = true;
+        console.log(rownr, typeof rownr)
         if ('focus ' + fieldname + "." + rowfieldname in self) {
-            res = self['focus ' + fieldname + "." + rowfieldname]()
+
+            res = self['focus ' + fieldname + "." + rowfieldname](rownr)
             return res;
         }
         res = self.getRecord().fieldIsEditable(fieldname, rowfieldname, rownr);
@@ -264,12 +266,41 @@ class Embedded_Window extends oo.UIEntity {
         }
     }
 
-    async afterEditRow(fieldname, rowfieldname, rownr, value) {
+    async call_afterEditRow(fieldname, rowfieldname, rownr, value) {
         var self = this;
         self.getRecord()[fieldname][rownr][rowfieldname] = value;
         if ('changed ' + fieldname + '.' + rowfieldname in this) {
-            this['changed ' + fieldname + '.' + rowfieldname](rownr)
+            await this['changed ' + fieldname + '.' + rowfieldname](rownr)
         }
+    }
+
+    async deleteRow(fieldname, rownr) {
+        let doit = await this.call_beforeDeleteRow(fieldname, rownr);
+        if (doit) {
+            console.log("rows length: " + this.getRecord().details(fieldname).length);
+            console.log("deleteing row: " + rownr);
+            this.getRecord().details(fieldname).remove(rownr)
+            console.log("rows length2: " + this.getRecord().details(fieldname).length);
+            let deletedRow = null //aca deberia venir la respuesta de Detail.remove(), pero creo que devuelve una lista y ademas oo en python no recibe este parametro asi que por ahora lo paso en null, cuando se necesite se activara
+            await this.call_afterDeleteRow(fieldname, rownr, deletedRow);
+        }
+        return doit;
+    }
+
+    async call_beforeDeleteRow(fieldname, rownr) {
+        return await this.beforeDeleteRow(fieldname, rownr)
+    }
+
+    async call_afterDeleteRow(fieldname, rownr) {
+        await this.afterDeleteRow(fieldname, rownr)
+    }
+
+    async beforeDeleteRow(fieldname, rownr) {
+        return true;
+    }
+
+
+    async afterDeleteRow(fieldname, rownr) {
     }
 
     async callAction(actiondef) {

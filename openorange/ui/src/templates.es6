@@ -5,27 +5,19 @@
     let _ = require('underscore')
 
     Handlebars.registerHelper('slice', function(context, block) {
-
         var ret = "",
             offset = parseInt(block.hash.offset) || 0,
             limit = parseInt(block.hash.limit) || 5,
             i,j;
-
         if(offset < 0){
             i = (offset < context.length) ? context.length-offset : 0;
         }else{
             i = (offset < context.length) ? offset : 0;
         }
-
-
         j = ((limit + offset) < context.length) ? (limit + offset) : context.length;
-
-
-
         for(i,j; i<j; i++) {
             ret += block.fn(context[i]);
         }
-        console.log(ret)
         return ret;
     });
 
@@ -33,11 +25,6 @@
 
         constructor() {
             this.selectors = {}
-            this.underscoreTemplateArgs = {
-                evaluate: /\{\{(.+?)\}\}/g,
-                interpolate: /\{\{=(.+?)\}\}/g,
-                escape: /\{\{-(.+?)\}\}/g
-            }
         }
 
         get(selector) {
@@ -57,6 +44,7 @@
                             $e.addedToPage = function ($r) {
                                 if (meta.attr('initonpage')) {
                                     var $this = $e; //esto hay que hacerlo con VAR!!!
+                                    console.log(meta.attr('initonpage'))
                                     eval(meta.attr('initonpage'))
                                 }
                             }.bind($e)

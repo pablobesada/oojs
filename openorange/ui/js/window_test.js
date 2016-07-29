@@ -10,10 +10,12 @@
 
 
         /*wso = cm.getClass("TestRecordWindow").new()
-        let rec = cm.getClass("TestRecord").new();
-        wso.setRecord(rec);
-        wso.open();
-        wso.setFocus();*/
+        cm.getClass("TestRecord").findOne({internalId: 7})
+            .then(function (rec) {
+                wso.setRecord(rec);
+                wso.open();
+                wso.setFocus();
+            })*/
 
 
         /*let w = cm.getClass("SalesOrderWindow").new()

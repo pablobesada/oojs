@@ -8,17 +8,22 @@
     class BaseContainer {
         constructor(entity) {
             let self = this;
+            this.templateElements = [];
             this.entity = entity;
             this.tab_id = oo.ui.genId();
-
-            this.__element__ = $(oo.ui.templates.get(".workspace .container").getHTML({id: this.tab_id}));
+            this.__element__ = oo.ui.templates.get(".workspace .container").createElement({id: this.tab_id});
             this.actionbar_id = oo.ui.genId("actionbar")
             this.__element__.append($(oo.ui.templates.get(".actionbar .container").getHTML({id: this.actionbar_id})))
             this.entity.on('action status', function (event) {
-                console.log("en action status listener", event)
                 self.renderActionBar()
-                console.log("after render")
             });
+        }
+
+        callInitOnPageCallbacks() {
+            _.each(this.templateElements, (templateElement) => {
+                templateElement.addedToPage();
+            })
+            this.templateElements = [];
         }
 
         setWindowTitle(title) {

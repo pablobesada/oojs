@@ -1,17 +1,17 @@
 <div class="templates">
     <div class="workspace">
-        <script class="body" type="x-tmpl-mustache">
+        <script class="body" type="x-tmpl-handlebars">
             <div id="loader-wrapper">
                 <div id="loader"></div>
                 <div class="loader-section section-left"></div>
                 <div class="loader-section section-right"></div>
             </div>
-            <div id="{{blockscreen_id}}" class="oo-block-screen"}">
+            <div id="{{blockscreen_id}}" class="oo-block-screen">
             </div>
-            <div id="{{processingscreen_id}}" class="oo-processing-screen"}">
+            <div id="{{processingscreen_id}}" class="oo-processing-screen">
                 <img id="loading" src="http://bit.ly/pMtW1K">
             </div>
-            <header class="page-topbar" id="header"><!-- start header nav-->
+            <header class="page-topbar" id="header">
                 <div class="navbar-fixed">
                     <nav class="navbar-color">
                         <div class="nav-wrapper">
@@ -21,9 +21,8 @@
                                 </h1></li>
                             </ul>
                             <div class="header-search-wrapper hide-on-med-and-down"><i class="mdi-action-search"></i>
-                                <!--input.header-search-input.z-depth-2(type='text', name='Search', id="OOSearch", placeholder='explore openorange')--><input
-                                        class="header-search-input z-depth-2 typeahead" id="OOSearch" type="text"
-                                        placeholder="explore openorange"></div>
+                                <input class="header-search-input z-depth-2 typeahead" id="OOSearch" type="text" placeholder="explore openorange">
+                             </div>
                         </div>
                     </nav>
                 </div>
@@ -44,7 +43,6 @@
                         <a class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only cyan"
                            href="#" data-activates="slide-out"><i class="mdi-navigation-menu"></i></a>
                     </aside>
-
                     <section id="content_section">
                         <div class="container">
                             <div class="row">
@@ -67,20 +65,20 @@
                 </div>
             </footer>
         </script>
-        <script class="container" type="x-tmpl-mustache">
+        <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields();">
             <div id="{{id}}" class="container oo-workspace-container"></div>
         </script>
         <div class="listwindow">
-            <script class="content" type="x-tmpl-mustache">
+            <script class="content" type="x-tmpl-handlebars">
                 <div class="listwindow_grid"></div>
             </script>
         </div>
     </div>
     <div class="actionbar">
-        <script class="container" type="x-tmpl-mustache">
+        <script class="container" type="x-tmpl-handlebars">
             <div id="{{id}}"></div>
         </script>
-        <script class="content" type="x-tmpl-mustache" init="$this.find('[data-tooltip]').tooltip({delay: 50});">
+        <script class="content" type="x-tmpl-handlebars" init="$this.find('[data-tooltip]').tooltip({delay: 50});">
             <div class="fixed-action-btn">
                 <a id="{{actions.0.id}}" data-tooltip="{{actions.0.label}}" data-position="left" class="btn-floating btn-large green"><i class="large mdi">{{actions.0.icon}}</i></a>
                 <ul>
@@ -93,7 +91,7 @@
             </div>
         </script>
     </div>
-    <script type="x-tmpl-mustache" class="cardselector"
+    <script type="x-tmpl-handlebars" class="cardselector"
             initonpage="if ($this.find('.singlecard-container').length > 0) $this.carousel()">
         <div class="carousel">
             {{#each items as |item| }}
@@ -105,7 +103,7 @@
         </div>
     </script>
     <div class="window">
-        <script type="x-tmpl-mustache" class="tabs" initonpage="$this.find('ul.tabs').tabs()">
+        <script type="x-tmpl-handlebars" class="tabs" initonpage="$this.find('ul.tabs').tabs()">
             <div class="row">
                 <div id="{{page_container_id}}" "class="col s12 page-container">
                     <ul class="tabs">
@@ -116,16 +114,16 @@
                 </div>
             </div>
         </script>
-        <script type="x-tmpl-mustache" class="reportview">
+        <script type="x-tmpl-handlebars" class="reportview">
             <div class="col s12 m6" reportview="{{name}}"></div>
         </script>
-        <script type="x-tmpl-mustache" class="cardcontainer">
+        <script type="x-tmpl-handlebars" class="cardcontainer">
             <a id="{{delete_action_id}}" class="btn-floating waves-effect waves-light red card-remove-btn hide" style="position:absolute; right: 15px; top:15px;"><i class="mdi">delete</i></a>
             <div class="card singlecard-container" cardname="{{cardname}}" style="position: relative">
                 <div id="{{content_id}}"></div>
             </div>
         </script>
-        <script type="x-tmpl-mustache" class="cardlistcontainer">
+        <script type="x-tmpl-handlebars" class="cardlistcontainer">
             <div id="{{id}}" class="col s12 m6 card-panel hoverable" cardcontainer="{{cardcontainername}}">
                 <div class='cardcontainer-buttonbar'>
                     {{#each actions as |action|}}
@@ -136,10 +134,10 @@
         </script>
         <div class="oomaster">
             <div class="components">
-                <script type="x-tmpl-mustache" class="line">
+                <script type="x-tmpl-handlebars" class="line">
                     <div class="row"></div>
                 </script>
-                <script type="x-tmpl-mustache" class="column">
+                <script type="x-tmpl-handlebars" class="column">
                     <div class="row">
                         {{#each components as |component|}}
                             <div class="row">
@@ -148,45 +146,43 @@
                         {{/each}}
                     </div>
                 </script>
-                <script type="x-tmpl-mustache" class="string" editor-selector="input" pastewindow-opener-selector="i">
+                <script type="x-tmpl-handlebars" class="string">
                     <div class="input-field col s4">
                         {{#if pastewindow}}
-                            <i class="mdi prefix">search</i>
+                            <i class="mdi prefix oo-pastewindow-opener">search</i>
                         {{/if}}
-                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} validate"/>
+                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
                 </script>
-                <script type="x-tmpl-mustache" class="integer" editor-selector="input">
+                <script type="x-tmpl-handlebars" class="integer" >
                     <div class="input-field col s4">
-                        <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} validate"/>
+                        <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
                 </script>
-                <script type="x-tmpl-mustache" class="checkbox" editor-selector="input">
+                <script type="x-tmpl-handlebars" class="checkbox" >
                     <p>
-                        <input {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} validate" id="{{id}}">
+                        <input {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor validate" id="{{id}}">
                         <label for="{{id}}">{{label}}</label>
                     </p>
                 </script>
-                <script type="x-tmpl-mustache" class="date" editor-selector="input"
-                        init="$this.find('input').pickadate(args.datePickerOptions);">
+                <script type="x-tmpl-handlebars" class="date" init="$this.find('input').pickadate(args.datePickerOptions);">
                         <div class="input-field col s4">
-                            <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} validate" datepicker="true"/>
+                            <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} oo-editor validate" datepicker="true"/>
                             <label for="{{id}}">{{label}}</label>
                         </div>
                 </script>
-                <script type="x-tmpl-mustache" class="time" editor-selector="input"
-                        init="$($this.find('input')[0]).mask('09:00:00');">
+                <script type="x-tmpl-handlebars" class="time" init="$($this.find('input')[0]).mask('09:00:00');">
                     <div class="input-field col s4">
-                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} validate " timeeditor="true"/>
+                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} oo-editor validate " timeeditor="true"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
 
                 </script>
-                <script type="x-tmpl-mustache" class="combobox" editor-selector="select">
+                <script type="x-tmpl-handlebars" class="combobox" initonpage="$this.find('select').material_select()">
                     <div class="input-field col s4">
-                        <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} validate">
+                        <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate">
                         {{#each options as |option|}}
                             <option value="{{option.value}}"  {{#if option.selected}}selected{{/if}}>  {{option.label}}</option>
                         {{/each}}
@@ -195,92 +191,88 @@
                     </div>
 
                 </script>
-                <script type="x-tmpl-mustache" class="radiobutton" editor-selector="input">
+                <script type="x-tmpl-handlebars" class="radiobutton">
                     {{#each options as |option|}}
                         <p>
-                            <input group_id="{{group_id}}" value="{{option.value}}" type="radio" name="{{option.field}}" class="editor {{option.cls}} validate" id="{{option.id}}">
+                            <input group_id="{{../group_id}}" value="{{option.value}}" type="radio" name="{{option.field}}" class="editor {{option.cls}} oo-editor validate" id="{{option.id}}">
                             <label for="{{option.id}}">{{option.label}}</label>
                         </p>
                     {{/each}}
 
                 </script>
-                <script type="x-tmpl-mustache" class="pipeline " editor-selector="span">
+                <script type="x-tmpl-handlebars" class="pipeline">
                     <div id="{{id}}" class="col s12 pipeline">
                         {{#each options as |option|}}
-                            <span group_id="{{../group_id}}" value="{{option.value}}" name="{{field}}" class="{{cls}} editor" active="{{option.selected}}">{{option.label}}</span>
+                            <span group_id="{{../group_id}}" value="{{option.value}}" name="{{field}}" class="{{cls}} editor oo-editor" active="{{option.selected}}">{{option.label}}</span>
                         {{/each}}
                     </div>
 
                 </script>
-                <script type="x-tmpl-mustache" class="memo" editor-selector="textarea">
+                <script type="x-tmpl-handlebars" class="memo">
                     <div class="input-field col s4">
-                        <textarea id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="materialize-textarea editor {{cls}} validate">
+                        <textarea id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="materialize-textarea editor {{cls}} oo-editor  validate">
                         </textarea>
                         <label for="{{id}}">{{label}}</label>
                     </div>
 
                 </script>
-                <script type="x-tmpl-mustache" class="matrix" row-container-selector="tbody">
-                    <table name="{{field}}" class="bordered oodetail striped">
+                <script type="x-tmpl-handlebars" class="matrix">
+                    <table name="{{field}}" class="bordered oodetail striped oo-matrix">
                         <thead>
                             <tr>
+                                <th></th>
                                 {{#each columns as |col|}}
                                     <th>{{col.label}}</th>
                                 {{/each}}
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class='oo-row-container'>
                         </tbody>
                     </table>
 
                 </script>
-                <script type="x-tmpl-mustache" class="matrixrow">
-                    <tr rownr="{{rowNr}}"></tr>
-
+                <script type="x-tmpl-handlebars" class="matrixrow" initonpage="Materialize.updateTextFields();">
+                    <tr rownr="{{rowNr}}" class='oo-row'><td class="oo-delete"><i class="mdi prefix">delete</i></td></tr>
                 </script>
-                <script type="x-tmpl-mustache" class="matrixcell">
+                <script type="x-tmpl-handlebars" class="matrixcell">
                     <td></td>
-
                 </script>
             </div>
         </div>
         <div class="oodetail">
             <div class="components">
-                <script type="x-tmpl-mustache" class="string" editor-selector="input" pastewindow-opener-selector="i">
+                <script type="x-tmpl-handlebars" class="string">
                     <div class="input-field" style="{{#if pastewindow}}'margin-left: 20px{{/if}}">
                         {{#if pastewindow}}
-                            <i class="mdi prefix" style="margin-left: -20px">search</i>
+                            <i class="mdi prefix oo-pastewindow-opener" style="margin-left: -20px">search</i>
                         {{/if}}
-                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} validate"/>
+                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
                     </div>
 
                 </script>
-                <script type="x-tmpl-mustache" class="integer" editor-selector="input">
-                    <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} validate"/>
+                <script type="x-tmpl-handlebars" class="integer" >
+                    <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
 
                 </script>
-                <script type="x-tmpl-mustache" class="date" editor-selector="input"
-                        initonpage="$this.pickadate(args.datePickerOptions);">
-                    <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} validate" datepicker="true"/>
-
+                <script type="x-tmpl-handlebars" class="date" initonpage="$this.pickadate(args.datePickerOptions);">
+                    <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} oo-editor validate" datepicker="true"/>
                 </script>
-                <script type="x-tmpl-mustache" class="time" editor-selector="input" init="$this.mask('09:00:00');">
-                    <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} validate " timeeditor="true"/>
+                <script type="x-tmpl-handlebars" class="time" init="$this.mask('09:00:00');">
+                    <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} oo-editor validate " timeeditor="true"/>
                 </script>
-                <script type="x-tmpl-mustache" class="combobox" editor-selector="select">
-                    <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} validate">
+                <script type="x-tmpl-handlebars" class="combobox" initonpage="$this.material_select()">
+                    <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate">
                         {{#each options as |option|}}
                             <option value="{{option.value}}"  {{#if option.selected}}selected{{/if}}="">  {{option.label}}</option>
                         {{/each}}
                     </select>
 
                 </script>
-                <script type="x-tmpl-mustache" class="checkbox" editor-selector="input">
+                <script type="x-tmpl-handlebars" class="checkbox">
                     <p>
-                        <input  {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} validate" id="{{id}}">
+                        <input  {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor validate" id="{{id}}">
                         <label for="{{id}}"></label>
                     </p>
-
                 </script>
             </div>
         </div>

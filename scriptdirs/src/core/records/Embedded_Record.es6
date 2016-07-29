@@ -170,6 +170,10 @@ DetailField.fieldNames = function fieldNames() {
     return this.getRowClass().__description__.fieldnames
 }
 
+DetailField.persistentFieldNames = function fieldNames() {
+    return this.getRowClass().__description__.persistentFieldNames
+}
+
 DetailField.newRow = function newRow() {
     return this.getRowClass().new();
 }
@@ -210,9 +214,10 @@ DetailField.splice = function splice() {
     });
     if (removed.length > 0) {
         if (this.listener) {
-            let start = arguments[0]
-            let count = arguments[1]
+            let start = Number(arguments[0])
+            let count = Number(arguments[1]) //importante xq si llegan a venir strings de parametros, en el for siguiente se contatenan y es un desastre
             for (let i=start+count-1;i>=start; i--) {
+                console.log("emiting removed of", i)
                 this.listener.rowRemoved(this, i);
             }
         }

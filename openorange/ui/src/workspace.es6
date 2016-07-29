@@ -33,6 +33,10 @@
             })
         }
 
+        isScreenBlocked() {
+            return this.__screenblocked__;
+        }
+
         blockScreen() {
             console.log("block")
             let self = this;

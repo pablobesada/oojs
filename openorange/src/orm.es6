@@ -245,7 +245,7 @@ orm.generate_load_sql = function generate_load_sql(record) {
 
 orm.generate_select_detail_sql = function generate_select_detail_sql(record, detailname) {
     var detail = record.details(detailname);
-    var fieldnames = detail.fieldNames();
+    var fieldnames = detail.persistentFieldNames(); 
     var questions = [];
     var values = [record.internalId];
     var snames = []

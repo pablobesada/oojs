@@ -10,7 +10,7 @@
 
 .oo-block-screen {
   display: none;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
@@ -22,7 +22,7 @@
 
 .oo-processing-screen {
   display: none;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
@@ -33,7 +33,7 @@
   filter: alpha(opacity=80); }
   .oo-processing-screen img {
     margin: auto;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
