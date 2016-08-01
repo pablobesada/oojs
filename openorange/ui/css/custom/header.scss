@@ -1,0 +1,94 @@
+.oo-main-header {
+  .navbar-color {
+    background: $grey-dark;
+  }
+  .logo {
+    margin: 1px 0;
+    padding: 14px 20px;
+    img {
+      width: 172px;
+    }
+  }
+  .header-search-wrapper {
+      margin: 10px auto 0 240px;
+      width: calc(100% - 600px);
+      height: 40px;
+      display: inline-block;
+      position: relative;
+      &:before {
+        content: "\f002";
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: 1.4em;
+        position: absolute;
+        right: 15px;
+        top: 10px;
+      }
+      i {
+        position: absolute;
+        font-size: 24px;
+        top: 6px;
+        left: 24px;
+        line-height: 32px !important;
+        -webkit-transition: color 200ms ease;
+        transition: color 200ms ease;
+      }
+      .header-search-input {
+        appearance: textfield;
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-radius: 3px;
+        display: block;
+        font-size: 16px;
+        font-weight: 400;
+        height: 24px;
+        outline: none;
+        padding: 8px 32px 8px 8px;
+        -webkit-transition: all 200ms ease;
+        transition: all 200ms ease;
+        width: 93%;
+        &.tt-hint {
+          padding-left: 20px;
+        }
+        &:hover {
+          background: rgba(255, 255, 255, 0.5);
+        }
+        &:focus {
+          background: #fff;
+          border-bottom: none !important;
+          box-shadow: none !important;
+          color: #333;
+        }
+        &::placeholder,
+        &::-webkit-input-placeholder,
+        &:-ms-input-placeholder,
+        &::-moz-placeholder {
+          color: #fff;
+          font-size: 16px;
+          font-weight: 400;
+        }
+        &:focus::placeholder,
+        &:focus:-ms-input-placeholder,
+        &:focus::-webkit-input-placeholder,
+        &:focus::-moz-placeholder {
+          color: #333;
+          font-size: 16px;
+          font-weight: 400;
+        }
+      }
+  }
+  .oo-nav-icons {
+    li {
+      color: white;
+      cursor: pointer;
+      padding-right: 10px;
+      &:last-child {
+        border-left: 1px solid white;
+        padding-left: 10px;
+        padding-right: 0;
+      }
+      &:hover {
+        color: $link-over;
+      }
+    }
+  }
+}
