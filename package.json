@@ -51,6 +51,7 @@
     "babel-preset-stage-3": "^6.5.0",
     "chance": "^1.0.2",
     "gulp-clean-css": "^2.0.11",
+    "gulp-sass": "^2.3.2",
     "mocha": "^2.4.5",
     "selenium-webdriver": "^2.53.3",
     "should": "^8.3.1"
