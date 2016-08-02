@@ -23,7 +23,7 @@ var gutil = require('gulp-util');
 var cleanCSS = require('gulp-clean-css');
 var concat = require('gulp-concat');
 var del = require('del');
-
+var sass = require('gulp-sass');
 
 
 
@@ -58,6 +58,7 @@ gulp.task('ui-watch', function () {
     let watcher;
     watcher = gulp.watch('openorange/ui/src/**/*.es6', ['ui-babel']);
     watcher = gulp.watch('openorange/ui/src/**/*.js', ['ui-js']);
+    gulp.watch('openorange/ui/css/**/*.scss', ['ui-sass']);
     //watcher = gulp.watch('openorange/ui/src/**/*.js');
     watcher.on('change', function (event) {
         console.log("EVENT: ", event.type)
@@ -128,6 +129,13 @@ gulp.task("ui-js", function () {
         }));
 });
 
+gulp.task("ui-sass", function () {
+    return gulp.src('openorange/ui/css/templates.scss')
+        .pipe(sass())
+        .on('error', sass.logError)
+        .pipe(gulp.dest('openorange/ui/css/'));
+});
+
 gulp.task("sd-babel", function () {
     let fr = '/src/'
     let to = '/lib/'
@@ -181,7 +189,7 @@ gulp.task('clean-ui', () => {
 gulp.task('clean-all', ['clean-oo', 'clean-sd','clean-ui'])
 
 
-gulp.task('build', ['clean-all', 'oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'sd-babel', 'sd-js'])
+gulp.task('build', ['clean-all', 'oo-babel', 'oo-js', 'ui-js', 'ui-babel', 'ui-sass', 'sd-babel', 'sd-js'])
 
 gulp.task('prepare openorange', () => {
     require('source-map-support').install(); //solo debe usarse para debugging
