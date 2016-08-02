@@ -6,6 +6,7 @@
 
     $(document).ready(function () {
         let wso = cm.getClass("SalesOrderListWindow").new();
+        //let wso = cm.getClass("TestRecordListWindow").new();
         wso.open()
 
 
@@ -26,6 +27,40 @@
             w.print()
         })*/
 
+
+        /*$('#myList').megalist()
+        $('#myList').on('change', function(event){
+            var message = "selected index: "+event.selectedIndex+"\n"+
+                "selected item: "+event.srcElement.get()[0].outerHTML;
+            alert( message );
+        })*/
+
+        $('#myList').megalist();
+        $('#myList').megalist('setLabelFunction', listItemLabelFunction );
+        $('#myList').on('change', listChangeHandler);
+
+        //$.getScript("http://search.twitter.com/search.json?q=andytrice&rpp=50&include_entities=true&result_type=mixed&callback=dataReceived" );
+        var results = []
+        setTimeout(newData, 1000);
+        function newData() {
+            dataReceived({f1: 'aaaa', f2: new Date()})
+            setTimeout(newData, 1000)
+        }
+        function dataReceived( data ) {
+            results.push(data);
+            $('#myList').megalist('setDataProvider', results )
+        }
+
+        function listChangeHandler( event ) {
+            var message =   "selected index: " + event.selectedIndex + "\n" +
+                "selected item: " + event.srcElement.get()[0].outerHTML   ;
+            alert( message );
+        }
+
+        function listItemLabelFunction( item ) {
+            console.log(item)
+            return "<div><span>"+item.f1+"</span> <span>"+item.f2+"</span> </div>";
+        }
 
     });
 

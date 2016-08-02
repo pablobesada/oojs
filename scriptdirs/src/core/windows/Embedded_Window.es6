@@ -67,7 +67,6 @@ class Embedded_Window extends oo.UIEntity {
         newdesc.name = descriptor.name;
         newdesc.title = descriptor.title;
         newdesc.recordClass = descriptor.record
-        console.log(descriptor.name, this.__super__.__description__.form)
         newdesc.form = descriptor.form || this.__super__.__description__.form;
         if (descriptor.override) {
             newdesc.form = this.applyFormOverride(newdesc.form, descriptor.override)

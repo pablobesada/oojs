@@ -28,6 +28,12 @@
                 </div>
             </header>
             <div id="main">
+<div class="megalist" id="myList" >
+    <ul>
+    </ul>
+</div>
+
+
                 <div class="wrapper">
                     <aside id="left-sidebar-nav">
                         <ul class="side-nav fixed leftside-navigation" id="slide-out">
@@ -66,11 +72,18 @@
             </footer>
         </script>
         <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields();">
-            <div id="{{id}}" class="container oo-workspace-container"></div>
+            <div id="{{id}}" class="container oo-workspace-container col s12"></div>
         </script>
         <div class="listwindow">
-            <script class="content" type="x-tmpl-handlebars">
-                <div class="listwindow_grid"></div>
+            <script class="body" type="x-tmpl-handlebars">
+                <ul class="oo-listwindow oo-list-container">
+                </ul>
+            </script>
+            <script class="row" type="x-tmpl-handlebars">
+                <li class="oo-row hoverable" ><div class="card row oo-cell-container"></card></li>
+            </script>
+            <script class="row-cell" type="x-tmpl-handlebars">
+                <div class="oo-row-cell col s12 m6 truncate"><span class="cell-label">{{label}}:</span> <span class="cell-value">{{value}}</span></div>
             </script>
         </div>
     </div>

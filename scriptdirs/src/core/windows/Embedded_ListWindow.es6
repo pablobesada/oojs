@@ -50,6 +50,10 @@ class Embedded_ListWindow extends oo.UIEntity {
         this.emit("focus", {listwindow: this})
     }
 
+    async getRecords(start, count) {
+        return await this.getRecordClass().select().offset(start).limit(count).fetch();
+    }
+
     static tryCall(self, methodname) {
         if (methodname in this) {
             return this[methodname].apply(self, Array.prototype.slice.apply(arguments).slice(2));

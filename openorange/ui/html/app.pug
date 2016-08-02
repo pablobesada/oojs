@@ -9,6 +9,7 @@ html(lang='en')
         link(href='css/materialize-0.97.6.min.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(rel='stylesheet', href='css/material-icons.css')
         link(rel='stylesheet', href='css/font-awesome.min.css')
+        link(href='css/megalist.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/style.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/perfect-scrollbar.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/app.css', type='text/css', rel='stylesheet', media='screen,projection')
@@ -19,90 +20,91 @@ html(lang='en')
         //link(rel="stylesheet",href="css/app/styles.min.css",type="text/css")
 
 
-body
+    body
 
-script(type='text/javascript', src='js/plugins/jquery/jquery-2.1.4.min.js')
-script(type='text/javascript', src='js/plugins/babel/polyfill.min.js')
-script(src='/bower_components/moment/moment.js')
-script(src='/bower_components/chance/dist/chance.min.js')
-script(src='/bower_components/jquery-mask-plugin/dist/jquery.mask.min.js')
-script(src='/bower_components/underscore/underscore-min.js')
-script(src="/bower_components/bluebird/js/browser/bluebird.min.js")
-script(src='js/plugins/mustache/mustache.min.js')
-script(src='js/plugins/handlebars/handlebars.min.js')
-script(src='js/plugins/typeahead/typeahead.bundle.min.js')
+    script(type='text/javascript', src='js/plugins/jquery/jquery-2.1.4.min.js')
+    script(type='text/javascript', src='js/plugins/babel/polyfill.min.js')
+    script(src='/bower_components/moment/moment.js')
+    script(src='/bower_components/chance/dist/chance.min.js')
+    script(src='/bower_components/jquery-mask-plugin/dist/jquery.mask.min.js')
+    script(src='/bower_components/underscore/underscore-min.js')
+    script(src="/bower_components/bluebird/js/browser/bluebird.min.js")
+    script(src='js/plugins/mustache/mustache.min.js')
+    script(src='js/plugins/handlebars/handlebars.min.js')
+    script(src='js/plugins/typeahead/typeahead.bundle.min.js')
 
-//OPENORANGE
+    //OPENORANGE
 
-script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js')
-script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
-script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js')
-script(src=OpenOrangeBaseURL+'/lib/both/BaseEntity.js')
-script(src=OpenOrangeBaseURL+'/lib/both/UIEntity.js')
-script(src=OpenOrangeBaseURL+'/lib/both/explorer.js')
-script(src=OpenOrangeBaseURL+'/lib/both/basequery.js')
-script(src=OpenOrangeBaseURL+'/lib/client/clientquery.js')
-script(src='js/oo/ui.js')
-script(src='js/oo/templates.js')
-script(src='js/oo/windowmanager.js')
-script(src='js/oo/listwindowmanager.js')
-script(src='js/oo/reportmanager.js')
-script(src='js/oo/routinemanager.js')
-script(src='js/oo/documentmanager.js')
-script(src='js/oo/dialogs.js')
-script(src='js/oo/workspace.js')
+    script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js')
+    script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
+    script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js')
+    script(src=OpenOrangeBaseURL+'/lib/both/BaseEntity.js')
+    script(src=OpenOrangeBaseURL+'/lib/both/UIEntity.js')
+    script(src=OpenOrangeBaseURL+'/lib/both/explorer.js')
+    script(src=OpenOrangeBaseURL+'/lib/both/basequery.js')
+    script(src=OpenOrangeBaseURL+'/lib/client/clientquery.js')
+    script(src='js/oo/ui.js')
+    script(src='js/oo/templates.js')
+    script(src='js/oo/windowmanager.js')
+    script(src='js/oo/listwindowmanager.js')
+    script(src='js/oo/reportmanager.js')
+    script(src='js/oo/routinemanager.js')
+    script(src='js/oo/documentmanager.js')
+    script(src='js/oo/dialogs.js')
+    script(src='js/oo/workspace.js')
 
-script(type='text/javascript', src='js/plugins/materialize/materialize-0.97.6.min.js')
-script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js')
-script(type='text/javascript', src='js/plugins/app/app.js')
-script(type='text/javascript', src="js/plugins/slickgrid/jquery.event.drag-2.2.js")
-script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js")
-script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js")
-script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js")
+    script(type='text/javascript', src='js/plugins/materialize/materialize-0.97.6.min.js')
+    script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js')
+    script(type='text/javascript', src='js/plugins/app/app.js')
+    script(type='text/javascript', src="js/plugins/slickgrid/jquery.event.drag-2.2.js")
+    script(type='text/javascript', src="js/plugins/megalist/megalist.js")
+    script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js")
+    script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js")
+    script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js")
 
-script(src='js/window_test.js')
+    script(id="pepepe", src='js/window_test.js')
 
-script.
-    $(document).ready(function () {
-        let oo = require('openorange')
-        //$('body').html(oo.ui.templates.get("workspace body").createElement({}))
-        window.addEventListener('keyup', function (event) {
-            if (event.ctrlKey && event.key == 'f') $('#OOSearch.typeahead').focus();
-        })
+    script.
+        $(document).ready(function () {
+            let oo = require('openorange')
+            //$('body').html(oo.ui.templates.get("workspace body").createElement({}))
+            window.addEventListener('keyup', function (event) {
+                if (event.ctrlKey && event.key == 'f') $('#OOSearch.typeahead').focus();
+            })
 
-        $('#OOSearch.typeahead').focus(function () {
-            $(this).select();
-        })
-        $('#OOSearch.typeahead').typeahead({hint: true}, {
-            async: true,
-            display: 'label',
-            limit: 4,
-            source: function (query, syncResults, asyncResults) {
-                oo.explorer.search(query)
-                        .then(function (results) {
-                            //console.log(results.length)
-                            asyncResults(results)
-                        })
-            },
-        }).on('typeahead:selected', function (obj, datum) {
-            var wnd = null;
-            switch (datum.type) {
-                case 'Record Class':
-                    console.log(datum.access)
-                    wnd = oo.classmanager.getClass(datum.access).new();
-                    break;
-                case 'Report':
-                    wnd = oo.classmanager.getClass(datum.name).new();
-                    break;
-                case 'Routine':
-                    wnd = oo.classmanager.getClass(datum.name).new();
-                    break;
-            }
-            if (wnd != null) {
-                wnd.open()
-                wnd.setFocus()
-            }
+            $('#OOSearch.typeahead').focus(function () {
+                $(this).select();
+            })
+            $('#OOSearch.typeahead').typeahead({hint: true}, {
+                async: true,
+                display: 'label',
+                limit: 4,
+                source: function (query, syncResults, asyncResults) {
+                    oo.explorer.search(query)
+                            .then(function (results) {
+                                //console.log(results.length)
+                                asyncResults(results)
+                            })
+                },
+            }).on('typeahead:selected', function (obj, datum) {
+                var wnd = null;
+                switch (datum.type) {
+                    case 'Record Class':
+                        console.log(datum.access)
+                        wnd = oo.classmanager.getClass(datum.access).new();
+                        break;
+                    case 'Report':
+                        wnd = oo.classmanager.getClass(datum.name).new();
+                        break;
+                    case 'Routine':
+                        wnd = oo.classmanager.getClass(datum.name).new();
+                        break;
+                }
+                if (wnd != null) {
+                    wnd.open()
+                    wnd.setFocus()
+                }
 
+            });
+            $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
         });
-        $('span.twitter-typeahead').attr('style', '').removeClass("twitter-typeahead")
-    });

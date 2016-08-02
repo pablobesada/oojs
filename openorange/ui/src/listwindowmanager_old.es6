@@ -14,16 +14,12 @@
             this.grid_columns = null;
             this.windowjson = JSON.parse(JSON.stringify(this.listwindow.__class__.__description__.columns));   //deep clone of the object because I need to add some metadata to it
             this.listwindow.onAny(this.update.bind(this));
-            this.start = null;
-            this.count = null;
-            this.batch = 3;
             return this
         }
 
         render() {
             var self = this;
-            this.__element__.addClass('oo-listwindow-container')
-            this.__element__.append(oo.ui.templates.get('.listwindow .body').createElement())
+            this.__element__.append(oo.ui.templates.get('.listwindow .content').createElement())
 
             oo.ui.containers.push({
                 entity: this.listwindow,
@@ -43,28 +39,8 @@
             windowElement.attr('id', this.tab_id);
             $('#workspace').append(windowElement);
             $('ul.tabs.workspace').tabs();
-
             var recordClass = self.listwindow.getRecordClass();
-            self.generateColumns();
-
-            let $body = oo.ui.templates.get('.listwindow .body').createElement()
-            this.listcontainer = $body.find('.oo-list-container');
-            if (this.listcontainer.length >= 0) this.listcontainer = this.listcontainer.addBack('.oo-list-container')
-            let $listheader = $body.find('.oo-list-header')
-            if ($listheader.length > 0) {
-                for (let i in self.grid_columns) {
-                    let col = self.grid_columns[i]
-                    let args = {label: col.label}
-                    let $cell = oo.ui.templates.get('.listwindow .header-cell').createElement(args)
-                    $listheader.append($cell)
-                }
-            }
-            //$listheader.html("pepepep")
-            this.listcontainer.scroll(this.listScrolled.bind(this))
-            this.__element__.html($body)
-            this.start = 0;
-            this.fill(this.start, this.start+this.batch);
-            /*
+            var columns = self.listwindow.__class__.__description__.columns;
             // self.grid;
             var loader = new Slick.Data.RemoteModel(recordClass);
             var options = {
@@ -108,7 +84,6 @@
                 loader.ensureData(vp.top, vp.bottom);
             });
             self.grid.onViewportChanged.notify();
-            */
         };
 
 
@@ -118,40 +93,11 @@
             var columns = self.listwindow.__class__.__description__.columns;
             for (var i = 0; i < columns.length; i++) {
                 var col = columns[i];
-                this.grid_columns.push({id: col.field, label: col.field, field: col.field, sortable: true})
+                this.grid_columns.push({id: col.field, name: col.field, field: col.field, sortable: true})
             }
         }
 
-        async fill(start, count) {
-            let self = this;
-            let records = await this.listwindow.getRecords(start, count);
-            this.count = records.length;
-            for (let i in records) {
-                let rec = records[i];
-                let args = {}
-                let $row = oo.ui.templates.get('.listwindow .row').createElement(args)
-                let $cellcontainer = $row.find('.oo-cell-container')
-                if ($cellcontainer.length == 0) $cellcontainer = $cellcontainer.addBack('.oo-cell-container');
-                if ($cellcontainer.length == 0) $cellcontainer = $row;
 
-                for (let j in this.grid_columns) {
-                    let col = this.grid_columns[j];
-                    let args = {value: rec[col.field], label: col.label}
-                    let $cell = oo.ui.templates.get('.listwindow .row-cell').createElement(args)
-                    $cellcontainer.append($cell)
-                }
-                $row.click((event) => {
-                    console.log("AAAA")
-                    self.recordSelectedInListWindow(rec);
-                })
-                this.listcontainer.append($row)
-            }
-            console.log(this.listcontainer)
-        }
-
-        listScrolled(event) {
-            console.log(this.listcontainer.offsetY)
-        }
         async recordSelectedInListWindow(record) {
             var self = this;
             let res = await record.load()

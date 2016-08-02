@@ -1,18 +1,16 @@
 
-
 #workspace .oo-workspace-container {
   height: 100%;
 }
 
 .listwindow_grid {
-  width:100%;
-  height:350px;
+  width: 100%;
+  height: 350px;
 }
 
 .oo-report-header-row {
   font-weight: bold;
 }
-
 
 .oo-block-screen {
   display: none;
@@ -49,21 +47,44 @@
   }
 }
 
- .pipeline {
-   //text-color: black;
-   span {
-     cursor: pointer;
-     padding: 5px;
-     &[active=true] {
-       color:blue;
-     }
-     &:before {
-       margin: 0 10px 0 8px;
-       content: ' > ';
-     }
+.pipeline {
+  //text-color: black;
+  span {
+    cursor: pointer;
+    padding: 5px;
+    &[active=true] {
+      color: blue;
+    }
+    &:before {
+      margin: 0 10px 0 8px;
+      content: ' > ';
+    }
 
-     &:first-child:before {
-       content: '';
-     }
-   }
- }
+    &:first-child:before {
+      content: '';
+    }
+  }
+}
+
+.oo-listwindow-container {
+  .oo-list-container {
+    width: 100%;
+    height: 300px;
+    overflow: auto;
+    .oo-row {
+      cursor: pointer;
+      margin-top: 15px;
+
+    }
+    .oo-cell-container {
+      padding: 10px;
+    }
+    .oo-row-cell {
+      display: inline-block;
+      .cell-label {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
