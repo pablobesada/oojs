@@ -46,7 +46,7 @@
         };
 
         focus() {
-            $('ul.tabs.workspace').tabs('select_tab', this.tab_id);
+            $('ul.recent-activity').tabs('select_tab', this.tab_id);
         }
 
         close() {

@@ -77,7 +77,8 @@
       }
   }
   .oo-nav-icons {
-    li {
+    position: relative;
+    > li {
       color: white;
       cursor: pointer;
       padding-right: 10px;
@@ -88,6 +89,35 @@
       }
       &:hover {
         color: $link-over;
+        .oo-nav-options {
+          display: inline-block;
+        }
+        &:before {
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-bottom: 8px solid $link-over;
+          bottom: 5px;
+          content: '';
+          height: 0;
+          margin-left: 5px;
+          position: absolute;
+          width: 0;
+        }
+      }
+      .oo-nav-options {
+        background: $link-over;
+        display: none;
+        left: 0;
+        position: absolute;
+        top: 64px;
+        width: 100%;
+        li {
+          float: none;
+          line-height: 30px;
+          a {
+            width: 100%;
+          }
+        }
       }
     }
   }

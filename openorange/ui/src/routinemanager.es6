@@ -23,14 +23,20 @@
             w.append(contentElement)
             oo.ui.containers.push({entity: this.routine, element: w, tab_id: this.tab_id, container: self});
             this.__content_element__ = contentElement;
-            var tab = $('<li class="tab col"><a href="#' + this.tab_id + '">' + this.routine.getTitle() + '</a></li>');
-            $('ul.tabs.workspace').append(tab);
+            var tab = $('<li><a href="#' + this.tab_id + '">' + this.routine.getTitle() + '</a></li>');
+            $('ul.recent-activity').prepend(tab);
             w.attr('id', this.tab_id);
             $('#workspace').append(w);
-            $('ul.tabs.workspace').tabs();
+            $('ul.recent-activity').tabs();
             self.routine.getParamsWindow().__ui_container_view_id__ = paramsWindowId;
             self.routine.getParamsWindow().open()
             self.renderActionBar();
+
+            if (w.siblings().length > 0) {
+              w.siblings().each(function() {
+                $(this).css('display', 'none');
+              });
+            }
         };
 
         update(event) {
@@ -60,5 +66,3 @@
     //$.extend(true, window.oo.ui, {reportmanager: ReportContainer})
     //window.ReportManager = ReportContainer; //para hacer global la variable ReportContainer
 })(jQuery);
-
-
