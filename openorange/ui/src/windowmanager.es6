@@ -64,12 +64,11 @@
             if (self.window.__ui_container_view_id__) {
                 $('#' + self.window.__ui_container_view_id__).append(windowElement)
             } else {
-                var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
-                $('ul.tabs.workspace').append(tab);
+                var tab = $('<li><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
+                $('ul.recent-activity').prepend(tab);
                 windowElement.attr('id', this.tab_id);
                 $('#workspace').append(windowElement);
-                $('ul.tabs.workspace').tabs();
-                console.log(windowElement)
+                $('ul.recent-activity').tabs();
                 this.templateElements.push(windowElement)
             }
             //$(windowElement).find('ul.tabs').tabs();

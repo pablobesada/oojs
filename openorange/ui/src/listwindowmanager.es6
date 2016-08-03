@@ -40,15 +40,22 @@
         displayWindow(windowElement) {
 
             var self = this
-            var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
-            $('ul.tabs.workspace').append(tab);
+            var tab = $('<li><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
+            $('ul.recent-activity').prepend(tab);
             windowElement.attr('id', this.tab_id);
             $('#workspace').append(windowElement);
             this.templateElements.push(windowElement)
-            $('ul.tabs.workspace').tabs();
+            $('ul.recent-activity').tabs();
 
             var recordClass = self.listwindow.getRecordClass();
             self.generateColumns();
+
+            var siblings = windowElement.siblings();
+            if (siblings.length > 0) {
+              siblings.each(function() {
+                $(this).css('display', 'none');
+              });
+            }
 
             let $body = oo.ui.templates.get('.listwindow .body').createElement()
             this.listcontainer = $body.find('.oo-list-container');
@@ -93,7 +100,6 @@
             }, 0)
 
             //this.fill(this.start, this.start+this.batch);
-
         };
 
         generateColumns() {
@@ -136,6 +142,7 @@
         listScrolled(event) {
             console.log(this.listcontainer.offsetY)
         }
+
         async recordSelectedInListWindow(record) {
             var self = this;
             let res = await record.load()

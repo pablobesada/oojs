@@ -30,16 +30,22 @@
             w.append(contentElement)
             oo.ui.containers.push({entity: this.report, element: w, tab_id: this.tab_id, container: self});
             this.__content_element__ = contentElement;
-            var tab = $('<li class="tab col"><a href="#' + this.tab_id + '">' + this.report.getTitle() + '</a></li>');
-            $('ul.tabs.workspace').append(tab);
+            var tab = $('<li><a href="#' + this.tab_id + '">' + this.report.getTitle() + '</a></li>');
+            $('ul.recent-activity').prepend(tab);
             w.attr('id', this.tab_id);
             $('#workspace').append(w);
-            $('ul.tabs.workspace').tabs();
+            $('ul.recent-activity').tabs();
             if (showSpecWindow) {
                 self.report.getParamsWindow().__ui_container_view_id__ = paramsWindowId;
                 self.report.getParamsWindow().open()
             }
             self.renderActionBar();
+
+            if (w.siblings().length > 0) {
+              w.siblings().each(function() {
+                $(this).css('display', 'none');
+              });
+            }
         };
 
         attachToWindowReportView() {
@@ -93,5 +99,3 @@
     //$.extend(true, window.oo.ui, {reportmanager: ReportContainer})
     //window.ReportManager = ReportContainer; //para hacer global la variable ReportContainer
 })(jQuery);
-
-
