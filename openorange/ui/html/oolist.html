@@ -3,10 +3,10 @@
     <link rel="stylesheet" href="../css/superlist.css" />
 </head>
 <body>
-<div style="position: relative; top:40px; left:80px;"><div>aca estoy en una pagina normal</div>
-    <div class="sl" style="height: 400px; width: 200px; border: 1px solid black"></div>
+<!--div style="position: relative; top:40px; left:80px;"><div>aca estoy en una pagina normal</div-->
 
-</div>
+
+</div-->
 
 
 <!--div>hola</div>
@@ -35,14 +35,17 @@
             item.innerHTML = 'Item ' + i
             res.push(item);
         }
-        //return res;
+        return res;
         //setTimeout(function () {promise.resolve(res)}, 2000);
         promise.resolve(res)
         return promise.promise
     }
 
+
     $(document).ready(function () {
-        $('.sl').superlist({src: {get: getItems, length: });
+        let div = $('<div class="sl" style="height: 400px; width: 200px; border: 1px solid black"></div>')
+        div.superlist({src: getItems, length: 20});
+        $(document.body).append(div)
 
      })
 

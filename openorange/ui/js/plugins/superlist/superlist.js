@@ -4,7 +4,7 @@
     function RemoteArray(source, length) {
         this.items = [];
         this.start = 0;
-        this.bufferlength = 120;
+        this.bufferlength = 60;
         this.fetching = null;
         this.fetching_start = null;
         this.fetching_count = null;
@@ -13,10 +13,13 @@
         this.waiter_ids = 1;
         this.source = source;
         this.length = length
-        if (typeof source != 'function') {
+        this.length_fixed =false;
+        if (typeof source == 'array') {
             this.items = source;
             this.length = this.items.length;
+            this.length_fixed = true;
         }
+        //if (this.bufferlength > this.length) this.bufferlength = length;
     }
 
     RemoteArray.prototype.ensure = function (start, count) {
@@ -28,6 +31,17 @@
         let fetch_id = this.last_fetch_id;
         Promise.resolve(this.source(start, count))
             .then(function (items) {
+                console.log(start, count, items.length)
+                if (!self.length_fixed) {
+                    if (count > items.length) {
+                        self.length = start + items.length;
+                        self.length_fixed = true;
+                        console.log('setting length to:' + self.length)
+                    } else if (count == items.length) {
+                        self.length = start + count + self.bufferlength;
+                        console.log('2setting length to:' + self.length)
+                    }
+                }
                 self.start = start;
                 self.items = items;
                 if (fetch_id == self.last_fetch_id) {
@@ -72,7 +86,7 @@
     // The actual plugin constructor
     function SuperList(element, options) {
         this.element = element;
-
+        //this.element.setLength = this.setLength.bind(this)
         this.options = $.extend({}, defaults, options);
 
         this._defaults = defaults;
@@ -82,20 +96,12 @@
     }
 
     SuperList.prototype.init = function () {
-        //let w = 320;
-        //let h = 320;
         let self = this;
-
-
-        //this.width = w;
-        //this.height = h;
-
-
-
         let container = this.element;
         let $e = $(container);
         this.width = $e.width()
         this.height = $e.height();
+        //console.log("SIZE: ", this.width, this.height)
         container.className += ' oo-superlist';
         //container.style.width = w;
         //container.style.height = h;
@@ -105,16 +111,16 @@
         this.canvas.style.position = 'absolute';
         this.canvas.style.overflow = 'hidden';
 
-        this.canvas.style.height = this.height;
+        this.canvas.style.height = this.height + "px";
 
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        //this.canvas.style.width = this.width;
+        //this.canvas.style.height = this.height;
         let scrollbar = new ScrollBar(this.height);
         this.scrollbar = scrollbar;
         container.appendChild(this.canvas);
         container.appendChild(scrollbar.domElement);
-        this.canvas.style.width = this.width - $(this.scrollbar.domElement).width() - 4;
-
+        this.canvas.style.width = (this.width - $(this.scrollbar.domElement).width() - 4) + "px" ;
+        //$(this.canvas).height(400)
         scrollbar.onScroll.add(function (type, scrollTo) {
             switch (type) {
                 case 'pageup':
@@ -138,65 +144,88 @@
         container.addEventListener('mousewheel', this.onWheel.bind(this), false);
         //document.body.appendChild(container);
         //var items = [];
-        this.items = new RemoteArray(this.options.src, 20)
+        this.items = new RemoteArray(this.options.src, 120)
 
 
         //console.log(this.innerHeight)
         this.onscreen = [];
         this.itemHeight = null;
-        this.initiated = false;
-        this.items.get(0)
-            .then(function (firstItem) {
-                self.canvas.appendChild(firstItem);
-                self.itemHeight = $(firstItem).outerHeight(true);
-                self.canvas.removeChild(firstItem);
-                self.initiated = true;
-                //self.itemHeight=16;
-                self.innerHeight = self.items.length * self.itemHeight;
-                self.updateScrollbar();
-                self.draw();
-            })
-
+        this.initiate();
     };
+
+    SuperList.prototype.initiate = function() {
+        let self = this;
+        this.initiated = false;
+        if (this.items.length) {
+            return this.items.get(0)
+                .then(function (firstItem) {
+                    if (firstItem.jquery) firstItem = firstItem[0]
+                    self.canvas.appendChild(firstItem);
+                    self.itemHeight = $(firstItem).outerHeight(true);
+                    self.canvas.removeChild(firstItem);
+                    self.initiated = true;
+                    //self.itemHeight=16;
+                    self.updateScrollbar();
+                    self.draw();
+                })
+        } else {
+            self.updateScrollbar();
+            self.draw();
+        }
+    }
 
     SuperList.prototype.onWheel = function (e) {
         e.preventDefault();
         if (!this.initiated) return;
         var delta = e.wheelDelta;
-        this.scrollTop = Math.max(0, this.scrollTop - delta);
-        this.scrollTop = Math.min(this.innerHeight-this.height+100, this.scrollTop)
-        console.log(this.scrollTop)
+        let scrollTop = Math.max(0, this.scrollTop - delta);
+        scrollTop = Math.min(this.innerHeight-this.height+100, scrollTop)
+        if (scrollTop == this.scrollTop) return;
+        this.scrollTop = scrollTop;
         this.draw();
         this.updateScrollbar();
     };
 
+    SuperList.prototype.setLength = function(l) {
+        this.options.length = l;
+        this.items.length = l;
+        this.initiate()
+    }
+
     SuperList.prototype.draw = function () {
+        //console.log('ini?', this.initiated)
         if (!this.initiated) return;
         let self = this;
+        self.innerHeight = self.items.length * self.itemHeight;
         //var time = Date.now();
         let scrollTop = Math.max(Math.min(this.scrollTop, this.innerHeight - this.height), 0);
 
         let first_item = Math.max(0, Math.ceil(scrollTop / self.itemHeight) - 1);
-        console.log(Math.ceil(this.height / self.itemHeight))
+        //console.log(Math.ceil(this.height / self.itemHeight))
         let last_item = Math.min(first_item + Math.ceil(this.height / self.itemHeight), this.items.length-1);
-        console.log("REDRAWING", first_item, last_item)
+        //console.log("REDRAWING", first_item, last_item)
         let promises = [];
         for (let i = first_item; i <= last_item; i++) {
              promises.push(this.items.get(i));
         }
         Promise.all(promises).then(function (result) {
+            //console.log("RESULT:", result)
             //self.element.removeChild(self.canvas)
             var frag = document.createDocumentFragment();
             var oldscreen = self.onscreen;
             self.onscreen = [];
             for (let i = first_item; i <= last_item; i++) {
                 let item = result[i-first_item];
+                if (!item) continue;
+                //console.log(item)
+                if (item.jquery) item = item[0]
                 let top = i * self.itemHeight
                 //if ((top + self.itemHeight >= scrollTop) && (top <= self.height + scrollTop)) {
                     //item.className += ' superlist-item';
                     item.style.position = 'absolute'
-                    item.style.top = top - scrollTop;
 
+                    item.style.top = (top - scrollTop) + "px";
+                //console.log("drawing item " + i + " at " + item.style.top, top, scrollTop)
                     frag.appendChild(item)
                     self.onscreen.push(item);
                 //}
@@ -218,14 +247,17 @@
     }
 
     SuperList.prototype.updateScrollbar = function () {
+        if (!this.initiated) return;
+        this.innerHeight = this.items.length * this.itemHeight;
         this.scrollbar.setLength(this.height / this.innerHeight);
         this.scrollbar.setPosition(this.scrollTop / (this.innerHeight - this.height));
     }
 
     $.fn[pluginName] = function (options) {
         return this.each(function () {
-            if (!$.data(this, 'plugin_' + pluginName)) {
-                $.data(this, 'plugin_' + pluginName,
+            let p = $.data(this, pluginName);
+            if (!p) {
+                $.data(this, pluginName,
                     new SuperList(this, options));
             }
         });
@@ -242,14 +274,14 @@
             this.scrolltrack = document.createElement('div');
             this.scrolltrackHeight = h-2;
             this.scrolltrack.className = 'superlist-scrolltrack';
-            this.scrolltrack.style.height = h-2;
+            this.scrolltrack.style.height = (h-2) + "px";
             //this.scrolltrack.style.width = SCROLL_WIDTH - 2;
 
             // var scrollTop = 0;
             this.scrollbar = document.createElement('div');
             this.scrollbar.className = 'superlist-scrollbar';
             //this.scrollbar.style.width = SCROLLBAR_WIDTH - 2;
-            this.scrollbar.style.height = h / 2;
+            this.scrollbar.style.height = (h / 2) + "px";
             this.scrollbar.style.top = 0;
             //this.scrollbar.style.left = 3;
 
@@ -273,7 +305,7 @@
             l = Math.max(Math.min(1, l), 0);
             l *= this.scrolltrackHeight;
             this.bar_length = Math.max(l, this.MIN_BAR_LENGTH);
-            this.scrollbar.style.height = this.bar_length;
+            this.scrollbar.style.height = this.bar_length + "px";
         }
 
         // Moves scrollbar to position by Percentage
@@ -281,7 +313,7 @@
             p = Math.max(Math.min(1, p), 0);
             let emptyTrack = this.scrolltrackHeight - this.bar_length;
             this.bar_y = p * emptyTrack;
-            this.scrollbar.style.top = this.bar_y;
+            this.scrollbar.style.top = this.bar_y + "px";
         }
 
 

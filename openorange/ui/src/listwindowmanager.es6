@@ -33,15 +33,18 @@
             });
             this.displayWindow(this.__element__)
             self.renderActionBar();
+            this.callInitOnPageCallbacks();
 
         };
 
         displayWindow(windowElement) {
+
             var self = this
             var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
             $('ul.tabs.workspace').append(tab);
             windowElement.attr('id', this.tab_id);
             $('#workspace').append(windowElement);
+            this.templateElements.push(windowElement)
             $('ul.tabs.workspace').tabs();
 
             var recordClass = self.listwindow.getRecordClass();
@@ -62,55 +65,36 @@
             //$listheader.html("pepepep")
             this.listcontainer.scroll(this.listScrolled.bind(this))
             this.__element__.html($body)
-            this.start = 0;
-            this.fill(this.start, this.start+this.batch);
-            /*
-            // self.grid;
-            var loader = new Slick.Data.RemoteModel(recordClass);
-            var options = {
-                enableCellNavigation: true,
-                enableColumnReorder: false,
-                forceFitColumns: true,
-                autoExpandColumns: true,
-                //showHeaderRow: true,
-
-            };
-
-            self.generateColumns();
-            self.grid = new Slick.Grid(windowElement.find(".listwindow_grid"), loader.data, self.grid_columns, options);
-            self.grid.onClick.subscribe(function (e, args) {
-                var item = args.item;
-                self.recordSelectedInListWindow(args.grid.getData()[args.row])
-            });
-            self.grid.onViewportChanged.subscribe(function (e, args) {
-                var vp = self.grid.getViewport();
-                loader.ensureData(vp.top, vp.bottom);
-            });
-            loader.onDataLoaded.subscribe(function (e, args) {
-                for (var i = args.from; i <= args.to; i++) {
-                    self.grid.invalidateRow(i);
+            this.templateElements.push($body)
+            //this.start = 0;
+            function getItems(start, count) {
+                console.log('fetching items: ', start, 'to', start + count - 1, " (" + count + ")")
+                var promise = Promise.pending();
+                var res = [];
+                for (var i = start; i < start + count; i++) {
+                    let item = document.createElement("div")
+                    item.style.fontSize = '12pt'
+                    item.style.padding = '35px'
+                    item.style.border = '1px solid black'
+                    item.style.width = '100%'
+                    //item.style.position = 'absolute'
+                    //item.style.backgroundColor = 'black';
+                    //item.style.color = 'white';
+                    item.innerHTML = 'Item ' + i
+                    res.push(item);
                 }
-                self.grid.updateRowCount();
-                self.grid.render();
-                //loadingIndicator.fadeOut();
-            });
+                //return res;
+                setTimeout(function () {promise.resolve(res)}, 5);
+                //promise.resolve(res)
+                return promise.promise
+            }
+            setTimeout(() => {
+                this.listcontainer = this.listcontainer.superlist({src: this.getRows.bind(this)});
+            }, 0)
 
-            $("#txtSearch").keyup(function (e) {
-                if (e.which == 13) {
-                    loader.setSearch($(this).val());
-                    var vp = self.grid.getViewport();
-                    loader.ensureData(vp.top, vp.bottom);
-                }
-            });
-            self.grid.onSort.subscribe(function (e, args) {
-                loader.setSort(args.sortCol.field, args.sortAsc ? 1 : -1);
-                var vp = self.grid.getViewport();
-                loader.ensureData(vp.top, vp.bottom);
-            });
-            self.grid.onViewportChanged.notify();
-            */
+            //this.fill(this.start, this.start+this.batch);
+
         };
-
 
         generateColumns() {
             var self = this;
@@ -122,10 +106,11 @@
             }
         }
 
-        async fill(start, count) {
+        async getRows(start, count) {
             let self = this;
             let records = await this.listwindow.getRecords(start, count);
             this.count = records.length;
+            let res = [];
             for (let i in records) {
                 let rec = records[i];
                 let args = {}
@@ -141,12 +126,11 @@
                     $cellcontainer.append($cell)
                 }
                 $row.click((event) => {
-                    console.log("AAAA")
                     self.recordSelectedInListWindow(rec);
                 })
-                this.listcontainer.append($row)
+                res.push($row)
             }
-            console.log(this.listcontainer)
+            return res;
         }
 
         listScrolled(event) {

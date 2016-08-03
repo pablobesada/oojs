@@ -9,7 +9,7 @@ html(lang='en')
         link(href='css/materialize-0.97.6.min.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(rel='stylesheet', href='css/material-icons.css')
         link(rel='stylesheet', href='css/font-awesome.min.css')
-        link(href='css/megalist.css', type='text/css', rel='stylesheet', media='screen,projection')
+        link(href='css/superlist.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/style.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/perfect-scrollbar.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/app.css', type='text/css', rel='stylesheet', media='screen,projection')
@@ -34,7 +34,7 @@ html(lang='en')
     script(src='js/plugins/typeahead/typeahead.bundle.min.js')
 
     //OPENORANGE
-
+    script(type='text/javascript', src="js/plugins/superlist/superlist.js")
     script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js')
     script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
     script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js')
@@ -57,12 +57,11 @@ html(lang='en')
     script(type='text/javascript', src='js/plugins/perfect-scrollbar/perfect-scrollbar.min.js')
     script(type='text/javascript', src='js/plugins/app/app.js')
     script(type='text/javascript', src="js/plugins/slickgrid/jquery.event.drag-2.2.js")
-    script(type='text/javascript', src="js/plugins/megalist/megalist.js")
     script(type='text/javascript', src="js/plugins/slickgrid/slick.core.js")
     script(type='text/javascript', src="js/plugins/slickgrid/slick.grid.js")
     script(type='text/javascript', src="js/plugins/slickgrid/slick.remotemodel.js")
 
-    script(id="pepepe", src='js/window_test.js')
+    script(src='js/window_test.js')
 
     script.
         $(document).ready(function () {

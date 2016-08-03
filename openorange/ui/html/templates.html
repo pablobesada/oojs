@@ -79,18 +79,43 @@
         <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields();">
             <div id="{{id}}" class="container oo-workspace-container col s12"></div>
         </script>
-        <div class="listwindow">
+
+        <!--div class="listwindow">
             <script class="body" type="x-tmpl-handlebars">
-                <ul class="oo-listwindow oo-list-container">
-                </ul>
+                <div class="oo-listwindow">
+                    <ul class="oo-list-container">
+                    </ul>
+                </div>
             </script>
             <script class="row" type="x-tmpl-handlebars">
-                <li class="oo-row hoverable" ><div class="card row oo-cell-container"></card></li>
+                <li class="oo-row hoverable"></li>
+            </script>
+            <script class="row-cell" type="x-tmpl-handlebars">
+                <div class="oo-row-cell truncate" style="width: 260px"><span>{{value}}</span></div>
+            </script>
+        </div-->
+
+        <div class="listwindow">
+            <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
+                <div class="oo-listwindow">
+                    <select class='col s4'>
+                        <option value="1" SELECTED >Este mes</option>
+                        <option value="1">Mes anterior</option>
+                        <option value="2">Ultimos abiertos</option>
+                        <option value="1">Sin aprobar</option>
+                    </select>
+                    <div class="oo-list-container">
+                    </div>
+                </div>
+            </script>
+            <script class="row" type="x-tmpl-handlebars">
+                <div class="oo-row hoverable"><div class="card row oo-cell-container"></div></div>
             </script>
             <script class="row-cell" type="x-tmpl-handlebars">
                 <div class="oo-row-cell col s12 m6 truncate"><span class="cell-label">{{label}}:</span> <span class="cell-value">{{value}}</span></div>
             </script>
         </div>
+
     </div>
     <div class="actionbar">
         <script class="container" type="x-tmpl-handlebars">
