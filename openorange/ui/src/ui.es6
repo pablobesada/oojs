@@ -19,9 +19,23 @@
             });
         }
 
+        open(params) {
+            let self = this;
+            self.render();
+            oo.ui.containers.push({
+                entity: this,
+                element: this.__element__,
+                tab_id: this.tab_id,
+                container: self
+            });
+            self.renderActionBar();
+            self.callInitOnPageCallbacks();
+        }
+
+
+
         callInitOnPageCallbacks() {
             _.each(this.templateElements, (templateElement) => {
-                console.log("AA", templateElement)
                 templateElement.addedToPage();
             })
             this.templateElements = [];
