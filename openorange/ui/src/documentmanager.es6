@@ -302,10 +302,10 @@
         }
 
         open() {
-            var tab = $(`<li class="tab"><a href="#${this.tab_id}">DOCUMENT</a></li>`);
-            $('ul.tabs.workspace').append(tab);
+            var tab = $(`<li><a href="#${this.tab_id}">DOCUMENT</a></li>`);
+            $('ul.recent-activity').prepend(tab);
             this.render()
-            $('ul.tabs.workspace').tabs();
+            $('ul.recent-activity').tabs();
         }
 
         render() {

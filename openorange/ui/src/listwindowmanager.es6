@@ -34,11 +34,11 @@
 
         displayWindow(windowElement) {
             var self = this
-            var tab = $('<li class="tab"><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
-            $('ul.tabs.workspace').append(tab);
+            var tab = $('<li><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
+            $('ul.recent-activity').prepend(tab);
             windowElement.attr('id', this.tab_id);
             $('#workspace').append(windowElement);
-            $('ul.tabs.workspace').tabs();
+            $('ul.recent-activity').tabs();
             var recordClass = self.listwindow.getRecordClass();
             var columns = self.listwindow.__class__.__description__.columns;
             var grid;
@@ -49,7 +49,6 @@
                 forceFitColumns: true,
                 //autoExpandColumns: true,
                 //showHeaderRow: true,
-
             };
 
             self.generateColumns();
@@ -71,6 +70,13 @@
                 //loadingIndicator.fadeOut();
             });
 
+            var siblings = windowElement.siblings();
+            if (siblings.length > 0) {
+              siblings.each(function() {
+                $(this).css('display', 'none');
+              });
+            }
+
             $("#txtSearch").keyup(function (e) {
                 if (e.which == 13) {
                     loader.setSearch($(this).val());
@@ -86,7 +92,6 @@
             grid.onViewportChanged.notify();
         };
 
-
         generateColumns() {
             var self = this;
             this.grid_columns = [];
@@ -96,7 +101,6 @@
                 this.grid_columns.push({id: col.field, name: col.field, field: col.field, sortable: true})
             }
         }
-
 
         async recordSelectedInListWindow(record) {
             var self = this;

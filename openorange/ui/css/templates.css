@@ -60,16 +60,42 @@
       font-size: 16px;
       font-weight: 400; }
 
-.oo-main-header .oo-nav-icons li {
-  color: white;
-  cursor: pointer;
-  padding-right: 10px; }
-  .oo-main-header .oo-nav-icons li:last-child {
-    border-left: 1px solid white;
-    padding-left: 10px;
-    padding-right: 0; }
-  .oo-main-header .oo-nav-icons li:hover {
-    color: #eee; }
+.oo-main-header .oo-nav-icons {
+  position: relative; }
+  .oo-main-header .oo-nav-icons > li {
+    color: white;
+    cursor: pointer;
+    padding-right: 10px; }
+    .oo-main-header .oo-nav-icons > li:last-child {
+      border-left: 1px solid white;
+      padding-left: 10px;
+      padding-right: 0; }
+    .oo-main-header .oo-nav-icons > li:hover {
+      color: #ddd; }
+      .oo-main-header .oo-nav-icons > li:hover .oo-nav-options {
+        display: inline-block; }
+      .oo-main-header .oo-nav-icons > li:hover:before {
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid #ddd;
+        bottom: 5px;
+        content: '';
+        height: 0;
+        margin-left: 5px;
+        position: absolute;
+        width: 0; }
+    .oo-main-header .oo-nav-icons > li .oo-nav-options {
+      background: #ddd;
+      display: none;
+      left: 0;
+      position: absolute;
+      top: 64px;
+      width: 100%; }
+      .oo-main-header .oo-nav-icons > li .oo-nav-options li {
+        float: none;
+        line-height: 30px; }
+        .oo-main-header .oo-nav-icons > li .oo-nav-options li a {
+          width: 100%; }
 
 #workspace .oo-workspace-container {
   height: 100%; }
