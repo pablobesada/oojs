@@ -21,6 +21,7 @@
 
         callInitOnPageCallbacks() {
             _.each(this.templateElements, (templateElement) => {
+                console.log("AA", templateElement)
                 templateElement.addedToPage();
             })
             this.templateElements = [];

@@ -1,0 +1,60 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../css/superlist.css" />
+</head>
+<body>
+<!--div style="position: relative; top:40px; left:80px;"><div>aca estoy en una pagina normal</div-->
+
+
+</div-->
+
+
+<!--div>hola</div>
+<div class="sl"></div-->
+</body>
+
+<script type="text/javascript" src="../js/plugins/jquery/jquery-2.1.4.min.js"></script>
+<script type='text/javascript' src='../js/plugins/babel/polyfill.min.js'></script>
+<script src="/bower_components/bluebird/js/browser/bluebird.min.js"></script>
+<script type="text/javascript" src="../js/plugins/superlist/superlist.js"></script>
+<script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
+<script>
+    function getItems(start, count) {
+        console.log('fetching items: ', start, 'to', start + count - 1, " (" + count + ")")
+        var promise = Promise.pending();
+        var res = [];
+        for (var i = start; i < start + count; i++) {
+            let item = document.createElement("div")
+            item.style.fontSize = '12pt'
+            item.style.padding = '35px'
+            item.style.border = '1px solid black'
+            item.style.width = '100%'
+            //item.style.position = 'absolute'
+            //item.style.backgroundColor = 'black';
+            //item.style.color = 'white';
+            item.innerHTML = 'Item ' + i
+            res.push(item);
+        }
+        return res;
+        //setTimeout(function () {promise.resolve(res)}, 2000);
+        promise.resolve(res)
+        return promise.promise
+    }
+
+
+    $(document).ready(function () {
+        let div = $('<div class="sl" style="height: 400px; width: 200px; border: 1px solid black"></div>')
+        div.superlist({src: getItems, length: 20});
+        $(document.body).append(div)
+
+     })
+
+
+
+
+
+
+</script>
+</body>
+
+</html>

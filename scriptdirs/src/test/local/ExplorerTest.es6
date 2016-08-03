@@ -13,4 +13,9 @@ describe("Explorer", function () {
         console.log("RES",res)
     });
 
+    it.only("search for specific record", async () => {
+        let res = await oo.explorer.search('Cliente');
+        console.log(res)
+    });
+
 });

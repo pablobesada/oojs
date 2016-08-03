@@ -1,5 +1,6 @@
 "use strict";
 
+let _ = require("underscore")
 
 var cm = null;
 function getClassManager() {
@@ -14,7 +15,6 @@ Explorer.search__server = async function search(txt) {
     var res = []
     var regexp = new RegExp(txt, "i");
     let modules = await self.findAllModules();
-    console.log(modules)
     for (let modname in modules) {
         if (modname == 'ALL') continue //por ahora
         var module = modules[modname];

@@ -6,6 +6,7 @@
 
     $(document).ready(function () {
         let wso = cm.getClass("SalesOrderListWindow").new();
+        //let wso = cm.getClass("TestRecordListWindow").new();
         wso.open()
 
 
@@ -26,6 +27,16 @@
             w.print()
         })*/
 
+
+        /*$('#myList').megalist()
+        $('#myList').on('change', function(event){
+            var message = "selected index: "+event.selectedIndex+"\n"+
+                "selected item: "+event.srcElement.get()[0].outerHTML;
+            alert( message );
+        })*/
+
+
+        //$.getScript("http://search.twitter.com/search.json?q=andytrice&rpp=50&include_entities=true&result_type=mixed&callback=dataReceived" );
 
     });
 

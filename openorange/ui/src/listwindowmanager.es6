@@ -14,12 +14,16 @@
             this.grid_columns = null;
             this.windowjson = JSON.parse(JSON.stringify(this.listwindow.__class__.__description__.columns));   //deep clone of the object because I need to add some metadata to it
             this.listwindow.onAny(this.update.bind(this));
+            this.start = null;
+            this.count = null;
+            this.batch = 3;
             return this
         }
 
         render() {
             var self = this;
-            this.__element__.append(oo.ui.templates.get('.listwindow .content').createElement())
+            this.__element__.addClass('oo-listwindow-container')
+            this.__element__.append(oo.ui.templates.get('.listwindow .body').createElement())
 
             oo.ui.containers.push({
                 entity: this.listwindow,
@@ -29,46 +33,22 @@
             });
             this.displayWindow(this.__element__)
             self.renderActionBar();
+            this.callInitOnPageCallbacks();
 
         };
 
         displayWindow(windowElement) {
+
             var self = this
             var tab = $('<li><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
             $('ul.recent-activity').prepend(tab);
             windowElement.attr('id', this.tab_id);
             $('#workspace').append(windowElement);
+            this.templateElements.push(windowElement)
             $('ul.recent-activity').tabs();
-            var recordClass = self.listwindow.getRecordClass();
-            var columns = self.listwindow.__class__.__description__.columns;
-            var grid;
-            var loader = new Slick.Data.RemoteModel(recordClass);
-            var options = {
-                enableCellNavigation: true,
-                enableColumnReorder: false,
-                forceFitColumns: true,
-                //autoExpandColumns: true,
-                //showHeaderRow: true,
-            };
 
+            var recordClass = self.listwindow.getRecordClass();
             self.generateColumns();
-            grid = new Slick.Grid(windowElement.find(".listwindow_grid"), loader.data, self.grid_columns, options);
-            grid.onClick.subscribe(function (e, args) {
-                var item = args.item;
-                self.recordSelectedInListWindow(args.grid.getData()[args.row])
-            });
-            grid.onViewportChanged.subscribe(function (e, args) {
-                var vp = grid.getViewport();
-                loader.ensureData(vp.top, vp.bottom);
-            });
-            loader.onDataLoaded.subscribe(function (e, args) {
-                for (var i = args.from; i <= args.to; i++) {
-                    grid.invalidateRow(i);
-                }
-                grid.updateRowCount();
-                grid.render();
-                //loadingIndicator.fadeOut();
-            });
 
             var siblings = windowElement.siblings();
             if (siblings.length > 0) {
@@ -77,19 +57,49 @@
               });
             }
 
-            $("#txtSearch").keyup(function (e) {
-                if (e.which == 13) {
-                    loader.setSearch($(this).val());
-                    var vp = grid.getViewport();
-                    loader.ensureData(vp.top, vp.bottom);
+            let $body = oo.ui.templates.get('.listwindow .body').createElement()
+            this.listcontainer = $body.find('.oo-list-container');
+            if (this.listcontainer.length >= 0) this.listcontainer = this.listcontainer.addBack('.oo-list-container')
+            let $listheader = $body.find('.oo-list-header')
+            if ($listheader.length > 0) {
+                for (let i in self.grid_columns) {
+                    let col = self.grid_columns[i]
+                    let args = {label: col.label}
+                    let $cell = oo.ui.templates.get('.listwindow .header-cell').createElement(args)
+                    $listheader.append($cell)
                 }
-            });
-            grid.onSort.subscribe(function (e, args) {
-                loader.setSort(args.sortCol.field, args.sortAsc ? 1 : -1);
-                var vp = grid.getViewport();
-                loader.ensureData(vp.top, vp.bottom);
-            });
-            grid.onViewportChanged.notify();
+            }
+            //$listheader.html("pepepep")
+            this.listcontainer.scroll(this.listScrolled.bind(this))
+            this.__element__.html($body)
+            this.templateElements.push($body)
+            //this.start = 0;
+            function getItems(start, count) {
+                console.log('fetching items: ', start, 'to', start + count - 1, " (" + count + ")")
+                var promise = Promise.pending();
+                var res = [];
+                for (var i = start; i < start + count; i++) {
+                    let item = document.createElement("div")
+                    item.style.fontSize = '12pt'
+                    item.style.padding = '35px'
+                    item.style.border = '1px solid black'
+                    item.style.width = '100%'
+                    //item.style.position = 'absolute'
+                    //item.style.backgroundColor = 'black';
+                    //item.style.color = 'white';
+                    item.innerHTML = 'Item ' + i
+                    res.push(item);
+                }
+                //return res;
+                setTimeout(function () {promise.resolve(res)}, 5);
+                //promise.resolve(res)
+                return promise.promise
+            }
+            setTimeout(() => {
+                this.listcontainer = this.listcontainer.superlist({src: this.getRows.bind(this)});
+            }, 0)
+
+            //this.fill(this.start, this.start+this.batch);
         };
 
         generateColumns() {
@@ -98,8 +108,39 @@
             var columns = self.listwindow.__class__.__description__.columns;
             for (var i = 0; i < columns.length; i++) {
                 var col = columns[i];
-                this.grid_columns.push({id: col.field, name: col.field, field: col.field, sortable: true})
+                this.grid_columns.push({id: col.field, label: col.field, field: col.field, sortable: true})
             }
+        }
+
+        async getRows(start, count) {
+            let self = this;
+            let records = await this.listwindow.getRecords(start, count);
+            this.count = records.length;
+            let res = [];
+            for (let i in records) {
+                let rec = records[i];
+                let args = {}
+                let $row = oo.ui.templates.get('.listwindow .row').createElement(args)
+                let $cellcontainer = $row.find('.oo-cell-container')
+                if ($cellcontainer.length == 0) $cellcontainer = $cellcontainer.addBack('.oo-cell-container');
+                if ($cellcontainer.length == 0) $cellcontainer = $row;
+
+                for (let j in this.grid_columns) {
+                    let col = this.grid_columns[j];
+                    let args = {value: rec[col.field], label: col.label}
+                    let $cell = oo.ui.templates.get('.listwindow .row-cell').createElement(args)
+                    $cellcontainer.append($cell)
+                }
+                $row.click((event) => {
+                    self.recordSelectedInListWindow(rec);
+                })
+                res.push($row)
+            }
+            return res;
+        }
+
+        listScrolled(event) {
+            console.log(this.listcontainer.offsetY)
         }
 
         async recordSelectedInListWindow(record) {
