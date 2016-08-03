@@ -3,6 +3,7 @@
 scriptdirs/lib
 openorange/lib
 openorange/ui/js/oo
+openorange/ui/css/templates.css
 node_modules
 bower_components
 oo.json
