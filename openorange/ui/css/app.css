@@ -1,18 +1,15 @@
+html {
+  height: 100%;
+}
 body {
-    background-color: #f9f9f9
+  background-color: #f9f9f9;
+  min-height: 100%;
+  padding-bottom: 6rem;
+  position: relative;
 }
 
-/*#main {
-    padding-left: 240px
-}
-
-footer {
-    padding-left: 240px
-}*/
-
-footer.page-footer {
-    background: #888;
-    padding-top: 0px;
+.fixed-action-btn {
+  bottom: 60px;
 }
 
 select {

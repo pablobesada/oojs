@@ -1,10 +1,16 @@
 @import 'colors';
+@import 'footer';
 @import 'header';
 @import 'listwindow';
 
-
 .oo-workspace-container {
   height: 100%;
+  .oo-window-title {
+    background-color: $secondary-bar-bkg;
+    color: white;
+    margin: 10px 0 0;
+    padding: 5px 10px;
+  }
 }
 
 .listwindow_gridXX {
