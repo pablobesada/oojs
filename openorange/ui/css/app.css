@@ -2,16 +2,17 @@ body {
     background-color: #f9f9f9
 }
 
-#main {
+/*#main {
     padding-left: 240px
 }
 
 footer {
     padding-left: 240px
-}
+}*/
 
 footer.page-footer {
-    padding-top: 0px
+    background: #888;
+    padding-top: 0px;
 }
 
 select {

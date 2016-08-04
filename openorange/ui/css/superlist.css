@@ -10,11 +10,9 @@
 }
 
 .superlist-scrollbar {
-    background: -webkit-gradient(linear, left top, right top, color-stop(0.2, rgb(88,88,88)), color-stop(0.6, rgb(64,64,64)));
-    border: 1px solid rgb(25,25,25);
-    position: relative;
-    margin: auto;
-    border-radius: 6px;
-    width: 12px;
+  background: #ccc;
+  border-radius: 10px;
+  margin: auto;
+  position: relative;
+  width: 5px;
 }
-

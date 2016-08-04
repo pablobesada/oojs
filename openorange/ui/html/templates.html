@@ -15,16 +15,17 @@
                 <div class="navbar-fixed">
                     <nav class="navbar-color">
                         <div class="nav-wrapper row">
-                            <h1 class="logo-wrapper col s3">
+                            <h1 class="logo-wrapper col l3 m2 s2">
                               <a class="logo darken-1" href="index.html">
-                                <img src="images/logo_open.png" alt="OpenOrange">
+                                <img class="oo-logo hide-on-med-and-down" src="images/logo_open.png" alt="OpenOrange">
+                                <img class="oo-icon hide-on-large-only" src="images/icon_open.png" alt="OpenOrange">
                               </a>
                               <span class="logo-text">OpenOrange</span>
                             </h1>
-                            <div class="header-search-wrapper hide-on-med-and-down col s6"><i class="mdi-action-search"></i>
+                            <div class="header-search-wrapper col l6 m5 s5"><i class="mdi-action-search"></i>
                                 <input class="header-search-input z-depth-2 typeahead" id="OOSearch" type="text" placeholder="explore openorange">
                             </div>
-                            <div class="col s3">
+                            <div class="col l3 m5 s5">
                               <ul class="right oo-nav-icons">
                                 <li><i class="fa fa-comments-o fa-2x" aria-hidden="true"></i></li>
                                 <li>
@@ -43,7 +44,7 @@
             </header>
             <div id="main">
                 <div class="wrapper">
-                    <aside id="left-sidebar-nav">
+                    <!--/* <aside id="left-sidebar-nav">
                         <ul class="side-nav fixed leftside-navigation" id="slide-out">
                             <li class="user-details cyan darken-2">
                                 <div class="row">
@@ -56,7 +57,7 @@
                         </ul>
                         <a class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only cyan"
                            href="#" data-activates="slide-out"><i class="mdi-navigation-menu"></i></a>
-                    </aside>
+                    </aside>*/-->
                     <section id="content_section">
                         <div class="container">
                             <div class="row">
@@ -79,7 +80,7 @@
             <div id="{{id}}" class="container oo-workspace-container col s12"></div>
         </script>
 
-        <!--div class="listwindow">
+        <!-- <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars">
                 <div class="oo-listwindow">
                     <ul class="oo-list-container">
@@ -92,17 +93,19 @@
             <script class="row-cell" type="x-tmpl-handlebars">
                 <div class="oo-row-cell truncate" style="width: 260px"><span>{{value}}</span></div>
             </script>
-        </div-->
+        </div> -->
 
         <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
                 <div class="oo-listwindow">
-                    <select class='col s4'>
-                        <option value="1" SELECTED >Este mes</option>
-                        <option value="1">Mes anterior</option>
-                        <option value="2">Ultimos abiertos</option>
-                        <option value="1">Sin aprobar</option>
-                    </select>
+                    <div class="select col s4">
+                      <select>
+                          <option value="1" SELECTED >Este mes</option>
+                          <option value="1">Mes anterior</option>
+                          <option value="2">Ultimos abiertos</option>
+                          <option value="1">Sin aprobar</option>
+                      </select>
+                    </div>
                     <div class="oo-list-container">
                     </div>
                 </div>
@@ -114,6 +117,7 @@
                 <div class="oo-row-cell col s12 m6 truncate"><span class="cell-label">{{label}}:</span> <span class="cell-value">{{value}}</span></div>
             </script>
         </div>
+
     </div>
     <div class="actionbar">
         <script class="container" type="x-tmpl-handlebars">
@@ -144,7 +148,7 @@
         </div>
     </script>
     <div class="window">
-        <script type="x-tmpl-handlebars" class="tabs" initonpage="$this.find('ul.recent-activity').tabs()">
+        <script type="x-tmpl-handlebars" class="tabs" initonpage="$this.find('ul.tabs').tabs()">
             <div class="row">
                 <div id="{{page_container_id}}" "class="col s12 page-container">
                     <ul class="tabs">

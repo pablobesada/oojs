@@ -130,7 +130,7 @@ gulp.task("ui-js", function () {
 });
 
 gulp.task("ui-sass", function () {
-    return gulp_src('openorange/ui/css/templates.scss')
+    return gulp_src('openorange/ui/css/custom/templates.scss')
         .pipe(sass())
         .on('error', sass.logError)
         .pipe(gulp.dest('openorange/ui/css/'));
