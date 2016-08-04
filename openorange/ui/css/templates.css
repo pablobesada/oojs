@@ -1,3 +1,13 @@
+/* ----- Color de componentes ----- */
+footer {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0; }
+  footer.page-footer {
+    background: #888;
+    padding-top: 0px; }
+
 .oo-main-header .navbar-color {
   background: #888; }
 
@@ -19,6 +29,7 @@
   display: inline-block;
   position: relative; }
   .oo-main-header .header-search-wrapper:before {
+    color: #fff;
     content: "\f002";
     font: normal normal normal 14px/1 FontAwesome;
     font-size: 1.4em;
@@ -66,11 +77,11 @@
 .oo-main-header .oo-nav-icons {
   position: relative; }
   .oo-main-header .oo-nav-icons > li {
-    color: white;
+    color: #fff;
     cursor: pointer;
     padding-right: 10px; }
     .oo-main-header .oo-nav-icons > li:last-child {
-      border-left: 1px solid white;
+      border-left: 1px solid #eee;
       margin-right: 10px;
       padding-left: 10px;
       padding-right: 0; }
@@ -138,6 +149,11 @@
 
 .oo-workspace-container {
   height: 100%; }
+  .oo-workspace-container .oo-window-title {
+    background-color: #85bb80;
+    color: white;
+    margin: 10px 0 0;
+    padding: 5px 10px; }
 
 .listwindow_gridXX {
   width: 100%;

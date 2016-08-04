@@ -1,6 +1,6 @@
 .oo-main-header {
   .navbar-color {
-    background: $grey-dark;
+    background: $header-footer-bkg;
   }
   .nav-wrapper {
     :last-child {
@@ -24,6 +24,7 @@
       display: inline-block;
       position: relative;
       &:before {
+        color: $icon-color;
         content: "\f002";
         font: normal normal normal 14px/1 FontAwesome;
         font-size: 1.4em;
@@ -84,11 +85,11 @@
   .oo-nav-icons {
     position: relative;
     > li {
-      color: white;
+      color: $icon-color;
       cursor: pointer;
       padding-right: 10px;
       &:last-child {
-        border-left: 1px solid white;
+        border-left: 1px solid #eee;
         margin-right: 10px;
         padding-left: 10px;
         padding-right: 0;
