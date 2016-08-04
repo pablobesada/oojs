@@ -102,7 +102,7 @@
             }
             return res;
         }
-        
+
         async recordSelectedInListWindow(record) {
             var self = this;
             let res = await record.load()

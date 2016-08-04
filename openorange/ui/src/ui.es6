@@ -46,14 +46,17 @@
         };
 
         focus() {
+            console.log("en focus()")
             $('ul.recent-activity').tabs('select_tab', this.tab_id);
+            //$(`ul.recent-activity a`).removeClass('active')
+            //$(`ul.recent-activity a[href="#${this.tab_id}"]`).addClass('active')
         }
 
         close() {
             if (this.entity.__ui_container_view_id__) {
                 $('#' + this.entity.__ui_container_view_id__).html("")
             } else {
-                let selected_tab_id = $('ul.tabs.workspace a.active').attr('href').substring(1);
+                let selected_tab_id = $('ul.recent-activity a.active').attr('href').substring(1);
                 let is_selected = (selected_tab_id == this.tab_id);
                 let newfocus = null
                 if (is_selected) {
@@ -67,14 +70,14 @@
                 }
                 $(`a[href="#${this.tab_id}"]`).closest('li').remove();
                 $(`#${this.tab_id}`).remove();
-                $('ul.tabs.workspace').tabs();
+                $('ul.recent-activity').tabs();
                 for (let i = 0; i < UI.containers.length; i++) {
                     if (UI.containers[i].entity === this.window) {
                         UI.containers.splice(i, 1)
                         break;
                     }
                 }
-                if (newfocus) $('ul.tabs.workspace').tabs('select_tab', newfocus.attr('href').substring(1));
+                if (newfocus) $('ul.recent-activity').tabs('select_tab', newfocus.attr('href').substring(1));
             }
         }
 
@@ -209,7 +212,8 @@
         //si escucho KEYPRESS, al hacer click sobre otro tab, luego SHiFT+ENTER no se recibe el evento
         let key = event.key.toLowerCase();
         if (key == 'alt' || key == 'shift' || key == 'ctrl' || key == 'ctrl' || key == 'meta') return;
-        let curtab = $('ul.tabs.workspace li a.active');
+        //let curtab = $('ul.tabs.workspace li a.active');
+        let curtab = $('ul.recent-activity li a.active');
         if (curtab.length > 0) {
             let wc = UI.findContainerForTabId(curtab.attr("href").substring(1))
             //console.log("WC", wc)

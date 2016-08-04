@@ -778,7 +778,6 @@
 
         update(event) {
             var self = this;
-            //console.log(event)
             let x = null;
             switch (event._meta.name) {
                 case "close":

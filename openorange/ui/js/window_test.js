@@ -8,6 +8,7 @@
         let wso = cm.getClass("SalesOrderListWindow").new();
         //let wso = cm.getClass("TestRecordListWindow").new();
         wso.open()
+        wso.setFocus()
 
 
         /*wso = cm.getClass("TestRecordWindow").new()
