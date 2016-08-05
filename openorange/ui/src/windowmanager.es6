@@ -8,9 +8,12 @@
     class WindowContainer extends oo.ui.BaseContainer {
 
         static getWindowReportView(window, viewname) {
+            console.log("LOOKING FOR WINDOW: ", window, viewname)
             for (let i = 0; i < oo.ui.containers.length; i++) {
                 if (oo.ui.containers[i].entity === window) {
+                    console.log("WINDOW FOUND")
                     let res = oo.ui.containers[i].element.find(`[reportview=${viewname}]`);
+                    console.log("RES", res)
                     if (res.length > 0) return $(res[0])
                     break;
                 }
@@ -18,8 +21,12 @@
             return null
         }
 
-        constructor(wnd) {
-            super(wnd)
+        constructor(wnd, parentView) {
+            parentView = parentView? parentView : (wnd.__ui_container_view_id__? $('#' + wnd.__ui_container_view_id__) : null)
+            super(wnd, parentView)
+            if (parentView) {
+                this.shouldShowTitle = false;
+            }
             this.window = this.entity;
             this.windowjson = JSON.parse(JSON.stringify(this.window.__class__.getDescription().form));  //deep clone of the object because I need to add some metadata to it
             this.window.__container_data__ = {};
@@ -40,46 +47,19 @@
             this.created_cards = []
         }
 
-        render() {
-            var self = this;
-            //console.log(containerElement)
-            oo.ui.containers.push({
-                container: this,
-                entity: this.window,
-                element: this.__element__,
-                tab_id: this.tab_id
-            });
+        getTitle() {
+            return this.window.getTitle();
+        }
+
+        populateUIElement() {
+            let self = this;
             this.__element__.append(self.createComponent(this.windowjson));
             this.__element__.append(self.createPasteWindow());
-            //console.log(this.windowjson)
-            this.displayWindow(this.__element__)
-            self.renderActionBar();
-            this.callInitOnPageCallbacks();
-        };
-
-
-
-        displayWindow(windowElement) {
-            let self = this;
-            if (self.window.__ui_container_view_id__) {
-                $('#' + self.window.__ui_container_view_id__).append(windowElement)
-            } else {
-                var tab = $('<li><a href="#' + this.tab_id + '">' + this.window.getTitle() + '</a></li>');
-                $('ul.recent-activity').prepend(tab);
-                windowElement.attr('id', this.tab_id);
-                $('#workspace').append(windowElement);
-                $('ul.recent-activity').tabs();
-                this.templateElements.push(windowElement)
-            }
-            //$(windowElement).find('ul.tabs').tabs();
-            //windowElement.find('.datepicker').pickadate(WindowContainer.datePickerOptions);
-            //$('input.editor[timeeditor=true]').mask('00:00:00');
             if (this.window.getRecord() != null) {
                 this.bindRecordToWindow(this.window.getRecord());
             }
-            //this.window.addListener(this);
             this.window.onAny(this.update.bind(this));
-        }
+        };
 
         createComponent(json) {
             var self = this;
@@ -233,8 +213,6 @@
             _(pages).forEach(function (page) {
                 page_container.append(page.page)
             })
-            console.log("RR")
-            console.log(res.addedToPage)
             this.templateElements.push(res);
             json.__element__ = res;
             return res
@@ -1241,9 +1219,9 @@
 
         setModified(modified) {
             if (modified) {
-                $('a[href="#' + this.tab_id + '"]').css('color', 'blue')
+                this.$title.addClass('oo-modified')
             } else {
-                $('a[href="#' + this.tab_id + '"]').css('color', '')
+                this.$title.removeClass('oo-modified')
             }
         }
 
@@ -1353,7 +1331,7 @@
         cm.getClass("Embedded_Window").onAny(function (event) {
             if (event._meta.name == 'open') {
                 let wm = new WindowContainer(event.window, event.viewcontainer)
-                wm.render()
+                wm.open()
             }
         });
     })

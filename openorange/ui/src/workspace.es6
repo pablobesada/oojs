@@ -14,11 +14,29 @@
             this.__screenblocked__ = false;
             this.lastFocusElement = null;
             this.waiters = []
+            this.current_tab_id = null;
         }
 
         render() {
+            let self = this;
             let args= {processingscreen_id: this.processingScreenId, blockscreen_id: this.blockScreenId}
             $('body').html(oo.ui.templates.get(".workspace>.body").createElement(args))
+
+            $('.oo-recent-activity-container').tabs({
+                onShow: function(tab_id) {
+                    console.log("newtab: ", tab_id)
+                }
+            })
+            $('.oo-recent-activity-container').mouseenter(() => {
+                this.current_tab_id = $(`.oo-recent-activity-container a.active`).attr('href').substring(1)
+                console.log("CURTAB: ",this.current_tab_id)
+            })
+            $('.oo-recent-activity-container').mouseleave(() => {
+                if (this.current_tab_id) {
+                    $('.oo-recent-activity-container').tabs('select_tab', this.current_tab_id);
+                }
+            })
+
         }
 
         async waitForUnblockedScreen() {

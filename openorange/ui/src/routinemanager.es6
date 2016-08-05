@@ -13,7 +13,12 @@
             return this
         }
 
-        appendToWorkspace(showSpecWindow) {
+        open(showSpecWindow) {
+            this.showSpecWindow = showSpecWindow;
+            super.open.call(this);
+        }
+
+        populateUIElement() {
             var self = this;
             let paramsWindowId = oo.ui.genId('ROUTINEWINDOW')
             let paramsWindow = $(`<div id="${paramsWindowId}"></div>`)
@@ -21,23 +26,14 @@
             var w = this.__element__;
             w.append(paramsWindow)
             w.append(contentElement)
-            oo.ui.containers.push({entity: this.routine, element: w, tab_id: this.tab_id, container: self});
             this.__content_element__ = contentElement;
-            var tab = $('<li><a href="#' + this.tab_id + '">' + this.routine.getTitle() + '</a></li>');
-            $('ul.recent-activity').prepend(tab);
-            w.attr('id', this.tab_id);
-            $('#workspace').append(w);
-            $('ul.recent-activity').tabs();
             self.routine.getParamsWindow().__ui_container_view_id__ = paramsWindowId;
             self.routine.getParamsWindow().open()
-            self.renderActionBar();
-
-            if (w.siblings().length > 0) {
-              w.siblings().each(function() {
-                $(this).css('display', 'none');
-              });
-            }
         };
+
+        getTitle() {
+            return this.routine.getTitle();
+        }
 
         update(event) {
             var self = this;
@@ -57,7 +53,7 @@
         cm.getClass("Embedded_Routine").onAny(function (event) {
             if (event._meta.name == 'open') {
                 let wm = new RoutineContainer(event.routine)
-                wm.appendToWorkspace()
+                wm.open()
             }
         });
     })

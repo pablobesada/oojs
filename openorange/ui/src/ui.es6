@@ -6,33 +6,75 @@
     var cm = oo.classmanager;
 
     class BaseContainer {
-        constructor(entity) {
+        constructor(entity, parentView) {
             let self = this;
+            this.parentView = parentView;
             this.templateElements = [];
             this.entity = entity;
             this.tab_id = oo.ui.genId();
-            this.__element__ = oo.ui.templates.get(".workspace .container").createElement({id: this.tab_id});
             this.actionbar_id = oo.ui.genId("actionbar")
-            this.__element__.append($(oo.ui.templates.get(".actionbar .container").getHTML({id: this.actionbar_id})))
-            this.entity.on('action status', function (event) {
-                self.renderActionBar()
-            });
+            this.shouldBeAddedToWorkspace = false;
+            this.shouldShowActions = true;
+            this.shouldShowTitle = true;
+            if (!this.parentView) {
+                this.parentView = $('#workspace');
+                this.shouldBeAddedToWorkspace = true;
+            }
         }
 
         open(params) {
             let self = this;
-            self.render();
-            oo.ui.containers.push({
-                entity: this,
-                element: this.__element__,
-                tab_id: this.tab_id,
-                container: self
+
+            let args = {id: this.tab_id, title: this.getTitle()}
+            this.__element__ = oo.ui.templates.get(".workspace .container").createElement(args);
+            this.$title = this.__element__.find('.oo-container-title');
+            if (!this.$title.length) this.$title = $title.find('.oo-container-title');
+            if (!this.shouldShowTitle) {
+                this.$title.hide();
+            }
+            this.parentView.append(this.__element__);
+
+            this.__element__.append($(oo.ui.templates.get(".actionbar .container").getHTML({id: this.actionbar_id})))
+            this.entity.on('action status', function (event) {
+                self.renderActionBar()
             });
+
+            self.populateUIElement();
+            if (this.shouldBeAddedToWorkspace) {
+                this.createUIEntry();
+                oo.ui.containers.push({
+                    entity: this.entity,
+                    element: this.__element__,
+                    tab_id: this.tab_id,
+                    container: this,
+                });
+                console.log("WINDOW REGISTERED", this)
+            }
+            this.templateElements.push(this.__element__)
             self.renderActionBar();
             self.callInitOnPageCallbacks();
         }
 
 
+        createUIEntry() {
+            let self = this;
+            var tab = $('<li><a href="#' + this.tab_id + '">' + this.getTitle() + '</a></li>');
+            $('.oo-recent-activity-container').prepend(tab);
+            this.__element__.attr('id', this.tab_id);
+            $('.oo-recent-activity-container').tabs();
+            tab.mouseover(function () {
+                $('.oo-recent-activity-container').tabs('select_tab', self.tab_id);
+            })
+            tab.click(function (event) {
+                if (event.originalEvent) oo.ui.workspace.current_tab_id = self.tab_id;
+            })
+
+        }
+
+
+        getTitle() {
+            return 'no title'
+        }
 
         callInitOnPageCallbacks() {
             _.each(this.templateElements, (templateElement) => {
@@ -43,11 +85,11 @@
 
         setWindowTitle(title) {
             $("a[href='#" + this.tab_id + "']").html(title)
+            this.$title.html(title);
         };
 
         focus() {
-            console.log("en focus()")
-            $('ul.recent-activity').tabs('select_tab', this.tab_id);
+            $('.oo-recent-activity-container').tabs('select_tab', this.tab_id);
             //$(`ul.recent-activity a`).removeClass('active')
             //$(`ul.recent-activity a[href="#${this.tab_id}"]`).addClass('active')
         }
@@ -56,7 +98,7 @@
             if (this.entity.__ui_container_view_id__) {
                 $('#' + this.entity.__ui_container_view_id__).html("")
             } else {
-                let selected_tab_id = $('ul.recent-activity a.active').attr('href').substring(1);
+                let selected_tab_id = $('.oo-recent-activity-container').attr('href').substring(1);
                 let is_selected = (selected_tab_id == this.tab_id);
                 let newfocus = null
                 if (is_selected) {
@@ -70,14 +112,14 @@
                 }
                 $(`a[href="#${this.tab_id}"]`).closest('li').remove();
                 $(`#${this.tab_id}`).remove();
-                $('ul.recent-activity').tabs();
+                $('.oo-recent-activity-container').tabs();
                 for (let i = 0; i < UI.containers.length; i++) {
                     if (UI.containers[i].entity === this.window) {
                         UI.containers.splice(i, 1)
                         break;
                     }
                 }
-                if (newfocus) $('ul.recent-activity').tabs('select_tab', newfocus.attr('href').substring(1));
+                if (newfocus) $('.oo-recent-activity-container').tabs('select_tab', newfocus.attr('href').substring(1));
             }
         }
 
@@ -140,7 +182,8 @@
         };
 
         renderActionBar() {
-            let self = this;
+            let self = this
+            if (!self.shouldShowActions) return;
             let actions = self.entity.getVisibleActions()
             if (actions.length == 0) return;
             //let toolbar = $(`<div class="fixed-action-btn"></div>`)
@@ -213,7 +256,7 @@
         let key = event.key.toLowerCase();
         if (key == 'alt' || key == 'shift' || key == 'ctrl' || key == 'ctrl' || key == 'meta') return;
         //let curtab = $('ul.tabs.workspace li a.active');
-        let curtab = $('ul.recent-activity li a.active');
+        let curtab = $('.oo-recent-activity-container li a.active');
         if (curtab.length > 0) {
             let wc = UI.findContainerForTabId(curtab.attr("href").substring(1))
             //console.log("WC", wc)

@@ -23,7 +23,7 @@ class TestReport extends Parent {
 
     getData() {
         let data = []
-        for (let i=0;i<10;i++){
+        for (let i=0;i<30;i++){
             data.push(['A'+i, 'B'+i])
         }
         return data

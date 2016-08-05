@@ -60,6 +60,10 @@ class Embedded_DocumentView extends oo.UIEntity {
         return this.__record__
     }
 
+    getTitle() {
+        return 'Print Preview'
+    }
+
 
     edit() {
         this.emit('edit', {documentView: this})

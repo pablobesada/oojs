@@ -11,16 +11,25 @@
         }
 
 
-        constructor(report, view) {
-            super(report)
+        constructor(report, parentView) {
+            super(report, parentView)
             this.report = report;
-            this.view = view;
+            if (parentView) {
+                this.shouldShowActions = false;
+                this.shouldShowTitle = false;
+            }
+            //this.view = parentview;
             //this.windowjson = JSON.parse(JSON.stringify(this.report.getDescription().window));   //deep clone of the object because I need to add some metadata to it
             this.report.onAny(this.update.bind(this));
             return this
         }
 
-        appendToWorkspace(showSpecWindow) {
+        open(showSpecWindow) {
+            this.showSpecWindow = showSpecWindow;
+            super.open.call(this)
+        }
+
+        populateUIElement() {
             var self = this;
             let paramsWindowId = oo.ui.genId('REPORTWINDOW')
             let paramsWindow = $(`<div id="${paramsWindowId}"></div>`)
@@ -30,25 +39,22 @@
             w.append(contentElement)
             oo.ui.containers.push({entity: this.report, element: w, tab_id: this.tab_id, container: self});
             this.__content_element__ = contentElement;
-            var tab = $('<li><a href="#' + this.tab_id + '">' + this.report.getTitle() + '</a></li>');
-            $('ul.recent-activity').prepend(tab);
-            w.attr('id', this.tab_id);
-            $('#workspace').append(w);
-            $('ul.recent-activity').tabs();
-            if (showSpecWindow) {
+            if (this.showSpecWindow) {
                 self.report.getParamsWindow().__ui_container_view_id__ = paramsWindowId;
                 self.report.getParamsWindow().open()
             }
-            self.renderActionBar();
-
-            if (w.siblings().length > 0) {
+            /*if (w.siblings().length > 0) {
               w.siblings().each(function() {
                 $(this).css('display', 'none');
               });
-            }
+            }*/
         };
 
-        attachToWindowReportView() {
+        getTitle() {
+            return this.report.getTitle();
+        }
+
+        /*attachToWindowReportView() {
             var self = this;
             let contentElement = $('<div name="content"></div>')
             var w = this.__element__
@@ -56,7 +62,7 @@
             this.__content_element__ = contentElement;
             let container = window.oo.ui.windowmanager.getWindowReportView(this.view.window, this.view.viewname)
             if (container) container.append(w)
-        };
+        };*/
 
         render() {
             var self = this
@@ -85,12 +91,19 @@
     $(document).ready(function () {
         cm.getClass("Embedded_Report").onAny(function (event) {
             if (event._meta.name == 'open') {
-                let wm = new ReportContainer(event.report, event.view)
+                let parentView = null
                 if (event.view) {
-                    wm.attachToWindowReportView(event.view)
-                } else {
-                    wm.appendToWorkspace(event.showSpecWindow)
+                    console.log("WWW", event.view)
+                    parentView = oo.ui.windowmanager.getWindowReportView(event.view.window, event.view.viewname)
+                    console.log("PP", parentView)
                 }
+                console.log("PARENT VIEW", parentView)
+                let wm = new ReportContainer(event.report, parentView)
+                //if (event.view) {
+                //    wm.attachToWindowReportView(event.view)
+                //} else {
+                    wm.open(event.showSpecWindow)
+                //}
             }
         });
     })

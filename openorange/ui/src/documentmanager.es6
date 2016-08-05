@@ -301,20 +301,12 @@
             this.document.onAny(this.update.bind(this));
         }
 
-        open() {
-            var tab = $(`<li><a href="#${this.tab_id}">DOCUMENT</a></li>`);
-            $('ul.recent-activity').prepend(tab);
-            this.render()
-            $('ul.recent-activity').tabs();
+
+        getTitle() {
+            return this.document.getTitle();
         }
 
-        render() {
-            oo.ui.containers.push({
-                container: this,
-                entity: this.document,
-                element: this.__element__,
-                tab_id: this.tab_id
-            });
+        populateUIElement() {
             let obj_field_id = oo.ui.genId();
             let obj_label_id = oo.ui.genId();
             let posX_id = oo.ui.genId();

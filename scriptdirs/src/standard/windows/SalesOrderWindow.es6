@@ -100,6 +100,7 @@ class SalesOrderWindow extends Parent {
     }
 
     async afterShowRecord() {
+        console.log("EN AFTERSHOW RECORD")
         let report = cm.getClass("CustomerListReport").new()
         //report.defaults()
         //report.ShowReportTitle = False

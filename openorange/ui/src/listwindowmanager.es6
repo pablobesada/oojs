@@ -8,8 +8,8 @@
     class ListWindowContainer extends oo.ui.BaseContainer {
 
 
-        constructor(wnd) {
-            super(wnd)
+        constructor(wnd ,parentView) {
+            super(wnd, parentView)
             this.listwindow = wnd;
             this.grid_columns = null;
             this.windowjson = JSON.parse(JSON.stringify(this.listwindow.__class__.__description__.columns));   //deep clone of the object because I need to add some metadata to it
@@ -20,22 +20,13 @@
             return this
         }
 
-        render() {
+        populateUIElement() {
             var self = this;
             //this.__element__.addClass('oo-listwindow-container')
             //this.__element__.append(oo.ui.templates.get('.listwindow .body').createElement())
 
 
             let windowElement = this.__element__
-
-
-            var tab = $('<li><a href="#' + this.tab_id + '">' + this.listwindow.getTitle() + '</a></li>');
-            $('ul.recent-activity').prepend(tab);
-            windowElement.attr('id', this.tab_id);
-            $('#workspace').append(windowElement);
-            this.templateElements.push(windowElement)
-            $('ul.recent-activity').tabs();
-
             var recordClass = self.listwindow.getRecordClass();
             self.generateColumns();
 
@@ -64,7 +55,13 @@
             setTimeout(() => {
                 this.listcontainer = this.listcontainer.superlist({src: this.getRows.bind(this)});
             }, 0)
+            return this.__element__
         };
+
+
+        getTitle() {
+            return this.listwindow.getTitle()
+        }
 
         generateColumns() {
             var self = this;

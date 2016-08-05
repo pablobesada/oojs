@@ -158,11 +158,13 @@ body, #main, .wrapper, #content_section, .container, #workspace {
 
 .oo-workspace-container {
   height: 100%; }
-  .oo-workspace-container .oo-window-title {
+  .oo-workspace-container .oo-container-title {
     background-color: #85bb80;
     color: white;
     margin: 10px 0 0;
     padding: 5px 10px; }
+    .oo-workspace-container .oo-container-title.oo-modified {
+      background-color: red; }
 
 .listwindow_gridXX {
   width: 100%;

@@ -19,11 +19,15 @@ body, #main, .wrapper, #content_section, .container, #workspace {
 
 .oo-workspace-container {
   height: 100%;
-  .oo-window-title {
+  .oo-container-title {
     background-color: $secondary-bar-bkg;
     color: white;
     margin: 10px 0 0;
     padding: 5px 10px;
+
+    &.oo-modified {
+      background-color: red;
+    }
   }
 }
 
