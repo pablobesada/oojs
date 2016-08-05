@@ -165,6 +165,11 @@ body, #main, .wrapper, #content_section, .container, #workspace {
     padding: 5px 10px; }
     .oo-workspace-container .oo-container-title.oo-modified {
       background-color: red; }
+    .oo-workspace-container .oo-container-title .oo-favourite-btn {
+      cursor: pointer;
+      color: gray; }
+      .oo-workspace-container .oo-container-title .oo-favourite-btn.oo-selected {
+        color: yellow; }
 
 .listwindow_gridXX {
   width: 100%;

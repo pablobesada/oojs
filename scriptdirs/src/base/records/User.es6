@@ -19,6 +19,7 @@ var Description = {
         DefaultReportFontSize: {type: "integer", length: 10},
         TaskCheckingInterval: {type: "integer", length: 10},
         Password: {type: "string", length: 130},
+        Favourites: {type: "string", length: 1024},  
     },
     filename: __filename
 }

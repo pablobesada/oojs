@@ -77,7 +77,12 @@
             </footer>
         </script>
         <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields();">
-            <div id="{{id}}" class="container oo-workspace-container col s12"><p class="oo-container-title">{{title}}</p></div>
+            <div id="{{id}}" class="container oo-workspace-container col s12">
+                <div class="oo-container-title">
+                    <span class="oo-title-text">{{title}}</span>
+                    <i class="fa fa-star right oo-favourite-btn {{#if favourite}}oo-selected{{/if}}" aria-hidden="true"></i>
+                </div>
+            </div>
         </script>
 
         <div class="listwindowXXX">

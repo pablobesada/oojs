@@ -22,10 +22,14 @@
             }
         }
 
-        open(params) {
-            let self = this;
+        async isFavourite() {
+            //return (await oo.getCurrentUserObject().Favourites.split(",").indexOf(this.entity.getDescription().name) >= 0)
+            return false;
+        }
 
-            let args = {id: this.tab_id, title: this.getTitle()}
+        async open(params) {
+            let self = this;
+            let args = {id: this.tab_id, title: this.getTitle(), favourite: await self.isFavourite()}
             this.__element__ = oo.ui.templates.get(".workspace .container").createElement(args);
             this.$title = this.__element__.find('.oo-container-title');
             if (!this.$title.length) this.$title = $title.find('.oo-container-title');
@@ -85,7 +89,7 @@
 
         setWindowTitle(title) {
             $("a[href='#" + this.tab_id + "']").html(title)
-            this.$title.html(title);
+            this.$title.find('.oo-title').html(title);
         };
 
         focus() {

@@ -28,6 +28,14 @@ body, #main, .wrapper, #content_section, .container, #workspace {
     &.oo-modified {
       background-color: red;
     }
+
+    & .oo-favourite-btn {
+      cursor: pointer;
+      color: gray;
+      &.oo-selected {
+        color: yellow;
+      }
+    }
   }
 }
 

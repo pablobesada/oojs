@@ -307,6 +307,10 @@
         return __currentUser__
     }
 
+    async function getCurrentUserObject() {
+        return classmanager.getClass("User").bring(currentUser())
+    }
+
     let fetchCurrentUser = async function fetchCurrentUser() {
         return new Promise(function (resolve, reject) {
             $.ajax({
@@ -424,6 +428,7 @@
         rollback: rollback,
         commit: commit,
         currentUser: currentUser,
+        getCurrentUserObject: getCurrentUserObject,
         baseurl: __baseurl__,
         md5: md5,
         alert: alert,
