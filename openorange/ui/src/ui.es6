@@ -25,7 +25,7 @@
         async isFavourite() {
             //return (await oo.getCurrentUserObject().Favourites.split(",").indexOf(this.entity.getDescription().name) >= 0)
             return false;
-        }
+        } 
 
         async open(params) {
             let self = this;
