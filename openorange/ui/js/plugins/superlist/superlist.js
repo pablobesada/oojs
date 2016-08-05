@@ -101,7 +101,7 @@
         let $e = $(container);
         this.width = $e.width()
         this.height = $e.height();
-        //console.log("SIZE: ", this.width, this.height)
+        console.log("SIZE: ", this.width, this.height)
         container.className += ' oo-superlist';
         //container.style.width = w;
         //container.style.height = h;
@@ -155,6 +155,10 @@
 
     SuperList.prototype.initiate = function() {
         let self = this;
+        let $e = $(self.element);
+        self.width = $e.width()
+        self.height = $e.height();
+        console.log("SIZE INITIATE: ", this.width, this.height)
         this.initiated = false;
         if (this.items.length) {
             return this.items.get(0)
