@@ -2244,3 +2244,33 @@ tr.group:hover {
 #polar-chart-holder {
     padding-top: 20px
 }
+
+/*Esto es necesario porque sino en webkit aparecen una flechitas (spin arrows) que si se les hace click modifican el valor de campo aunque luego el beforeEdit revuelva false*/
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance:textfield;
+}
+.input-field.oodetail {
+  /*padding: 0px;*/
+  padding-bottom: 5px;
+  margin: 0px;
+}
+input[type].oodetail {
+  height: 1rem;
+  margin: 6px;
+  border: none;
+}
+table.oodetail td{
+  padding: 0px;
+}
+
+input:focus::-webkit-input-placeholder { color:transparent !important;}
+input:focus:-moz-placeholder { color:transparent; } /* FF 4-18 */
+input:focus::-moz-placeholder { color:transparent; } /* FF 19+ */
+input:focus:-ms-input-placeholder { color:transparent; } /* IE 10+ */

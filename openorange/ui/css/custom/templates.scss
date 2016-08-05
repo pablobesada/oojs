@@ -1,17 +1,19 @@
 @import 'colors';
+@import 'mixins';
 @import 'footer';
 @import 'header';
 @import 'listwindow';
+@import 'typeahead';
 
 body, #main, .wrapper, #content_section, .container, #workspace {
-  height: 100%
+  height: 100%;
 }
 
 #content_section>.container {
   &>.row  {
     height: 100%;
       &>.col {
-      height: 100%
+      height: 100%;
     }
   }
 }
@@ -19,9 +21,9 @@ body, #main, .wrapper, #content_section, .container, #workspace {
 
 .oo-workspace-container {
   height: 100%;
-  .oo-container-title {
+  .oo-container-title:not(:empty) {
     background-color: $secondary-bar-bkg;
-    color: white;
+    color: $secondary-bar-content;
     margin: 10px 0 0;
     padding: 5px 10px;
 
