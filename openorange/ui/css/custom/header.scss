@@ -7,9 +7,14 @@
       padding-right: 0;
     }
   }
+  .logo-wrapper {
+    line-height: 0;
+  }
   .logo {
-    margin: 1px 0;
-    padding: 14px 20px;
+    display: inline-block;
+    font-size: 0;
+    margin: 0;
+    padding: 0 20px 0;
     .oo-logo {
       height: 66px;
     }
@@ -29,7 +34,7 @@
         font: normal normal normal 14px/1 FontAwesome;
         font-size: 1.4em;
         position: absolute;
-        right: 4%;
+        right: 7%;
         top: 10px;
       }
       i {
@@ -45,16 +50,20 @@
         appearance: textfield;
         background: rgba(255, 255, 255, 0.3);
         border: none;
-        border-radius: 3px;
+        @include border-radius(3px);
         display: block;
         font-size: 16px;
         font-weight: 400;
         height: 24px;
         outline: none;
-        padding: 8px 32px 8px 8px;
+        padding: 8px 20px 8px 8px;
         -webkit-transition: all 200ms ease;
         transition: all 200ms ease;
-        width: 93%;
+        width: 92%;
+        &.tt-hint {
+          padding-left: 20px;
+          padding-right: 0;
+        }
         &:hover {
           background: rgba(255, 255, 255, 0.5);
         }
