@@ -23,7 +23,7 @@
                               <span class="logo-text">OpenOrange</span>
                             </h1>
                             <div class="header-search-wrapper col l6 m5 s5"><i class="mdi-action-search"></i>
-                                <input class="header-search-input z-depth-2 typeahead" id="OOSearch" type="text" placeholder="explore openorange">
+                              <input class="header-search-input z-depth-2 typeahead" id="OOSearch" type="text" placeholder="explore openorange">
                             </div>
                             <div class="col l3 m5 s5">
                               <ul class="right oo-nav-icons">
@@ -103,14 +103,17 @@
         <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
                 <div class="oo-listwindow">
-                    <div class="select col s4">
+                    <div class="container-search-wrapper col s4"><i class="mdi-action-search"></i>
+                      <input class="container-search-input typeahead" id="OOSearch" type="text" placeholder="explore openorange">
+                    </div>
+                    <!-- /*<div class="select col s4">
                       <select>
                           <option value="1" SELECTED >Este mes</option>
                           <option value="1">Mes anterior</option>
                           <option value="2">Ultimos abiertos</option>
                           <option value="1">Sin aprobar</option>
                       </select>
-                    </div>
+                    </div>*/ -->
                     <div class="oo-list-container">
                     </div>
                 </div>
