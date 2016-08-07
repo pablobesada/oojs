@@ -517,8 +517,13 @@ class Embedded_Record extends oo.BaseEntity {
         })
     }
 
-    async save_fromGUI() {
-
+    async saveAndCommit() {
+        let res = await oo.beginTransaction()
+        if (!res) return res;
+        res = await this.save();
+        if (!res) return res
+        res = await oo.commit()
+        return res
     }
 
     async save() {

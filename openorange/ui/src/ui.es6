@@ -74,26 +74,18 @@
         openFavouriteLink(link) {
 
         }
+
         async toggleFavourite(event) {
             let self = this;
             let user = await oo.getCurrentUserObject();
             if (user) {
                 let favlink = this.getFavouriteLink()
                 if (this.__element__.find('.oo-favourite-btn').hasClass("oo-selected")) {
-                    let values = user.Favourites.split(",");
-                    values.splice(values.indexOf(favlink), 1);
-                    user.Favourites = values.join(',')
+                    user.removeFavourite(favlink)
                 } else {
-                    user.Favourites = user.Favourites || ""
-                    let values = _.filter(user.Favourites.split(","), (v) => {return v.trim()});
-                    values.push(favlink);
-                    user.Favourites = values.join(",")
+                    user.addFavourite(favlink)
                 }
-                let res = await oo.beginTransaction()
-                if (!res) return res;
-                res = await user.save();
-                if (!res) console.log(res);
-                res = await oo.commit()
+                let res = await user.saveAndCommit()
                 this.updateFavouriteFlag();
                 oo.ui.workspace.loadFavourites();
             }

@@ -1,3 +1,4 @@
+let _ = require("underscore")
 var cm = require('openorange').classmanager
 
 var Description = {
@@ -28,6 +29,19 @@ var Parent = cm.SuperClass(Description)
 
 class User extends Parent {
 
+    addFavourite(favlink) {
+        this.Favourites = this.Favourites || ""
+        let values = _.filter(this.Favourites.split(","), (v) => {return v.trim()});
+        values.push(favlink);
+        this.Favourites = values.join(",")
+        console.log(this.Favourites)
+    }
+
+    removeFavourite(favlink) {
+        let values = this.Favourites.split(",");
+        values.splice(values.indexOf(favlink), 1);
+        this.Favourites = values.join(',')
+    }
 }
 
 module.exports = User.initClass(Description)

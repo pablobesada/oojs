@@ -19,17 +19,15 @@
 
         render() {
             let self = this;
-            let args= {processingscreen_id: this.processingScreenId, blockscreen_id: this.blockScreenId}
+            let args = {processingscreen_id: this.processingScreenId, blockscreen_id: this.blockScreenId}
             $('body').html(oo.ui.templates.get(".workspace>.body").createElement(args))
 
             $('.oo-recent-activity-container').tabs({
-                onShow: function(tab_id) {
-                    console.log("newtab: ", tab_id)
+                onShow: function (tab_id) {
                 }
             })
             $('.oo-recent-activity-container').mouseenter(() => {
                 this.current_tab_id = $(`.oo-recent-activity-container a.active`).attr('href').substring(1)
-                console.log("CURTAB: ",this.current_tab_id)
             })
             $('.oo-recent-activity-container').mouseleave(() => {
                 if (this.current_tab_id) {
@@ -44,7 +42,9 @@
             let user = await oo.getCurrentUserObject()
             $('.oo-favourites-container').html('')
             if (user) {
-                let f = _.filter((user.Favourites || '').split(','), (v) => {return v.trim()})
+                let f = _.filter((user.Favourites || '').split(','), (v) => {
+                    return v.trim()
+                })
                 _.each(f, async (v) => {
                     let tokens = v.split("#")
                     let wnd = oo.classmanager.getClass(tokens[0]).new()
@@ -55,34 +55,45 @@
                     let $item = oo.ui.templates.get('.workspace .favourite-item').createElement({label: wnd.getTitle()})
                     $('.oo-favourites-container').append($item)
                     let $open_action = $item.find('.oo-open-action')
-                    if (!$open_action.length) $open_action = $open_action.addBack('.oo-open-action');
+                    if (!$open_action.length) $open_action = $item.addBack('.oo-open-action');
                     $open_action.click((event) => {
-                        wnd.open();
-                        wnd.setFocus();
                         event.stopPropagation();
                         event.preventDefault()
+                        console.log("OPEN")
+                        wnd.open();
+                        wnd.setFocus();
                     })
                     let $create_action = $item.find('.oo-create-action')
-                    if (!$create_action.length) $create_action = $create_action.addBack('.oo-create-action');
+                    if (!$create_action.length) $create_action = $item.addBack('.oo-create-action');
                     if (wnd instanceof oo.classmanager.getClass('Embedded_ListWindow')) {
                         $create_action.click((event) => {
-                            console.log("AAACCCCTIONN")
+                            event.stopPropagation();
+                            event.preventDefault()
+                            console.log("DELETE")
                             let rec = wnd.getRecordClass().new();
                             rec.defaults();
                             console.log(rec)
                             let w = wnd.getWindowClass().new();
-
-                            console.log(w)
                             w.setRecord(rec);
                             w.open();
                             w.setFocus();
-                            event.stopPropagation();
-                            event.preventDefault()
                             return true;
                         })
                     } else {
                         $create_action.hide()
                     }
+
+                    let $delete_action = $item.find('.oo-delete-action')
+                    if (!$delete_action.length) $delete_action = $item.addBack('.oo-delete-action');
+                    $delete_action.click(async (event) => {
+                        event.stopPropagation();
+                        event.preventDefault()
+                        console.log("DELETE", user)
+                        user.removeFavourite(v);
+                        await user.saveAndCommit();
+                        $item.remove();
+                        return true;
+                    })
 
                 })
             }
@@ -111,7 +122,7 @@
             $('#' + this.blockScreenId).show();
             this.blockToProcessingCallback = setTimeout(function () {
                 $('#' + self.processingScreenId).show();
-            },self.blockToProcessingTime)
+            }, self.blockToProcessingTime)
             //this.lastFocusElement = document.activeElement;
             //console.log("removing focus form ", this.lastFocusElement)
             //this.lastFocusElement.blur();
