@@ -31,7 +31,10 @@
                                   <i class="fa fa-clock-o fa-2x" aria-hidden="true"></i>
                                   <ul class="recent-activity oo-nav-options oo-recent-activity-container"></ul>
                                 </li>
-                                <li><i class="fa fa-heart fa-2x" aria-hidden="true"></i></li>
+                                <li><i class="fa fa-heart fa-2x" aria-hidden="true"></i>
+                                    <ul class="oo-nav-options oo-favourites-container">
+                                    </ul>
+                                </li>
                                 <li><i class="fa fa-comments-o fa-2x" aria-hidden="true"></i></li>
                                 <li><i class="fa fa-calendar-o fa-2x" aria-hidden="true"></i></li>
                                 <li><i class="fa fa-th fa-2x" aria-hidden="true"></i></li>
@@ -75,6 +78,9 @@
                         All rights reserved.<span class="right">Design and Developed by OpenOrange</span></div>
                 </div>
             </footer>
+        </script>
+        <script class="favourite-item" type="x-tmpl-handlebars">
+            <li><a href="#" class="oo-open-action">{{label}} <i class="fa fa-plus right oo-create-action" aria-hidden="true"></i></a></li>
         </script>
         <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields();">
             <div id="{{id}}" class="container oo-workspace-container col s12">

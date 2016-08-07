@@ -37,6 +37,55 @@
                 }
             })
 
+            this.loadFavourites();
+        }
+
+        async loadFavourites() {
+            let user = await oo.getCurrentUserObject()
+            $('.oo-favourites-container').html('')
+            if (user) {
+                let f = _.filter((user.Favourites || '').split(','), (v) => {return v.trim()})
+                _.each(f, async (v) => {
+                    let tokens = v.split("#")
+                    let wnd = oo.classmanager.getClass(tokens[0]).new()
+                    if (tokens.length > 1) {
+                        let rec = await wnd.__class__.getRecordClass().findOne({internalId: tokens[1]})
+                        wnd.setRecord(rec)
+                    }
+                    let $item = oo.ui.templates.get('.workspace .favourite-item').createElement({label: wnd.getTitle()})
+                    $('.oo-favourites-container').append($item)
+                    let $open_action = $item.find('.oo-open-action')
+                    if (!$open_action.length) $open_action = $open_action.addBack('.oo-open-action');
+                    $open_action.click((event) => {
+                        wnd.open();
+                        wnd.setFocus();
+                        event.stopPropagation();
+                        event.preventDefault()
+                    })
+                    let $create_action = $item.find('.oo-create-action')
+                    if (!$create_action.length) $create_action = $create_action.addBack('.oo-create-action');
+                    if (wnd instanceof oo.classmanager.getClass('Embedded_ListWindow')) {
+                        $create_action.click((event) => {
+                            console.log("AAACCCCTIONN")
+                            let rec = wnd.getRecordClass().new();
+                            rec.defaults();
+                            console.log(rec)
+                            let w = wnd.getWindowClass().new();
+
+                            console.log(w)
+                            w.setRecord(rec);
+                            w.open();
+                            w.setFocus();
+                            event.stopPropagation();
+                            event.preventDefault()
+                            return true;
+                        })
+                    } else {
+                        $create_action.hide()
+                    }
+
+                })
+            }
         }
 
         async waitForUnblockedScreen() {

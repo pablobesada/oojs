@@ -82,7 +82,7 @@ class Embedded_Report extends oo.UIEntity {
     }
 
     async open(showSpecWindow) {
-        if (showSpecWindow == undefined) showSpecWindow = true;
+        if (showSpecWindow == undefined || showSpecWindow == null) showSpecWindow = true;
         let self = this
         Embedded_Report.emit('open', {report: self, view: self.view, showSpecWindow: showSpecWindow})
         //Embedded_Report.notifyClassListeners({type: "report", action: "open", data: this})

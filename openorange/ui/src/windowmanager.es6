@@ -1312,6 +1312,11 @@
             //if (cards.length > 0) selectorContainer.carousel();  //si el carouse no tiene items tira error la libreria materialize
             //$('#' + containerid).append(m);
         }
+
+        getFavouriteLink() {
+            return this.entity.__class__.getDescription().name + "#" + this.entity.getRecord().internalId
+        }
+
     }
 
     WindowContainer.datePickerOptions = {

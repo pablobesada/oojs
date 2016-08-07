@@ -7,7 +7,7 @@
 
     let classmanager = Object.create(null);
     let orm = {};
-    let __currentUser__ = null;
+    let __currentUser__ = undefined;
     classmanager.lookupdirs = ["records", "windows", "cards", "reports", "routines", "modules", "tools", "documents"];
     //classmanager.scriptdirs = ["core", "base", "standard"];
     //classmanager.reversed_scriptdirs = Array.prototype.slice.call(classmanager.scriptdirs).reverse()
@@ -308,35 +308,37 @@
     }
 
     async function getCurrentUserObject() {
-        return classmanager.getClass("User").bring(currentUser())
+        return currentUserPromise.promise.then(function () {
+            return classmanager.getClass("User").bring(currentUser())
+        })
     }
 
+    let currentUserPromise = Promise.pending();
     let fetchCurrentUser = async function fetchCurrentUser() {
-        return new Promise(function (resolve, reject) {
-            $.ajax({
-                type: "GET",
-                url: __baseurl__ + '/getcurrentuser',
-                contentType: 'application/json; charset=utf-8',
-                dataType: "json",
-                async: true,
-                success: function (result) {
-                    if (!result.ok) {
-                        reject(result.error);
-                        return;
-                    }
-                    var response = 'response' in result ? result.response : null;
-                    __currentUser__ = result.currentuser;
-                    resolve(result.currentuser);
+        $.ajax({
+            type: "GET",
+            url: __baseurl__ + '/getcurrentuser',
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            async: true,
+            success: function (result) {
+                if (!result.ok) {
+                    reject(result.error);
                     return;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    reject(errorThrown);
-                },
-                complete: function () {
-                    //console.log("en load::complete");
                 }
-            });
+                var response = 'response' in result ? result.response : null;
+                __currentUser__ = result.currentuser;
+                currentUserPromise.resolve(result.currentuser);
+                return;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                currentUserPromise.reject(errorThrown);
+            },
+            complete: function () {
+                //console.log("en load::complete");
+            }
         });
+        return currentUserPromise.promise;
     }
 
     let prefetchClasses = function prefetchClasses() {

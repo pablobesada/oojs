@@ -1,7 +1,7 @@
 .oo-listwindow {
   margin-top: 10px;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 250px);
   .container-search-wrapper {
     padding: 0;
     position: relative;

@@ -129,8 +129,13 @@ orm.generate_update_sql = function generate_update_sql(record) {
     where.push("`internalId`=?");
     values.push(record.oldFields("internalId").getSQLValue());
     if (record.hasField("syncVersion")) {
-        where.push("`syncVersion`=?");
-        values.push(record.oldFields("syncVersion").getSQLValue());
+        let sv = record.oldFields("syncVersion").getSQLValue();
+        if (sv == null) {
+            where.push("`syncVersion` IS NULL");
+        } else {
+            where.push("`syncVersion`=?");
+            values.push(sv);
+        }
     }
     var sql = "UPDATE " + record.__class__.__description__.name + " SET " + setfields.join(",") + " WHERE " + where.join(" AND ");
     return {sql: sql, values: values};

@@ -6,21 +6,21 @@
 @import 'typeahead';
 
 body, #main, .wrapper, #content_section, .container, #workspace {
-  height: 100%;
+  //height: 100%;
 }
 
 #content_section>.container {
   &>.row  {
-    height: 100%;
+    //height: 100%;
       &>.col {
-      height: 100%;
+      //height: 100%;
     }
   }
 }
 
 
 .oo-workspace-container {
-  height: 100%;
+  //height: 100%;
   .oo-container-title:not(:empty) {
     background-color: $secondary-bar-bkg;
     color: $secondary-bar-content;

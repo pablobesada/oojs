@@ -22,15 +22,11 @@
             }
         }
 
-        isFavourite() {
-            //return (await oo.getCurrentUserObject().Favourites.split(",").indexOf(this.entity.getDescription().name) >= 0)
-            return false;
-        } 
-
-        async open(params) {
+        open(params) {
             let self = this;
-            let args = {id: this.tab_id, title: this.getTitle(), favourite: self.isFavourite()}
+            let args = {id: this.tab_id, title: this.getTitle(), favourite: false}
             this.__element__ = oo.ui.templates.get(".workspace .container").createElement(args);
+            this.__element__.find('.oo-favourite-btn').click(this.toggleFavourite.bind(this))
             this.$title = this.__element__.find('.oo-container-title');
             if (!this.$title.length) this.$title = $title.find('.oo-container-title');
             if (!this.shouldShowTitle) {
@@ -57,8 +53,51 @@
             this.templateElements.push(this.__element__)
             self.renderActionBar();
             self.callInitOnPageCallbacks();
+            self.updateFavouriteFlag();
         }
 
+        async updateFavouriteFlag() {
+            let self = this;
+            let user = await oo.getCurrentUserObject();
+            let favlink = this.getFavouriteLink()
+            if (user && user.Favourites && user.Favourites.split(",").indexOf(favlink) >= 0) {
+                this.__element__.find('.oo-favourite-btn').addClass("oo-selected")
+            } else {
+                this.__element__.find('.oo-favourite-btn').removeClass("oo-selected")
+            }
+        }
+
+        getFavouriteLink() {
+            return this.entity.__class__.getDescription().name
+        }
+
+        openFavouriteLink(link) {
+
+        }
+        async toggleFavourite(event) {
+            let self = this;
+            let user = await oo.getCurrentUserObject();
+            if (user) {
+                let favlink = this.getFavouriteLink()
+                if (this.__element__.find('.oo-favourite-btn').hasClass("oo-selected")) {
+                    let values = user.Favourites.split(",");
+                    values.splice(values.indexOf(favlink), 1);
+                    user.Favourites = values.join(',')
+                } else {
+                    user.Favourites = user.Favourites || ""
+                    let values = _.filter(user.Favourites.split(","), (v) => {return v.trim()});
+                    values.push(favlink);
+                    user.Favourites = values.join(",")
+                }
+                let res = await oo.beginTransaction()
+                if (!res) return res;
+                res = await user.save();
+                if (!res) console.log(res);
+                res = await oo.commit()
+                this.updateFavouriteFlag();
+                oo.ui.workspace.loadFavourites();
+            }
+        }
 
         createUIEntry() {
             let self = this;
