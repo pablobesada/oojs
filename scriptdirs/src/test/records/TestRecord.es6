@@ -61,6 +61,8 @@ class TestRecord extends Parent {
 
     async check() {
         let res = await Parent.tryCall(this, true, "check");
+        //if (!this.LinkTo_Field) return this.errorResponse("linkto field cannot be empty", {FieldName: 'LinkTo_Field'})
+        //if (this.Rows.length > 0 && !this.Rows[0].String_Field) return this.errorResponse("string_field cannot be empty", {FieldName: 'Rows', RowFieldName: 'String_Field', RowNr: 0})
         if (!res) return res;
         if (this.waitBeforeReturningFromCheck > 0) await TestRecord.wait(this.waitBeforeReturningFromCheck);
         return this.checkReturnValue;

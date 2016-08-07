@@ -765,6 +765,15 @@
                     //el action 'open' es en event de clase y no entra por aca. ver final de este archivo.
                     self.focus()
                     break;
+                case "focus field":
+                    console.log(event)
+                    if (!event.rowfieldname) {
+                        self.__element__.find(`.oo-editor[name=${event.fieldname}]`).focus();
+                    } else {
+                        console.log("DD",`.oo-matrix[name=${event.fieldname}] .oo-row[rownr=${event.rownr}] .oo-editor[name=${event.rowfieldname}]`)
+                        self.__element__.find(`.oo-matrix[name=${event.fieldname}] .oo-row[rownr=${event.rownr}] .oo-editor[name=${event.rowfieldname}]`).focus();
+                    }
+                    break;
                 case "record replaced":
                     self.bindRecordToWindow(event.record);
                     break;

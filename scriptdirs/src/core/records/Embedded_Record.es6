@@ -305,6 +305,27 @@ function propDetailGetter(fn) {
         return this.__details__[fn]
     }
 }
+
+class ErrorResponse {
+    constructor(errorCode, errorParams) {
+        if (!errorParams) errorParams = {};
+        this.errorCode = errorCode;
+        this.errorParams = errorParams;
+    }
+
+    toJSON() {
+        return {code: this.errorCode, params: this.errorParams}
+    }
+
+    static fromJSON(json) {
+        return new ErrorResponse(json.code, json.params)
+    }
+
+    getMessage() {
+        return this.errorCode
+    }
+}
+
 class Embedded_Record extends oo.BaseEntity {
 
     static initClass(descriptor) {
@@ -407,6 +428,7 @@ class Embedded_Record extends oo.BaseEntity {
         this.__details__ = {}
         this.__fieldslistener__ = Object.create(FieldsListener)
         this.__fieldslistener__.receiver = this;
+        this.__error_responses__ = [];
         var props = {}
         this.__listeners__ = [];
         let description = this.__class__.getDescription()
@@ -431,6 +453,19 @@ class Embedded_Record extends oo.BaseEntity {
         }
         Object.defineProperties(this, props)
         return this;
+    }
+
+    errorResponse(errorCode, errorParams) {
+        this.__error_responses__.push(new ErrorResponse(errorCode, errorParams))
+        return false;
+    }
+
+    getErrorResponses() {
+        return this.__error_responses__
+    }
+
+    clearErrorResponses() {
+        this.__error_responses__ = [];
     }
 
     fieldModified(p1, p2, p3, p4) { //it could be: {p1: field, p2: oldvalue} or {p1: detail, p2: row, p3: rowfield, p4: oldvalue}
@@ -670,7 +705,8 @@ class Embedded_Record extends oo.BaseEntity {
             __meta__: {
                 __isnew__: this.__isnew__,
                 __ismodified__: this.__ismodified__,
-                __classname__: this.__class__.__description__.name
+                __classname__: this.__class__.__description__.name,
+                __error_responses__: _.map(this.__error_responses__, (e) => {return e.toJSON()})
             },
             fields: {},
             oldFields: {},
@@ -701,6 +737,7 @@ class Embedded_Record extends oo.BaseEntity {
     static fromJSON(obj, rec) {
         if (typeof obj == "string") obj = JSON.parse(obj);
         if (rec == null) rec = oo.classmanager.getClass(obj.__meta__.__classname__).new();
+        rec.__error_responses__ = _.map(obj.__meta__.__error_responses__, (e) => {return ErrorResponse.fromJSON(e)})
         var fieldnames = rec.fieldNames();
         for (var i = 0; i < fieldnames.length; i++) {
             var fn = fieldnames[i];

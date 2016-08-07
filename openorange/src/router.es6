@@ -82,11 +82,11 @@ router.post('/record/:method', function (req, res, next) {
                 }
             })
             .catch(function (err) {
-                res.send({ok: false, error: err})
+                res.send({ok: false, error: err, stack: err.stack})
                 console.log(err.stack)
             });
     } catch (err) {
-        res.send({ok: false, error: err})
+        res.send({ok: false, error: err, stack: err.stack})
         console.log(err.stack)
     }
 });

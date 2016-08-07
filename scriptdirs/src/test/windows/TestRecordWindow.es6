@@ -52,7 +52,8 @@ var Description = {
             {
                 label: "TAB2", name: 'TAB1Page', content: [
                 {field: 'Rows', columns: [
-                    {field: 'rowNr'}]
+                    {field: 'rowNr'},
+                    {field: 'String_Field', pastewindow: 'CustomerPasteWindow'},]
                 }]
 
             },

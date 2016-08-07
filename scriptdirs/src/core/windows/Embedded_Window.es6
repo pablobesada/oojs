@@ -314,8 +314,22 @@ class Embedded_Window extends oo.UIEntity {
                 let res = await oo.beginTransaction()
                 if (!res) return res;
                 res = await rec.save();
-                if (!res) return res;
-                res = oo.commit()
+                if (res) {
+                    res = await oo.commit()
+                } else {
+                    let errs = rec.getErrorResponses();
+                    let focus_done = false;
+                    for (let i = 0; i < errs.length; i++) {
+                        let err = errs[i];
+                        console.log(err)
+                        oo.postMessage(err.getMessage())
+                        if (!focus_done && err.errorParams.FieldName) {
+                            this.emit('focus field', {window: this, fieldname: err.errorParams.FieldName, rowfieldname: err.errorParams.RowFieldName, rownr: err.errorParams.RowNr})
+                            focus_done = true;
+                        }
+                    }
+                    rec.clearErrorResponses();
+                }
                 return res;
             } finally {
                 this.emit('processing end', {window: this})

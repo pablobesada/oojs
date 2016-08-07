@@ -64,6 +64,7 @@ class ClientRecord extends Parent {
                 data: JSON.stringify(data),
                 success: function (result) {
                     if (!result.ok) {
+                        console.log("Error in server", result.stack)
                         reject(result.error);
                         return;
                     }
