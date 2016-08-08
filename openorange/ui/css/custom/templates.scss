@@ -22,20 +22,106 @@ body, #main, .wrapper, #content_section, .container, #workspace {
 .oo-workspace-container {
   //height: 100%;
   .oo-container-title:not(:empty) {
-    background-color: $secondary-bar-bkg;
-    color: $secondary-bar-content;
+    background-color: $subheader-bkg;
+    color: $subheader-content;
     margin: 10px 0 0;
-    padding: 5px 10px;
-
+    padding: 0 10px;
     &.oo-modified {
-      background-color: red;
+      background: $subheader-modified;
     }
-
-    & .oo-favourite-btn {
-      cursor: pointer;
-      color: gray;
-      &.oo-selected {
-        color: yellow;
+    .oo-title-text {
+      font-size: 16px;
+    }
+    .container-search-wrapper {
+      height: 40px;
+      margin-top: 10px;
+      padding: 0;
+      position: relative;
+      &:before {
+        color: $icon-color;
+        content: "\f002";
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: 1.4em;
+        position: absolute;
+        right: 3%;
+        top: 10px;
+      }
+      i {
+        height: 0;
+      }
+      .container-search-input {
+        border-color: $grey-light;
+        margin: 0;
+        padding: 0 10px;
+        width: 94%;
+        &:focus {
+          outline: none;
+        }
+        @include placeholder($grey-light);
+        &.tt-hint {
+          color: $grey-light;
+        }
+      }
+      .tt-menu {
+        width: 98%;
+        .tt-suggestion {
+          font-size: 15px;
+        }
+      }
+    }
+    .oo-subnav-icons {
+      position: relative;
+      ul > li {
+        color: $icon-color;
+        cursor: pointer;
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+        &:hover {
+          color: $link-over;
+          .icon {
+            position: relative;
+            &:not(:only-child) {
+              &:after {
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-bottom: 8px solid #ddd;
+                bottom: 0;
+                content: '';
+                height: 0;
+                left: 3px;
+                position: absolute;
+                width: 0;
+              }
+            }
+          }
+          .oo-subnav-options {
+            display: inline-block;
+          }
+        }
+        .oo-subnav-options {
+          background: $link-over;
+          color: $link;
+          display: none;
+          left: 0;
+          position: absolute;
+          top: 64px;
+          width: 100%;
+          li {
+            float: none;
+            line-height: 30px;
+            padding: 0 10px;
+            a {
+              width: 100%;
+            }
+          }
+        }
+        .icon {
+          font-size: 1.5em;
+          &.oo-selected {
+            color: $icon-selected;
+          }
+        }
       }
     }
   }

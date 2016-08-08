@@ -2,48 +2,6 @@
   margin-top: 10px;
   width: 100%;
   height: calc(100vh - 250px);
-  .container-search-wrapper {
-    padding: 0;
-    position: relative;
-    &:before {
-      color: $grey-light;
-      content: "\f002";
-      font: normal normal normal 14px/1 FontAwesome;
-      font-size: 1.4em;
-      position: absolute;
-      right: 3%;
-      top: 10px;
-    }
-    .container-search-input {
-      margin: 0;
-      padding: 0 10px;
-      width: 94%;
-      &:focus {
-        background: #fff;
-        border-color: $grey-light;
-        box-shadow: none;
-        outline: none;
-      }
-      &::placeholder,
-      &::-webkit-input-placeholder,
-      &:-ms-input-placeholder,
-      &::-moz-placeholder {
-        color: #fff;
-        font-size: 16px;
-      }
-      &:focus::placeholder,
-      &:focus:-ms-input-placeholder,
-      &:focus::-webkit-input-placeholder,
-      &:focus::-moz-placeholder {
-        color: #fff;
-        font-size: 16px;
-        font-weight: 400;
-      }
-    }
-    .tt-menu {
-      width: 100%;
-    }
-  }
   .select {
     .dropdown-content li {
       min-height: 30px;

@@ -11,3 +11,10 @@
   -ms-box-shadow: $params;
   box-shadow: $params;
 }
+
+@mixin placeholder($color, $fontSize: 15px) {
+  &::placeholder { color: $color; font-size: $fontSize; }
+  &::-webkit-input-placeholder { color: $color; font-size: $fontSize; }
+  &:-ms-input-placeholder { color: $color; font-size: $fontSize; }
+  &::-moz-placeholder { color: $color; font-size: $fontSize; }
+}
