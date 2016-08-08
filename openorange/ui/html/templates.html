@@ -28,17 +28,17 @@
                             <div class="col l3 m5 s5">
                               <ul class="right oo-nav-icons">
                                 <li>
-                                  <i class="fa fa-clock-o fa-2x" aria-hidden="true"></i>
-                                  <ul class="recent-activity oo-nav-options oo-recent-activity-container"></ul>
+                                  <i class="icon fa fa-clock-o" aria-hidden="true"></i>
+                                  <ul class="oo-nav-options oo-recent-activity-container"></ul>
                                 </li>
-                                <li><i class="fa fa-heart fa-2x" aria-hidden="true"></i>
+                                <li><i class="icon fa fa-heart" aria-hidden="true"></i>
                                     <ul class="oo-nav-options oo-favourites-container">
                                     </ul>
                                 </li>
-                                <li><i class="fa fa-comments-o fa-2x" aria-hidden="true"></i></li>
-                                <li><i class="fa fa-calendar-o fa-2x" aria-hidden="true"></i></li>
-                                <li><i class="fa fa-th fa-2x" aria-hidden="true"></i></li>
-                                <li><i class="fa fa-user fa-2x" aria-hidden="true"></i></li>
+                                <li><i class="icon fa fa-comments-o" aria-hidden="true"></i></li>
+                                <li><i class="icon fa fa-calendar-o" aria-hidden="true"></i></li>
+                                <li><i class="icon fa fa-th" aria-hidden="true"></i></li>
+                                <li><i class="icon fa fa-user" aria-hidden="true"></i></li>
                               </ul>
                             </div>
                         </div>
@@ -84,10 +84,28 @@
         </script>
         <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields();">
             <div id="{{id}}" class="container oo-workspace-container col s12">
-                <div class="oo-container-title">
-                    <span class="oo-title-text">{{title}}</span>
-                    <i class="fa fa-star right oo-favourite-btn {{#if favourite}}oo-selected{{/if}}" aria-hidden="true"></i>
-                </div>
+                <nav class="oo-container-title row">
+                  <div class="nav-wrapper">
+                    <div class="col s4">
+                      <span class="oo-title-text">{{title}}</span>
+                    </div>
+                    <div class="container-search-wrapper col s6">
+                      <i class="mdi-action-search"></i>
+                      <input class="container-search-input typeahead" id="OOSearch" type="text" placeholder="Explore {{title}}">
+                    </div>
+                    <div class="oo-subnav-icons col s2">
+                      <ul class="right">
+                        <li>
+                          <i class="icon fa fa-cog" aria-hidden="true"></i>
+                          <ul class="oo-subnav-options oo-settings-container">
+                            <li>Configuración</li>
+                          </ul>
+                        </li>
+                        <li><i class="icon fa fa-heart oo-favourite-btn {{#if favourite}}oo-selected{{/if}}" aria-hidden="true"></i></li>
+                      </ul>
+                    </div>
+                  </div>
+                </nav>
             </div>
         </script>
 
@@ -109,9 +127,6 @@
         <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
                 <div class="oo-listwindow">
-                    <div class="container-search-wrapper col s4"><i class="mdi-action-search"></i>
-                      <input class="container-search-input typeahead" id="OOSearch" type="text" placeholder="explore openorange">
-                    </div>
                     <!-- /*<div class="select col s4">
                       <select>
                           <option value="1" SELECTED >Este mes</option>
