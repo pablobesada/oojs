@@ -560,6 +560,7 @@ orm.syncSetRecord = async function syncSetRecord(setrecordname) {
 }
 
 orm.syncAllTables = async function syncAllTables() {
+
     let classes = {}
     let cm = require("openorange").classmanager
     //console.log(cm.getClass("Row").getDescription())

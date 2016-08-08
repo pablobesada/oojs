@@ -12,6 +12,11 @@ async function login(usercode, md5pass) {
     return false;
 }
 
+function finish() {
+    console.log("Finishing OpenOrange")
+    require("./db").disconnect();
+}
+
 var oo = {}
 oo.BaseEntity = require("./both/BaseEntity")
 oo.UIEntity = require("./both/UIEntity")
@@ -37,6 +42,7 @@ oo.setSocketIO = function (socketIO) {
     oo.connectedClient = require('./pushserver')(socketIO);
 }
 oo.eventmanager = new oo.BaseEntity();
+oo.finish = finish;
 
 oo.askYesNo = async function (txt) {return oo.connectedClient.ask('askYesNo', txt)}
 oo.inputString = async function (txt) {return oo.connectedClient.ask('inputString', txt)}

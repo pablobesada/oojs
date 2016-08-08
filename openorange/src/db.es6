@@ -162,6 +162,9 @@ db.getConnection = async function getConnection() {
     })
 }
 
+db.disconnect = function disconnect() {
+    db.pool.end();
+}
 
 module.exports = db;
 

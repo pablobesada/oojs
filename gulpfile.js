@@ -202,10 +202,14 @@ gulp.task('sync-tables', ['prepare openorange'], () => {
     let oo = require("openorange")
     oo.init();
     oo.orm.syncAllTables()
+        .then(function () {
+            console.log("Sync tables finished")
+            oo.finish()
+        })
 })
 
 
-gulp.task('create-openorange-user', ['prepare openorange'], (done) => {
+gulp.task('create-openorange-user', ['prepare openorange'], () => {
     let oo = require("openorange")
     oo.init();
     var conn = null;
@@ -218,15 +222,31 @@ gulp.task('create-openorange-user', ['prepare openorange'], (done) => {
             return conn.commit()
         })
         .then(() => {
-            gutil.log.colors.red('User openorange (no password) is now available for login');
-            done()
+            gutil.log(gutil.colors.green('User openorange (no password) is now available for login'));
+            oo.finish();
         })
         .catch((err) => {
-            gutil.log.colors.red(err.message);
-            done()
+            gutil.log(gutil.colors.red(err));
+            oo.finish();
         })
 })
 
+function P() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            console.log("EN TIMEOUT")
+            resolve("OK")
+        }, 2000);
+    });
+}
+gulp.task("TEST", ['prepare openorange'], () => {
+    let oo = require("openorange")
+    oo.init();
+    oo.getDBConnection()
+    console.log("EN TEST")
+  P()
+      .then((res) => {console.log(res); oo.finish()})
+})
 
 //gulp.task('minify-css', function() {
 //    fs.unlinkSync('openorange/ui/css/app/styles.min.css');

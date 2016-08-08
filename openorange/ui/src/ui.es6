@@ -125,6 +125,7 @@
 
         focus() {
             $('.oo-recent-activity-container').tabs('select_tab', this.tab_id);
+            oo.ui.workspace.current_tab_id = this.tab_id;
             //$(`ul.recent-activity a`).removeClass('active')
             //$(`ul.recent-activity a[href="#${this.tab_id}"]`).addClass('active')
         }

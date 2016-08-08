@@ -27,7 +27,8 @@
                 }
             })
             $('.oo-recent-activity-container').mouseenter(() => {
-                this.current_tab_id = $(`.oo-recent-activity-container a.active`).attr('href').substring(1)
+                //this.current_tab_id = $(`.oo-recent-activity-container a.active`).attr('href').substring(1)
+                //console.log("TABID", this.current_tab_id)
             })
             $('.oo-recent-activity-container').mouseleave(() => {
                 if (this.current_tab_id) {
