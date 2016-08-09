@@ -795,6 +795,7 @@
                     break;
                 case "row inserted":
                     var detail = event.detail;
+                    console.log("ROW INSERTED", event)
                     if (detail.name in this.matrix_json_map) {
                         _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
                             var tbody = matrixjson.__element__.find(".oo-row-container[matrix_idx]");
@@ -803,7 +804,7 @@
                     }
                     break;
                 case "row removed":
-                    console.log(event)
+                    console.log("ROW REMOVED", event)
                     var detail = event.detail;
                     if (detail.name in this.matrix_json_map) {
                         _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
@@ -812,10 +813,13 @@
                     }
                     break;
                 case "detail cleared":
+                    console.log("DETAIL CLEARED", event)
                     var detail = event.detail;
                     if (detail.name in this.matrix_json_map) {
                         _(this.matrix_json_map[detail.name]).forEach(function (matrixjson) {
-                            var tbody = matrixjson.__element__.find(".oo-row-contaner");
+                            console.log("matrixjson", matrixjson)
+                            var tbody = matrixjson.__element__.find(".oo-row-container");
+                            console.log("tbody", tbody)
                             tbody.find(".oo-row").not('[rowNr=null]').remove();
                         })
                     }
