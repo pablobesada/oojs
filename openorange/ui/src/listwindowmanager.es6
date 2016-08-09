@@ -7,6 +7,10 @@
 
     class ListWindowContainer extends oo.ui.BaseContainer {
 
+        static getType() {
+            return 'listwindowcontainer'
+        }
+
 
         constructor(wnd ,parentView) {
             super(wnd, parentView)
@@ -26,6 +30,7 @@
             //this.__element__.append(oo.ui.templates.get('.listwindow .body').createElement())
 
 
+            this.setupSearchWidget();
             let windowElement = this.__element__
             var recordClass = self.listwindow.getRecordClass();
             self.generateColumns();
@@ -58,7 +63,25 @@
             return this.__element__
         };
 
+        setupSearchWidget() {
+            let self=this;
+            self.__element__.find('.oo-search').typeahead({hint: true, minLength: 0}, {
+                //async: true,
+                display: 'label',
+                source: function (query, syncResults, asyncResults) {
+                    console.log("SS", self.listwindow.getSuggestedSearches())
+                    syncResults(self.listwindow.getSuggestedSearches())
+                }
+            }).on('typeahead:change', function (event) {
+                console.log("search:change", event.currentTarget.value)
+                self.listwindow.setSearchText(event.currentTarget.value)
+                self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
+            }).on('typeahead:selected', function (obj, datum) {
+                self.listwindow.setSearchText(datum.query)
+                self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
+            });
 
+        }
         getTitle() {
             return this.listwindow.getTitle()
         }

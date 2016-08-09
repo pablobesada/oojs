@@ -6,6 +6,10 @@
 
     class ReportContainer extends oo.ui.BaseContainer {
 
+        static getType() {
+            return 'reportcontainer'
+        }
+
         static findReport(id) {
             return require('openorange').classmanager.getClass('Embedded_Report').findReport(id);
         }

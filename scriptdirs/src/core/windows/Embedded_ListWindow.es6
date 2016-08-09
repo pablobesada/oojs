@@ -1,10 +1,13 @@
 "use strict" 
 var oo = require('openorange')
+let moment = require("moment")
 
 var ListWindowDescription = {
     name: 'Embedded_ListWindow',
     inherits: null,
-    filename: __filename
+    suggested_searches: [],
+    filename: __filename,
+
 }
 
 class Embedded_ListWindow extends oo.UIEntity {
@@ -21,9 +24,16 @@ class Embedded_ListWindow extends oo.UIEntity {
         newdesc.columns = descriptor.columns;
         newdesc.filename = descriptor.filename;
         newdesc.actions = parentdesc.actions
+        newdesc.suggested_searches = parentdesc.suggested_searches ? parentdesc.suggested_searches.slice() : []
+        if (descriptor.suggested_searches) {
+            for (let i = 0; i < descriptor.suggested_searches.length; i++) newdesc.suggested_searches.push(descriptor.suggested_searches[i])
+        }
+
         this.__recordClass__ = null;
         this.__windowClass__ = null;
         this.__description__ = newdesc;
+        this.searchText = null;
+        this.where = null;
         return this;
     }
 
@@ -50,12 +60,55 @@ class Embedded_ListWindow extends oo.UIEntity {
         this.emit("focus", {listwindow: this})
     }
 
-    async getRecords(start, count) {
-        return await this.getRecordClass().select().offset(start).limit(count).fetch();
+    setSearchText(txt) {
+        console.log("new search text: ", txt)
+        function processToken(t) {
+            if (t == '$user') return oo.currentUser();
+            if (t == '$today') return moment().format("YYYY-MM-DD");
+            return t;
+        }
+        this.searchText = txt;
+        this.where = null
+        if (txt.trim()) {
+            this.where = {};
+            let tokens = txt.split(' ')
+            let or = {};
+            for (let token of tokens) {
+                if (!token.trim()) continue;
+                if (token.indexOf("=") >= 0) {
+                    console.log("HAS EQUAL")
+                    let left = processToken(token.split("=")[0])
+                    //if (left == token.split("=")[0]) left = left + '__eq';
+                    let right = processToken(token.split("=")[1])
+                    this.where[left] = right;
+                }
+                else {
+                    console.log("ELSE")
+                    for (let col of this.__class__.getDescription().columns) {
+                        or[col.field + '__LIKE'] = '%' + token + '%';
+                    }
+                }
+            }
+            console.log("OR:", or)
+            if (Object.keys(or).length) this.where['__or__'] = oo.query.or(or);
+        }
     }
 
-    async getRecordsLength(start, count) {
+    async getRecords(start, count) {
+        let q = this.getRecordClass().select();
+        if (this.where) q.where(this.where)
+        console.log("GETTING RECORDS WITH WHERE: ", this.where)
+        q = q.offset(start).limit(count);
+        return await q.fetch();
+    }
+
+
+    /*async getRecordsLength(start, count) {
         return await this.getRecordClass().select().offset(start).limit(count).fetch();
+    }*/
+
+    getSuggestedSearches() {
+        return this.__class__.getDescription().suggested_searches
     }
 
     static tryCall(self, methodname) {

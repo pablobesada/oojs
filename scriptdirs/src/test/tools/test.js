@@ -27,6 +27,7 @@ require("../core/windows/Embedded_WindowTest")
 require("../local/ReportTest.js")
 require("../local/ClassManagerTest")
 require("../tools/ormTest")
+require("../tools/QueryTest")
 
 
 

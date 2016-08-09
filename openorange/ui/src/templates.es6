@@ -21,6 +21,20 @@
         return ret;
     });
 
+    Handlebars.registerHelper('if_equal', function(a, b, opts) {
+        if(a == b) // Or === depending on your needs
+            return opts.fn(this);
+        else
+            return opts.inverse(this);
+    });
+
+    Handlebars.registerHelper('if_not_equal', function(a, b, opts) {
+        if(a != b) // Or === depending on your needs
+            return opts.fn(this);
+        else
+            return opts.inverse(this);
+    });
+
     class TemplateManager {
 
         constructor() {

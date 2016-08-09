@@ -7,6 +7,10 @@
 
     class WindowContainer extends oo.ui.BaseContainer {
 
+        static getType() {
+            return 'windowcontainer'
+        }
+
         static getWindowReportView(window, viewname) {
             console.log("LOOKING FOR WINDOW: ", window, viewname)
             for (let i = 0; i < oo.ui.containers.length; i++) {

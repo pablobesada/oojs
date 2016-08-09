@@ -79,6 +79,38 @@ BaseQuery.where = function where(w){
         var colname = c;
         var op = '=';
         var cc = c.split("__");
+        if (cc.length == 1) {
+            self._where.push(colname + " " + op + " '" + w[c] + "'")
+        }
+        else if (cc.length == 2) {
+            switch(cc[1].toUpperCase()) {
+                case 'LIKE':
+                    colname = cc[0];
+                    op = 'LIKE';
+                    break;
+                case 'GT':
+                    colname = cc[0];
+                    op = '>=';
+                    break;
+            }
+        } else {
+            if (colname.toUpperCase() == '__OR__') {
+                self._where.push(w[c])
+            }
+        }
+
+
+    }
+    return self
+}
+
+BaseQuery.or = function or(w) {
+    var self = this;
+    let _or = [];
+    for (var c in w) {
+        var colname = c;
+        var op = '=';
+        var cc = c.split("__");
         if (cc.length == 2) {
             switch(cc[1].toUpperCase()) {
                 case 'LIKE':
@@ -91,10 +123,9 @@ BaseQuery.where = function where(w){
                     break;
             }
         }
-
-        self._where.push(colname + " " + op + " '" + w[c] + "'")
+        _or.push(colname + " " + op + " '" + w[c] + "'")
     }
-    return self
+    return "(" + _or.join(" OR ") + ")"
 }
 
 if (typeof window == 'undefined') {

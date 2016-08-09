@@ -86,14 +86,18 @@
             <div id="{{id}}" class="container oo-workspace-container col s12">
                 <nav class="oo-container-title row">
                   <div class="nav-wrapper">
+                  {{#if_not_equal type 'listwindowcontainer'}}
                     <div class="col s4">
                       <span class="oo-title-text">{{title}}</span>
                     </div>
+                    {{/if_not_equal}}
+                    {{#if_equal type 'listwindowcontainer'}}
                     <div class="container-search-wrapper col s6">
                       <i class="mdi-action-search"></i>
-                      <input class="container-search-input typeahead" id="OOSearch" type="text" placeholder="Explore {{title}}">
+                      <input class="container-search-input typeahead oo-search" type="text" placeholder="Explore {{title}}">
                     </div>
-                    <div class="oo-subnav-icons col s2">
+                    {{/if_equal}}
+                    <div class="oo-subnav-icons col s2 right">
                       <ul class="right">
                         <li>
                           <i class="icon fa fa-cog" aria-hidden="true"></i>

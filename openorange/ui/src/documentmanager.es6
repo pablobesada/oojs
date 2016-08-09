@@ -290,6 +290,10 @@
 
     class DocumentContainer extends oo.ui.BaseContainer {
 
+        static getType() {
+            return 'documentcontainer'
+        }
+
         constructor(doc) {
             super(doc)
             this.document = this.entity

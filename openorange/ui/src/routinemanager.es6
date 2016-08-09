@@ -6,6 +6,10 @@
 
     class RoutineContainer extends oo.ui.BaseContainer {
 
+        static getType() {
+            return 'routinecontainer'
+        }
+
         constructor(routine, view) {
             super(routine)
             this.routine = routine;

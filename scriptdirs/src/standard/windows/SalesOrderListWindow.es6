@@ -12,9 +12,14 @@ var Description = {
         {field: 'CustCode'},
         {field: 'CustName'},
         {field: 'TransDate'},
-        {field: 'Amount'},
+        {field: 'User'},
     ],
-    filename: __filename
+    filename: __filename,
+    suggested_searches: [
+        {label: 'Registros Abiertos', query: 'Status=0'},
+        {label: 'Registros de hoy', query: 'TransDate=$today'},
+        {label: 'Creados por mi', query: 'User=$user'},
+    ]
 }
 
 var Parent = cm.SuperClass(Description)

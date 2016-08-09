@@ -144,13 +144,9 @@
         container.addEventListener('mousewheel', this.onWheel.bind(this), false);
         //document.body.appendChild(container);
         //var items = [];
-        this.items = new RemoteArray(this.options.src, 120)
-
-
-        //console.log(this.innerHeight)
         this.onscreen = [];
         this.itemHeight = null;
-        this.initiate();
+        this.setSource(this.options.src);
     };
 
     SuperList.prototype.initiate = function() {
@@ -163,12 +159,16 @@
         if (this.items.length) {
             return this.items.get(0)
                 .then(function (firstItem) {
-                    if (firstItem.jquery) firstItem = firstItem[0]
-                    self.canvas.appendChild(firstItem);
-                    self.itemHeight = $(firstItem).outerHeight(true);
-                    self.canvas.removeChild(firstItem);
+                    self.itemHeight = 16;
+                    if (firstItem) {
+                        if (firstItem.jquery) firstItem = firstItem[0]
+                        self.canvas.appendChild(firstItem);
+                        self.itemHeight = $(firstItem).outerHeight(true);
+                        self.canvas.removeChild(firstItem);
+                    } else {
+                        self.itemHeight = 16;
+                    }
                     self.initiated = true;
-                    //self.itemHeight=16;
                     self.updateScrollbar();
                     self.draw();
                 })
@@ -194,6 +194,11 @@
         this.options.length = l;
         this.items.length = l;
         this.initiate()
+    }
+
+    SuperList.prototype.setSource = function (src) {
+        this.items = new RemoteArray(src, 120)
+        this.initiate();
     }
 
     SuperList.prototype.draw = function () {

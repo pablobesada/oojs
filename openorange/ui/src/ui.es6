@@ -24,7 +24,7 @@
 
         open(params) {
             let self = this;
-            let args = {id: this.tab_id, title: this.getTitle(), favourite: false}
+            let args = {id: this.tab_id, title: this.getTitle(), favourite: false, type: this.constructor.getType()}
             this.__element__ = oo.ui.templates.get(".workspace .container").createElement(args);
             this.__element__.find('.oo-favourite-btn').click(this.toggleFavourite.bind(this))
             this.$title = this.__element__.find('.oo-container-title');
