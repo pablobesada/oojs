@@ -1072,7 +1072,7 @@
             html += '<div id="' + self.pastewindow_id + '" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">';
             html += '  <div class="modal-content">';
             //html += '    <table class="recordlist"><thead></thead><tbody></tbody></table>';
-            html += '    <div class="pastewindow_grid" style="width:600px;height:200px;"></div>';
+            html += '    <div class="pastewindow_grid" style="width:600px;height:250px;"></div>';
             html += '  </div>';
             html += '  <div class="modal-footer green lighten-4">';
             html += '    <a href="#" class="waves-effect waves-red btn-flat modal-action modal-close">Disagree</a>';

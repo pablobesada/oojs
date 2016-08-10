@@ -85,6 +85,30 @@
   top: 10px;
   width: 2.5rem;
 }
+.pastewindow {
+  .pastewindow_grid {
+    padding-right: 24px;
+  }
+  .slick-header {
+    .slick-header-columns,
+    .slick-header-column {
+      @include linear-gradient(#fafafa, #eee);
+    }
+    .slick-header-column {
+      height: 25px;
+      line-height: 25px;
+    }
+  }
+  .ui-widget-content {
+    &:hover {
+      background: #ddd;
+    }
+    .slick-cell {
+      border-bottom-color: transparent;
+      cursor: pointer;
+    }
+  }
+}
 .tabs {
   margin-top: 20px;
 }
