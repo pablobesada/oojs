@@ -3,6 +3,7 @@
 @import 'footer';
 @import 'header';
 @import 'listwindow';
+@import 'report';
 @import 'typeahead';
 @import 'window';
 
@@ -68,6 +69,9 @@ body, #main, .wrapper, #content_section, .container, #workspace {
         .tt-suggestion {
           font-size: 15px;
         }
+      }
+      .twitter-typeahead {
+        display: inline !important;
       }
     }
     .oo-subnav-icons {
