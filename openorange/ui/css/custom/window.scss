@@ -1,0 +1,90 @@
+.pipeline {
+  margin: 20px 0;
+  span {
+    cursor: pointer;
+    padding: 5px;
+    &[active=true] {
+      color: blue;
+    }
+    &:not(:last-child):after {
+      margin: 0 10px 0 8px;
+      content: ' > ';
+    }
+  }
+  &.status {
+    span {
+      background: $pipeline-done;
+      color: $link;
+      margin-left: -1px;
+      padding: 8px 14px 8px 25px;
+      position: relative;
+      &:hover {
+        color: $link-over;
+      }
+      &:not(:last-child):after {
+        border-bottom: 17px solid transparent;
+        border-left: 17px solid $pipeline-done;
+        border-top: 17px solid transparent;
+        content: '';
+        height: 0;
+        margin-left: 13px;
+        position: absolute;
+        top: 0;
+        width: 0;
+        z-index: 1;
+      }
+      &:not(:first-child):before {
+        border-bottom: 17px solid transparent;
+        border-left: 17px solid white;
+        border-top: 17px solid transparent;
+        content: '';
+        height: 0;
+        margin-left: -25px;
+        position: absolute;
+        top: 0;
+        width: 0;
+        z-index: 0;
+      }
+      &[active=true] {
+        background: $pipeline-progress;
+        color: $link-over;
+        cursor: default;
+        &:not(:last-child):after {
+          border-left-color: $pipeline-progress;
+        }
+        & ~ span {
+          background: $pipeline-pending;
+          &:not(:last-child):after {
+            border-left-color: $pipeline-pending;
+          }
+        }
+      }
+      &:first-child {
+        border-radius: 5px 0 0 5px;
+      }
+      &:last-child {
+        border-radius: 0 5px 5px 0;
+      }
+    }
+  }
+}
+.radiobutton-field {
+  p {
+    margin: 0;
+  }
+}
+.checkbox-field {
+  p {
+    margin: 0;
+  }
+}
+.oo-pastewindow-opener {
+  color: $grey-dark;
+  cursor: pointer;
+  right: 0;
+  top: 10px;
+  width: 2.5rem;
+}
+.tabs {
+  margin-top: 20px;
+}
