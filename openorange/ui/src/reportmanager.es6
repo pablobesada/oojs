@@ -37,7 +37,7 @@
             var self = this;
             let paramsWindowId = oo.ui.genId('REPORTWINDOW')
             let paramsWindow = $(`<div id="${paramsWindowId}"></div>`)
-            let contentElement = $('<div name="content"></div>')
+            let contentElement = $('<div name="content oo-report-content"></div>')
             var w = this.__element__;
             w.append(paramsWindow)
             w.append(contentElement)
