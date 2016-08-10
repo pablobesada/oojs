@@ -10,7 +10,7 @@ var async = require('async')
 
 
 describe('Query', function () {
-    it.only('Select', async () => {
+    it('Select', async () => {
         let q = oo.query.select(oo.classmanager.getClass("TestRecord"))
         q.where({__or__:q.or({String_Field: '123', Integer_Field: '444'})})
         await q.fetch();

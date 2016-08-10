@@ -31,6 +31,10 @@ var Description = {
 
     },
     filename: __filename,
+    indexes: [
+        {name: "Main", fields: ["Integer_Field"], unique: false},
+        {name: "SubString", fields: ["SubTestName", "String_Field"], unique: true}
+    ]
 }
 
 let Parent = cm.SuperClass(Description)

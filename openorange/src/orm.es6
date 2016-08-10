@@ -334,7 +334,7 @@ async function save_existing(conn, record) {
     let info = await conn.query(update.sql, update.values)
     if (info.changedRows != 1) {
         console.log({code: "WRONG_SYNCVERSION", message: "Record might have been modified by other user "})
-        return false
+        return record.errorResponse("WRONG_SYNCVERSION")
     }
     record.syncVersion += 1;
     record.setNewFlag(false);
@@ -487,13 +487,28 @@ orm.column_def_sql = function column_def_sql(name, fielddef) {
     let opts = (name == 'internalId') ? 'NOT NULL AUTO_INCREMENT' : 'DEFAULT NULL'
     return `${name} ${type} ${opts}`
 }
+
+orm.index_sql_def = function index_sql_def(index) {
+    let key = '';
+    if (index.primary) {
+        key = 'PRIMARY KEY (';
+    } else if (index.unique) {
+        key = 'UNIQUE KEY `' + index.name + "` (";
+    } else {
+        key = 'KEY `' + index.name + "` (";
+    }
+    let fields = _.map(index.fields, (fn) => {return '`' + fn + '`'}).join(',')
+    key = key + fields + ")"
+    return key;
+}
+
 orm.createTable = async function createTable(description) {
     let tablename = description.name;
     let columns = _(description.persistentFieldNames).map((fn) => {
         return orm.column_def_sql(fn, description.fields[fn])
     });
-    let indexes = []
-    indexes.push('PRIMARY KEY (`internalId`)');
+    let indexes = [];
+    for (let index of description.indexes) indexes.push(orm.index_def_sql(index))
     let sql = `CREATE TABLE ${tablename} (${columns.join(",\n")}, ${indexes.join(",\n")} ) ENGINE=InnoDB DEFAULT CHARSET=utf8`
     let conn = await ctx.getDBConnection();
     return conn.query(sql);
@@ -520,10 +535,6 @@ orm.alterTable = async function alterTable(description) {
         if (!(fn in table_current_fields)) adds.push(fn);
     }
 
-    //console.log("ADDS: ", adds)
-    //console.log("DELS: ", dels)
-    //console.log("UPDS: ", upds)
-
     let tablename = description.name;
     let columns = _(adds).map((fn) => {
         return "ADD " + orm.column_def_sql(fn, description.fields[fn])
@@ -531,9 +542,37 @@ orm.alterTable = async function alterTable(description) {
     columns = columns.concat(_(upds).map((fn) => {
         return "MODIFY " + orm.column_def_sql(fn, description.fields[fn])
     }))
-    //columns =  columns.concat(_(dels).map((fn) => {return "DROP " + fn})) // por el momento no vamos a eliminar columnas, xq puede haber problemas al borrar campos creador por OpenOrange Legacy y que sigan en uso
-    if (columns.length) {
-        let sql = `ALTER TABLE ${tablename} ${columns.join(",\n")}`
+
+    qres = await conn.query('SHOW INDEXES FROM ' + description.name);
+    rows = qres[0], queryfields = qres[1];
+    adds = [], dels = [], upds = []
+    let descriptor_indexes = {}, db_indexes = {}
+    for (let index of description.indexes) descriptor_indexes[index.name] = index;
+    for (let row of rows) {
+        if (!(row.Key_name in db_indexes)) db_indexes[row.Key_name] = {name: row.Key_name, fields: []}
+        db_indexes[row.Key_name].fields.push(row.Column_name);
+        db_indexes[row.Key_name].unique = (row.Non_unique == 0)
+        db_indexes[row.Key_name].primary = (row.Key_name == 'PRIMARY')
+    }
+    for (let idxname in descriptor_indexes) {
+        if (!(idxname in db_indexes)) {
+            adds.push(descriptor_indexes[idxname])
+        } else {
+            let dbidx = db_indexes[idxname];
+            let desidx = descriptor_indexes[idxname]
+            if (!(_.isEqual(dbidx.fields, desidx.fields) && !!dbidx.primary==!!desidx.primary && !!dbidx.unique==!!desidx.unique )) {
+                upds.push(descriptor_indexes[idxname])
+            }
+        }
+    }
+    let indexes = [];
+    for (let index of adds) indexes.push("ADD " + orm.index_sql_def(index))
+    indexes = indexes.concat(_.map(upds, (index) => {return "DROP INDEX " + index.name}))
+    indexes = indexes.concat(_.map(upds, (index) => {return "ADD " + orm.index_sql_def(index)}))
+    console.log(indexes)
+    if (columns.length || indexes.length) {
+        let sql = `ALTER TABLE ${tablename} ${columns.join(",\n")} ${indexes.join(",\n")}`
+        //console.log(sql)
         return await conn.query(sql);
     }
     return true;

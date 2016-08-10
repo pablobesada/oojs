@@ -37,6 +37,15 @@
             })
 
             this.loadFavourites();
+            this.loadModules();
+        }
+
+        async loadModules() {
+            $('.oo-modules-container').html('');
+            let args = {label: 'Ventas', icon: 'plus'}
+            let $item = oo.ui.templates.get('.workspace .module-item').createElement(args)
+            console.log($item)
+            $('.oo-modules-container').append($item)
         }
 
         async loadFavourites() {

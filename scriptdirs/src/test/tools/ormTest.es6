@@ -104,4 +104,11 @@ describe('ORM with Selenium', function () {
         console.log("-----------")
         await oo.orm.syncAllTables()
     })
+
+    it.only("indexes", async () => {
+        let CLS = cm.getClass("TestRecord")
+        let res = await oo.orm.syncRecord(CLS)
+        console.log(res)
+        return true;
+    })
 });

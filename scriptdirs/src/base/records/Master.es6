@@ -10,6 +10,10 @@ var Description = {
         Code: {type: "string", length: 30},
         Closed: {type: "boolean"},
     },
+    indexes: [
+        {name: "Code", fields: ["Code"], unique: true},
+        {name: "ClosedCode", fields: ["Closed", "Code"]},
+    ],
     filename: __filename,
 }
 

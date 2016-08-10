@@ -274,6 +274,7 @@ var RecordDescription = {
     fields: {},
     fieldnames: ['internalId'],
     detailnames: [],
+    indexes: [{name: 'PRIMARY', fields: ['internalId'], primary: true, unique: true}],
     filename: __filename
 }
 
@@ -393,6 +394,11 @@ class Embedded_Record extends oo.BaseEntity {
         newdesc.provides = parentdesc.provides? parentdesc.provides.slice(): []
         if (descriptor.provides) {
             for (let i = 0; i < descriptor.provides.length; i++) newdesc.provides.push(descriptor.provides[i])
+        }
+
+        newdesc.indexes = parentdesc.indexes? parentdesc.indexes.slice(): []
+        if (descriptor.indexes) {
+            for (let i = 0; i < descriptor.indexes.length; i++) newdesc.indexes.push(descriptor.indexes[i])
         }
 
 
@@ -577,6 +583,7 @@ class Embedded_Record extends oo.BaseEntity {
                 res = await self.beforeUpdate();
                 if (res) {
                     res = await self.store();
+                    console.log("STORE RES:", res)
                     if (!res) return res;
                     res = await self.afterUpdate()
                     if (res == null) res = true;
