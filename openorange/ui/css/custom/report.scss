@@ -1,0 +1,9 @@
+.oo-report-content {
+  padding: 0 20px;
+  .oo-report-header-row {
+    border-bottom: 1px solid $report-thead-line;
+  }
+  tr:not(.oo-report-header-row):nth-child(even) {
+    background: $report-table-bkg;
+  }
+}
