@@ -4,6 +4,7 @@
 @import 'header';
 @import 'listwindow';
 @import 'typeahead';
+@import 'window';
 
 body, #main, .wrapper, #content_section, .container, #workspace {
   //height: 100%;
@@ -168,24 +169,5 @@ body, #main, .wrapper, #content_section, .container, #workspace {
     left: 0;
     bottom: 0;
     right: 0;
-  }
-}
-
-.pipeline {
-  //text-color: black;
-  span {
-    cursor: pointer;
-    padding: 5px;
-    &[active=true] {
-      color: blue;
-    }
-    &:before {
-      margin: 0 10px 0 8px;
-      content: ' > ';
-    }
-
-    &:first-child:before {
-      content: '';
-    }
   }
 }
