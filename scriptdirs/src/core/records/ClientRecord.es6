@@ -30,12 +30,30 @@ class ClientRecord extends Parent {
     }
 
 
+    async saveAndCommit() {
+        //return super.save();
+        return this.runInServer("saveAndCommit");
+        // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
+        // 1. save de registros locals
+        // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
+    }
+
     async save() {
         //return super.save();
         return this.runInServer("save");
         // por ahora vamos al servidor solo en el store. ojo que si vamos al servidor con el save, hay que tener en cuenta:
             // 1. save de registros locals
             // 2. alerts, mensajes y inputs al usuario durante el proceso de grabado
+    }
+
+    async delete() {
+        //return super.save();
+        return this.runInServer("delete");
+    }
+
+    async deleteAndCommit() {
+        //return super.save();
+        return this.runInServer("deleteAndCommit");
     }
 
     async ppp() {

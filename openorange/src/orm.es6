@@ -358,6 +358,7 @@ function delete_details_and_finish_function(conn, record) {
         .then(
             function () {
                 record.syncOldFields()
+                return true;
                 //return conn.commit().then(function () {
                 //
                 //})
@@ -394,16 +395,18 @@ orm.store = async function store(record, callback) {
 
 orm.delete = async function (record) {
     if (record.isNew()) {
-        return Promise.reject({
+        return record.errorResponse("NOT_DELETED");
+        /*return Promise.reject({
             code: "NOT_DELETED",
             message: "Record is new. Cannot be deleted"
-        });
+        });*/
     }
     let conn = await ctx.getDBConnection()
     var del = orm.generate_delete_sql(record);
     let info = await conn.query(del.sql, del.values)
     if (info.affectedRows != 1) {
-        throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
+        return record.errorResponse("NOT_DELETED")
+        //throw {code: "NOT_DELETED", message: "Record might have been modified by other user."};
     }
     await store_sets(conn, record, false, true)
     return delete_details_and_finish_function(conn, record);
@@ -569,7 +572,6 @@ orm.alterTable = async function alterTable(description) {
     for (let index of adds) indexes.push("ADD " + orm.index_sql_def(index))
     indexes = indexes.concat(_.map(upds, (index) => {return "DROP INDEX " + index.name}))
     indexes = indexes.concat(_.map(upds, (index) => {return "ADD " + orm.index_sql_def(index)}))
-    console.log(indexes)
     if (columns.length || indexes.length) {
         let sql = `ALTER TABLE ${tablename} ${columns.join(",\n")} ${indexes.join(",\n")}`
         //console.log(sql)

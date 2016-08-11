@@ -656,8 +656,19 @@ class Embedded_Record extends oo.BaseEntity {
         return res
     }
 
+    async deleteAndCommit() {
+        let res = await oo.beginTransaction()
+        if (!res) return res;
+        res = await this.delete();
+        if (!res) return res
+        res = await oo.commit()
+        return res
+    }
+
     async delete() {
-        return oo.orm.delete(this);
+        let res = oo.orm.delete(this);
+        if (res) this.emit('deleted', {record: this, method: 'delete'})
+        return res;
     }
 
     async load() {

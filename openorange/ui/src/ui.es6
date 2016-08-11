@@ -134,7 +134,7 @@
             if (this.entity.__ui_container_view_id__) {
                 $('#' + this.entity.__ui_container_view_id__).html("")
             } else {
-                let selected_tab_id = $('.oo-recent-activity-container').attr('href').substring(1);
+                let selected_tab_id = $('.oo-recent-activity-container .active').attr('href').substring(1);
                 let is_selected = (selected_tab_id == this.tab_id);
                 let newfocus = null
                 if (is_selected) {
@@ -254,7 +254,10 @@
             let toolbar = template.createElement(args)
             _.each(buttons, (btn) => {
                 let params = {self: self, actiondef: btn.actiondef}
-                toolbar.find('#' + btn.id).click(self.actionClicked.bind(params))
+                toolbar.find('#' + btn.id).click(() => {
+                    this.__element__.find('#' + this.actionbar_id).find('[data-tooltip]').tooltip('remove')
+                    self.actionClicked.call(params)
+                })
             })
             this.__element__.find('#' + this.actionbar_id).html(toolbar);
             //toolbar.find('[data-tooltip]').tooltip({delay: 50});

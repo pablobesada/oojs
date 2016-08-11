@@ -321,7 +321,6 @@ class Embedded_Window extends oo.UIEntity {
                     let focus_done = false;
                     for (let i = 0; i < errs.length; i++) {
                         let err = errs[i];
-                        console.log(err)
                         oo.postMessage(err.getMessage())
                         if (!focus_done && err.errorParams.FieldName) {
                             this.emit('focus field', {window: this, fieldname: err.errorParams.FieldName, rowfieldname: err.errorParams.RowFieldName, rownr: err.errorParams.RowNr})
@@ -338,9 +337,65 @@ class Embedded_Window extends oo.UIEntity {
         return false;
     }
 
+    async save() {
+        var rec = this.getRecord();
+        if (rec != null) {
+            this.emit('processing start', {window: this})
+            try {
+                let res = rec.saveAndCommit();
+                let errs = rec.getErrorResponses();
+                let focus_done = false;
+                for (let i = 0; i < errs.length; i++) {
+                    let err = errs[i];
+                    oo.postMessage(err.getMessage())
+                    if (!focus_done && err.errorParams.FieldName) {
+                        this.emit('focus field', {
+                            window: this,
+                            fieldname: err.errorParams.FieldName,
+                            rowfieldname: err.errorParams.RowFieldName,
+                            rownr: err.errorParams.RowNr
+                        })
+                        focus_done = true;
+                    }
+                }
+                rec.clearErrorResponses();
+                return res;
+            } finally {
+                this.emit('processing end', {window: this})
+            }
+        }
+    }
+
     async delete() {
-        let rec = this.getRecord();
-        console.log("DELETING")
+        if (!await oo.askYesNo("Seguro?")) return;
+        var rec = this.getRecord();
+        if (rec != null) {
+            this.emit('processing start', {window: this})
+            let res=null;
+            try {
+                res = rec.deleteAndCommit();
+                let errs = rec.getErrorResponses();
+                let focus_done = false;
+                for (let i = 0; i < errs.length; i++) {
+                    let err = errs[i];
+                    oo.postMessage(err.getMessage())
+                    if (!focus_done && err.errorParams.FieldName) {
+                        this.emit('focus field', {
+                            window: this,
+                            fieldname: err.errorParams.FieldName,
+                            rowfieldname: err.errorParams.RowFieldName,
+                            rownr: err.errorParams.RowNr
+                        })
+                        focus_done = true;
+                    }
+                }
+                rec.clearErrorResponses();
+                return res;
+            } finally {
+                this.emit('processing end', {window: this})
+                if (res) this.close();
+            }
+        }
     }
 
     static applyFormOverride(form, patcheslist, path) {
