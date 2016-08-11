@@ -29,7 +29,7 @@
       display: inline-block;
       position: relative;
       &:before {
-        color: $icon-color;
+        color: $icon-light;
         content: "\f002";
         font: normal normal normal 14px/1 FontAwesome;
         font-size: 1.4em;
@@ -79,7 +79,7 @@
   .oo-nav-icons {
     position: relative;
     > li {
-      color: $icon-color;
+      color: $icon-light;
       cursor: pointer;
       font-size: 1.7em;
       padding-right: 10px;
@@ -123,6 +123,14 @@
           line-height: 30px;
           a {
             width: 100%;
+          }
+          i {
+            line-height: 30px;
+            max-height: 30px;
+            padding: 0 5px;
+            &:hover {
+              color: $icon-dark;
+            }
           }
         }
       }

@@ -79,7 +79,7 @@
   }
 }
 .oo-pastewindow-opener {
-  color: $grey-dark;
+  color: $icon-dark;
   cursor: pointer;
   right: 0;
   top: 10px;
@@ -111,4 +111,65 @@
 }
 .tabs {
   margin-top: 20px;
+  .tab {
+    a {
+      background: $tabs-inactive-bkg;
+      border-bottom: 1px solid $tabs-border;
+      color: $tabs-inactive-text;
+      &.active {
+        background: $tabs-active-bkg;
+        border-bottom: 0 none;
+        color: $tabs-active-text;
+      }
+      &:hover {
+        color: $tabs-hover-text;
+      }
+    }
+    &:not(:first-child) {
+      a {
+        border-left: 1px solid $tabs-border;
+      }
+    }
+  }
+  .indicator {
+    background-color: $tabs-indicator-line;
+    top: 0;
+  }
+}
+div[id^="oo_TAB_"] {
+  background: $tabs-content-bkg;
+  float: left;
+  padding: 20px 10px;
+  width: 100%;
+  .oodetail {
+    td {
+      padding: 0 5px;
+      position: relative;
+      .input-field {
+        margin: 0;
+      }
+    }
+    .picker {
+      outline: none;
+      right: 15px;
+      top: 20px;
+      z-index: 1002;
+      &:before {
+        color: $icon-dark;
+        content: "\f073";
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+      }
+    }
+    .oo-pastewindow-opener {
+      top: 0;
+    }
+    .oo-delete {
+      i {
+        color: $icon-dark;
+        cursor: pointer;
+      }
+    }
+  }
 }
