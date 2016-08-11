@@ -40,7 +40,7 @@ body, #main, .wrapper, #content_section, .container, #workspace {
       padding: 0;
       position: relative;
       &:before {
-        color: $icon-color;
+        color: $icon-light;
         content: "\f002";
         font: normal normal normal 14px/1 FontAwesome;
         font-size: 1.4em;
@@ -77,7 +77,7 @@ body, #main, .wrapper, #content_section, .container, #workspace {
     .oo-subnav-icons {
       position: relative;
       ul > li {
-        color: $icon-color;
+        color: $icon-light;
         cursor: pointer;
         &:not(:last-child) {
           margin-right: 15px;

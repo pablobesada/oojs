@@ -4,7 +4,8 @@ $orange: #fcb451;
 $orange-bkg: #e2a95d;
 
 /* ----- Color de componentes ----- */
-$icon-color: #fff;
+$icon-light: #fff;
+$icon-dark: #888;
 $icon-selected: #fcb451;
 $link: #fff;
 $link-over: #ddd;
@@ -14,7 +15,6 @@ $header-footer-bkg: #888;
 $subheader-content: #fff;
 $subheader-bkg: #85bb80;
 $subheader-modified: #e2473c;
-// 4ea96c
 // Pipeline
 $pipeline-done: #87c789;
 $pipeline-progress: #7f7fdc;
@@ -22,3 +22,12 @@ $pipeline-pending: #bbb;
 // Report
 $report-thead-line: #d0d0d0;
 $report-table-bkg: #f2f2f2;
+// Tabs
+$tabs-active-bkg: #fff;
+$tabs-inactive-bkg: #eee;
+$tabs-border: #ddd;
+$tabs-active-text: #4caf50;
+$tabs-inactive-text: #ccc;
+$tabs-hover-text: #85bb80;
+$tabs-indicator-line: #85bb80;
+$tabs-content-bkg: #fff;
