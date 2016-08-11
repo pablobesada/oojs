@@ -1083,6 +1083,15 @@
             return pastewindow;
         };
 
+        createPasteWindow() {
+            var self = this;
+            self.pastewindow_id = oo.ui.genId("PASTEWINDOW");
+            let args = {id: self.pastewindow_id}
+            this.pastewindow = oo.ui.templates.get(".pastewindow .body").createElement(args)
+            console.log("PW1", this.pastewindow)
+            return this.pastewindow;
+        };
+
         async openPasteWindow(event) {
             var params = this;
             var self = params.self;
@@ -1179,6 +1188,110 @@
             pwelement.openModal();
         };
 
+        async openPasteWindow(event) {
+            var params = this;
+            var self = params.self;
+            var field = params.field;
+            var fieldjson = params.json;
+            var pw = cm.getClass(fieldjson.pastewindow);
+            var pwelement = self.__element__.find(".pastewindow");
+            //var recordClass = cm.getClass(pw.__description__.recordClass);
+            let columns = pw.__description__.columns;
+            var readonly = null;
+            let rownr = null;
+            if (params.detailname == null) {
+                await oo.ui.workspace.waitForUnblockedScreen()
+                oo.ui.workspace.blockScreen()
+                readonly = !Boolean(await self.window.beforeEdit(fieldjson.field));
+                oo.ui.workspace.unblockScreen()
+            } else {
+                //console.log(event)
+                rownr = $(event.target).closest('.oo-row').attr("rownr");
+                if (isNaN(rownr)) { //virtual row
+                    readonly = true;
+                } else {
+                    await oo.ui.workspace.waitForUnblockedScreen()
+                    oo.ui.workspace.blockScreen()
+                    readonly = !Boolean(await self.window.beforeEditRow(params.detailname, fieldjson.field, rownr));
+                    oo.ui.workspace.unblockScreen()
+                }
+            }
+            if (readonly) return;
+            console.log("PW", self.pastewindow)
+            self.pastewindow_listcontainer = self.pastewindow.find('.oo-list-container');
+            if (self.pastewindow_listcontainer.length) self.pastewindow_listcontainer = self.pastewindow_listcontainer.addBack('.oo-list-container')
+
+            let pwcolumns = [];
+            for (let col of columns) pwcolumns.push({id: col.field, label: col.field, field: col.field, sortable: true})
+
+            let params2 = {
+                self: self, classname:
+                pw.__description__.recordClass,
+                columns: pwcolumns,
+                detailname: params.detailname,
+                rownr: rownr,
+                field: field,
+                fieldjson: fieldjson,
+                pastewindow: pw,
+                pastewindowelement: pwelement,
+                editor: params.editor,
+
+
+            }
+            setTimeout(() => {
+                console.log("SETTING ROWNRX", params2.rownr)
+                self.pastewindow_listcontainer = self.pastewindow_listcontainer.superlist();
+                self.pastewindow_listcontainer.data('superlist').setSource(self.getPasteWindowRows.bind(params2))
+            },0);
+            self.pastewindow.openModal();
+        };
+
+        async getPasteWindowRows(start, count) {
+            let params = this;
+            let self = params.self;
+            let columns = params.columns
+            console.log("COLUMNS:", columns)
+            let classname = params.classname;
+            console.log("CL", classname)
+            let records = await self.window.getPasteWindowRecords(classname, start, count);
+            console.log("RLENGTH:", records.length)
+            let res = [];
+            for (let i in records) {
+                let rec = records[i];
+                let args = {};
+                let $row = oo.ui.templates.get('.pastewindow .row').createElement(args)
+                let $cellcontainer = $row.find('.oo-cell-container')
+                if ($cellcontainer.length == 0) $cellcontainer = $cellcontainer.addBack('.oo-cell-container');
+                if ($cellcontainer.length == 0) $cellcontainer = $row;
+
+                for (let j in columns) {
+                    let col = columns[j];
+                    let args = {value: rec[col.field], label: col.label}
+                    let $cell = oo.ui.templates.get('.pastewindow .row-cell').createElement(args)
+                    $cellcontainer.append($cell)
+                }
+                $row.click((event) => {
+                    var item = args.item;
+                    let pasteparams = {
+                        self: self,
+                        detailname: params.detailname,
+                        rownr: params.rownr,
+                        field: params.field,
+                        fieldjson: params.fieldjson,
+                        pastewindow: params.pastewindow,
+                        pastewindowelement: params.pastewindowelement,
+                        editor: params.editor,
+                        record: rec,
+                    };
+                    console.log("SETTING ROWNR", params.rownr)
+                    self.recordSelectedInPasteWindow(pasteparams);
+                })
+                res.push($row)
+                console.log("ROW", $row);
+            }
+            return res;
+        }
+
         async openRelatedRecord(event) {
             var params = this;
             var self = params.self;
@@ -1203,6 +1316,7 @@
 
         async recordSelectedInPasteWindow(params) {
             //var params = this;
+            console.log("SELECTED, rownr", params.rownr)
             var self = this;
             params.pastewindowelement.closeModal()
             var readonly = null;

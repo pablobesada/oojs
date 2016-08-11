@@ -1,36 +1,29 @@
 <html>
 <head>
+    <link href="../css/materialize-0.97.6.min.css" type='text/css' rel='stylesheet' media='screen,projection' />
     <link rel="stylesheet" href="../css/superlist.css" />
+    <link rel="stylesheet" href="../css/templates.css" />
     <style>
-        .container {
-            position: relative;
-            background:red;
-            width: 100%;
-            flex-direction: column;
-            display: flex;
-        }
+
         #my {
-            height:100%;
-            width:200px;
-            background:green;
-            flex-grow: 1;
+            #height:99%;
+            #width:400px;
+            #background:green;
+            #flex-grow: 1;
 
         }
-        footer {
-            position: absolute;
-            bottom: 0px;
-            background: yellow;
-            height: 80px;
-            width:30%;
-        }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="my">
+<div id="modal" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">
+    <div class="modal-content">
+        <div class="oo-pastewindow">
+            <div id="my" class="oo-list-container">
+            </div>
+        </div>
     </div>
-    <footer>HOLA</footer>
 </div>
 
 
@@ -40,6 +33,7 @@
 <script src="/bower_components/bluebird/js/browser/bluebird.min.js"></script>
 <script type="text/javascript" src="../js/plugins/superlist/superlist.js"></script>
 <script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
+<script type='text/javascript' src='../js/plugins/materialize/materialize-0.97.6.min.js'></script>
 <script>
     function getItems(start, count) {
         console.log('fetching items: ', start, 'to', start + count - 1, " (" + count + ")")
@@ -47,13 +41,6 @@
         var res = [];
         for (var i = start; i < start + count; i++) {
             let item = document.createElement("div")
-            item.style.fontSize = '12pt'
-            item.style.padding = '35px'
-            item.style.border = '1px solid black'
-            item.style.width = '100%'
-            //item.style.position = 'absolute'
-            //item.style.backgroundColor = 'black';
-            //item.style.color = 'white';
             item.innerHTML = 'Item ' + i
             res.push(item);
         }
@@ -65,17 +52,11 @@
 
 
     $(document).ready(function () {
-
         let div = $('#my')
         div.superlist({src: getItems, length: 20});
         //$(document.body).append(div)
-
+        $('#modal').openModal()
      })
-
-
-
-
-
 
 </script>
 </body>

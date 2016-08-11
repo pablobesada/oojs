@@ -487,6 +487,14 @@ class Embedded_Window extends oo.UIEntity {
         //console.log("W: returning provided data")
         return this.__provided_data_object__
     }
+
+    async getPasteWindowRecords(classname, start, count) {
+        let q = oo.classmanager.getClass(classname).select();
+        //if (this.where) q.where(this.where)
+        q = q.offset(start).limit(count);
+        return await q.fetch();
+    }
+
 }
 
 //Embedded_Window.__description__ = WindowDescription

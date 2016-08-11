@@ -81,15 +81,19 @@
                         All rights reserved.<span class="right">Design and Developed by OpenOrange</span></div>
                 </div>
             </footer>
+
         </script>
         <script class="favourite-item" type="x-tmpl-handlebars">
             <li><a href="#" class="oo-open-action">{{label}} <span class="right"><i class="fa fa-plus oo-create-action" aria-hidden="true"></i><i class="fa fa-remove oo-delete-action" aria-hidden="true"></i></span></a></li>
+
         </script>
         <script class="module-item" type="x-tmpl-handlebars">
             <li><a href="#" class="oo-open-action"><i class="fa fa-{{icon}}" aria-hidden="true"></i> {{label}} </a></li>
+
         </script>
 
-        <script class="container" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields(); $this.find('span.twitter-typeahead').attr('style', '').removeClass('twitter-typeahead');">
+        <script class="container" type="x-tmpl-handlebars"
+                initonpage="Materialize.updateTextFields(); $this.find('span.twitter-typeahead').attr('style', '').removeClass('twitter-typeahead');">
             <div id="{{id}}" class="container oo-workspace-container col s12">
                 <nav class="oo-container-title row">
                   <div class="nav-wrapper">
@@ -118,23 +122,8 @@
                   </div>
                 </nav>
             </div>
+
         </script>
-
-        <div class="listwindowXXX">
-            <script class="body" type="x-tmpl-handlebars">
-                <div class="oo-listwindow">
-                    <ul class="oo-list-container">
-                    </ul>
-                </div>
-            </script>
-            <script class="row" type="x-tmpl-handlebars">
-                <li class="oo-row hoverable"></li>
-            </script>
-            <script class="row-cell" type="x-tmpl-handlebars">
-                <div class="oo-row-cell truncate" style="width: 260px"><span>{{value}}</span></div>
-            </script>
-        </div>
-
         <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
                 <div class="oo-listwindow">
@@ -149,12 +138,36 @@
                     <div class="oo-list-container">
                     </div>
                 </div>
+
             </script>
             <script class="row" type="x-tmpl-handlebars">
                 <div class="oo-row hoverable"><div class="card row oo-cell-container"></div></div>
+
             </script>
             <script class="row-cell" type="x-tmpl-handlebars">
                 <div class="oo-row-cell col s12 m6 truncate"><span class="cell-label">{{label}}:</span> <span class="cell-value">{{value}}</span></div>
+
+            </script>
+        </div>
+
+        <div class="pastewindow">
+            <script class="body" type="x-tmpl-handlebars">
+              <div id="{{id}}" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">
+                  <div class="modal-content">
+                    <div class="oo-pastewindow">
+                        <div class="oo-list-container">
+                        </div>
+                    </div>
+                  </div>
+              </div>
+            </script>
+            <script class="row" type="x-tmpl-handlebars">
+                <div class="oo-row hoverable"><div class="card row oo-cell-container"></div></div>
+
+            </script>
+            <script class="row-cell" type="x-tmpl-handlebars">
+                <div class="oo-row-cell col s12 m6 truncate"><span class="cell-label">{{label}}:</span> <span class="cell-value">{{value}}</span></div>
+
             </script>
         </div>
 
@@ -162,6 +175,7 @@
     <div class="actionbar">
         <script class="container" type="x-tmpl-handlebars">
             <div id="{{id}}"></div>
+
         </script>
         <script class="content" type="x-tmpl-handlebars" init="$this.find('[data-tooltip]').tooltip({delay: 50});">
             <div class="fixed-action-btn">
@@ -174,6 +188,7 @@
                     {{/each}}
                 </ul>
             </div>
+
         </script>
     </div>
     <script type="x-tmpl-handlebars" class="cardselector"
@@ -186,6 +201,7 @@
             </div>
             {{/each}}
         </div>
+
     </script>
     <div class="window">
         <script type="x-tmpl-handlebars" class="tabs" initonpage="$this.find('ul.tabs').tabs()">
@@ -198,15 +214,18 @@
                     </ul>
                 </div>
             </div>
+
         </script>
         <script type="x-tmpl-handlebars" class="reportview">
             <div class="col s12 m6" reportview="{{name}}"></div>
+
         </script>
         <script type="x-tmpl-handlebars" class="cardcontainer">
             <a id="{{delete_action_id}}" class="btn-floating waves-effect waves-light red card-remove-btn hide" style="position:absolute; right: 15px; top:15px;"><i class="mdi">delete</i></a>
             <div class="card singlecard-container" cardname="{{cardname}}" style="position: relative">
                 <div id="{{content_id}}"></div>
             </div>
+
         </script>
         <script type="x-tmpl-handlebars" class="cardlistcontainer">
             <div id="{{id}}" class="col s12 m6 card-panel hoverable" cardcontainer="{{cardcontainername}}">
@@ -216,11 +235,13 @@
                     {{/each}}
                 </div>
             </div>
+
         </script>
         <div class="oomaster">
             <div class="components">
                 <script type="x-tmpl-handlebars" class="line">
                     <div class="row"></div>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="column">
                     <div class="row">
@@ -230,6 +251,7 @@
                             </div>
                         {{/each}}
                     </div>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="string">
                     <div class="input-field col s3">
@@ -239,32 +261,38 @@
                         <i class="mdi prefix oo-pastewindow-opener">search</i>
                       {{/if}}
                     </div>
+
                 </script>
-                <script type="x-tmpl-handlebars" class="integer" >
+                <script type="x-tmpl-handlebars" class="integer">
                     <div class="input-field col s3">
                         <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
+
                 </script>
-                <script type="x-tmpl-handlebars" class="checkbox" >
+                <script type="x-tmpl-handlebars" class="checkbox">
                   <div class="col s3 checkbox-field">
                     <p>
                       <input {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor validate" id="{{id}}">
                       <label for="{{id}}">{{label}}</label>
                     </p>
                   </div>
+
                 </script>
-                <script type="x-tmpl-handlebars" class="date" init="$this.find('input').pickadate(args.datePickerOptions);">
+                <script type="x-tmpl-handlebars" class="date"
+                        init="$this.find('input').pickadate(args.datePickerOptions);">
                   <div class="input-field col s3">
                       <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} oo-editor validate" datepicker="true"/>
                       <label for="{{id}}">{{label}}</label>
                   </div>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="time" init="$($this.find('input')[0]).mask('09:00:00');">
                     <div class="input-field col s3">
                         <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} oo-editor validate " timeeditor="true"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="combobox" initonpage="$this.find('select').material_select()">
                     <div class="input-field col s3">
@@ -275,6 +303,7 @@
                         </select>
                         <label for="{{id}}">{{label}}</label>
                     </div>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="radiobutton">
                   <div class="col s3 radiobutton-field">
@@ -285,6 +314,7 @@
                       </p>
                     {{/each}}
                   </div>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="pipeline">
                     <div id="{{id}}" class="col s12 pipeline">
@@ -293,6 +323,7 @@
                         {{/each}}
                     </div>
 
+
                 </script>
                 <script type="x-tmpl-handlebars" class="memo">
                     <div class="input-field col s3">
@@ -300,6 +331,7 @@
                         </textarea>
                         <label for="{{id}}">{{label}}</label>
                     </div>
+
 
                 </script>
                 <script type="x-tmpl-handlebars" class="matrix">
@@ -316,12 +348,15 @@
                         </tbody>
                     </table>
 
+
                 </script>
                 <script type="x-tmpl-handlebars" class="matrixrow" initonpage="Materialize.updateTextFields();">
                     <tr rownr="{{rowNr}}" class='oo-row'><td class="oo-delete"><i class="mdi prefix">delete</i></td></tr>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="matrixcell">
                     <td></td>
+
                 </script>
             </div>
         </div>
@@ -334,16 +369,20 @@
                       <i class="mdi prefix oo-pastewindow-opener" style="margin-left: -20px">search</i>
                     {{/if}}
                   </div>
+
                 </script>
-                <script type="x-tmpl-handlebars" class="integer" >
+                <script type="x-tmpl-handlebars" class="integer">
                     <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
+
 
                 </script>
                 <script type="x-tmpl-handlebars" class="date" initonpage="$this.pickadate(args.datePickerOptions);">
                     <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} oo-editor validate" datepicker="true"/>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="time" init="$this.mask('09:00:00');">
                     <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} oo-editor validate " timeeditor="true"/>
+
                 </script>
                 <script type="x-tmpl-handlebars" class="combobox" initonpage="$this.material_select()">
                     <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate">
@@ -352,12 +391,14 @@
                         {{/each}}
                     </select>
 
+
                 </script>
                 <script type="x-tmpl-handlebars" class="checkbox">
                     <p>
                         <input  {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor validate" id="{{id}}">
                         <label for="{{id}}"></label>
                     </p>
+
                 </script>
             </div>
         </div>
