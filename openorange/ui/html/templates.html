@@ -41,7 +41,11 @@
                                     <ul class="oo-nav-options oo-modules-container">
                                     </ul>
                                 </li>
-                                <li><i class="icon fa fa-user" aria-hidden="true"></i></li>
+                                <li><i class="icon fa fa-user" aria-hidden="true"></i>
+                                    <ul class="oo-nav-options oo-user-options-container">
+
+                                    </ul
+                                </li>
                               </ul>
                             </div>
                         </div>
@@ -89,7 +93,27 @@
         </script>
         <script class="module-item" type="x-tmpl-handlebars">
             <li><a href="#" class="oo-open-action"><i class="fa fa-{{icon}}" aria-hidden="true"></i> {{label}} </a></li>
-
+        </script>
+        <script class="user-option-item" type="x-tmpl-handlebars">
+            <li><a href="#" class="oo-action"><i class="fa fa-{{icon}}" aria-hidden="true"></i> {{label}} </a></li>
+        </script>
+        <script class="change-password-dialog" type="x-tmpl-handlebars" initonpage="Materialize.updateTextFields(); $this.openModal({complete: function () {$this.remove();}}); $this.find('.oo-current-password').focus();">
+              <div id="oo-change-password-dialog" class="modal modal-fixed-footer pastewindow" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">
+                  <div class="modal-content">
+                      <div class="input-field col s3">
+                        <input id="oo-current-password" class="oo-current-password" type="password" />
+                        <label for="oo-current-password">Clave Actual</label>
+                      </div>
+                      <div class="input-field col s3">
+                        <input id="oo-new-password" class="oo-new-password" type="password" />
+                        <label for="oo-new-password">Clave Nueva</label>
+                      </div>
+                  </div>
+                  <div class="modal-footer green">
+                        <a href="#" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                        <a href="#" class="oo-ok-btn modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+                    </div>
+              </div>
         </script>
 
         <script class="container" type="x-tmpl-handlebars"

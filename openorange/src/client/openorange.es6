@@ -419,6 +419,27 @@
         oo.pushreceiver.broadcast(msg)
     }
 
+    async function changeUserPassword(oldPassword, newPassword) {
+        let promise = Promise.pending();
+        $.ajax({
+            type: 'POST',
+            url:  __baseurl__ + '/changeuserpassword',
+            data: {oldPassword: oldPassword, newPassword: newPassword},
+            async: true,
+            success: function (result) {
+                promise.resolve(result.ok)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus)
+                console.log(errorThrown)
+                promise.reject(errorThrown)
+            },
+            complete: function () {
+            }
+        });
+        return promise.promise;
+    }
+
     let oo = {
         ui: {},
         classmanager: classmanager,
@@ -439,6 +460,7 @@
         postMessage: postMessage,
         broadcast: broadcast,
         pushreceiver: new PushReceiver(),
+        changeUserPassword: changeUserPassword,
         //ready: ready,
     }
 

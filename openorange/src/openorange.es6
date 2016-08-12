@@ -2,7 +2,7 @@
 let cm = require("./classmanager");
 async function login(usercode, md5pass) {
     if (!usercode || usercode == '') return false;
-    if (!md5pass) md5pass = null;
+    if (!md5pass || md5pass == 'd41d8cd98f00b204e9800998ecf8427e') md5pass = null;
     let user = await cm.getClass("User").findOne({Code: usercode, Password: md5pass})
     if (user && md5pass != user.Password) user = null; //necesario para usuarios sin clave
     if (user) {
@@ -35,6 +35,7 @@ oo.beginTransaction = oo.contextmanager.beginTransaction.bind(oo.contextmanager)
 oo.commit = oo.contextmanager.commit.bind(oo.contextmanager);
 oo.rollback = oo.contextmanager.rollback.bind(oo.contextmanager);
 //context user accessors
+
 oo.currentUser = oo.contextmanager.currentUser.bind(oo.contextmanager);
 oo.login = login;
 oo.getRouter = function getRouter() {return require("./router")};
@@ -48,6 +49,22 @@ oo.askYesNo = async function (txt) {return oo.connectedClient.ask('askYesNo', tx
 oo.inputString = async function (txt) {return oo.connectedClient.ask('inputString', txt)}
 oo.alert = async function (txt) {return oo.connectedClient.ask('alert', txt)}
 oo.postMessage = async function (txt) {return oo.connectedClient.ask('postMessage', txt)}
+
+async function changeUserPassword(oldPassword, newPassword) {
+    let user = await oo.classmanager.getClass("User").bring(oo.currentUser());
+    if (user) {
+        if (user.Password == oldPassword || (oldPassword == 'd41d8cd98f00b204e9800998ecf8427e' && user.Password == null)) {
+            user.Password = newPassword;
+            let res = await user.saveAndCommit();
+            return res;
+        }
+    }
+    console.log("DIFFF", user.Password, oldPassword)
+    return false;
+
+}
+
+oo.changeUserPassword = changeUserPassword;
 
 oo.init = function(opts) {
     if (!opts) {

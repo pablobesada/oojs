@@ -1217,7 +1217,7 @@
                 }
             }
             if (readonly) return;
-            console.log("PW", self.pastewindow)
+            //console.log("PW", self.pastewindow)
             self.pastewindow_listcontainer = self.pastewindow.find('.oo-list-container');
             if (self.pastewindow_listcontainer.length) self.pastewindow_listcontainer = self.pastewindow_listcontainer.addBack('.oo-list-container')
 
@@ -1239,7 +1239,7 @@
 
             }
             setTimeout(() => {
-                console.log("SETTING ROWNRX", params2.rownr)
+                //console.log("SETTING ROWNRX", params2.rownr)
                 self.pastewindow_listcontainer = self.pastewindow_listcontainer.superlist();
                 self.pastewindow_listcontainer.data('superlist').setSource(self.getPasteWindowRows.bind(params2))
             },0);
@@ -1283,11 +1283,11 @@
                         editor: params.editor,
                         record: rec,
                     };
-                    console.log("SETTING ROWNR", params.rownr)
+                    //console.log("SETTING ROWNR", params.rownr)
                     self.recordSelectedInPasteWindow(pasteparams);
                 })
                 res.push($row)
-                console.log("ROW", $row);
+                //console.log("ROW", $row);
             }
             return res;
         }

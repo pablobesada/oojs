@@ -246,8 +246,15 @@ router.get('/prefetchclasses', async function (req, res, next) {
 
 
 })
+
 router.get('/getcurrentuser', function (req, res, next) {
     res.send({ok: true, currentuser: req.session.user})
+});
+
+router.post('/changeuserpassword', async function (req, res, next) {
+    let response = await oo.changeUserPassword(req.body.oldPassword, req.body.newPassword);
+    console.log("RESPONSE", response)
+    res.send({ok: response})
 });
 
 router.post('/login', function (req, res, next) {

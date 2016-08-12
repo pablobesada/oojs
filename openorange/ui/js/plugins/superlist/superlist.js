@@ -23,6 +23,7 @@
     }
 
     RemoteArray.prototype.ensure = function (start, count) {
+        if (!this.source) return;
         let self = this;
         this.fetching = true;
         this.fetching_start = start;

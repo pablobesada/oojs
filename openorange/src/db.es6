@@ -106,7 +106,7 @@ class Connection {
                     reject(err)
                     return;
                 }
-                resolve();
+                resolve(true);
             })
         })
     }
@@ -122,7 +122,7 @@ class Connection {
                     reject(err)
                     return;
                 }
-                resolve();
+                resolve(true);
             })
         })
     }

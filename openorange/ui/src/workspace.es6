@@ -38,6 +38,29 @@
 
             this.loadFavourites();
             this.loadModules();
+            this.loadUserOptions();
+        }
+
+        async loadUserOptions() {
+            $('.oo-modules-container').html('');
+            let args = {label: 'Cambiar Clave', icon: 'lock'}
+            let $item = oo.ui.templates.get('.workspace .user-option-item').createElement(args)
+            $('.oo-user-options-container').append($item)
+            $item.click((event) => {
+                let $dialog = oo.ui.templates.get('.workspace .change-password-dialog').createElement()
+                $('body').append($dialog)
+                $dialog.addedToPage();
+                $dialog.find('.oo-ok-btn').click(async () => {
+                    let res = await oo.changeUserPassword(md5($dialog.find('.oo-current-password').val()), md5($dialog.find('.oo-new-password').val()))
+                    if (res) {
+                        oo.postMessage("Password changed");
+                    } else {
+                        oo.postMessage("Password not changed");
+                    }
+                })
+
+
+            })
         }
 
         async loadModules() {
