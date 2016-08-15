@@ -11,8 +11,8 @@ var Description = {
         {field: 'syncVersion'},
         {field: 'SubTestName',},
         {field: 'String_Field', pastewindow: 'CustomerPasteWindow'},
-        {field: 'String_Field', editor: 'memo'},
-        {field: 'LinkTo_Field', name: 'LTF'},
+
+        {field: 'LinkTo_Field', name: 'LTF', },
         {field: 'Date_Field'},
         {field: 'Date_Field', editor: 'string'},
         {field: 'Integer_Field'},
@@ -25,7 +25,15 @@ var Description = {
             {label: 'CERO', value: 0},
             {label: 'UNO', value: 1},
             {label: 'DOS', value: 2}]},
+        {type: 'column', content: [
 
+            {field: 'String_Field', editor: 'memo'},
+            {field: 'Integer_Field', editor: 'combobox', options: [
+                {label: 'CERO', value: 0},
+                {label: 'UNO', value: 1},
+                {label: 'DOS', value: 2}]},
+        ]},
+        {field: 'String_Field', editor: 'memo'},
         {field: 'Integer_Field', editor: 'combobox', options: [
             {label: 'CERO', value: 0},
             {label: 'UNO', value: 1},
