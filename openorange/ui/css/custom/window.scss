@@ -1,20 +1,60 @@
-.pipeline {
-  margin: 20px 0;
-  span {
-    cursor: pointer;
-    padding: 5px;
-    &[active=true] {
-      color: blue;
+.oo-window {
+  // smaller inputs
+  // rewrite materialize form fields
+  .input-field:not(.oo-select-field) {
+    label {
+      top: 0.3rem;
     }
-    &:not(:last-child):after {
-      margin: 0 10px 0 8px;
-      content: ' > ';
+    input:not([type]),
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    input[type=url],
+    input[type=time],
+    input[type=date],
+    input[type=datetime],
+    input[type=datetime-local],
+    input[type=tel],
+    input[type=number],
+    input[type=search] {
+      height: 2rem;
+    }
+    textarea.materialize-textarea {
+      padding: 0.2rem 0;
     }
   }
-  &.status {
+  .oo-select-field {
+    .dropdown-content {
+      li {
+        line-height: 1rem;
+        min-height: 32px;
+        > span {
+          color: $grey-dark;
+          font-size: 15px;
+          line-height: 15px;
+          padding: 8px 14px;
+        }
+      }
+    }
+  }
+  .oo-radiobutton-field {
+    p {
+      margin: 0;
+    }
+  }
+  .oo-checkbox-field {
+    p {
+      margin: 0;
+    }
+  }
+  // END rewrite materialize form fields
+
+  .pipeline {
+    margin: 20px 0;
     span {
       background: $pipeline-done;
-      color: $link;
+      color: $link-over;
+      cursor: pointer;
       margin-left: -1px;
       padding: 8px 14px 8px 25px;
       position: relative;
@@ -47,7 +87,7 @@
       }
       &[active=true] {
         background: $pipeline-progress;
-        color: $link-over;
+        color: $link;
         cursor: default;
         &:not(:last-child):after {
           border-left-color: $pipeline-progress;
@@ -67,125 +107,114 @@
       }
     }
   }
-}
-.radiobutton-field {
-  p {
-    margin: 0;
+  .oo-pastewindow-opener {
+    color: $icon-dark;
+    cursor: pointer;
+    right: 0;
+    top: 1px;
+    width: 2.5rem;
   }
-}
-.checkbox-field {
-  p {
-    margin: 0;
-  }
-}
-.oo-pastewindow-opener {
-  color: $icon-dark;
-  cursor: pointer;
-  right: 0;
-  top: 10px;
-  width: 2.5rem;
-}
-.pastewindow {
-  .pastewindow_grid {
-    padding-right: 24px;
-  }
-  .slick-header {
-    .slick-header-columns,
-    .slick-header-column {
-      @include linear-gradient(#fafafa, #eee);
+  .pastewindow {
+    .pastewindow_grid {
+      padding-right: 24px;
     }
-    .slick-header-column {
-      height: 25px;
-      line-height: 25px;
-    }
-  }
-  .ui-widget-content {
-    &:hover {
-      background: #ddd;
-    }
-    .slick-cell {
-      border-bottom-color: transparent;
-      cursor: pointer;
-    }
-  }
-}
-.tabs {
-  margin-top: 20px;
-  .tab {
-    a {
-      background: $tabs-inactive-bkg;
-      border-bottom: 1px solid $tabs-border;
-      color: $tabs-inactive-text;
-      &.active {
-        background: $tabs-active-bkg;
-        border-bottom: 0 none;
-        color: $tabs-active-text;
+    .slick-header {
+      .slick-header-columns,
+      .slick-header-column {
+        @include linear-gradient(#fafafa, #eee);
       }
+      .slick-header-column {
+        height: 25px;
+        line-height: 25px;
+      }
+    }
+    .ui-widget-content {
       &:hover {
-        color: $tabs-hover-text;
+        background: #ddd;
       }
-    }
-    &:not(:first-child) {
-      a {
-        border-left: 1px solid $tabs-border;
-      }
-    }
-  }
-  .indicator {
-    background-color: $tabs-indicator-line;
-    top: 0;
-  }
-}
-div[id^="oo_TAB_"] {
-  background: $tabs-content-bkg;
-  float: left;
-  padding: 20px 10px;
-  width: 100%;
-  .oodetail {
-    td {
-      padding: 0 5px;
-      position: relative;
-      .input-field {
-        margin: 0;
-      }
-    }
-    .picker {
-      outline: none;
-      right: 15px;
-      top: 20px;
-      z-index: 1002;
-      &:before {
-        color: $icon-dark;
-        content: "\f073";
+      .slick-cell {
+        border-bottom-color: transparent;
         cursor: pointer;
-        position: absolute;
-        right: 0;
       }
     }
-    .oo-pastewindow-opener {
+  }
+  .tabs {
+    margin-top: 20px;
+    .tab {
+      a {
+        background: $tabs-inactive-bkg;
+        border-bottom: 1px solid $tabs-border;
+        color: $tabs-inactive-text;
+        &.active {
+          background: $tabs-active-bkg;
+          border-bottom: 0 none;
+          color: $tabs-active-text;
+        }
+        &:hover {
+          color: $tabs-hover-text;
+        }
+      }
+      &:not(:first-child) {
+        a {
+          border-left: 1px solid $tabs-border;
+        }
+      }
+    }
+    .indicator {
+      background-color: $tabs-indicator-line;
       top: 0;
     }
-    .oo-delete {
-      i {
-        color: $icon-dark;
-        cursor: pointer;
+  }
+  div[id^="oo_TAB_"] {
+    background: $tabs-content-bkg;
+    float: left;
+    padding: 20px 10px;
+    width: 100%;
+    .oodetail {
+      td {
+        padding: 0 5px;
+        position: relative;
+        .input-field {
+          margin: 0;
+        }
+      }
+      .picker {
+        outline: none;
+        right: 15px;
+        top: 20px;
+        z-index: 1002;
+        &:before {
+          color: $icon-dark;
+          content: "\f073";
+          cursor: pointer;
+          position: absolute;
+          right: 0;
+        }
+      }
+      .oo-pastewindow-opener {
+        top: 0;
+      }
+      .oo-delete {
+        i {
+          color: $icon-dark;
+          cursor: pointer;
+        }
       }
     }
   }
-}
 
 
-.oo-window-header {
-  border: 1px solid black;
-  background: lightgray;
-}
-.oo-header-selector {
-  .oo-selected {
-    background: green;
+  .oo-window-header {
+    border: 1px solid black;
+    background: lightgray;
   }
-}
+  .oo-header-selector {
+    .oo-selected {
+      background: green;
+    }
+  }
 
-.oo-importance-high {
-  font-size: 28pt !important;
-  background: brown !important;
-}
+  .oo-importance-high {
+    font-size: 28pt !important;
+    background: brown !important;
+  }}

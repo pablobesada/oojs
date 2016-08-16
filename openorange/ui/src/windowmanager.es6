@@ -78,7 +78,7 @@
             if ('type' in json && json.type == 'header') return self.createHeaderComponent(json);
             if ('content' in json) return self.createComponent(json.content);
             if (json instanceof Array) {
-                var container = $('<div class="col s12"></div>');
+                var container = $('<div class="col s12 oo-window"></div>');
                 _(json).forEach(function (jcomponent) {
                     container.append(self.createComponent(jcomponent))
                 });
