@@ -308,7 +308,7 @@
                 </script>
                 <script type="x-tmpl-handlebars" class="integer">
                     <div class="input-field col s3">
-                        <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
+                        <input id="{{id}}" value="{{value}}" type="number" name="{{field}}" class="editor {{cls}} oo-editor oo-importance-{{importance}} validate"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
 
@@ -316,7 +316,7 @@
                 <script type="x-tmpl-handlebars" class="checkbox">
                   <div class="col s3 checkbox-field">
                     <p>
-                      <input {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor validate" id="{{id}}">
+                      <input {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor oo-importance-{{importance}} validate" id="{{id}}">
                       <label for="{{id}}">{{label}}</label>
                     </p>
                   </div>
@@ -325,21 +325,21 @@
                 <script type="x-tmpl-handlebars" class="date"
                         init="$this.find('input').pickadate(args.datePickerOptions);">
                   <div class="input-field col s3">
-                      <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} oo-editor validate" datepicker="true"/>
+                      <input id="{{id}}" data-value="{{value}}" type="date" name="{{field}}" class="editor datepicker {{cls}} oo-editor oo-importance-{{importance}} validate" datepicker="true"/>
                       <label for="{{id}}">{{label}}</label>
                   </div>
 
                 </script>
                 <script type="x-tmpl-handlebars" class="time" init="$($this.find('input')[0]).mask('09:00:00');">
                     <div class="input-field col s3">
-                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} oo-editor validate " timeeditor="true"/>
+                        <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor timeeditor {{cls}} oo-editor oo-importance-{{importance}} validate " timeeditor="true"/>
                         <label for="{{id}}">{{label}}</label>
                     </div>
 
                 </script>
                 <script type="x-tmpl-handlebars" class="combobox" initonpage="$this.find('select').material_select()">
                     <div class="input-field col s3">
-                        <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate">
+                        <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor oo-importance-{{importance}} validate">
                         {{#each options as |option|}}
                             <option value="{{option.value}}"  {{#if option.selected}}selected{{/if}}>  {{option.label}}</option>
                         {{/each}}
@@ -352,7 +352,7 @@
                   <div class="col s3 radiobutton-field">
                     {{#each options as |option|}}
                       <p>
-                        <input group_id="{{../group_id}}" value="{{option.value}}" type="radio" name="{{option.field}}" class="editor {{option.cls}} oo-editor validate" id="{{option.id}}">
+                        <input group_id="{{../group_id}}" value="{{option.value}}" type="radio" name="{{option.field}}" class="editor {{option.cls}} oo-editor oo-importance-{{importance}} validate" id="{{option.id}}">
                         <label for="{{option.id}}">{{option.label}}</label>
                       </p>
                     {{/each}}
@@ -362,7 +362,7 @@
                 <script type="x-tmpl-handlebars" class="pipeline">
                     <div id="{{id}}" class="col s12 pipeline">
                         {{#each options as |option|}}
-                            <span group_id="{{../group_id}}" value="{{option.value}}" name="{{field}}" class="{{cls}} editor oo-editor" active="{{option.selected}}">{{option.label}}</span>
+                            <span group_id="{{../group_id}}" value="{{option.value}}" name="{{field}}" class="{{cls}} editor oo-editor oo-importance-{{importance}}" active="{{option.selected}}">{{option.label}}</span>
                         {{/each}}
                     </div>
 
@@ -370,7 +370,7 @@
                 </script>
                 <script type="x-tmpl-handlebars" class="memo">
                     <div class="input-field col s3">
-                        <textarea id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="materialize-textarea editor {{cls}} oo-editor  validate">
+                        <textarea id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="materialize-textarea editor {{cls}} oo-editor oo-importance-{{importance}} validate">
                         </textarea>
                         <label for="{{id}}">{{label}}</label>
                     </div>

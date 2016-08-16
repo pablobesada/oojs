@@ -16,8 +16,8 @@ var Description = {
 
             {field: 'User', label: 'Usuario'},
             {field: 'SerNr', label: 'Numero'},
-            {field: 'TransDate'},
-            {field: 'CustName'},
+            {field: 'TransDate', importance: "high"},
+            {field: 'CustName', importance: "high"},
             {field: 'CustName', editor: 'memo'},
             {field: 'TransTime'},
             {field: 'TransTime'},
