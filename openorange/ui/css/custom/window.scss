@@ -43,6 +43,7 @@
     }
   }
   .oo-checkbox-field {
+    margin-top: 1rem;
     p {
       margin: 0;
     }
@@ -205,16 +206,52 @@
 
 
   .oo-window-header {
-    border: 1px solid black;
-    background: lightgray;
-  }
-  .oo-header-selector {
-    .oo-selected {
-      background: green;
+    background: $window-header-bkg;
+    @include box-shadow(0 2px 7px #c3c3c3);
+    margin-top: 15px;
+    padding-bottom: 20px;
+    padding-top: 25px;
+    .oo-settings-btn-container {
+      position: relative;
+      .oo-settings-btn {
+        color: $icon-dark;
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        top: -18px;
+      }
     }
   }
 
   .oo-importance-high {
-    font-size: 28pt !important;
-    background: brown !important;
-  }}
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+  }
+}
+
+
+.oo-header-selector {
+  .oo-field {
+    cursor: pointer;
+    padding: 2px 0 2px 30px;
+    position: relative;
+    margin: 5px 0;
+    &:before {
+      border: 1px solid $grey-light;
+      @include border-radius(5px);
+      content: '';
+      font-size: 18px;
+      height: 21px;
+      left: 0;
+      line-height: 20px;
+      position: absolute;
+      width: 21px;
+    }
+  }
+  .oo-selected {
+    &:before {
+      color: #aed581;
+      content: '\f00c';
+    }
+  }
+}
