@@ -75,9 +75,10 @@
             if ('type' in json && json.type == 'card') return self.createCardComponent(json);
             if ('type' in json && json.type == 'cardcontainer') return self.createCardContainerComponent(json);
             if ('type' in json && json.type == 'reportview') return self.createReportViewComponent(json);
+            if ('type' in json && json.type == 'header') return self.createHeaderComponent(json);
             if ('content' in json) return self.createComponent(json.content);
             if (json instanceof Array) {
-                var container = $('<div class="container"></div>');
+                var container = $('<div class="col s12"></div>');
                 _(json).forEach(function (jcomponent) {
                     container.append(self.createComponent(jcomponent))
                 });
@@ -184,6 +185,36 @@
                 component.find('#' + child.container_id).append(child.component)
             })
             json.__element__ = component;
+            return component;
+        };
+
+        extractFields(json) {
+        let res = []
+        if ('field' in json) {
+            res.push(json)
+        } else if ('content' in json) {
+            res = res.concat(this.extractFields(json.content))
+        } else if (json instanceof Array) {
+            for (let j of json) {
+                res = res.concat(this.extractFields(j))
+            }
+        }
+        return res
+    }
+
+        createHeaderComponent(json) {
+            var self = this;
+            var component = oo.ui.templates.get('.window .components .header').createElement()
+            component.data('fields', json.fields)
+            console.log(json)
+            console.log(-2, json.fields)
+            console.log(-1, component.data('fields'))
+            var settings_btn = component.find('.oo-settings-btn')
+            if (!settings_btn.length) settings_btn = component.addBack('.oo-settings-btn')
+            settings_btn.click((event) => {
+                self.openHeaderFieldSelector(component);
+            })
+            self.renderHeaderFields(component);
             return component;
         };
 
@@ -400,6 +431,7 @@
                 field: json.field,
                 cls: cls,
                 label: json.label ? json.label : json.field,
+                importance: json.importance ? json.importance : 'normal',
                 pastewindow: json.pastewindow
             }
             if (aditional_template_args) {
@@ -1445,9 +1477,75 @@
         }
 
         getFavouriteLink() {
-            return this.entity.__class__.getDescription().name + "#" + this.entity.getRecord().internalId
+            if (this.entity.getRecord()) return this.entity.__class__.getDescription().name + "#" + this.entity.getRecord().internalId;
+            return null;
         }
 
+        renderHeaderFields($component) {
+            let self = this;
+            let fieldlist = $component.data('fields').slice();
+            console.log(0,$component.data('fields'))
+            let fieldsjson = self.extractFields(this.windowjson)
+            console.log(fieldsjson);
+            fieldsjson = _.filter(fieldsjson, (fieldjson) => {
+                let idx = fieldlist.indexOf(fieldjson.field);
+                if (idx >= 0) {
+                    fieldlist.splice(idx,1);
+                }
+                return (idx >= 0);
+            })
+            console.log(fieldsjson);
+            console.log(1,$component.data('fields'))
+            let $fields_container = $component.find('.oo-fields-container')
+            $fields_container.html('')
+            _(fieldsjson).forEach(function (child_component_json) {
+                var child_component = self.createComponent(child_component_json);
+                $fields_container.append(child_component);
+            });
+            console.log(2,$component.data('fields'))
+            self.callInitOnPageCallbacks();
+        }
+
+        openHeaderFieldSelector($component) {
+            let self = this;
+            console.log("DDDD", $component.data('fields'))
+            let current_fields = $component.data('fields');
+            console.log("cur fields", current_fields);
+            let fields = this.extractFields(this.windowjson)
+            let temp = {}
+            let i = 0;
+            while (i <fields.length) {
+                let f = fields[i];
+                if (f.field in temp) {
+                    fields.splice(i,1);
+                } else {
+                    i++;
+                }
+                temp[f.field] = true;
+            }
+            fields = _.map(fields, (field) => {return _.extend({}, field)})
+            _.each(fields, (field) => {
+                if (!field.label) field.label = field.field;
+                field.selected_pos = current_fields.indexOf(field.field);
+                field.selected = field.selected_pos >= 0;
+            })
+            let args = {fields: fields}
+            let $selector = oo.ui.templates.get('.header-settings').createElement(args);
+            $selector.find(".oo-toggle-btn").click((event) => {
+                let $target = $(event.target);
+                if ($target.hasClass("oo-selected")) {
+                    $target.removeClass("oo-selected")
+                } else {
+                    $target.addClass("oo-selected")
+                }
+            })
+            $selector.data('callback', () => {
+                $component.data('fields', _.map($selector.find('.oo-field.oo-selected'), function (el) {console.log(el); return $(el).attr('field')}));
+                self.renderHeaderFields($component);
+            });
+            $('body').append($selector);
+            $selector.addedToPage();
+        }
     }
 
     WindowContainer.datePickerOptions = {

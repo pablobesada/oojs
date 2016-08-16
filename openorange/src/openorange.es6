@@ -1,16 +1,5 @@
 "use strict"
 let cm = require("./classmanager");
-async function login(usercode, md5pass) {
-    if (!usercode || usercode == '') return false;
-    if (!md5pass || md5pass == 'd41d8cd98f00b204e9800998ecf8427e') md5pass = null;
-    let user = await cm.getClass("User").findOne({Code: usercode, Password: md5pass})
-    if (user && md5pass != user.Password) user = null; //necesario para usuarios sin clave
-    if (user) {
-        oo.connectedClient.broadcast('postMessage', `El usuario ${usercode} se acaba de loguear`)
-        return true;
-    }
-    return false;
-}
 
 async function login(usercode, md5pass) {
     if (!usercode || usercode == '') return false;

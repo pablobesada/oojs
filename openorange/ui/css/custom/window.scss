@@ -173,3 +173,14 @@ div[id^="oo_TAB_"] {
     }
   }
 }
+
+
+.oo-window-header {
+  border: 1px solid black;
+  background: lightgray;
+}
+.oo-header-selector {
+  .oo-selected {
+    background: green;
+  }
+}

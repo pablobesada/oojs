@@ -13,7 +13,6 @@ var Description = {
             {label: 'Sum per Origin', value: 3},
         ]},
 
-        {type:header, edition: [
             {field: 'User', label: 'Usuario'},
             {field: 'SerNr', label: 'Numero'},
             {field: 'TransDate'},
@@ -23,13 +22,6 @@ var Description = {
             {field: 'TransTime'},
             {field: 'CustCode', pastewindow: "CustomerPasteWindow"},
 
-        ], view: [
-            {field: 'User', label: 'Usuario'},
-            {field: 'SerNr', label: 'Numero'},
-            {field: 'TransDate', viewoptions: "big"},
-            {field: 'TransTime'},
-            {field: 'TransTime'},
-        ]},
         //{type: 'card', name: 'CustomerSalesOrdersCard'},
         //{type: 'card', name: 'TimerCard'},
         {field: 'PrintFormat', editor: 'radiobutton', options: [

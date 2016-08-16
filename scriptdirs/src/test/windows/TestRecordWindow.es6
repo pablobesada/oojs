@@ -9,14 +9,13 @@ var Description = {
     title: "Test Record Window",
     form: [
         {field: 'syncVersion'},
-        {field: 'SubTestName',},
+        {type: 'header', fields: ['String_Field', 'LinkTo_Field', 'Date_Field']},
         {field: 'String_Field', pastewindow: 'CustomerPasteWindow'},
-
-        {field: 'LinkTo_Field', name: 'LTF', },
-        {field: 'Date_Field'},
-        {field: 'Date_Field', editor: 'string'},
-        {field: 'Integer_Field'},
+        {field: 'Date_Field', editor: 'date'},
         {field: 'Integer_Field', editor: 'checkbox'},
+        {field: 'Integer_Field'},
+
+        {field: 'LinkTo_Field', name: 'LTF' },
         {field: 'Integer_Field', editor: 'radiobutton', options: [
     {label: 'CERO', value: 0},
     {label: 'UNO', value: 1},

@@ -263,9 +263,29 @@
         </script>
         <div class="oomaster">
             <div class="components">
+                <script type="x-tmpl-handlebars" class="header">
+                    <div class="col s12 oo-window-header">
+                        <div>
+                            <a class="oo-settings-btn btn-floating waves-effect waves-light red"><i class="mdi">settings</i></a>
+                        </div>
+                        <div class='oo-fields-container'>
+                        </div>
+                    </div>
+                </script>
+                <script type="x-tmpl-handlebars" class="header-settings" initonpage="$this.openModal({complete: function () {$this.data('callback')(); $this.remove();}});">
+                    <div class="modal modal-fixed-footer oo-header-selector-window" style="z-index: 1003; display: none; opacity: 0; transform: scaleX(0.7); top: 317.636px;">
+                        <div class="modal-content">
+                            <div class="col s12 oo-header-selector">
+                                {{#each fields as |field|}}
+                                    <div class="oo-field oo-toggle-btn {{#if field.selected}}oo-selected{{/if}}" field="{{field.field}}">{{field.label}}</div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                </script>
+
                 <script type="x-tmpl-handlebars" class="line">
                     <div class="row"></div>
-
                 </script>
                 <script type="x-tmpl-handlebars" class="column">
                     <div class="row">
@@ -279,13 +299,12 @@
                 </script>
                 <script type="x-tmpl-handlebars" class="string">
                     <div class="input-field col s3">
-                      <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor validate"/>
+                      <input id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor oo-importance-{{importance}} validate"/>
                       <label for="{{id}}">{{label}}</label>
                       {{#if pastewindow}}
                         <i class="mdi prefix oo-pastewindow-opener">search</i>
                       {{/if}}
                     </div>
-
                 </script>
                 <script type="x-tmpl-handlebars" class="integer">
                     <div class="input-field col s3">
