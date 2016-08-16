@@ -7,6 +7,7 @@ var Description = {
     record: 'SalesOrder',
     title: "Sales Order",
     form: [
+        {type: 'header', fields: ['User', 'SerNr', 'TransDate']},
         {field: 'PrintFormat', editor: 'pipeline', options: [
             {label: 'Normal', value: 0},
             {label: 'Sum per Item', value: 1},
