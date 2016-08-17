@@ -76,24 +76,27 @@ html(lang='en')
                 $(this).select();
             })
             let $search = $('#OOSearch');
-            $search[0].addEventListener("awesomplete-select", function(e){
-                console.log(arguments)
-            }, false);
+            //let search_suggestions = [];
             var awesomplete = new Awesomplete($search[0], {
                 minChars: 1,
                 autoFirst: true,
                 data: function (item, input) {
-                    return item.label;
+                    return {label: item.label, value: item.label, item: item};
                 }
             });
+            $search[0].addEventListener("awesomplete-select", function (e) {
+                console.log(e.text.item.item)
+            }, false);
+
             $search.on("keyup", function (event) {
                 if (event.key == 'ArrowDown' || event.key == 'ArrowUp' || event.keyCode == 13) {
                     return false;
                 }
                 oo.explorer.search(this.value)
                         .then(function (results) {
-                            console.log(results)
+                            //search_suggestions = results;
+                            //_.each(search_suggestions, function (item, idx) {item.position = idx});
                             awesomplete.list = results;
                         })
+                });
             });
-        });

@@ -208,7 +208,7 @@ _.prototype = {
 
 		if (selected) {
 			var suggestion = this.suggestions[this.index];
-
+			console.log("SEUG", suggestion)
 			var allowed = $.fire(this.input, "awesomplete-select", {
 				text: suggestion,
 				origin: origin || selected
@@ -302,6 +302,7 @@ function Suggestion(data) {
 
 	this.label = o.label || o.value;
 	this.value = o.value;
+	this.item = data; //PDB;
 }
 Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
 	get: function() { return this.label.length; }
