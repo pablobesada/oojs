@@ -13,12 +13,7 @@ html(lang='en')
         link(href='css/awesomplete.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/perfect-scrollbar.css', type='text/css', rel='stylesheet', media='screen,projection')
         link(href='css/app.css', type='text/css', rel='stylesheet', media='screen,projection')
-        //link(rel="stylesheet",href="css/slick.grid.css",type="text/css")
-        //link(rel="stylesheet",href="css/examples.css",type="text/css")
         link(rel="stylesheet",href=templatesCSS,type="text/css")
-
-        //link(rel="stylesheet",href="css/app/styles.min.css",type="text/css")
-
 
     body
 
@@ -84,9 +79,6 @@ html(lang='en')
                     return {label: item.label, value: item.label, item: item};
                 }
             });
-            $search[0].addEventListener("awesomplete-select", function (e) {
-                console.log(e.text.item.item)
-            }, false);
 
             $search.on("keyup", function (event) {
                 if (event.key == 'ArrowDown' || event.key == 'ArrowUp' || event.keyCode == 13) {
@@ -98,5 +90,28 @@ html(lang='en')
                             //_.each(search_suggestions, function (item, idx) {item.position = idx});
                             awesomplete.list = results;
                         })
-                });
             });
+
+
+            $search[0].addEventListener("awesomplete-select", function (e) {
+                let datum = e.text.item.item;
+                console.log(datum);
+                var wnd = null;
+                switch (datum.type) {
+                    case 'Record Class':
+                        console.log(datum.access)
+                        wnd = oo.classmanager.getClass(datum.access).new();
+                        break;
+                    case 'Report':
+                        wnd = oo.classmanager.getClass(datum.name).new();
+                        break;
+                    case 'Routine':
+                        wnd = oo.classmanager.getClass(datum.name).new();
+                        break;
+                }
+                if (wnd != null) {
+                    wnd.open()
+                    wnd.setFocus()
+                }
+            });
+        })

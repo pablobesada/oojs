@@ -63,7 +63,7 @@
             return this.__element__
         };
 
-        setupSearchWidget() {
+        setupSearchWidget_OLD() {
             let self=this;
             self.__element__.find('.oo-search').typeahead({hint: true, minLength: 0}, {
                 //async: true,
@@ -82,6 +82,37 @@
             });
 
         }
+
+        setupSearchWidget() {
+            let self=this;
+            let $search = self.__element__.find('.oo-search');
+            if (!$search.length) return;
+            var awesomplete = new Awesomplete($search[0], {
+                minChars: 0,
+                autoFirst: false,
+                list: self.listwindow.getSuggestedSearches(),
+                filter: function (text, input) {
+                    return true;
+                },
+                data: function (item, input) {
+                    return {label: item.label, value: item.label, item: item};
+                }
+
+            });
+            console.log("LIST", self.listwindow.getSuggestedSearches())
+            $search[0].addEventListener("focus", function (e) {
+                awesomplete.evaluate();
+            });
+            $search[0].addEventListener("awesomplete-select", function (e) {
+                self.listwindow.setSearchText(e.text.item.item.query)
+                self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
+            });
+            $search[0].addEventListener("change", function (e) {
+                self.listwindow.setSearchText($search.val())
+                self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
+            });
+        }
+
         getTitle() {
             return this.listwindow.getTitle()
         }

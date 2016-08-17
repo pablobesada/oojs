@@ -144,6 +144,7 @@
                 let params = {self: this, containerName: json.name}
                 addButton.click(this.selectCards.bind(params))
                 editButton.click(() => {
+                    console.log("AAAAAA")
                     if (!editButton.hasClass('active')) {
                         component.find('.card-remove-btn').removeClass('hide')
                         editButton.addClass('active')
