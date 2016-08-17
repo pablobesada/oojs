@@ -266,8 +266,8 @@
             <div class="components">
                 <script type="x-tmpl-handlebars" class="header">
                     <div class="col s12 oo-window-header">
-                        <div>
-                            <a class="oo-settings-btn btn-floating waves-effect waves-light red"><i class="mdi">settings</i></a>
+                        <div class="oo-settings-btn-container">
+                            <a class="oo-settings-btn"><i class="mdi">settings</i></a>
                         </div>
                         <div class='oo-fields-container'>
                         </div>
@@ -315,7 +315,7 @@
 
                 </script>
                 <script type="x-tmpl-handlebars" class="checkbox">
-                  <div class="col s3 checkbox-field">
+                  <div class="col s3 oo-checkbox-field">
                     <p>
                       <input {{#if checked}}checked="checked"{{/if}} type="checkbox" name="{{field}}" class="editor {{cls}} oo-editor oo-importance-{{importance}} validate" id="{{id}}">
                       <label for="{{id}}">{{label}}</label>
@@ -339,7 +339,7 @@
 
                 </script>
                 <script type="x-tmpl-handlebars" class="combobox" initonpage="$this.find('select').material_select()">
-                    <div class="input-field col s3">
+                    <div class="input-field col s3 oo-select-field">
                         <select id="{{id}}" value="{{value}}" type="text" name="{{field}}" class="editor {{cls}} oo-editor oo-importance-{{importance}} validate">
                         {{#each options as |option|}}
                             <option value="{{option.value}}"  {{#if option.selected}}selected{{/if}}>  {{option.label}}</option>
@@ -350,7 +350,7 @@
 
                 </script>
                 <script type="x-tmpl-handlebars" class="radiobutton">
-                  <div class="col s3 radiobutton-field">
+                  <div class="col s3 oo-radiobutton-field">
                     {{#each options as |option|}}
                       <p>
                         <input group_id="{{../group_id}}" value="{{option.value}}" type="radio" name="{{option.field}}" class="editor {{option.cls}} oo-editor oo-importance-{{importance}} validate" id="{{option.id}}">

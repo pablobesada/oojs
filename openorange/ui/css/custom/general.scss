@@ -1,0 +1,21 @@
+html {
+  height: 100vh;
+}
+body {
+  background-color: #ddd;
+  min-height: 100%;
+  padding-bottom: 6rem;
+  position: relative;
+}
+#content_section {
+  margin-top: 15px;
+  #workspace {
+    background: #f9f9f9;
+  }
+}
+.container {
+    padding: 0 0.5rem;
+    margin: 0 auto;
+    max-width: 100% !important;
+    width: 98%
+}

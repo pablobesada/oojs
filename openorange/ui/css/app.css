@@ -1,13 +1,3 @@
-html {
-  height: 100vh;
-}
-body {
-  background-color: #f9f9f9;
-  min-height: 100%;
-  padding-bottom: 6rem;
-  position: relative;
-}
-
 .fixed-action-btn {
   bottom: 60px;
 }
@@ -24,13 +14,6 @@ select {
 
 #sidenav-overlay {
     background-color: transparent
-}
-
-.container {
-    padding: 0 0.5rem;
-    margin: 0 auto;
-    max-width: 100% !important;
-    width: 98%
 }
 
 #left-sidebar-nav {

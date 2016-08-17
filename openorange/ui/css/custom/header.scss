@@ -90,14 +90,14 @@
         padding-right: 0;
       }
       &:hover {
-        color: $link-over;
+        color: $header-link-over;
         .icon {
           position: relative;
           &:not(:only-child) {
             &:after {
               border-left: 8px solid transparent;
               border-right: 8px solid transparent;
-              border-bottom: 8px solid #ddd;
+              border-bottom: 8px solid $header-link-over;
               bottom: 0;
               content: '';
               height: 0;
@@ -112,7 +112,7 @@
         }
       }
       .oo-nav-options {
-        background: $link-over;
+        background: $header-link-over;
         display: none;
         left: 0;
         position: absolute;
