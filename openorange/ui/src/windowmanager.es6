@@ -446,12 +446,39 @@
             $pwopener = res.find(".oo-pastewindow-opener")
             if ($pwopener.length == 0) $pwopener = $editor.addBack(".oo-pastewindow-opener");
             this.templateElements.push(res)
+            if (json.pastewindow) {
+                //this.addPasteWindowFunctionality(json, $editor);
+            }
             return {component: res, editor: $editor, pastewindowopener: $pwopener};
 
         }
 
+        addPasteWindowFunctionality(json, $editor) {
+            let self = this;
+            $editor.addClass("awesomplete")
+            let awesomplete = new Awesomplete($editor[0], {
+                minChars: 1,
+                autoFirst: true,
+                data: function (item, input) {
+                    return {label: item.label, value: item.label, item: item};
+                }
+            });
+
+            $editor[0].addEventListener("keyup", async function (e) {
+                console.log("keyup")
+                let classname = 'Customer'
+                let records = await self.window.getPasteWindowRecords(classname, 0, 5);
+                awesomplete.list = recods;
+                self.listwindow.setSearchText($search.val())
+                self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
+            });
+
+
+        }
+
         string(json, cls, field) {
-            return this.processEditor(json, cls, field, 'string')
+            let res = this.processEditor(json, cls, field, 'string')
+            return res;
         };
 
         memo(json, cls, field) {
