@@ -118,23 +118,33 @@
         </script>
 
         <script class="container" type="x-tmpl-handlebars"
-                initonpage="Materialize.updateTextFields();">
+                initonpage="Materialize.updateTextFields(); $this.find('select').material_select();">
             <div id="{{id}}" class="container oo-workspace-container col s12">
                 <nav class="oo-container-title row">
                   <div class="nav-wrapper">
-                  {{#if_not_equal type 'listwindowcontainer'}}
-                    <div class="col s4">
-                      <span class="oo-title-text">{{title}}</span>
-                    </div>
+                    {{#if_not_equal type 'listwindowcontainer'}}
+                      <div class="col s4">
+                        <span class="oo-title-text">{{title}}</span>
+                      </div>
                     {{/if_not_equal}}
                     {{#if_equal type 'listwindowcontainer'}}
-                    <div class="container-search-wrapper col s6">
-                      <i class="mdi-action-search"></i>
-                      <input class="container-search-input awesomplete oo-search" type="text" placeholder="Explore {{title}}">
-                    </div>
+                      <div class="container-search-wrapper col s6">
+                        <i class="mdi-action-search"></i>
+                        <input class="container-search-input awesomplete oo-search" type="text" placeholder="Explore {{title}}">
+                      </div>
                     {{/if_equal}}
-                    <div class="oo-subnav-icons col s2 right">
+                    <div class="oo-subnav-icons col s6 m4 l3 right">
                       <ul class="right">
+                        {{#if_not_equal type 'listwindowcontainer'}}
+                          <li>
+                            <label class="label">Acciones <i class="icon fa fa-caret-down" aria-hidden="true"></i></label>
+                            <ul class="oo-subnav-options oo-actions">
+                              <li>Opcion 1</li>
+                              <li>Opcion 2</li>
+                              <li>Opcion 3</li>
+                            </ul>
+                          </li>
+                        {{/if_not_equal}}
                         <li>
                           <i class="icon fa fa-cog" aria-hidden="true"></i>
                           <ul class="oo-subnav-options oo-settings-container">
@@ -147,8 +157,8 @@
                   </div>
                 </nav>
             </div>
-
         </script>
+
         <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
                 <div class="oo-listwindow">
