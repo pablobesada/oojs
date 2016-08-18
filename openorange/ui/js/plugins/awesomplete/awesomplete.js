@@ -26,18 +26,23 @@ var _ = function (input, o) {
 		filter: _.FILTER_CONTAINS,
 		sort: _.SORT_BYLENGTH,
 		item: _.ITEM,
-		replace: _.REPLACE
+		replace: _.REPLACE,
+		useParentContainer: false,
 	}, o);
 
 	this.index = -1;
 
 	// Create necessary elements
 
-	this.container = $.create("div", {
-		className: "awesomplete",
-		around: input
-	});
-
+	if (this.useParentContainer) {
+		this.container = input.parentNode;
+		this.container.setAttribute("class", (this.container.getAttribute("class") ? this.container.getAttribute("class") + " " : "") + "awesomplete")
+	} else {
+		this.container = $.create("div", {
+			className: "awesomplete",
+			around: input
+		});
+	}
 	this.ul = $.create("ul", {
 		hidden: "hidden",
 		inside: this.container
@@ -208,7 +213,6 @@ _.prototype = {
 
 		if (selected) {
 			var suggestion = this.suggestions[this.index];
-			console.log("SEUG", suggestion)
 			var allowed = $.fire(this.input, "awesomplete-select", {
 				text: suggestion,
 				origin: origin || selected
@@ -244,7 +248,7 @@ _.prototype = {
 				.slice(0, this.maxItems);
 
 			this.suggestions.forEach(function(text) {
-					me.ul.appendChild(me.item(text, value));
+					me.ul.appendChild(me.item(text, value, text.item));
 				});
 
 			if (this.ul.children.length === 0) {

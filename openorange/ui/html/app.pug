@@ -30,7 +30,7 @@ html(lang='en')
 
     //OPENORANGE
     script(type='text/javascript', src="js/plugins/superlist/superlist.js")
-    script(type='text/javascript', src="js/plugins/awesomplete/awesomplete.min.js")
+    script(type='text/javascript', src="js/plugins/awesomplete/awesomplete.js")
     script(src=OpenOrangeBaseURL + '/socket.io/socket.io.js')
     script(src=OpenOrangeBaseURL +'/lib/client/md5.min.js')
     script(src=OpenOrangeBaseURL+ '/lib/client/openorange.js')
@@ -81,9 +81,7 @@ html(lang='en')
             });
 
             $search.on("keyup", function (event) {
-                if (event.key == 'ArrowDown' || event.key == 'ArrowUp' || event.keyCode == 13) {
-                    return false;
-                }
+                if (event.key == 'ArrowDown' || event.key == 'ArrowUp' || event.keyCode == 13) return false;
                 oo.explorer.search(this.value)
                         .then(function (results) {
                             //search_suggestions = results;

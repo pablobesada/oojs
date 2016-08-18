@@ -446,12 +446,57 @@
             $pwopener = res.find(".oo-pastewindow-opener")
             if ($pwopener.length == 0) $pwopener = $editor.addBack(".oo-pastewindow-opener");
             this.templateElements.push(res)
+            if (json.pastewindow) {
+                this.addPasteWindowFunctionality(json, $editor);
+            }
             return {component: res, editor: $editor, pastewindowopener: $pwopener};
 
         }
 
+        addPasteWindowFunctionality(json, $editor) {
+            let self = this;
+            //$editor.addClass("awesomplete")
+            let pwclass = cm.getClass(json.pastewindow);
+            let awesomplete = new Awesomplete($editor[0], {
+                useParentContainer: true,
+                minChars: 2,
+                autoFirst: true,
+                data: function (item, input) {
+                    return {label: item.Code, value: item[pwclass.__description__.pastefieldname], record: item};
+                },
+                item: function (text, input, item) {
+                    let record = item.record;
+                    let $li = $('<li></li>')
+                    let colwidthpercent = Math.round(100.0 / pwclass.__description__.columns.length);
+                    for (let col of pwclass.__description__.columns) {
+                        let v = record.fields(col.field).getFormattedValue();
+                        v = v.replace(new RegExp(input, 'g'), '<mark>'+input+'</mark>');
+                        let $span = $(`<span style="display: inline-block; width: ${colwidthpercent}%;">${v}</span>`)
+                        $li.append($span)
+                    }
+                    return $li[0]
+                }
+            });
+
+            $editor[0].addEventListener("keyup", async function (e) {
+                if (this.readOnly) return false;
+                if (event.key == 'ArrowDown' || event.key == 'ArrowUp' || event.keyCode == 13) return false;
+                let classname = 'Customer'
+                let records = await self.window.getPasteWindowRecords(classname, 0, 5);
+                awesomplete.list = records;
+                //self.listwindow.setSearchText($search.val())
+                //self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
+            });
+
+            $editor[0].addEventListener("awesomplete-selectcomplete", async function (e) {
+                let record = e.text.item.item;
+                self.afterEdit(event);
+            });
+        }
+
         string(json, cls, field) {
-            return this.processEditor(json, cls, field, 'string')
+            let res = this.processEditor(json, cls, field, 'string')
+            return res;
         };
 
         memo(json, cls, field) {

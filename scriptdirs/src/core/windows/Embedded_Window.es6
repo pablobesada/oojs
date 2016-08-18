@@ -488,8 +488,11 @@ class Embedded_Window extends oo.UIEntity {
         return this.__provided_data_object__
     }
 
-    async getPasteWindowRecords(classname, start, count) {
+    async getPasteWindowRecords(classname, start, count, text) {
         let q = oo.classmanager.getClass(classname).select();
+        if (text) {
+            let pwclass = oo.classmanager.getClass()
+        }
         //if (this.where) q.where(this.where)
         q = q.offset(start).limit(count);
         return await q.fetch();
