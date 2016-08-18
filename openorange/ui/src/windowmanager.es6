@@ -488,7 +488,10 @@
                 //self.listcontainer.data('superlist').setSource(self.getRows.bind(self));
             });
 
-
+            $editor[0].addEventListener("awesomplete-selectcomplete", async function (e) {
+                let record = e.text.item.item;
+                self.afterEdit(event);
+            });
         }
 
         string(json, cls, field) {

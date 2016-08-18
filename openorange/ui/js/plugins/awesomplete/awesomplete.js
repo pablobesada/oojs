@@ -213,7 +213,6 @@ _.prototype = {
 
 		if (selected) {
 			var suggestion = this.suggestions[this.index];
-			console.log("SEUG", suggestion)
 			var allowed = $.fire(this.input, "awesomplete-select", {
 				text: suggestion,
 				origin: origin || selected
