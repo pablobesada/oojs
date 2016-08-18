@@ -113,8 +113,12 @@ class SalesOrderWindow extends Parent {
         //report.getRecord().JoinNames = True
         //report.open(False)
         report.open(false)
+
     }
 
+    /*async "focus CustCode"() {
+        return false;
+    }*/
     async "changed PrintFormat"() {
         await Parent.tryCall(this, null, "changed PrintFormat");
         console.log("SO: changed PrintFormat: " + this.getRecord().PrintFormat)
