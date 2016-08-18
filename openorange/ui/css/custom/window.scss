@@ -173,9 +173,10 @@
     width: 100%;
     .oodetail {
       td {
-        padding: 0 5px;
+        padding: 5px;
         position: relative;
-        .input-field {
+        .input-field,
+        p {
           margin: 0;
         }
       }
@@ -190,10 +191,11 @@
           cursor: pointer;
           position: absolute;
           right: 0;
+          top: -4px;
         }
       }
       .oo-pastewindow-opener {
-        top: 0;
+        top: 6px;
       }
       .oo-delete {
         i {
@@ -204,6 +206,39 @@
     }
   }
 
+  div[id^="oo_card_container_"] {
+    padding: 10px;
+    .cardcontainer-buttonbar {
+      border-bottom: 1px solid $grey-light;
+      margin-bottom: 8px;
+      width: 100%;
+      .oo-card-action-btn {
+        background: $grey-dark;
+      }
+      ul {
+        margin: 0 14px;
+        li {
+          display: inline-block;
+          padding: 8px 0;
+          &:not(:last-child) {
+            margin-right: 6px;
+          }
+        }
+      }
+    }
+    .singlecard-container {
+      margin: 10px;
+      position: relative;
+      &:nth-child(2n+0) {
+        clear: both;
+      }
+      .card-remove-btn {
+        position: absolute;
+        right: 18px;
+        top: 15px;
+      }
+    }
+  }
 
   .oo-window-header {
     background: $window-header-bkg;
@@ -260,4 +295,3 @@
   font-size: 28pt !important;
   background: yellow !important;
 }
-
