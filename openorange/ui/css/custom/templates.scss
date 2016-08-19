@@ -25,9 +25,24 @@ body, #main, .wrapper, #content_section, .container, #workspace {
 }
 
 
+.oo-select-field {
+  .dropdown-content {
+    li {
+      line-height: 1rem;
+      min-height: 32px;
+      > span {
+        color: $grey-dark;
+        font-size: 15px;
+        line-height: 15px;
+        padding: 8px 14px;
+      }
+    }
+  }
+}
+
 .oo-workspace-container {
   //height: 100%;
-  .oo-container-title:not(:empty) {
+  .oo-container-title {
     background-color: $subheader-bkg;
     color: $subheader-content;
     margin: 10px 0 0;
@@ -88,7 +103,8 @@ body, #main, .wrapper, #content_section, .container, #workspace {
         }
         &:hover {
           color: $link-over;
-          .icon {
+          .icon,
+          .label {
             position: relative;
             &:not(:only-child) {
               &:after {
@@ -104,6 +120,15 @@ body, #main, .wrapper, #content_section, .container, #workspace {
               }
             }
           }
+          .label {
+            color: $link-over;
+            display: inline-block;
+            height: 64px;
+            line-height: 64px;
+            &:after {
+              left: 18px !important;
+            }
+          }
           .oo-subnav-options {
             display: inline-block;
           }
@@ -116,10 +141,16 @@ body, #main, .wrapper, #content_section, .container, #workspace {
           position: absolute;
           top: 64px;
           width: 100%;
+          z-index: 1;
           li {
             float: none;
             line-height: 30px;
+            margin: 0;
             padding: 0 10px;
+            &:hover {
+              background: rgba(0,0,0,0.1);
+              color: white;
+            }
             a {
               width: 100%;
             }
@@ -129,6 +160,17 @@ body, #main, .wrapper, #content_section, .container, #workspace {
           font-size: 1.5em;
           &.oo-selected {
             color: $icon-selected;
+          }
+        }
+        .label {
+          color: $icon-light;
+          cursor: pointer;
+          font-size: 14px;
+          margin-right: 5px;
+          .icon:before {
+            left: 2px;
+            position: relative;
+            top: 3px;
           }
         }
       }

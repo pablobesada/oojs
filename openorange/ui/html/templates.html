@@ -118,23 +118,33 @@
         </script>
 
         <script class="container" type="x-tmpl-handlebars"
-                initonpage="Materialize.updateTextFields();">
+                initonpage="Materialize.updateTextFields(); $this.find('select').material_select();">
             <div id="{{id}}" class="container oo-workspace-container col s12">
                 <nav class="oo-container-title row">
                   <div class="nav-wrapper">
-                  {{#if_not_equal type 'listwindowcontainer'}}
-                    <div class="col s4">
-                      <span class="oo-title-text">{{title}}</span>
-                    </div>
+                    {{#if_not_equal type 'listwindowcontainer'}}
+                      <div class="col s4">
+                        <span class="oo-title-text">{{title}}</span>
+                      </div>
                     {{/if_not_equal}}
                     {{#if_equal type 'listwindowcontainer'}}
-                    <div class="container-search-wrapper col s6">
-                      <i class="mdi-action-search"></i>
-                      <input class="container-search-input awesomplete oo-search" type="text" placeholder="Explore {{title}}">
-                    </div>
+                      <div class="container-search-wrapper col s6">
+                        <i class="mdi-action-search"></i>
+                        <input class="container-search-input awesomplete oo-search" type="text" placeholder="Explore {{title}}">
+                      </div>
                     {{/if_equal}}
-                    <div class="oo-subnav-icons col s2 right">
+                    <div class="oo-subnav-icons col s6 m4 l3 right">
                       <ul class="right">
+                        {{#if_not_equal type 'listwindowcontainer'}}
+                          <li>
+                            <label class="label">Acciones <i class="icon fa fa-caret-down" aria-hidden="true"></i></label>
+                            <ul class="oo-subnav-options oo-actions">
+                              <li>Opcion 1</li>
+                              <li>Opcion 2</li>
+                              <li>Opcion 3</li>
+                            </ul>
+                          </li>
+                        {{/if_not_equal}}
                         <li>
                           <i class="icon fa fa-cog" aria-hidden="true"></i>
                           <ul class="oo-subnav-options oo-settings-container">
@@ -147,31 +157,24 @@
                   </div>
                 </nav>
             </div>
-
         </script>
+
         <div class="listwindow">
             <script class="body" type="x-tmpl-handlebars" initonpage="$this.find('select').material_select()">
                 <div class="oo-listwindow">
-                    <!-- /*<div class="select col s4">
-                      <select>
-                          <option value="1" SELECTED >Este mes</option>
-                          <option value="1">Mes anterior</option>
-                          <option value="2">Ultimos abiertos</option>
-                          <option value="1">Sin aprobar</option>
-                      </select>
-                    </div>*/ -->
-                    <div class="oo-list-container">
-                    </div>
+                  <ul class="oo-list-header col s12"></ul>
+                  <div class="oo-list-container">
+                  </div>
                 </div>
-
+            </script>
+            <script class="header-cell" type="x-tmpl-handlebars">
+              <li class="col s2">{{label}}</li>
             </script>
             <script class="row" type="x-tmpl-handlebars">
-                <div class="oo-row hoverable"><div class="card row oo-cell-container"></div></div>
-
+              <ul class="oo-row"></ul>
             </script>
             <script class="row-cell" type="x-tmpl-handlebars">
-                <div class="oo-row-cell col s12 m6 truncate"><span class="cell-label">{{label}}:</span> <span class="cell-value">{{value}}</span></div>
-
+              <li class="oo-row-cell col s2 truncate"><span class="cell-value">{{value}}</span></li>
             </script>
         </div>
 
@@ -246,17 +249,19 @@
 
         </script>
         <script type="x-tmpl-handlebars" class="cardcontainer">
-            <div class="card singlecard-container" cardname="{{cardname}}" style="position: relative">
-                <a id="{{delete_action_id}}" class="btn-floating waves-effect waves-light red card-remove-btn hide" style="position:absolute; right: 15px; top:15px;"><i class="mdi">delete</i></a>
+            <div class="card singlecard-container col s12 m5 l5" cardname="{{cardname}}">
+                <a id="{{delete_action_id}}" class="btn-floating waves-effect waves-light red card-remove-btn hide"><i class="mdi">delete</i></a>
                 <div id="{{content_id}}"></div>
             </div>
         </script>
         <script type="x-tmpl-handlebars" class="cardlistcontainer">
-            <div id="{{id}}" class="col s12 m6 card-panel hoverable" cardcontainer="{{cardcontainername}}">
+            <div id="{{id}}" class="col s12 card-panel hoverable" cardcontainer="{{cardcontainername}}">
                 <div class='cardcontainer-buttonbar'>
+                  <ul>
                     {{#each actions as |action|}}
-                        <a id="{{action.id}}" class="btn-floating waves-effect waves-light red"><i class="mdi">{{action.icon}}</i></a>
+                      <li><a id="{{action.id}}" class="btn-floating oo-card-action-btn"><i class="mdi">{{action.icon}}</i></a></li>
                     {{/each}}
+                  </ul>
                 </div>
             </div>
 

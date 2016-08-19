@@ -6,6 +6,7 @@
     #border: 1px solid rgb(29, 29, 29);
     z-index: 10;
     cursor: pointer;
+    position: relative;
     width: 16px;
 }
 
