@@ -511,7 +511,7 @@ orm.createTable = async function createTable(description) {
         return orm.column_def_sql(fn, description.fields[fn])
     });
     let indexes = [];
-    for (let index of description.indexes) indexes.push(orm.index_def_sql(index))
+    for (let index of description.indexes) indexes.push(orm.index_sql_def(index))
     let sql = `CREATE TABLE ${tablename} (${columns.join(",\n")}, ${indexes.join(",\n")} ) ENGINE=InnoDB DEFAULT CHARSET=utf8`
     let conn = await ctx.getDBConnection();
     return conn.query(sql);
